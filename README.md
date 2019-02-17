@@ -3,12 +3,12 @@ Manage Computer Science Discord elective roles and channels automatically.
 
 ## Usage
 1. Change the token in TestBot.java to match your bot's token
-2. Change the directory of variable path (line 30) in MyEventListener.java
+2. Change the directory of variable path in MyEventListener.java (line 30)
 3. Run the bot
 
 # Commands
 ### Owner only
-!totalchatwipe - clones current text channel and deletes the original 
+!totalchatwipe - clones current text channel and deletes the original (effectively wipes chat history)
 
 !cleanelectives - deletes all text channels in the Electives category  
 
@@ -25,3 +25,5 @@ Manage Computer Science Discord elective roles and channels automatically.
 !join [role name] - if the role already exists, it is assigned to the user. Else, the user's id and requested role are stored in a CSV file. If enough users apply for the same role, the role and a private text channel are created and all applicants are assigned to it
 
 !leave [role name] - unassigns role from user and removes their application to that role from the csv file if it's there
+
+!help - gives examples and instructions for using !join and !leave

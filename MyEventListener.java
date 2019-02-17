@@ -27,7 +27,7 @@ public class MyEventListener extends ListenerAdapter {
         MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
         Guild guild = event.getGuild(); // Variable guild is the Discord server
         Member auth = guild.getMember(author); // Variable auth is of type Member for later use
-        String path = "C:\\Users\\Shawn\\IdeaProjects\\Java Project\\src\\DiscordBots\\ElectiveRequests.csv"; // CSV file path
+        String path = "CHANGEFILEPATH\\ElectiveRequests.csv"; // CSV file path
 
 
         // Bot helps with command usage

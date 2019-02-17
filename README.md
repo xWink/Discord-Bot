@@ -18,4 +18,4 @@ Manage Computer Science Discord elective roles and channels automatically.
 
 ### Anyone
 !ping - returns "pong!" and your latency in ms  
-!join [role name] - stores the user's id and requested role in a CSV file. If enough users apply for the same role, the role and private text channel is created and all previous applicants are assigned the role. If the role already exists, the user is given the role
+!join [role name] - if the role already exists, it is assigned to the user. Else, the user's id and requested role are stored in a CSV file. If enough users apply for the same role, the role and a private text channel are created and all applicants are assigned to it

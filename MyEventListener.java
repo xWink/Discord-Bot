@@ -27,11 +27,24 @@ public class MyEventListener extends ListenerAdapter {
         MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
         Guild guild = event.getGuild(); // Variable guild is the Discord server
         Member auth = guild.getMember(author); // Variable auth is of type Member for later use
-        String path = "CHANGEPATH\\ElectiveRequests.csv"; // CSV filepath
+        String path = "C:\\Users\\Shawn\\IdeaProjects\\Java Project\\src\\DiscordBots\\ElectiveRequests.csv"; // CSV file path
 
+
+        // Bot helps with command usage
+        if (content.toLowerCase().equals("!join") || content.toLowerCase().equals("!join ")){
+            channel.sendMessage("Command: !join <courseID>\n\nExample: !join mcs2100").queue();
+        }
+
+        else if (content.toLowerCase().equals("!leave") || content.toLowerCase().equals("!leave ")){
+            channel.sendMessage("Command: !leave <courseID>\n\nExample: !leave mcs2100").queue();
+        }
+
+        else if (content.toLowerCase().equals("!help")){
+            channel.sendMessage("For instructions to join an elective group, say \"!join\" and to leave one, say \"!leave\"").queue();
+        }
 
         // Bot responds with pong and latency
-        if (content.toLowerCase().equals("!ping")) {
+        else if (content.toLowerCase().equals("!ping")) {
             channel.sendMessage("Pong! " + event.getJDA().getPing() + " ms").queue();
         }
 
@@ -92,7 +105,8 @@ public class MyEventListener extends ListenerAdapter {
             else{ // If role does not exist
                 File file = new File(path);
                 try {
-                    // Create writers and readers
+                    // Create writers, readers, threshold, etc
+                    int threshold = 1; // Required number of applicants for new role
                     Boolean alreadyExists = false;
                     FileWriter fileWriter = new FileWriter(file, true);
                     CSVWriter csvWriter = new CSVWriter(fileWriter);
@@ -106,9 +120,8 @@ public class MyEventListener extends ListenerAdapter {
                     // If user already requested this role, don't add this application to file
                     String line = reader.readLine();
                     while (line != null){
-                        if (line.equals("\""+roleName+"\","+"\""+author.toString()+"\"")){
+                        if (line.equals("\""+roleName+"\","+"\""+author.getId()+"\"")){
                             alreadyExists = true;
-                            channel.sendMessage("You already applied for this role!").queue();
                         }
                         line = reader.readLine();
                     }
@@ -121,7 +134,6 @@ public class MyEventListener extends ListenerAdapter {
                     csvWriter.close();
                     fileWriter.close();
                     // Check how many people applied for the same role
-                    int threshold = 4; // Required number of applicants for new role
                     String[] applicants = new String[threshold];
                     int applicationCount = 0;
                     BufferedReader reader2 = Files.newBufferedReader(filePath);
@@ -135,7 +147,7 @@ public class MyEventListener extends ListenerAdapter {
                     }
                     reader2.close();
                     // If number of applications is sufficient, create role and channel for it, and assign all applicants to that role
-                    if (applicationCount >= threshold){
+                    if (applicationCount >= threshold && !alreadyExists){
                         Collection <Permission> viewChannel = new ArrayList<>(); // Permissions for that channel
                         ((ArrayList<Permission>) viewChannel).add(0,Permission.VIEW_CHANNEL);
                         guild.getController().createRole().setName(roleName).queue(); // Create the role
@@ -154,7 +166,12 @@ public class MyEventListener extends ListenerAdapter {
                         channel.sendMessage("The channel for your elective has been created! Only members of the channel can see it.").queue();
                     }
                     else{ // If number of applications is too low
-                        channel.sendMessage("Role \""+roleName+"\" does not exist, but the request has been noted.\nNumber of requests needed: "+(threshold-applicationCount)).queue();
+                        if (alreadyExists){
+                            channel.sendMessage("You already applied for this role!\nNumber of requests needed: "+ (threshold - applicationCount)).queue();
+                        }
+                        else{
+                            channel.sendMessage("Role \"" + roleName + "\" does not exist, but the request has been noted.\nNumber of requests needed: " + (threshold - applicationCount)).queue();
+                        }
                     }
 
                 } catch (IOException e) {
@@ -163,12 +180,64 @@ public class MyEventListener extends ListenerAdapter {
             }
         }
 
+        // Remove user's application from CSV file
+        else if (content.toLowerCase().startsWith("!leave ")){
+            String roleName = content.substring(7, content.length());
+            try {
+                Path filePath = Paths.get(path);
+                // Get number of lines
+                BufferedReader bufferedReader = Files.newBufferedReader(filePath);
+                int lineCount = 0;
+                int i = 0;
+                String line;
+                while(bufferedReader.readLine() != null){
+                    lineCount++;
+                }
+                String[] fileContent = new String[lineCount];
+
+                // Store file content in array
+                BufferedReader reader = Files.newBufferedReader(filePath);
+                while((line = reader.readLine()) != null){
+                    fileContent[i] = line+"\n";
+                    i++;
+                }
+
+                // Find application
+                for (i = 0; i < lineCount; i++){
+                    if (fileContent[i].equals("\""+roleName+"\","+"\""+author.getId()+"\"\n")){
+                        fileContent[i] = "";
+                    }
+                }
+
+                //Rewrite csv file
+                File file = new File(path);
+                FileWriter fileWriter = new FileWriter(file, false);
+                CSVWriter csvWriter = new CSVWriter(fileWriter);
+                for (i = 0; i < lineCount; i++) {
+                    fileWriter.write(fileContent[i]);
+                }
+                csvWriter.close();
+                fileWriter.close();
+
+                // Remove role from user
+                try {
+                    guild.getController().removeSingleRoleFromMember(auth, guild.getRolesByName(roleName, true).get(0)).queue();
+                    channel.sendMessage(auth.getAsMention()+" left "+roleName).queue();
+                }catch(IndexOutOfBoundsException e){
+                    channel.sendMessage("You do not have this role!").queue();
+                }
+
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+        }
+
         // Delete all non-specified roles (OWNER ONLY)
-        else if (content.equals("!cleanroles")){
+        else if (content.toLowerCase().equals("!cleanroles")){
             if (auth.isOwner()){
                 List <Role> listRoles = guild.getRoles();
                 for (Role listRole : listRoles) { // Delete all roles that are not these
-                    if (!(listRole.toString().toLowerCase().substring(2,listRole.toString().indexOf("(")).equals("moderator") || listRole.toString().substring(2,listRole.toString().indexOf("(")).equals("verified students") || listRole.toString().toLowerCase().substring(2,listRole.toString().indexOf("(")).equals("@everyone") || listRole.toString().toLowerCase().substring(2,listRole.toString().indexOf("(")).equals("discordbot"))) {
+                    if (!(listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("moderator") || listRole.toString().substring(2,listRole.toString().lastIndexOf("(")).equals("verified students") || listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("@everyone") || listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("discordbot"))) {
                         listRole.delete().queue();
                     }
                 }
@@ -180,7 +249,7 @@ public class MyEventListener extends ListenerAdapter {
         }
 
         // Delete all elective channels (OWNER ONLY)
-        else if(content.equals("!cleanelectives")){
+        else if(content.toLowerCase().equals("!cleanelectives")){
             if (auth.isOwner()){
                 List <Channel> listChannels = guild.getChannels();
                 for (Channel listChannel : listChannels){

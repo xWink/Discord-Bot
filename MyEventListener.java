@@ -19,26 +19,28 @@ public class MyEventListener extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event){
 
-        User author = event.getAuthor(); // author variable is the author of the message
+        User author = event.getAuthor(); // Variable author is the author of type User
         if (author.isBot()) return; // If the event is made by the bot, ignore it
 
         Message message = event.getMessage(); // Variable message is the detected message
         String content = message.getContentRaw(); // Variable content is the text of the message
         MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
         Guild guild = event.getGuild(); // Variable guild is the Discord server
-        Member auth = guild.getMember(author); // Variable auth is of type Member for later use
-        String path = "CHANGEFILEPATH\\ElectiveRequests.csv"; // CSV file path
+        Member auth = guild.getMember(author); // Variable auth is author of type Member
+        String path = "C:\\Users\\Shawn\\IdeaProjects\\Java Project\\src\\DiscordBots\\ElectiveRequests.csv"; // CSV file path
 
 
-        // Bot helps with command usage
+        // Bot shows how to use !join
         if (content.toLowerCase().equals("!join") || content.toLowerCase().equals("!join ")){
             channel.sendMessage("Command: !join <courseID>\n\nExample: !join mcs2100").queue();
         }
 
+        // Bot shows how to use !leave
         else if (content.toLowerCase().equals("!leave") || content.toLowerCase().equals("!leave ")){
             channel.sendMessage("Command: !leave <courseID>\n\nExample: !leave mcs2100").queue();
         }
 
+        // Bot shows how to use !join and !leave
         else if (content.toLowerCase().equals("!help")){
             channel.sendMessage("For instructions to join an elective group, say \"!join\" and to leave one, say \"!leave\"").queue();
         }
@@ -60,32 +62,38 @@ public class MyEventListener extends ListenerAdapter {
         }
 
         // Bot gives requested role to target (MODERATOR->PEASANT ONLY)
-        else if(content.startsWith("!giverole ")){
-            content = content.substring(10,content.length());
-            String roleName = content.substring(content.indexOf(" ")+1,content.length());
-            Member member = message.getMentionedMembers().get(0);
-            // If author is a moderator and target is not a moderator
-            if (auth.getRoles().containsAll(guild.getRolesByName("Moderator",true))
-                    && !member.getRoles().containsAll(guild.getRolesByName("Moderator", true))) {
-                guild.getController().addRolesToMember(member, guild.getRolesByName(roleName, true)).queue();
-            }
-            else{
-                channel.sendMessage("You do not have permission to do that!").queue();
+        else if(content.toLowerCase().startsWith("!giverole ")){
+            try {
+                content = content.substring(10, content.length());
+                String roleName = content.substring(content.indexOf(" ") + 1, content.length());
+                Member member = message.getMentionedMembers().get(0);
+                // If author is a moderator and target is not a moderator
+                if (auth.getRoles().containsAll(guild.getRolesByName("Moderator", true))
+                        && !member.getRoles().containsAll(guild.getRolesByName("Moderator", true))) {
+                    guild.getController().addRolesToMember(member, guild.getRolesByName(roleName, true)).queue();
+                } else {
+                    channel.sendMessage("You do not have permission to do that!").queue();
+                }
+            } catch(IndexOutOfBoundsException e){
+                channel.sendMessage("Command: !giverole <@user> <role>").queue();
             }
         }
 
         // Bot removes requested role from user (MODERATOR->PEASANT ONLY)
         else if(content.startsWith("!takerole ")) {
-            content = content.substring(10, content.length());
-            String roleName = content.substring(content.indexOf(" ") + 1, content.length());
-            Member member = message.getMentionedMembers().get(0);
-            // If author is a moderator and target is not a moderator
-            if (auth.getRoles().containsAll(guild.getRolesByName("Moderator",true))
-                    && !member.getRoles().containsAll(guild.getRolesByName("Moderator", true))) {
-                guild.getController().removeRolesFromMember(member, guild.getRolesByName(roleName, true)).queue();
-            }
-            else{
-                channel.sendMessage("You do not have permission to do that!").queue();
+            try {
+                content = content.substring(10, content.length());
+                String roleName = content.substring(content.indexOf(" ") + 1, content.length());
+                Member member = message.getMentionedMembers().get(0);
+                // If author is a moderator and target is not a moderator
+                if (auth.getRoles().containsAll(guild.getRolesByName("Moderator", true))
+                        && !member.getRoles().containsAll(guild.getRolesByName("Moderator", true))) {
+                    guild.getController().removeRolesFromMember(member, guild.getRolesByName(roleName, true)).queue();
+                } else {
+                    channel.sendMessage("You do not have permission to do that!").queue();
+                }
+            }catch (IndexOutOfBoundsException e){
+                channel.sendMessage("Command: !takerole <@user> <role>").queue();
             }
         }
 
@@ -106,7 +114,7 @@ public class MyEventListener extends ListenerAdapter {
                 File file = new File(path);
                 try {
                     // Create writers, readers, threshold, etc
-                    int threshold = 1; // Required number of applicants for new role
+                    int threshold = 4; // Required number of applicants for new role
                     Boolean alreadyExists = false;
                     FileWriter fileWriter = new FileWriter(file, true);
                     CSVWriter csvWriter = new CSVWriter(fileWriter);
@@ -167,10 +175,10 @@ public class MyEventListener extends ListenerAdapter {
                     }
                     else{ // If number of applications is too low
                         if (alreadyExists){
-                            channel.sendMessage("You already applied for this role!\nNumber of requests needed: "+ (threshold - applicationCount)).queue();
+                            channel.sendMessage("You already applied for this role!\nI need "+(threshold - applicationCount)+" more requests to make it").queue();
                         }
                         else{
-                            channel.sendMessage("Role \"" + roleName + "\" does not exist, but the request has been noted.\nNumber of requests needed: " + (threshold - applicationCount)).queue();
+                            channel.sendMessage("Role \"" + roleName + "\" does not exist, but the request has been noted.\nI need "+(threshold - applicationCount)+" more requests to make it").queue();
                         }
                     }
 
@@ -183,6 +191,7 @@ public class MyEventListener extends ListenerAdapter {
         // Remove user's application from CSV file
         else if (content.toLowerCase().startsWith("!leave ")){
             String roleName = content.substring(7, content.length());
+            Boolean eventHappened = false;
             try {
                 Path filePath = Paths.get(path);
                 // Get number of lines
@@ -202,10 +211,12 @@ public class MyEventListener extends ListenerAdapter {
                     i++;
                 }
 
-                // Find application
+                // Find application and erase it from csv
                 for (i = 0; i < lineCount; i++){
                     if (fileContent[i].equals("\""+roleName+"\","+"\""+author.getId()+"\"\n")){
                         fileContent[i] = "";
+                        eventHappened = true;
+                        channel.sendMessage("I've deleted your application for \""+roleName+"\"").queue();
                     }
                 }
 
@@ -224,7 +235,9 @@ public class MyEventListener extends ListenerAdapter {
                     guild.getController().removeSingleRoleFromMember(auth, guild.getRolesByName(roleName, true).get(0)).queue();
                     channel.sendMessage(auth.getAsMention()+" left "+roleName).queue();
                 }catch(IndexOutOfBoundsException e){
-                    channel.sendMessage("You do not have this role!").queue();
+                    if (!eventHappened) {
+                        channel.sendMessage("You do not have this role!").queue();
+                    }
                 }
 
             }catch (IOException e){
@@ -237,7 +250,7 @@ public class MyEventListener extends ListenerAdapter {
             if (auth.isOwner()){
                 List <Role> listRoles = guild.getRoles();
                 for (Role listRole : listRoles) { // Delete all roles that are not these
-                    if (!(listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("moderator") || listRole.toString().substring(2,listRole.toString().lastIndexOf("(")).equals("verified students") || listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("@everyone") || listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("discordbot"))) {
+                    if (!(listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("moderator") || listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("verified students") || listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("@everyone") || listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("discordbot"))) {
                         listRole.delete().queue();
                     }
                 }

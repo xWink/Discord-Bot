@@ -41,7 +41,43 @@ public class MyEventListener extends ListenerAdapter {
 		MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
 		Guild guild = event.getGuild(); // Variable guild is the Discord server
 		Member auth = guild.getMember(author); // Variable auth is author of type Member
-		String path = "C:\\Users\\Nicholas\\Cloud\\Nextcloud\\Coding\\BCompBot\\ElectiveRequests.csv"; // CSV file path
+		String path = "C:\\Users\\Nicholas\\Cloud\\Nextcloud\\Coding\\BCompBot\\ElectiveRequests.csv"; // applicant file path
+		String path2 = "C:\\Users\\Nicholas\\Cloud\\Nextcloud\\Coding\\BCompBot\\ScoreList.csv"; // score file path
+
+		// Get high and low scores into memory
+		String highMem, lowMem, highNum, lowNum;
+		int high = 0, low = 999;
+
+		File scores = new File(path2);
+		try {
+			Path scorePath = Paths.get(path2);
+			BufferedReader reader = Files.newBufferedReader(scorePath);
+			String line;
+
+			// If file is empty, write 2 sets of name,score
+			if ((line = reader.readLine()) == null) {
+				FileWriter fileWriter = new FileWriter(scores, true);
+				CSVWriter csvWriter = new CSVWriter(fileWriter);
+				String[] highHead = {"Name", "0"};
+				String[] lowHead = {"Name", "999"};
+
+				csvWriter.writeNext(highHead);
+				csvWriter.writeNext(lowHead);
+			}
+			// If file has content, read it into memory
+			else{
+				highMem = line.substring(0,line.indexOf(",")-1);
+				highNum = line.substring(line.indexOf(",")+1);
+				high = Integer.parseInt(highNum);
+
+				line = reader.readLine();
+				lowMem = line.substring(0,line.indexOf(",")-1);
+				lowNum = line.substring(line.indexOf(",")+1);
+				low = Integer.parseInt(lowNum);
+			}
+		} catch(IOException e){
+			e.printStackTrace();
+		}
 
 
 		// Bot shows how to use !join
@@ -62,6 +98,9 @@ public class MyEventListener extends ListenerAdapter {
 		// Bot responds with pong and latency
 		else if (content.toLowerCase().equals("!ping")) {
 			channel.sendMessage("Pong! " + event.getJDA().getPing() + " ms").queue();
+			if (event.getJDA().getPing() > high){
+				channel.sendMessage("You beat the high score!").queue();
+			}
 		}
 
 		// Bot creates new text channel and deletes old one (OWNER ONLY)
@@ -78,8 +117,8 @@ public class MyEventListener extends ListenerAdapter {
 		// Bot gives requested role to target (MODERATOR->PEASANT ONLY)
 		else if(content.toLowerCase().startsWith("!giverole ")){
 			try {
-				content = content.substring(10, content.length());
-				String roleName = content.substring(content.indexOf(" ") + 1, content.length());
+				content = content.substring(10);
+				String roleName = content.substring(content.indexOf(" ") + 1);
 				Member member = message.getMentionedMembers().get(0);
 				// If author is a moderator and target is not a moderator
 				if (auth.getRoles().containsAll(guild.getRolesByName("Moderator", true))
@@ -96,8 +135,8 @@ public class MyEventListener extends ListenerAdapter {
 		// Bot removes requested role from user (MODERATOR->PEASANT ONLY)
 		else if(content.startsWith("!takerole ")) {
 			try {
-				content = content.substring(10, content.length());
-				String roleName = content.substring(content.indexOf(" ") + 1, content.length());
+				content = content.substring(10);
+				String roleName = content.substring(content.indexOf(" ") + 1);
 				Member member = message.getMentionedMembers().get(0);
 				// If author is a moderator and target is not a moderator
 				if (auth.getRoles().containsAll(guild.getRolesByName("Moderator", true))
@@ -113,7 +152,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// User requests to join/create an elective role (EVERYONE)
 		else if(content.startsWith("!join ")){
-			String roleName = content.substring(6, content.length());
+			String roleName = content.substring(6);
 			// If role is restricted, don't assign user to role
 			if (roleName.toLowerCase().equals("moderator") || roleName.toLowerCase().contains("verified")){
 				channel.sendMessage("I cannot set you to that role").queue();
@@ -129,7 +168,7 @@ public class MyEventListener extends ListenerAdapter {
 				try {
 					// Create writers, readers, threshold, etc
 					int threshold = 4; // Required number of applicants for new role
-					Boolean alreadyExists = false;
+					boolean alreadyExists = false;
 					FileWriter fileWriter = new FileWriter(file, true);
 					CSVWriter csvWriter = new CSVWriter(fileWriter);
 					Path filePath = Paths.get(path);
@@ -170,8 +209,8 @@ public class MyEventListener extends ListenerAdapter {
 					reader2.close();
 					// If number of applications is sufficient, create role and channel for it, and assign all applicants to that role
 					if (applicationCount >= threshold && !alreadyExists){
-						Collection <Permission> viewChannel = new ArrayList<>(); // Permissions for that channel
-						((ArrayList<Permission>) viewChannel).add(0,Permission.VIEW_CHANNEL);
+						ArrayList<Permission> viewChannel = new ArrayList<>(); // Permissions for that channel
+						viewChannel.add(0,Permission.VIEW_CHANNEL);
 						guild.getController().createRole().setName(roleName).queue(); // Create the role
 						guild.getController().createTextChannel(roleName).setParent(guild.getCategoriesByName("Electives",true).get(0)).complete(); // Create the textChannel
 						TextChannel textChannel = guild.getTextChannelsByName(roleName,true).get(0); // Variable textChannel is the new channel
@@ -204,8 +243,8 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Remove user's application from CSV file
 		else if (content.toLowerCase().startsWith("!leave ")){
-			String roleName = content.substring(7, content.length());
-			Boolean eventHappened = false;
+			String roleName = content.substring(7);
+			boolean eventHappened = false;
 			try {
 				Path filePath = Paths.get(path);
 				// Get number of lines
@@ -264,7 +303,8 @@ public class MyEventListener extends ListenerAdapter {
 			if (auth.isOwner()){
 				List <Role> listRoles = guild.getRoles();
 				for (Role listRole : listRoles) { // Delete all roles that are not these
-					if (!(listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("moderator") || listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("verified students") || listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("@everyone") || listRole.toString().toLowerCase().substring(2,listRole.toString().lastIndexOf("(")).equals("discordbot"))) {
+					String substring = listRole.toString().toLowerCase().substring(2, listRole.toString().lastIndexOf("("));
+					if (!(substring.equals("moderator") || substring.equals("verified students") || substring.equals("@everyone") || substring.equals("discordbot"))) {
 						listRole.delete().queue();
 					}
 				}
@@ -289,6 +329,11 @@ public class MyEventListener extends ListenerAdapter {
 			else{
 				channel.sendMessage("You do not have permission to do that!").queue();
 			}
+		}
+
+		// Show score
+		else if (content.toLowerCase().equals("!score")){
+
 		}
 	}
 }

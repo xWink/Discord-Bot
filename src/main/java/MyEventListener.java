@@ -1,4 +1,4 @@
-/*
+package DiscordBots.src.main.java;/*
 Copyright 2019 Shawn Kaplan
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files
@@ -25,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 
@@ -41,19 +40,20 @@ public class MyEventListener extends ListenerAdapter {
 		MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
 		Guild guild = event.getGuild(); // Variable guild is the Discord server
 		Member auth = guild.getMember(author); // Variable auth is author of type Member
+		//String path = "C:\\Users\\User\\IdeaProjects\\Java\\src\\DiscordBots\\src\\main\\java\\ElectiveRequests.csv";
+		//String path2 = "C:\\Users\\User\\IdeaProjects\\Java\\src\\DiscordBots\\src\\main\\java\\ScoreList.csv";
 		String path = "/home/botadmin/ElectiveRequests.csv"; // applicant file path
 		String path2 = "/home/botadmin/ScoreList.csv"; // score file path
 
 		// Get high and low scores into memory
-		String bestMem = null, worstMem = null, bestNum, worstNum;
-		int best = 999, worst = 0;
+		String bestMem = "null", worstMem = "null", bestNum = "0", worstNum = "0";
+		long best = 999, worst = 0;
 		File scores = new File(path2);
 		try {
 			FileWriter fileWriter = new FileWriter(scores, true);
 			CSVWriter csvWriter = new CSVWriter(fileWriter);
 			Path scorePath = Paths.get(path2);
 			BufferedReader reader = Files.newBufferedReader(scorePath);
-
 			String line;
 
 			// If file is empty, write 2 sets of name,score
@@ -61,18 +61,18 @@ public class MyEventListener extends ListenerAdapter {
 				String[] bestHead = {"Name", "999"};
 				String[] worstHead = {"Name", "0"};
 
-				csvWriter.writeNext(bestHead);
-				csvWriter.writeNext(worstHead);
+				csvWriter.writeNext(bestHead,true);
+				csvWriter.writeNext(worstHead,true);
 			}
 			// If file has content, read it into memory
 			else{
-				bestMem = line.substring(0,line.indexOf(",")-1);
-				bestNum = line.substring(line.indexOf(",")+1);
+				bestMem = line.substring(line.indexOf("\"")+1,line.indexOf("\"",line.indexOf("\"")+1));
+				bestNum = line.substring(line.lastIndexOf(",")+2,line.indexOf("\"", line.lastIndexOf(",")+2));
 				best = Integer.parseInt(bestNum);
 
 				line = reader.readLine();
-				worstMem = line.substring(0,line.indexOf(",")-1);
-				worstNum = line.substring(line.indexOf(",")+1);
+				worstMem = line.substring(line.indexOf("\"")+1,line.indexOf("\"",line.indexOf("\"")+1));
+				worstNum = line.substring(line.lastIndexOf(",")+2,line.indexOf("\"", line.lastIndexOf(",")+2));
 				worst = Integer.parseInt(worstNum);
 			}
 
@@ -102,8 +102,46 @@ public class MyEventListener extends ListenerAdapter {
 		// Bot responds with pong and latency
 		else if (content.toLowerCase().equals("!ping")) {
 			channel.sendMessage("Pong! " + event.getJDA().getPing() + " ms").queue();
-			if (event.getJDA().getPing() > worst){
-				channel.sendMessage("You beat the high score!").queue();
+			String authorString = author.toString().substring(author.toString().indexOf(":") + 1, author.toString().lastIndexOf("("));
+
+			// If they get the best score, add it to the CSV file
+			if (event.getJDA().getPing() < best) {
+				channel.sendMessage("You got the best score!").queue();
+				bestNum = Long.toString(event.getJDA().getPing());
+				try {
+					FileWriter fileWriter = new FileWriter(scores, false);
+					CSVWriter csvWriter = new CSVWriter(fileWriter);
+
+					String[] updateBest = {authorString, bestNum};
+					System.out.println(authorString);
+					csvWriter.writeNext(updateBest, true);
+					String[] updateWorst = {worstMem, worstNum};
+					csvWriter.writeNext(updateWorst, true);
+
+					csvWriter.close();
+					fileWriter.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			// If they get the worst score, add it to the CSV file
+			if (event.getJDA().getPing() > worst) {
+				channel.sendMessage("Wow, you got the worst score! What brand toaster runs Discord?").queue();
+				worstNum = Long.toString(event.getJDA().getPing());
+				try {
+					FileWriter fileWriter = new FileWriter(scores, false);
+					CSVWriter csvWriter = new CSVWriter(fileWriter);
+
+					String[] updateBest = {bestMem, bestNum};
+					csvWriter.writeNext(updateBest);
+					String[] updateWorst = {authorString, worstNum};
+					csvWriter.writeNext(updateWorst);
+
+					csvWriter.close();
+					fileWriter.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
@@ -337,7 +375,8 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Show score
 		else if (content.toLowerCase().equals("!score")){
-			channel.sendMessage("The best score is "+best+" from "+best+"!").queue();
+			channel.sendMessage("The best score is "+best+" ms from "+bestMem+"!").queue();
+			channel.sendMessage("The worst score is "+worst+" ms from "+worstMem+"!").queue();
 		}
 	}
 }

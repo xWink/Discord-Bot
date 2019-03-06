@@ -41,8 +41,8 @@ public class MyEventListener extends ListenerAdapter {
 		MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
 		Guild guild = event.getGuild(); // Variable guild is the Discord server
 		Member auth = guild.getMember(author); // Variable auth is author of type Member
-		String path = "C:\\Users\\Nicholas\\Cloud\\Nextcloud\\Coding\\BCompBot\\ElectiveRequests.csv"; // applicant file path
-		String path2 = "C:\\Users\\Nicholas\\Cloud\\Nextcloud\\Coding\\BCompBot\\ScoreList.csv"; // score file path
+		String path = "/home/botadmin/ElectiveRequests.csv"; // applicant file path
+		String path2 = "/home/botadmin/ScoreList.csv"; // score file path
 
 		// Get high and low scores into memory
 		String bestMem = null, worstMem = null, bestNum, worstNum;

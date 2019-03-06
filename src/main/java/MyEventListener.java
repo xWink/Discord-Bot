@@ -45,35 +45,34 @@ public class MyEventListener extends ListenerAdapter {
 		String path2 = "C:\\Users\\Nicholas\\Cloud\\Nextcloud\\Coding\\BCompBot\\ScoreList.csv"; // score file path
 
 		// Get high and low scores into memory
-		String highMem = null, lowMem = null, highNum, lowNum;
-		int high = 0, low = 999;
-
+		String bestMem = null, worstMem = null, bestNum, worstNum;
+		int best = 999, worst = 0;
 		File scores = new File(path2);
 		try {
 			Path scorePath = Paths.get(path2);
 			BufferedReader reader = Files.newBufferedReader(scorePath);
+			FileWriter fileWriter = new FileWriter(scores, true);
+			CSVWriter csvWriter = new CSVWriter(fileWriter);
 			String line;
 
 			// If file is empty, write 2 sets of name,score
 			if ((line = reader.readLine()) == null) {
-				FileWriter fileWriter = new FileWriter(scores, true);
-				CSVWriter csvWriter = new CSVWriter(fileWriter);
-				String[] highHead = {"Name", "0"};
-				String[] lowHead = {"Name", "999"};
+				String[] bestHead = {"Name", "999"};
+				String[] worstHead = {"Name", "0"};
 
-				csvWriter.writeNext(highHead);
-				csvWriter.writeNext(lowHead);
+				csvWriter.writeNext(bestHead);
+				csvWriter.writeNext(worstHead);
 			}
 			// If file has content, read it into memory
 			else{
-				highMem = line.substring(0,line.indexOf(",")-1);
-				highNum = line.substring(line.indexOf(",")+1);
-				high = Integer.parseInt(highNum);
+				bestMem = line.substring(0,line.indexOf(",")-1);
+				bestNum = line.substring(line.indexOf(",")+1);
+				best = Integer.parseInt(bestNum);
 
 				line = reader.readLine();
-				lowMem = line.substring(0,line.indexOf(",")-1);
-				lowNum = line.substring(line.indexOf(",")+1);
-				low = Integer.parseInt(lowNum);
+				worstMem = line.substring(0,line.indexOf(",")-1);
+				worstNum = line.substring(line.indexOf(",")+1);
+				worst = Integer.parseInt(worstNum);
 			}
 		} catch(IOException e){
 			e.printStackTrace();
@@ -98,7 +97,7 @@ public class MyEventListener extends ListenerAdapter {
 		// Bot responds with pong and latency
 		else if (content.toLowerCase().equals("!ping")) {
 			channel.sendMessage("Pong! " + event.getJDA().getPing() + " ms").queue();
-			if (event.getJDA().getPing() > high){
+			if (event.getJDA().getPing() > worst){
 				channel.sendMessage("You beat the high score!").queue();
 			}
 		}
@@ -333,7 +332,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Show score
 		else if (content.toLowerCase().equals("!score")){
-			channel.sendMessage("The worst score is "+high+" from "+highMem+"!").queue();
+			channel.sendMessage("The best score is "+best+" from "+best+"!").queue();
 		}
 	}
 }

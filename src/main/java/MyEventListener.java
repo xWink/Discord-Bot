@@ -45,7 +45,7 @@ public class MyEventListener extends ListenerAdapter {
 		String path2 = "C:\\Users\\Nicholas\\Cloud\\Nextcloud\\Coding\\BCompBot\\ScoreList.csv"; // score file path
 
 		// Get high and low scores into memory
-		String highMem, lowMem, highNum, lowNum;
+		String highMem = null, lowMem = null, highNum, lowNum;
 		int high = 0, low = 999;
 
 		File scores = new File(path2);
@@ -333,7 +333,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Show score
 		else if (content.toLowerCase().equals("!score")){
-
+			channel.sendMessage("The worst score is "+high+" from "+highMem+"!").queue();
 		}
 	}
 }

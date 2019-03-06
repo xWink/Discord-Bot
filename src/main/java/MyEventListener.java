@@ -49,10 +49,11 @@ public class MyEventListener extends ListenerAdapter {
 		int best = 999, worst = 0;
 		File scores = new File(path2);
 		try {
-			Path scorePath = Paths.get(path2);
-			BufferedReader reader = Files.newBufferedReader(scorePath);
 			FileWriter fileWriter = new FileWriter(scores, true);
 			CSVWriter csvWriter = new CSVWriter(fileWriter);
+			Path scorePath = Paths.get(path2);
+			BufferedReader reader = Files.newBufferedReader(scorePath);
+
 			String line;
 
 			// If file is empty, write 2 sets of name,score
@@ -74,6 +75,10 @@ public class MyEventListener extends ListenerAdapter {
 				worstNum = line.substring(line.indexOf(",")+1);
 				worst = Integer.parseInt(worstNum);
 			}
+
+			fileWriter.close();
+			csvWriter.close();
+			reader.close();
 		} catch(IOException e){
 			e.printStackTrace();
 		}

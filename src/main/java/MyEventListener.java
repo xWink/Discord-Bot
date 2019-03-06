@@ -76,8 +76,8 @@ public class MyEventListener extends ListenerAdapter {
 				worst = Integer.parseInt(worstNum);
 			}
 
-			fileWriter.close();
 			csvWriter.close();
+			fileWriter.close();
 			reader.close();
 		} catch(IOException e){
 			e.printStackTrace();

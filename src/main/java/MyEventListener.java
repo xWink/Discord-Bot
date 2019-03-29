@@ -376,7 +376,7 @@ public class MyEventListener extends ListenerAdapter {
 		}
 
 		// Show score
-		else if (content.toLowerCase().equals("!score")){
+		else if (content.toLowerCase().equals("!score") || content.toLowerCase().equals("!scores")){
 			channel.sendMessage("The best score is "+best+" ms from "+bestMem+"!").queue();
 			channel.sendMessage("The worst score is "+worst+" ms from "+worstMem+"!").queue();
 		}

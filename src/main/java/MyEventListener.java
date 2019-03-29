@@ -264,6 +264,8 @@ public class MyEventListener extends ListenerAdapter {
 						textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(viewChannel).queue();
 						// Let people with the specified role see the channel
 						textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(viewChannel).queue();
+						// Do not let people with this role do @everyone
+						textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setDeny(Permission.MESSAGE_MENTION_EVERYONE).queue();
 						// Let moderators see the channel
 						textChannel.createPermissionOverride(guild.getRolesByName("Moderator",true).get(0)).setAllow(viewChannel).queue();
 						channel.sendMessage("The channel for your elective has been created! Only members of the channel can see it.").queue();

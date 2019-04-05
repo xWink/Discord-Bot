@@ -1,4 +1,4 @@
-Version 1.2.1
+Version 1.2.2
 # Purpose
 Manage Computer Science Discord elective roles and channels automatically.
 

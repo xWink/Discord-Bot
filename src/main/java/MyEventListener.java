@@ -21,14 +21,9 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class MyEventListener extends ListenerAdapter {
-	//TODO: REMOVE THIS TEST ONCE YOU HAVE RESULTS
-	int test = 0;
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event){
-		//TODO: REMOVE THIS TEST ONCE YOU HAVE RESULTS
-		System.out.println(test);
-		test++;
 
 		User author = event.getAuthor(); // Variable author is the author of type User
 		if (author.isBot()) return; // If the event is made by the bot, ignore it

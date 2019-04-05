@@ -61,23 +61,17 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Bot creates new text channel and deletes old one (OWNER ONLY)
 		else if (content.toLowerCase().equals("!totalchatwipe")) {
-			if (auth.equals(guild.getOwner())) {
-				event.getGuild().getTextChannelById(event.getChannel().getId()).createCopy().queue();
-				event.getGuild().getTextChannelById(event.getChannel().getId()).delete().queue();
-			}
-			else{
-				channel.sendMessage("You do not have permission to do that!").queue();
-			}
+			TotalChatWipe.chatWipe(auth, guild, channel);
 		}
 
 		// Bot gives requested role to target (MODERATOR->PEASANT ONLY)
 		else if(content.toLowerCase().startsWith("!giverole ")){
-			GiveOrTakeRole.giveRole(auth, channel, guild, content, message);
+			GiveRole.giveRole(auth, channel, guild, content, message);
 		}
 
 		// Bot removes requested role from user (MODERATOR->PEASANT ONLY)
 		else if(content.startsWith("!takerole ")) {
-			GiveOrTakeRole.takeRole(auth, channel, guild, content, message);
+			TakeRole.takeRole(auth, channel, guild, content, message);
 		}
 
 		// User requests to join/create an elective role (EVERYONE)
@@ -104,47 +98,10 @@ public class MyEventListener extends ListenerAdapter {
 		else if (content.toLowerCase().equals("!score") || content.toLowerCase().equals("!scores")){
 			Scores.scores(channel, path2);
 		}
-/*
+
 		// Russian roulette
-		else if (content.toLowerCase().equals("!roul")){
-			//TODO: trigger pull counter, death counter, number of chambers left in cylinder (decrement each time trigger is pulled)
-			Random rand = new Random();
-			File file = new File(path3);
-
-			try {
-				// Create writers, readers, threshold, etc
-				FileWriter fileWriter = new FileWriter(file, true);
-				CSVWriter csvWriter = new CSVWriter(fileWriter);
-				Path filePath = Paths.get(path);
-				BufferedReader reader = Files.newBufferedReader(filePath);
-
-				// If file is empty, give it appropriate headers
-				if (reader.readLine() == null) {
-					String[] header = {"Name", "Attempts", "Deaths"};
-					csvWriter.writeNext(header);
-				}
-
-				// Get number of lines
-				BufferedReader bufferedReader = Files.newBufferedReader(filePath);
-				int lineCount = 0;
-				int i = 0;
-				String line;
-				while(bufferedReader.readLine() != null){
-					lineCount++;
-				}
-				String[] fileContent = new String[lineCount];
-
-				// Store file content in array
-				while((line = reader.readLine()) != null){
-					fileContent[i] = line+"\n";
-					i++;
-				}
-
-
-			} catch (IOException e){
-				e.printStackTrace();
-			}
+		else if (content.toLowerCase().equals("!roul")) {
+			Roulette.roulette();
 		}
-		*/
 	}
 }

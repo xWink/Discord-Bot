@@ -98,10 +98,11 @@ public class MyEventListener extends ListenerAdapter {
 		else if (content.toLowerCase().equals("!score") || content.toLowerCase().equals("!scores")){
 			Scores.scores(channel, path2);
 		}
-
+/*
 		// Russian roulette
 		else if (content.toLowerCase().equals("!roul")) {
 			Roulette.roulette();
 		}
+*/
 	}
 }

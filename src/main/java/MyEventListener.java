@@ -1,4 +1,3 @@
-package DiscordBots.src.main.java;
 /*
 Copyright 2019 Shawn Kaplan
 

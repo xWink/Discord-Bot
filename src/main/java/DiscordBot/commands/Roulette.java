@@ -21,8 +21,9 @@ public class Roulette {
 		File file = new File(path3);
 
 		// Calculate whether the user died
-		int pull = rand.nextInt(chamberCount-1);
+		int pull = rand.nextInt(chamberCount);
 		int boom;
+		System.out.println(pull);
 		if (pull == 0){
 			boom = 1;
 			chamberCount = 6;

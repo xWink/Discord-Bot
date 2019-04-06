@@ -58,7 +58,7 @@ public class Roulette {
 
 			// Store file content in array
 			while ((line = reader.readLine()) != null) {
-				fileContent[i] = line;
+				fileContent[i] = line+"\n";
 				i++;
 			}
 
@@ -71,10 +71,8 @@ public class Roulette {
 
 					found = true;
 					// Convert trigger pulls and deaths to ints and increase accordingly
-
 					attempts = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"")+3,fileContent[i].indexOf("\"", fileContent[i].indexOf("\",\"")+3)));
-
-					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-1));
+					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-2));
 					attempts++;
 					deaths += boom;
 
@@ -93,11 +91,16 @@ public class Roulette {
 				csvWriter.writeNext(newPlayer, true);
 
 			} else {
-				// If user found, rewrite file with new data
+				// Erase file content
 				PrintWriter printWriter = new PrintWriter(file);
 				printWriter.write("");
 				printWriter.close();
 
+				// Write header
+				String[] header = {"Name", "Attempts", "Deaths"};
+				csvWriter.writeNext(header);
+
+				// Rewrite file with new data
 				PrintWriter printWriter1 = new PrintWriter(file);
 				System.out.println("Printwriter created");
 				for (i = 0; i < lineCount; i++){

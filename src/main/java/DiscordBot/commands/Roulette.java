@@ -61,7 +61,7 @@ public class Roulette {
 
 			// Store file content in array
 			while ((line = reader.readLine()) != null) {
-				fileContent[i] = line + "\n";
+				fileContent[i] = line;
 				i++;
 			}
 
@@ -77,7 +77,7 @@ public class Roulette {
 
 					attempts = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"")+3,fileContent[i].indexOf("\"", fileContent[i].indexOf("\",\"")+3)));
 
-					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-2));
+					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-1));
 					attempts++;
 					deaths += boom;
 

@@ -4,10 +4,7 @@ import com.opencsv.CSVWriter;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,13 +37,15 @@ public class Roulette {
 			Path filePath = Paths.get(path3);
 			BufferedReader reader = Files.newBufferedReader(filePath);
 			boolean found = false;
+			String[] header = {"Name", "Attempts", "Deaths"};
 			int attempts;
 			int deaths;
 
 			// If file is empty, give it appropriate headers
 			if (reader.readLine() == null) {
-				String[] header = {"Name", "Attempts", "Deaths"};
 				csvWriter.writeNext(header);
+				csvWriter.close();
+				fileWriter.close();
 			}
 
 			// Get number of lines
@@ -64,6 +63,7 @@ public class Roulette {
 				fileContent[i] = line + "\n";
 				i++;
 			}
+			reader.close();
 
 			// Find matching username
 			for (i = 0; i < lineCount; i++){
@@ -79,7 +79,7 @@ public class Roulette {
 					deaths += boom;
 
 					// Rewrite the line in fileContent with new numbers
-					fileContent[i] = "\""+author.getId()+"\",\""+Integer.toString(attempts)+"\",\""+Integer.toString(deaths)+"\"";
+					fileContent[i] = "\""+author.getId()+"\",\""+Integer.toString(attempts)+"\",\""+Integer.toString(deaths)+"\"\n";
 					System.out.println(fileContent[i]);
 					break;
 				}
@@ -92,21 +92,28 @@ public class Roulette {
 				System.out.println("created string");
 				csvWriter.writeNext(newPlayer, true);
 				System.out.println("wrote");
+
+				fileWriter.close();
+				csvWriter.close();
 			} else {
-				// If user found, rewrite file with new data
+				// Erase file
 				System.out.println("found");
+				PrintWriter printWriter = new PrintWriter(file);
+				printWriter.print("");
+				printWriter.close();
+
+				// Print header
+				csvWriter.writeNext(header);
+				csvWriter.close();
+				fileWriter.close();
+
 				for (i = 0; i < lineCount; i++){
 					fileWriter.write(fileContent[i]);
-					fileWriter.write("\n");
 				}
 				System.out.println("wrote");
 			}
 
-			System.out.println("Closing readers");
-
-			reader.close();
-			csvWriter.close();
-			fileWriter.close();
+			System.out.println("Finished");
 
 		} catch (IOException e) {
 			e.printStackTrace();

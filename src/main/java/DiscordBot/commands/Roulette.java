@@ -73,12 +73,9 @@ public class Roulette {
 					found = true;
 					// Convert trigger pulls and deaths to ints and increase accordingly
 
-					System.out.println(fileContent[i].substring(fileContent[i].length()-5, fileContent[i].length()-1));
-
 					attempts = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"")+3,fileContent[i].indexOf("\"", fileContent[i].indexOf("\",\"")+3)));
 
-					System.out.println(fileContent[i].substring(fileContent[i].length()-5, fileContent[i].length()-1));
-					System.out.println(fileContent[i].substring(fileContent[i].indexOf("\",\""+3, fileContent[i].indexOf("\",\"")+3), fileContent[i].length()-1));
+					System.out.println(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+2, fileContent[i].length()-2));
 
 					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3), fileContent[i].length()-1));
 					attempts++;

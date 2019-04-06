@@ -104,11 +104,13 @@ public class Roulette {
 				FileWriter fw = new FileWriter(path3, true);
 				BufferedWriter bw = new BufferedWriter(fw);
 				PrintWriter appendWriter = new PrintWriter(bw);
+
 				System.out.println("Printwriter created");
+
+				appendWriter.append("\n");
 				for (i = 0; i < lineCount; i++){
 					appendWriter.append(fileContent[i]);
 				}
-				appendWriter.append(null);
 				appendWriter.close();
 				bw.close();
 				fw.close();

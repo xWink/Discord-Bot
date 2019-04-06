@@ -101,13 +101,17 @@ public class Roulette {
 				csvWriter.writeNext(header);
 
 				// Rewrite file with new data
-				PrintWriter printWriter1 = new PrintWriter(file);
+				FileWriter fw = new FileWriter(path3, true);
+				BufferedWriter bw = new BufferedWriter(fw);
+				PrintWriter appendWriter = new PrintWriter(bw);
 				System.out.println("Printwriter created");
 				for (i = 0; i < lineCount; i++){
-					printWriter1.append(fileContent[i]);
+					appendWriter.append(fileContent[i]);
 				}
-				printWriter1.append(null);
-				printWriter1.close();
+				appendWriter.append(null);
+				appendWriter.close();
+				bw.close();
+				fw.close();
 			}
 
 			bufferedReader.close();

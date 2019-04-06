@@ -44,8 +44,6 @@ public class Roulette {
 			// If file is empty, give it appropriate headers
 			if (reader.readLine() == null) {
 				csvWriter.writeNext(header);
-				csvWriter.close();
-				fileWriter.close();
 			}
 
 			// Get number of lines
@@ -93,8 +91,6 @@ public class Roulette {
 				csvWriter.writeNext(newPlayer, true);
 				System.out.println("wrote");
 
-				fileWriter.close();
-				csvWriter.close();
 			} else {
 				// Erase file
 				System.out.println("found");
@@ -104,8 +100,6 @@ public class Roulette {
 
 				// Print header
 				csvWriter.writeNext(header);
-				csvWriter.close();
-				fileWriter.close();
 
 				for (i = 0; i < lineCount; i++){
 					fileWriter.write(fileContent[i]);
@@ -113,6 +107,8 @@ public class Roulette {
 				System.out.println("wrote");
 			}
 
+			fileWriter.close();
+			csvWriter.close();
 			System.out.println("Finished");
 
 		} catch (IOException e) {

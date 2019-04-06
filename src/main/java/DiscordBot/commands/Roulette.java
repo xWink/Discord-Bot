@@ -58,25 +58,25 @@ public class Roulette {
 
 			// Store file content in array
 			while ((line = reader.readLine()) != null) {
-				fileContent[i] = line;
+				fileContent[i] = line + "\n";
 				i++;
 			}
 
 			// Find matching username
 			for (i = 0; i < lineCount; i++){
 				if (fileContent[i].startsWith("\""+author.getId()+"\"")){
-
+					System.out.println("Here");
 					found = true;
 					// Convert trigger pulls and deaths to ints and increase accordingly
 
 					attempts = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"")+3,fileContent[i].indexOf("\"", fileContent[i].indexOf("\",\"")+3)));
 
-					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-1));
+					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-2));
 					attempts++;
 					deaths += boom;
 
 					// Rewrite the line in fileContent with new numbers
-					fileContent[i] = "\""+author.getId()+"\",\""+Integer.toString(attempts)+"\",\""+Integer.toString(deaths)+"\"\n";
+					fileContent[i] = "\""+author.getId()+"\",\""+Integer.toString(attempts)+"\",\""+Integer.toString(deaths)+"\"";
 					System.out.println(fileContent[i]);
 					break;
 				}
@@ -89,7 +89,6 @@ public class Roulette {
 				System.out.println("created string");
 				csvWriter.writeNext(newPlayer, true);
 				System.out.println("wrote");
-
 			} else {
 				// Erase file
 				System.out.println("found");
@@ -99,17 +98,18 @@ public class Roulette {
 
 				// Print header
 				csvWriter.writeNext(header);
-
 				for (i = 0; i < lineCount; i++){
 					fileWriter.write(fileContent[i]);
+					fileWriter.write("\n");
 				}
 				System.out.println("wrote");
 			}
 
-			fileWriter.close();
-			csvWriter.close();
+			System.out.println("Closing readers");
+
 			reader.close();
-			System.out.println("Finished");
+			csvWriter.close();
+			fileWriter.close();
 
 		} catch (IOException e) {
 			e.printStackTrace();

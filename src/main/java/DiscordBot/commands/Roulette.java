@@ -27,7 +27,7 @@ public class Roulette {
 		} else{
 			boom = 0;
 			chamberCount--;
-			channel.sendMessage("Click! You survived. For now...").queue();
+			channel.sendMessage("Click. You survived :poggers:").queue();
 		}
 
 		try {
@@ -109,10 +109,10 @@ public class Roulette {
 				printWriter1.close();
 			}
 
-			System.out.println("Closing readers");
 			reader.close();
-			csvWriter.close();
 			fileWriter.close();
+			csvWriter.close();
+			System.out.println("Closed readers/writers");
 
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -68,14 +68,11 @@ public class Roulette {
 			// Find matching username
 			for (i = 0; i < lineCount; i++){
 				if (fileContent[i].startsWith("\""+author.getId()+"\"")){
-					System.out.println(fileContent[i]);
 
 					found = true;
 					// Convert trigger pulls and deaths to ints and increase accordingly
 
 					attempts = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"")+3,fileContent[i].indexOf("\"", fileContent[i].indexOf("\",\"")+3)));
-
-					System.out.println(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-2));
 
 					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-2));
 					attempts++;
@@ -83,22 +80,26 @@ public class Roulette {
 
 					// Rewrite the line in fileContent with new numbers
 					fileContent[i] = "\""+author.getId()+"\",\""+Integer.toString(attempts)+"\",\""+Integer.toString(deaths)+"\"";
+					System.out.println(fileContent[i]);
 					break;
 				}
 			}
-			System.out.println("Got out of loop");
 
 			// If user not found, add new name to file
 			if (!found){
+				System.out.println("Not found");
 				String[] newPlayer = {author.getId(), "1", Integer.toString(boom)};
+				System.out.println("created string");
 				csvWriter.writeNext(newPlayer, true);
+				System.out.println("wrote");
 			} else {
-				System.out.println("Writing new file content");
 				// If user found, rewrite file with new data
+				System.out.println("found");
 				for (i = 0; i < lineCount; i++){
 					fileWriter.write(fileContent[i]);
 					fileWriter.write("\n");
 				}
+				System.out.println("wrote");
 			}
 
 			System.out.println("Closing readers");

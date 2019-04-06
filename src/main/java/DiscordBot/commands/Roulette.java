@@ -69,10 +69,15 @@ public class Roulette {
 			for (i = 0; i < lineCount; i++){
 				if (fileContent[i].startsWith("\""+author.getId()+"\"")){
 					System.out.println(fileContent[i]);
+					System.out.println(fileContent[i].substring(fileContent[i].indexOf("\",\"")+3,fileContent[i].indexOf("\"", fileContent[i].indexOf("\",\"")+3)));
+
 					found = true;
 					// Convert trigger pulls and deaths to ints and increase accordingly
 					attempts = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"")+3,fileContent[i].indexOf("\"", fileContent[i].indexOf("\",\"")+3)));
-					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf(Integer.toString(attempts)), fileContent[i].length()-1));
+
+					System.out.println((fileContent[i].substring(fileContent[i].indexOf(Integer.toString(attempts)+Integer.toString(attempts).length()+2), fileContent[i].length()-1)));
+
+					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf(Integer.toString(attempts)+Integer.toString(attempts).length()+2), fileContent[i].length()-1));
 					attempts++;
 					deaths += boom;
 					System.out.println(attempts+" "+deaths);

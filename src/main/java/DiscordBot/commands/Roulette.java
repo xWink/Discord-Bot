@@ -111,8 +111,8 @@ public class Roulette {
 
 			bufferedReader.close();
 			reader.close();
-			fileWriter.close();
 			csvWriter.close();
+			fileWriter.close();
 			System.out.println("Closed readers/writers");
 
 		} catch (IOException e) {

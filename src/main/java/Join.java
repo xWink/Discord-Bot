@@ -1,4 +1,4 @@
-package DiscordBots.src.main.java;
+package src.main.java;
 
 import com.opencsv.CSVWriter;
 import net.dv8tion.jda.core.Permission;

@@ -1,3 +1,4 @@
+package src.main.java;
 /*
 Copyright 2019 Shawn Kaplan
 
@@ -14,21 +15,16 @@ FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TOR
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-
-import DiscordBots.src.main.java.*;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 public class MyEventListener extends ListenerAdapter {
-	//TODO: REMOVE THIS TEST ONCE YOU HAVE RESULTS
-	int test = 0;
+
+	int chamberCount = 6;
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event){
-		//TODO: REMOVE THIS TEST ONCE YOU HAVE RESULTS
-		System.out.println(test);
-		test++;
 
 		User author = event.getAuthor(); // Variable author is the author of type User
 		if (author.isBot()) return; // If the event is made by the bot, ignore it
@@ -104,11 +100,10 @@ public class MyEventListener extends ListenerAdapter {
 		else if (content.toLowerCase().equals("!score") || content.toLowerCase().equals("!scores")){
 			Scores.scores(channel, path2);
 		}
-/*
+
 		// Russian roulette
 		else if (content.toLowerCase().equals("!roul")) {
-			Roulette.roulette();
+			Roulette.roulette(author, path3, chamberCount,  channel);
 		}
-*/
 	}
 }

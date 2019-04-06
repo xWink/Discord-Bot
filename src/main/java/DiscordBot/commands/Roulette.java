@@ -106,6 +106,7 @@ public class Roulette {
 				for (i = 0; i < lineCount; i++){
 					printWriter1.append(fileContent[i]);
 				}
+				printWriter1.append(null);
 				printWriter1.close();
 			}
 

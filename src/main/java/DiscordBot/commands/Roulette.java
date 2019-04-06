@@ -23,7 +23,6 @@ public class Roulette {
 		// Calculate whether the user died
 		int pull = rand.nextInt(chamberCount);
 		int boom;
-		System.out.println(pull);
 		if (pull == 0){
 			boom = 1;
 			chamberCount = 6;
@@ -31,6 +30,7 @@ public class Roulette {
 		} else{
 			boom = 0;
 			chamberCount--;
+			channel.sendMessage("Click! You survived. For now...").queue();
 		}
 
 		try {

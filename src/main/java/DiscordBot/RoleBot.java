@@ -15,7 +15,6 @@ public class RoleBot {
 			Scanner scanner = new Scanner(file);
 			String token = scanner.nextLine();
 			scanner.close();
-			System.out.println(token+"\n");
 			// Create bot with token given by Discord developer page
 			JDA api = new JDABuilder(AccountType.BOT).setToken(token).build();
 			api.addEventListener(new MyEventListener());

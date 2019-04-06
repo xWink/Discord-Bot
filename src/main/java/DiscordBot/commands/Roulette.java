@@ -99,7 +99,6 @@ public class Roulette {
 				// If user found, rewrite file with new data
 				for (i = 0; i < lineCount; i++){
 					fileWriter.write(fileContent[i]);
-					fileWriter.write("\n");
 				}
 			}
 

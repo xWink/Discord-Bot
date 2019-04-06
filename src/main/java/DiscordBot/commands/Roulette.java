@@ -4,10 +4,7 @@ import com.opencsv.CSVWriter;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -97,13 +94,19 @@ public class Roulette {
 
 			} else {
 				// If user found, rewrite file with new data
+				PrintWriter printWriter = new PrintWriter(file);
+				printWriter.write("");
+				printWriter.close();
+
+				PrintWriter printWriter1 = new PrintWriter(file);
+				System.out.println("Printwriter created");
 				for (i = 0; i < lineCount; i++){
-					fileWriter.write(fileContent[i]);
+					printWriter1.append(fileContent[i]);
 				}
+				printWriter1.close();
 			}
 
 			System.out.println("Closing readers");
-
 			reader.close();
 			csvWriter.close();
 			fileWriter.close();

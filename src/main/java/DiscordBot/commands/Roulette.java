@@ -64,6 +64,7 @@ public class Roulette {
 
 			// Find matching username
 			for (i = 0; i < lineCount; i++){
+				System.out.println("Looping");
 				if (fileContent[i].startsWith("\""+author.getId()+"\"")){
 					System.out.println("Here");
 					found = true;
@@ -81,7 +82,7 @@ public class Roulette {
 					break;
 				}
 			}
-
+			System.out.println("Exited loop");
 			// If user not found, add new name to file
 			if (!found){
 				System.out.println("Not found");
@@ -96,8 +97,7 @@ public class Roulette {
 				printWriter.print("");
 				printWriter.close();
 
-				// Print header
-				csvWriter.writeNext(header);
+				// Print file content
 				for (i = 0; i < lineCount; i++){
 					fileWriter.write(fileContent[i]);
 					fileWriter.write("\n");

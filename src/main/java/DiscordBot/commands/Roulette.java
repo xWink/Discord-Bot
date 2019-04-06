@@ -58,10 +58,9 @@ public class Roulette {
 
 			// Store file content in array
 			while ((line = reader.readLine()) != null) {
-				fileContent[i] = line + "\n";
+				fileContent[i] = line;
 				i++;
 			}
-			reader.close();
 
 			// Find matching username
 			for (i = 0; i < lineCount; i++){
@@ -72,7 +71,7 @@ public class Roulette {
 
 					attempts = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"")+3,fileContent[i].indexOf("\"", fileContent[i].indexOf("\",\"")+3)));
 
-					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-2));
+					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-1));
 					attempts++;
 					deaths += boom;
 
@@ -109,6 +108,7 @@ public class Roulette {
 
 			fileWriter.close();
 			csvWriter.close();
+			reader.close();
 			System.out.println("Finished");
 
 		} catch (IOException e) {

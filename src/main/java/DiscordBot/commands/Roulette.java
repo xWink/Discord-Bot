@@ -109,6 +109,7 @@ public class Roulette {
 				printWriter1.close();
 			}
 
+			bufferedReader.close();
 			reader.close();
 			fileWriter.close();
 			csvWriter.close();

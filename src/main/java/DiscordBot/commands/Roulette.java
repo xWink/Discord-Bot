@@ -4,7 +4,10 @@ import com.opencsv.CSVWriter;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -37,12 +40,12 @@ public class Roulette {
 			Path filePath = Paths.get(path3);
 			BufferedReader reader = Files.newBufferedReader(filePath);
 			boolean found = false;
-			String[] header = {"Name", "Attempts", "Deaths"};
 			int attempts;
 			int deaths;
 
 			// If file is empty, give it appropriate headers
 			if (reader.readLine() == null) {
+				String[] header = {"Name", "Attempts", "Deaths"};
 				csvWriter.writeNext(header);
 			}
 
@@ -63,10 +66,12 @@ public class Roulette {
 			}
 
 			// Find matching username
+			System.out.println(lineCount);
 			for (i = 0; i < lineCount; i++){
 				System.out.println("Looping");
 				if (fileContent[i].startsWith("\""+author.getId()+"\"")){
-					System.out.println("Here");
+					System.out.println("Entered the conditional");
+
 					found = true;
 					// Convert trigger pulls and deaths to ints and increase accordingly
 
@@ -82,27 +87,20 @@ public class Roulette {
 					break;
 				}
 			}
-			System.out.println("Exited loop");
+			System.out.println("Broke the loop");
+
 			// If user not found, add new name to file
 			if (!found){
 				System.out.println("Not found");
 				String[] newPlayer = {author.getId(), "1", Integer.toString(boom)};
-				System.out.println("created string");
 				csvWriter.writeNext(newPlayer, true);
-				System.out.println("wrote");
-			} else {
-				// Erase file
-				System.out.println("found");
-				PrintWriter printWriter = new PrintWriter(file);
-				printWriter.print("");
-				printWriter.close();
 
-				// Print file content
+			} else {
+				// If user found, rewrite file with new data
 				for (i = 0; i < lineCount; i++){
 					fileWriter.write(fileContent[i]);
 					fileWriter.write("\n");
 				}
-				System.out.println("wrote");
 			}
 
 			System.out.println("Closing readers");

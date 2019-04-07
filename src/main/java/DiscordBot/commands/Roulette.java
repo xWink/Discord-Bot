@@ -1,6 +1,5 @@
 package DiscordBot.commands;
 
-import com.opencsv.CSVWriter;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
@@ -94,13 +93,14 @@ public class Roulette {
 				printWriter.close();
 
 				// Rewrite file with new data
-
 				System.out.println("Printwriter created");
 
 				appendWriter.append("\n");
 				for (i = 0; i < lineCount; i++){
-					appendWriter.append(fileContent[i]);
-					appendWriter.append("\n");
+					if (fileContent[i].length() > 0) {
+						appendWriter.append(fileContent[i]);
+						appendWriter.append("\n");
+					}
 				}
 			}
 

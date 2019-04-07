@@ -45,9 +45,9 @@ public class Roulette {
 			while (bufferedReader.readLine() != null) {
 				lineCount++;
 			}
-			String[] fileContent = new String[lineCount];
 
 			// Store file content in array
+			String[] fileContent = new String[lineCount];
 			while ((line = reader.readLine()) != null) {
 				fileContent[i] = line+"\n";
 				i++;
@@ -99,7 +99,6 @@ public class Roulette {
 				for (i = 0; i < lineCount; i++){
 					if (fileContent[i].length() > 0) {
 						appendWriter.append(fileContent[i]);
-						appendWriter.append("\n");
 					}
 				}
 			}

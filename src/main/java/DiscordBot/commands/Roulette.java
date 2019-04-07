@@ -29,7 +29,7 @@ public class Roulette {
 			channel.sendMessage("Click. You survived  <:poggies:564285288621539328>").queue();
 		}
 
-		channel.sendMessage("Chambers left in the cylinder: ||"+chamberCount+"||").queue();
+		channel.sendMessage("Chambers left in the cylinder: ||  "+chamberCount+"  ||").queue();
 
 		try {
 			// Create writers, readers, boolean, etc

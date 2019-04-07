@@ -68,7 +68,7 @@ public class Roulette {
 					deaths += boom;
 
 					// Rewrite the line in fileContent with new numbers
-					fileContent[i] = "\""+author.getId()+"\",\""+Integer.toString(attempts)+"\",\""+Integer.toString(deaths)+"\"";
+					fileContent[i] = "\""+author.getId()+"\",\""+Integer.toString(attempts)+"\",\""+Integer.toString(deaths)+"\"\n";
 					System.out.println(fileContent[i]);
 					break;
 				}

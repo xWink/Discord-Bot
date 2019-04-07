@@ -26,8 +26,10 @@ public class Roulette {
 		} else{
 			boom = 0;
 			chamberCount--;
-			channel.sendMessage("Click. You survived :sweat_drops: :sweat_drops:").queue();
+			channel.sendMessage("Click. You survived \\poggers").queue();
 		}
+
+		channel.sendMessage("Chambers left in the cylinder: "+chamberCount).queue();
 
 		try {
 			// Create writers, readers, boolean, etc

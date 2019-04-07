@@ -27,24 +27,16 @@ public class Roulette {
 		} else{
 			boom = 0;
 			chamberCount--;
-			channel.sendMessage("Click. You survived :poggers:").queue();
+			channel.sendMessage("Click. You survived :sweat_drops: :sweat_drops:").queue();
 		}
 
 		try {
 			// Create writers, readers, boolean, etc
-			FileWriter fileWriter = new FileWriter(file, true);
-			CSVWriter csvWriter = new CSVWriter(fileWriter);
 			Path filePath = Paths.get(path3);
 			BufferedReader reader = Files.newBufferedReader(filePath);
 			boolean found = false;
 			int attempts;
 			int deaths;
-
-			// If file is empty, give it appropriate headers
-			if (reader.readLine() == null) {
-				String[] header = {"Name", "Attempts", "Deaths"};
-				csvWriter.writeNext(header);
-			}
 
 			// Get number of lines
 			BufferedReader bufferedReader = Files.newBufferedReader(filePath);
@@ -84,42 +76,39 @@ public class Roulette {
 			}
 			System.out.println("Broke the loop");
 
+			// Create writers to append
+			FileWriter fw = new FileWriter(path3, true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			PrintWriter appendWriter = new PrintWriter(bw);
+
 			// If user not found, add new name to file
 			if (!found){
 				System.out.println("Not found");
-				String[] newPlayer = {author.getId(), "1", Integer.toString(boom)};
-				csvWriter.writeNext(newPlayer, true);
 
+				String newPlayer = "\""+author.getId()+"\",\"1\",\""+Integer.toString(boom)+"\"\n";
+				appendWriter.append(newPlayer);
 			} else {
 				// Erase file content
 				PrintWriter printWriter = new PrintWriter(file);
 				printWriter.write("");
 				printWriter.close();
 
-				// Write header
-				String[] header = {"Name", "Attempts", "Deaths"};
-				csvWriter.writeNext(header);
-
 				// Rewrite file with new data
-				FileWriter fw = new FileWriter(path3, true);
-				BufferedWriter bw = new BufferedWriter(fw);
-				PrintWriter appendWriter = new PrintWriter(bw);
 
 				System.out.println("Printwriter created");
 
 				appendWriter.append("\n");
 				for (i = 0; i < lineCount; i++){
 					appendWriter.append(fileContent[i]);
+					appendWriter.append("\n");
 				}
-				appendWriter.close();
-				bw.close();
-				fw.close();
 			}
 
+			appendWriter.close();
+			bw.close();
+			fw.close();
 			bufferedReader.close();
 			reader.close();
-			csvWriter.close();
-			fileWriter.close();
 			System.out.println("Closed readers/writers");
 
 		} catch (IOException e) {

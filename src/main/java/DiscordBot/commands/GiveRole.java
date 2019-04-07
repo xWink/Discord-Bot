@@ -15,7 +15,7 @@ public class GiveRole {
 			if (auth.getRoles().containsAll(guild.getRolesByName("Moderator", true))
 					&& !member.getRoles().containsAll(guild.getRolesByName("Moderator", true))) {
 				guild.getController().addRolesToMember(member, guild.getRolesByName(roleName, true)).queue();
-				channel.sendMessage("Added "+roleName+" role to "+member.getUser().getId()).queue();
+				channel.sendMessage("Added "+roleName+" role to <@"+member.getUser().getId()+">").queue();
 			} else {
 				channel.sendMessage("You do not have permission to do that!").queue();
 			}

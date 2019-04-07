@@ -26,7 +26,7 @@ public class Roulette {
 		} else{
 			boom = 0;
 			chamberCount--;
-			channel.sendMessage("Click. You survived <:poggers:554666728878112774>").queue();
+			channel.sendMessage("Click. You survived  <:poggies:564285288621539328>").queue();
 		}
 
 		channel.sendMessage("Chambers left in the cylinder: "+chamberCount).queue();
@@ -56,13 +56,10 @@ public class Roulette {
 			}
 
 			// Find matching username
-			System.out.println(lineCount);
 			for (i = 0; i < lineCount; i++){
-				System.out.println("Looping");
 				if (fileContent[i].startsWith("\""+author.getId()+"\"")){
-					System.out.println("Entered the conditional");
-
 					found = true;
+
 					// Convert trigger pulls and deaths to ints and increase accordingly
 					attempts = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"")+3,fileContent[i].indexOf("\"", fileContent[i].indexOf("\",\"")+3)));
 					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-2));
@@ -71,11 +68,9 @@ public class Roulette {
 
 					// Rewrite the line in fileContent with new numbers
 					fileContent[i] = "\""+author.getId()+"\",\""+Integer.toString(attempts)+"\",\""+Integer.toString(deaths)+"\"\n";
-					System.out.println(fileContent[i]);
 					break;
 				}
 			}
-			System.out.println("Broke the loop");
 
 			// Create writers to append
 			FileWriter fw = new FileWriter(path3, true);
@@ -84,19 +79,16 @@ public class Roulette {
 
 			// If user not found, add new name to file
 			if (!found){
-				System.out.println("Not found");
-
 				String newPlayer = "\""+author.getId()+"\",\"1\",\""+Integer.toString(boom)+"\"\n";
 				appendWriter.append(newPlayer);
-			} else {
+			}
+			else {
 				// Erase file content
 				PrintWriter printWriter = new PrintWriter(file);
 				printWriter.write("");
 				printWriter.close();
 
 				// Rewrite file with new data
-				System.out.println("Printwriter created");
-
 				appendWriter.append("\n");
 				for (i = 0; i < lineCount; i++){
 					if (fileContent[i].length() > 0) {
@@ -110,12 +102,9 @@ public class Roulette {
 			fw.close();
 			bufferedReader.close();
 			reader.close();
-			System.out.println("Closed readers/writers");
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		return chamberCount;
 	}
 }

@@ -5,7 +5,9 @@ import net.dv8tion.jda.core.entities.*;
 import java.util.List;
 
 public class CleanRoles {
+
 	public static void cleanRoles(Member auth, MessageChannel channel, Guild guild) {
+
 		if (auth.isOwner()) {
 			List<Role> listRoles = guild.getRoles();
 			for (Role listRole : listRoles) { // Delete all roles that are not these

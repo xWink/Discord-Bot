@@ -28,20 +28,20 @@ public class MyEventListener extends ListenerAdapter {
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event){
 
-		User author = event.getAuthor(); // Variable author is the author of type User
+		final User author = event.getAuthor(); // Variable author is the author of type User
 		if (author.isBot()) return; // If the event is made by the bot, ignore it
 
-		Message message = event.getMessage(); // Variable message is the detected message
-		String content = message.getContentRaw(); // Variable content is the text of the message
-		MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
-		Guild guild = event.getGuild(); // Variable guild is the Discord server
-		Member auth = guild.getMember(author); // Variable auth is author of type Member
-		//String path = "C:\\Users\\User\\IdeaProjects\\Java\\src\\DiscordBots\\src\\main\\java\\ElectiveRequests.csv";
-		//String path2 = "C:\\Users\\User\\IdeaProjects\\Java\\src\\DiscordBots\\src\\main\\java\\ScoreList.csv";
-		String path = "/home/botadmin/ElectiveRequests.csv"; // applicant file path
-		String path2 = "/home/botadmin/ScoreList.csv"; // score file path
-		String path3 = "/home/botadmin/RouletteData.csv"; // roulette file path
+		final Message message = event.getMessage(); // Variable message is the detected message
+		final String content = message.getContentRaw(); // Variable content is the text of the message
+		final MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
+		final Guild guild = event.getGuild(); // Variable guild is the Discord server
+		final Member auth = guild.getMember(author); // Variable auth is author of type Member
+		final String path = "/home/botadmin/ElectiveRequests.csv"; // applicant file path
+		final String path2 = "/home/botadmin/ScoreList.csv"; // score file path
+		final String path3 = "/home/botadmin/RouletteData.csv"; // roulette file path
 
+		// Only interact with messages in the bot channel
+		if (!channel.getId().equals("551828950871965696")) return;
 
 		// Bot shows how to use !join
 		if (content.toLowerCase().equals("!join") || content.toLowerCase().equals("!join ")){
@@ -55,7 +55,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Bot shows how to use !join and !leave
 		else if (content.toLowerCase().equals("!help")){
-			channel.sendMessage("For instructions to join an elective group, say \"!join\" and to leave one, say \"!leave\"").queue();
+			Help.help(channel);
 		}
 
 		// Bot responds with pong and latency

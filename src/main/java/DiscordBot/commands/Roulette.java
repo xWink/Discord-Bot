@@ -26,7 +26,7 @@ public class Roulette {
 		} else{
 			boom = 0;
 			chamberCount--;
-			channel.sendMessage("Click. You survived \\poggers").queue();
+			channel.sendMessage("Click. You survived \\:poggers:").queue();
 		}
 
 		channel.sendMessage("Chambers left in the cylinder: "+chamberCount).queue();

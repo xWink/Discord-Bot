@@ -16,9 +16,9 @@ Manage Computer Science Discord elective roles and channels automatically.
 `!takerole [mentioned user] [role name]` - same as `!giverole`, but removes the role  
 
 ### Anyone
-`!ping` - returns "pong!" and your latency in ms. Keeps track of best/worst scores
+`!ping` - returns your latency in ms. Keeps track of best/worst scores
 
-`!bang` - play Russian roulette
+`!bang` - play Russian roulette. Tracks number of attempts and deaths for each player.
 
 `!join [role name]` - if the role already exists, it is assigned to the user. Else, the user's id and requested role are stored in a CSV file. If enough users apply for the same role, the role and a private text channel are created and all applicants are assigned to it
 

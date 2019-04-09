@@ -33,11 +33,8 @@ public class BangScores {
             // Store file content in array of BangPlayers
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("\"")){
-                    System.out.println(line.substring(line.indexOf("\"") + 1, line.indexOf("\",\"")));
-                    System.out.println(guild.getMemberById(line.substring(line.indexOf("\"") + 1, line.indexOf("\",\""))).getNickname());
-                    System.out.println(guild.getMemberById(line.substring(line.indexOf("\"") + 1, line.indexOf("\",\""))).getUser().getName());
                     playerArray[i] = new BangPlayer(
-                            guild.getMemberById(line.substring(line.indexOf("\"") + 1, line.indexOf("\",\""))).getNickname(),
+                            guild.getMemberById(line.substring(line.indexOf("\"") + 1, line.indexOf("\",\""))).getUser().getName(),
                             Integer.parseInt(line.substring(line.indexOf("\",\"") + 3, line.indexOf("\"", line.indexOf("\",\"") + 3))),
                             Integer.parseInt(line.substring(line.indexOf("\",\"", line.indexOf("\",\"") + 3) + 3, line.length() - 1))
                     );

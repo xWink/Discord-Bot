@@ -20,7 +20,6 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import DiscordBot.commands.*;
-import src.main.java.DiscordBot.commands.BangScores;
 
 public class MyEventListener extends ListenerAdapter {
 

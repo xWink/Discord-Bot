@@ -46,30 +46,33 @@ public class BangScores {
 
             // Find relevant scores
             for (i = 0; i < lineCount; i++){
-                // Most attempts
-                if (playerArray[i].attempts > attemptCount){
-                    mostAttempts = i;
-                    attemptCount = playerArray[i].attempts;
-                }
-                // Most deaths
-                if (playerArray[i].deaths > deathCount){
-                    mostDeaths = i;
-                    deathCount = playerArray[i].deaths;
-                }
-                // Luckiest
                 int deaths = playerArray[i].deaths;
                 int attempts = playerArray[i].attempts;
-                System.out.println(attempts+" "+deaths);
-                if (playerArray[i].attempts >= 20 && playerArray[i].deaths / playerArray[i].attempts < bestRate){
+
+                // Most attempts
+                if (attempts > attemptCount){
+                    mostAttempts = i;
+                    attemptCount = attempts;
+                }
+                // Most deaths
+                if (deaths > deathCount){
+                    mostDeaths = i;
+                    deathCount = deaths;
+                }
+                // Luckiest
+                if (attempts >= 20 && deaths / attempts < bestRate){
                     luckiest = i;
-                    bestRate = playerArray[i].deaths / playerArray[i].attempts;
+                    bestRate = deaths / attempts;
+                    System.out.println("best rate: "+bestRate);
                 }
                 // Unluckiest
-                if (playerArray[i].attempts >= 20 && playerArray[i].deaths / playerArray[i].attempts > worstRate){
+                if (attempts >= 20 && deaths / attempts > worstRate){
                     unluckiest = i;
-                    worstRate = playerArray[i].deaths / playerArray[i].attempts;
+                    worstRate = deaths / attempts;
+                    System.out.println("worst rate: "+worstRate);
                 }
             }
+            System.out.println("rates: "+bestRate+" "+worstRate);
 
             // Print score messages
             if (mostAttempts > -1)

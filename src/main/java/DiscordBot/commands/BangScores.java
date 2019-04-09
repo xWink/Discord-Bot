@@ -18,7 +18,7 @@ public class BangScores {
             BufferedReader reader = Files.newBufferedReader(scorePath);
             BufferedReader bufferedReader = Files.newBufferedReader(scorePath);
             String line;
-            int lineCount = 0, i = 0, mostAttempts = -1, attemptCount = 0, mostDeaths = -1, deathCount = 0, luckiest = -1, bestRate = 0, unluckiest = -1, worstRate = 0;
+            int lineCount = 0, i = 0, mostAttempts = -1, attemptCount = 0, mostDeaths = -1, deathCount = 0, luckiest = -1, bestRate = 100, unluckiest = -1, worstRate = 0;
 
             // Get number of lines
             while ((line = bufferedReader.readLine()) != null){

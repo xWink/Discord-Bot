@@ -61,16 +61,18 @@ public class BangScores {
                     deathCount = deaths;
                 }
                 // Luckiest
-                if (attempts >= 20 && (float)deaths / (float)attempts * 100 < bestRate){
+                if (attempts >= 20 && (float)deaths / (float)attempts < bestRate){
                     luckiest = i;
-                    bestRate = (float)deaths / (float)attempts;
+                    bestRate = (float)deaths / (float)attempts * 100;
                 }
                 // Unluckiest
                 if (attempts >= 20 && (float)deaths / (float)attempts > worstRate){
                     unluckiest = i;
-                    worstRate = (float)deaths / (float)attempts;
+                    worstRate = (float)deaths / (float)attempts * 100;
                 }
             }
+            bestRate = Math.round(bestRate * 10) / 10;
+            worstRate = Math.round(worstRate * 10) / 10;
 
             // Print score messages
             if (mostAttempts > -1)

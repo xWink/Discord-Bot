@@ -2,12 +2,6 @@ Version 1.3
 # Purpose
 Manage Computer Science Discord elective roles and channels automatically.
 
-## Usage
-1. Change the token in TestBot.java to match your bot's token
-2. Change the directory of variable path in MyEventListener.java (line 30)
-3. Change the package in both files to your package name
-4. Run the bot
-
 # Commands
 ### Owner only
 `!totalchatwipe` - clones current text channel and deletes the original (effectively wipes chat history)

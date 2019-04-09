@@ -18,7 +18,8 @@ public class BangScores {
             BufferedReader reader = Files.newBufferedReader(scorePath);
             BufferedReader bufferedReader = Files.newBufferedReader(scorePath);
             String line;
-            int lineCount = 0, i = 0, mostAttempts = -1, attemptCount = 0, mostDeaths = -1, deathCount = 0, luckiest = -1, bestRate = 100, unluckiest = -1, worstRate = 0;
+            int lineCount = 0, i = 0, mostAttempts = -1, attemptCount = 0, mostDeaths = -1, deathCount = 0, luckiest = -1, unluckiest = -1;
+            float bestRate = 100, worstRate = 0;
 
             // Get number of lines
             while ((line = bufferedReader.readLine()) != null){
@@ -60,19 +61,16 @@ public class BangScores {
                     deathCount = deaths;
                 }
                 // Luckiest
-                if (attempts >= 20 && deaths / attempts < bestRate){
+                if (attempts >= 20 && (float)deaths / (float)attempts * 100 < bestRate){
                     luckiest = i;
-                    bestRate = deaths / attempts;
-                    System.out.println("best rate: "+bestRate);
+                    bestRate = (float)deaths / (float)attempts;
                 }
                 // Unluckiest
-                if (attempts >= 20 && deaths / attempts > worstRate){
+                if (attempts >= 20 && (float)deaths / (float)attempts > worstRate){
                     unluckiest = i;
-                    worstRate = deaths / attempts;
-                    System.out.println("worst rate: "+worstRate);
+                    worstRate = (float)deaths / (float)attempts;
                 }
             }
-            System.out.println("rates: "+bestRate+" "+worstRate);
 
             // Print score messages
             if (mostAttempts > -1)
@@ -80,9 +78,9 @@ public class BangScores {
             if (mostDeaths > -1)
                 channel.sendMessage("The player with the most deaths is "+playerArray[mostDeaths].player+" with a score of "+deathCount).queue();
             if (luckiest > -1)
-                channel.sendMessage("The player with the best survival rate is "+playerArray[luckiest].player+" with a score of "+bestRate).queue();
+                channel.sendMessage("The player with the best survival rate is "+playerArray[luckiest].player+" with a score of "+bestRate+"%").queue();
             if (unluckiest > -1)
-                channel.sendMessage("The player with the worst death rate is "+playerArray[unluckiest].player+" with a score of "+worstRate).queue();
+                channel.sendMessage("The player with the worst death rate is "+playerArray[unluckiest].player+" with a score of "+worstRate+"%").queue();
         }catch (IOException e){
             e.printStackTrace();
         }

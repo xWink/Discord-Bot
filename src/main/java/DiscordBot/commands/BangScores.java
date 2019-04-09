@@ -1,4 +1,4 @@
-package src.main.java.DiscordBot.commands;
+package DiscordBot.commands;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageChannel;

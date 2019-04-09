@@ -12,7 +12,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class Scores {
+
 	public static void scores(MessageChannel channel, String path2){
+
 		// Get high and low scores into memory
 		String bestMem = "null", worstMem = "null", bestNum = "0", worstNum = "0";
 		long best = 999, worst = 0;

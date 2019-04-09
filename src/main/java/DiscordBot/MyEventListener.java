@@ -106,7 +106,11 @@ public class MyEventListener extends ListenerAdapter {
 		// Russian roulette
 		else if (content.toLowerCase().equals("!bang")) {
 			chamberCount = Roulette.roulette(author, path3, chamberCount,  channel);
-			System.out.println(chamberCount+" Success!\n");
+		}
+
+		// Russian roulette scores
+		else if (content.toLowerCase().equals("!bangscore") || content.toLowerCase().equals("!bangscores")){
+			BangScores.bangScores(channel, path3, guild);
 		}
 	}
 }

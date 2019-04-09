@@ -51,10 +51,8 @@ public class Roulette {
 			// Store file content in array
 			String[] fileContent = new String[lineCount];
 			while ((line = reader.readLine()) != null) {
-				if (line.startsWith("\"")) {
-					fileContent[i] = line + "\n";
-					i++;
-				}
+				fileContent[i] = line + "\n";
+				i++;
 			}
 
 			// Find matching username

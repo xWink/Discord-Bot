@@ -57,6 +57,9 @@ public class BangScores {
                     deathCount = playerArray[i].deaths;
                 }
                 // Luckiest
+                int deaths = playerArray[i].deaths;
+                int attempts = playerArray[i].attempts;
+                System.out.println(attempts+" "+deaths);
                 if (playerArray[i].attempts >= 20 && playerArray[i].deaths / playerArray[i].attempts < bestRate){
                     luckiest = i;
                     bestRate = playerArray[i].deaths / playerArray[i].attempts;

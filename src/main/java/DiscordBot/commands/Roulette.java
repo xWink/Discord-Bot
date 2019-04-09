@@ -22,11 +22,11 @@ public class Roulette {
 		if (pull == 0){
 			boom = 1;
 			chamberCount = 6;
-			channel.sendMessage("Bang! You died :skull:").queue();
+			channel.sendMessage("Bang! "+author.getName()+" died :skull:").queue();
 		} else{
 			boom = 0;
 			chamberCount--;
-			channel.sendMessage("Click. You survived  <:poggies:564285288621539328>").queue();
+			channel.sendMessage("Click. "+author.getName()+" survived  <:poggies:564285288621539328>").queue();
 		}
 
 		channel.sendMessage("Chambers left in the cylinder: ||  "+chamberCount+"  ||").queue();

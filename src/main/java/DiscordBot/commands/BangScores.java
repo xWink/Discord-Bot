@@ -80,9 +80,9 @@ public class BangScores {
             if (mostDeaths > -1)
                 channel.sendMessage("The player with the most deaths is "+playerArray[mostDeaths].player+" with a score of "+deathCount).queue();
             if (luckiest > -1)
-                channel.sendMessage("The player with the best survival rate is "+playerArray[luckiest].player+" with a score of "+bestRate+"%").queue();
+                channel.sendMessage("The player with the best survival rate is "+playerArray[luckiest].player+" at "+bestRate+"%").queue();
             if (unluckiest > -1)
-                channel.sendMessage("The player with the worst death rate is "+playerArray[unluckiest].player+" with a score of "+worstRate+"%").queue();
+                channel.sendMessage("The player with the worst death rate is "+playerArray[unluckiest].player+" at "+worstRate+"%").queue();
         }catch (IOException e){
             e.printStackTrace();
         }

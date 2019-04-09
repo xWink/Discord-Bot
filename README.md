@@ -1,26 +1,8 @@
-Version 1.3
+Version 1.4
 # Purpose
 Manage Computer Science Discord elective roles and channels automatically.
 
-## Usage
-1. Change the token in TestBot.java to match your bot's token
-2. Change the directory of variable path in MyEventListener.java (line 30)
-3. Change the package in both files to your package name
-4. Run the bot
-
 # Commands
-### Owner only
-`!totalchatwipe` - clones current text channel and deletes the original (effectively wipes chat history)
-
-`!cleanelectives` - deletes all text channels in the Electives category  
-
-`!cleanroles` - deletes all non-essential roles  
-
-### Moderator+
-`!giverole [mentioned user] [role name]` - if the target is not a moderator, the role is assigned to the target  
-
-`!takerole [mentioned user] [role name]` - same as `!giverole`, but removes the role  
-
 ### Anyone
 `!ping` - returns "pong!" and your latency in ms. Keeps track of best/worst scores
 
@@ -33,3 +15,15 @@ Manage Computer Science Discord elective roles and channels automatically.
 `!help` - gives examples and instructions for using `!join` and `!leave`
 
 `!score` or `!scores` - responds with best and worst latency scores and the users who got them
+
+### Moderator+
+`!giverole [mentioned user] [role name]` - if the target is not a moderator, the role is assigned to the target  
+
+`!takerole [mentioned user] [role name]` - same as `!giverole`, but removes the role
+
+### Owner only
+`!totalchatwipe` - clones current text channel and deletes the original (effectively wipes chat history)
+
+`!cleanelectives` - deletes all text channels in the Electives category
+
+`!cleanroles` - deletes all non-essential roles

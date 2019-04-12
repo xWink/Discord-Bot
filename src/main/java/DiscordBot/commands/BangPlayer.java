@@ -3,10 +3,10 @@ package DiscordBot.commands;
 public class BangPlayer {
 
     String player;
-    int attempts;
-    int deaths;
+    double attempts;
+    double deaths;
 
-    public BangPlayer(String player, int attempts, int deaths){
+    public BangPlayer(String player, double attempts, double deaths){
         this.player = player;
         this.attempts = attempts;
         this.deaths = deaths;

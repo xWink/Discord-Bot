@@ -19,7 +19,7 @@ public class BangScores {
             BufferedReader bufferedReader = Files.newBufferedReader(scorePath);
             String line;
             int lineCount = 0, i = 0, mostAttempts = -1,  mostDeaths = -1, luckiest = -1, unluckiest = -1;
-            double bestRate = 100.00, worstRate = -1.00, attemptCount = 0, deathCount = 0;
+            double bestRate = -1.00, worstRate = 100.00, attemptCount = 0, deathCount = 0;
 
             // Get number of lines
             while ((line = bufferedReader.readLine()) != null){
@@ -46,8 +46,10 @@ public class BangScores {
 
             // Find relevant scores
             for (i = 0; i < lineCount; i++){
-                double deaths = playerArray[i].deaths;
                 double attempts = playerArray[i].attempts;
+                double deaths = playerArray[i].deaths;
+                System.out.println("Attempts: "+attempts+" from "+playerArray[i].player);
+                System.out.println("Deaths: "+deaths+" from "+playerArray[i].player);
 
                 // Most attempts
                 if (attempts > attemptCount){
@@ -60,18 +62,24 @@ public class BangScores {
                     deathCount = deaths;
                 }
                 // Luckiest
-                if (attempts >= 20 && deaths / attempts < bestRate){
+                if (attempts >= 20 && 100 - (deaths / attempts * 100) > bestRate){
                     luckiest = i;
-                    bestRate = deaths / attempts * 100;
+                    bestRate = 100 - (deaths / attempts * 100);
+                    System.out.println("Best rate: "+bestRate);
+                    System.out.println("Luckiest: "+playerArray[i].player);
                 }
                 // Unluckiest
-                if (attempts >= 20 && deaths / attempts > worstRate){
+                if (attempts >= 20 && 100 - (deaths / attempts * 100) < worstRate){
                     unluckiest = i;
-                    worstRate = deaths / attempts * 100;
+                    worstRate = 100 - (deaths / attempts * 100);
+                    System.out.println("Worst rate: "+worstRate);
+                    System.out.println("Unluckiest: "+playerArray[i].player);
                 }
             }
             bestRate = Math.round(bestRate * 10) / 10;
             worstRate = Math.round(worstRate * 10) / 10;
+            System.out.println("Best rate final: "+bestRate);
+            System.out.println("Worst rate final: "+worstRate);
 
             // Print score messages
             if (mostAttempts > -1)

@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 public class BangScores {
 
     public static void bangScores(MessageChannel channel, String path3, Guild guild){
-        System.out.println("Test");
+
         try{
             Path scorePath = Paths.get(path3);
             BufferedReader reader = Files.newBufferedReader(scorePath);
@@ -30,7 +30,7 @@ public class BangScores {
             bufferedReader.close();
 
             BangPlayer playerArray[] = new BangPlayer[lineCount];
-            System.out.println("Test");
+
             // Store file content in array of BangPlayers
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("\"")){
@@ -48,8 +48,6 @@ public class BangScores {
             for (i = 0; i < lineCount; i++){
                 double attempts = playerArray[i].attempts;
                 double deaths = playerArray[i].deaths;
-                System.out.println("Attempts: "+attempts+" from "+playerArray[i].player);
-                System.out.println("Deaths: "+deaths+" from "+playerArray[i].player);
 
                 // Most attempts
                 if (attempts > attemptCount){
@@ -65,27 +63,23 @@ public class BangScores {
                 if (attempts >= 20 && 100 - (deaths / attempts * 100) > bestRate){
                     luckiest = i;
                     bestRate = 100 - (deaths / attempts * 100);
-                    System.out.println("Best rate: "+bestRate);
-                    System.out.println("Luckiest: "+playerArray[i].player);
                 }
                 // Unluckiest
                 if (attempts >= 20 && 100 - (deaths / attempts * 100) < worstRate){
                     unluckiest = i;
                     worstRate = 100 - (deaths / attempts * 100);
-                    System.out.println("Worst rate: "+worstRate);
-                    System.out.println("Unluckiest: "+playerArray[i].player);
                 }
             }
-            bestRate = Math.round(bestRate * 10) / 10;
-            worstRate = Math.round(worstRate * 10) / 10;
+            bestRate = Math.round(bestRate * 100) / 100;
+            worstRate = Math.round(worstRate * 100) / 100;
             System.out.println("Best rate final: "+bestRate);
             System.out.println("Worst rate final: "+worstRate);
 
             // Print score messages
             if (mostAttempts > -1)
-                channel.sendMessage("The player with the most attempts is "+playerArray[mostAttempts].player+" with a score of "+attemptCount).queue();
+                channel.sendMessage("The player with the most attempts is "+playerArray[mostAttempts].player+" with a score of "+(int)attemptCount).queue();
             if (mostDeaths > -1)
-                channel.sendMessage("The player with the most deaths is "+playerArray[mostDeaths].player+" with a score of "+deathCount).queue();
+                channel.sendMessage("The player with the most deaths is "+playerArray[mostDeaths].player+" with a score of "+(int)deathCount).queue();
             if (luckiest > -1)
                 channel.sendMessage("The player with the best survival rate is "+playerArray[luckiest].player+" at "+bestRate+"%").queue();
             if (unluckiest > -1)

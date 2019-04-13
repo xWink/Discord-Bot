@@ -43,7 +43,7 @@ public class BangScores {
                 }
             }
             reader.close();
-
+            System.out.println("Test");
             // Find relevant scores
             for (i = 0; i < lineCount; i++){
                 double attempts = playerArray[i].attempts;

@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 public class BangScores {
 
     public static void bangScores(MessageChannel channel, String path3, Guild guild){
-
+        System.out.println("Test");
         try{
             Path scorePath = Paths.get(path3);
             BufferedReader reader = Files.newBufferedReader(scorePath);
@@ -30,7 +30,7 @@ public class BangScores {
             bufferedReader.close();
 
             BangPlayer playerArray[] = new BangPlayer[lineCount];
-
+            System.out.println("Test");
             // Store file content in array of BangPlayers
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("\"")){
@@ -43,7 +43,7 @@ public class BangScores {
                 }
             }
             reader.close();
-            System.out.println("Test");
+
             // Find relevant scores
             for (i = 0; i < lineCount; i++){
                 double attempts = playerArray[i].attempts;

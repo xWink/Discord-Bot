@@ -70,10 +70,8 @@ public class BangScores {
                     worstRate = 100 - (deaths / attempts * 100);
                 }
             }
-            bestRate = Math.round(bestRate * 100) / 100;
-            worstRate = Math.round(worstRate * 100) / 100;
-            System.out.println("Best rate final: "+bestRate);
-            System.out.println("Worst rate final: "+worstRate);
+            bestRate = Math.round(bestRate * 10d) / 10d;
+            worstRate = Math.round(worstRate * 10d) / 10d;
 
             // Print score messages
             if (mostAttempts > -1)

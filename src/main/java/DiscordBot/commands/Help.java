@@ -8,6 +8,6 @@ public class Help {
 
         channel.sendMessage("For instructions to join an elective group, say \"!join\" and to leave one, say \"!leave\"").queue();
         channel.sendMessage("To play Russian Roulette, say \"!bang\" or to use Ping, say \"!ping\"").queue();
-        channel.sendMessage("To see the top Ping scores, say \"!scores\"").queue();
+        channel.sendMessage("To see roulette scores, say \"!bangscores\" or to see Ping scores, say \"!scores\"").queue();
     }
 }

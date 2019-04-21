@@ -16,7 +16,6 @@ public class Roulette {
 
 		Random rand = new Random();
 		File file = new File(path3);
-
 		// Calculate whether the user died
 		int pull = rand.nextInt(chamberCount);
 		int boom;
@@ -24,21 +23,31 @@ public class Roulette {
 		if (pull == 0) {
 			// If there is one bullet left, there is a 1/10 chance of the gun jamming
 			if (chamberCount == 1) {
-				int jam = 1 + (Math.random() * 9);
+				int jam = 1 + (int)(Math.random() * 9);
+
 				if (jam == 4) {
 					boom = 0;
 					chamberCount = 6;
 					channel.sendMessage("The gun jammed... " + author.getName() + " survived <:poggers:564285288621539328>").queue();
-					break;
 				}
-			}
+				
+				// If the gun doesn't jam
+				else {
+					boom = 1;
+					chamberCount = 6;
+					channel.sendMessage("Bang! " + author.getName() + " died :skull:").queue();
+				}
+			} 
 			
-			// If there are <1 bullets left or if the gun does not jam
-			boom = 1;
-			chamberCount = 6;
-			channel.sendMessage("Bang! " + author.getName() + " died :skull:").queue();
-		} 
-		// User does not die
+			// >1 bullets left
+			else {
+				boom = 1;
+				chamberCount = 6;
+				channel.sendMessage("Bang! " + author.getName() + " died :skull:").queue();
+			} 
+		}
+		
+		// User doesn't die
 		else {
 			boom = 0;
 			chamberCount--;

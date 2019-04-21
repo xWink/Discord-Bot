@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
+import java.lang.Math;
 
 public class Roulette {
 
@@ -15,18 +16,42 @@ public class Roulette {
 
 		Random rand = new Random();
 		File file = new File(path3);
-
 		// Calculate whether the user died
 		int pull = rand.nextInt(chamberCount);
 		int boom;
-		if (pull == 0){
-			boom = 1;
-			chamberCount = 6;
-			channel.sendMessage("Bang! "+author.getName()+" died :skull:").queue();
-		} else{
+
+		if (pull == 0) {
+			// If there is one bullet left, there is a 1/10 chance of the gun jamming
+			if (chamberCount == 1) {
+				int jam = 1 + (int)(Math.random() * 9);
+
+				if (jam == 4) {
+					boom = 0;
+					chamberCount = 6;
+					channel.sendMessage("The gun jammed... " + author.getName() + " survived <:poggers:564285288621539328>").queue();
+				}
+				
+				// If the gun doesn't jam
+				else {
+					boom = 1;
+					chamberCount = 6;
+					channel.sendMessage("Bang! " + author.getName() + " died :skull:").queue();
+				}
+			} 
+			
+			// >1 bullets left
+			else {
+				boom = 1;
+				chamberCount = 6;
+				channel.sendMessage("Bang! " + author.getName() + " died :skull:").queue();
+			} 
+		}
+		
+		// User doesn't die
+		else {
 			boom = 0;
 			chamberCount--;
-			channel.sendMessage("Click. "+author.getName()+" survived  <:poggies:564285288621539328>").queue();
+			channel.sendMessage("Click. " + author.getName() + " survived  <:poggies:564285288621539328>").queue();
 		}
 
 		channel.sendMessage("Chambers left in the cylinder: ||  "+chamberCount+"  ||").queue();

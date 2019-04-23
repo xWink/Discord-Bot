@@ -96,5 +96,10 @@ public class MyEventListener extends ListenerAdapter {
 		else if (content.toLowerCase().equals("!bangscore") || content.toLowerCase().equals("!bangscores")){
 			BangScores.bangScores(channel, path3, guild);
 		}
+
+		// Show bang scores for individual
+		else if (content.toLowerCase().equals("!mybang")){
+			myBang.myBang(author, channel, path3);
+		}
 	}
 }

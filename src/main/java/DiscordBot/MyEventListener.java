@@ -99,7 +99,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Show bang scores for individual
 		else if (content.toLowerCase().equals("!mybang")){
-			myBang.myBang(author, channel, path3);
+			MyBang.myBang(author, channel, path3);
 		}
 	}
 }

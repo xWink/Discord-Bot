@@ -83,8 +83,9 @@ public class Join {
 					}
 					// Prevent everyone from seeing the channel
 					textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(viewChannel).queue();
-					// Let people with the specified role see the channel
+					// Let people with the specified role see the channel and read/send messages
 					textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(viewChannel).queue();
+					textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(Permission.MESSAGE_READ).queue();
 					// Do not let people with this role do @everyone
 					textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setDeny(Permission.MESSAGE_MENTION_EVERYONE).queue();
 					// Let moderators see the channel

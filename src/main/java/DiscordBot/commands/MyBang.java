@@ -1,6 +1,5 @@
-package src.main.java.DiscordBot.commands;
+package DiscordBot.commands;
 
-import DiscordBot.commands.BangPlayer;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 

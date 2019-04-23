@@ -1,4 +1,4 @@
-Version 1.4.4
+Version 1.5
 # Purpose
 Manage Computer Science Discord elective roles and channels automatically.
 
@@ -13,6 +13,8 @@ Manage Computer Science Discord elective roles and channels automatically.
 `!bang` - play Russian roulette
 
 `!bangscore` or `!bangscores` - Shows high scores for attempts, deaths, survival rate, and death rate
+
+`!mybang` - Shows the user's attempts, deaths, and survival rate
 
 `!join [role name]` - if the role already exists, it is assigned to the user. Else, the user's id and requested role are stored in a CSV file. If enough users apply for the same role, the role and a private text channel are created and all applicants are assigned to it
 

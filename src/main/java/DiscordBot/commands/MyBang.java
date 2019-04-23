@@ -33,8 +33,8 @@ public class MyBang {
 
             // Post results
             if (player != null){
-                double survivalRate = Math.round(player.deaths / player.attempts * 10d) / 10d;
-                channel.sendMessage("Scores for"+author.getName()+":\nAttempts: "+(int)player.attempts+"\nDeaths: "+(int)player.deaths+"\nSurvival rate: "+survivalRate).queue();
+                double survivalRate = Math.round(player.deaths / player.attempts * 100 * 10d) / 10d;
+                channel.sendMessage("Scores for"+author.getName()+":\nAttempts: "+(int)player.attempts+"\nDeaths: "+(int)player.deaths+"\nSurvival rate: "+survivalRate+"%").queue();
             }else{
                 channel.sendMessage(author.getName()+" could not be found in score list").queue();
             }

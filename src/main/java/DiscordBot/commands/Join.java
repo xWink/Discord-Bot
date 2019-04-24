@@ -21,7 +21,7 @@ public class Join {
 			channel.sendMessage("I cannot set you to that role").queue();
 			return;
 		}
-		System.out.println("Here");
+		System.out.println(guild.getRolesByName(roleName,true).get(0).getName().toLowerCase());
 		// If role exists and isn't restricted, assign user to role
 		if (guild.getRolesByName(roleName,true).get(0).getName().toLowerCase().equals(roleName.toLowerCase())) {
 			System.out.println("Here0");

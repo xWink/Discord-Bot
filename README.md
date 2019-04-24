@@ -14,6 +14,8 @@ Manage Computer Science Discord elective roles and channels automatically.
 
 `!bangscore` or `!bangscores` - Shows high scores for attempts, deaths, survival rate, and death rate
 
+`!roles` - Shows a list of available roles to join
+
 `!join [role name]` - if the role already exists, it is assigned to the user. Else, the user's id and requested role are stored in a CSV file. If enough users apply for the same role, the role and a private text channel are created and all applicants are assigned to it
 
 `!leave [role name]` - unassigns role from user and removes their application for that role from the CSV file

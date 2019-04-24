@@ -22,7 +22,7 @@ public class Join {
 			return;
 		}
 		// If role exists and isn't restricted, assign user to role
-		if (!guild.getRolesByName(roleName,true).equals(guild.getRolesByName("lamptissueboxfritoscoke",true))) {
+		if (guild.getRolesByName(roleName,true).get(0).equals(roleName)) {
 			guild.getController().addRolesToMember(auth, guild.getRolesByName(roleName, true)).queue();
 			channel.sendMessage("Role \""+roleName+"\" added to "+auth.getAsMention()).queue();
 		}

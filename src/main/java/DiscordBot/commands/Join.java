@@ -27,6 +27,7 @@ public class Join {
 			channel.sendMessage("Role \""+roleName+"\" added to "+auth.getAsMention()).queue();
 		}
 		else{ // If role does not exist
+System.out.println("Here1");
 			File file = new File(path);
 			try {
 				// Create writers, readers, threshold, etc
@@ -36,11 +37,14 @@ public class Join {
 				CSVWriter csvWriter = new CSVWriter(fileWriter);
 				Path filePath = Paths.get(path);
 				BufferedReader reader = Files.newBufferedReader(filePath);
+
 				// If file is empty, give it appropriate headers
 				if (reader.readLine() == null){
+System.out.println("Here2");
 					String[] header = {"CourseID", "Applicant"};
 					csvWriter.writeNext(header);
 				}
+
 				// If user already requested this role, don't add this application to file
 				String line = reader.readLine();
 				while (line != null){
@@ -49,14 +53,18 @@ public class Join {
 					}
 					line = reader.readLine();
 				}
+
 				// If this is a new application, add it to file
 				if (!alreadyExists) {
+System.out.println("Here3");
 					String[] application = {roleName, author.getId()};
 					csvWriter.writeNext(application, true);
 				}
 				reader.close();
 				csvWriter.close();
 				fileWriter.close();
+System.out.println("Here4");
+
 				// Check how many people applied for the same role
 				String[] applicants = new String[threshold];
 				int applicationCount = 0;
@@ -64,23 +72,28 @@ public class Join {
 				line = reader2.readLine();
 				while (line != null){
 					if (line.startsWith("\""+roleName+"\",")){
+System.out.println("Here5");
 						applicants[applicationCount] = line.substring(line.indexOf("\"",roleName.length()+3)+1,line.length()-1);
 						applicationCount++;
 					}
 					line = reader2.readLine();
 				}
 				reader2.close();
+
 				// If number of applications is sufficient, create role and channel for it, and assign all applicants to that role
 				if (applicationCount >= threshold && !alreadyExists){
 					ArrayList<Permission> viewChannel = new ArrayList<>(); // Permissions for that channel
 					viewChannel.add(0,Permission.VIEW_CHANNEL);
+
 					guild.getController().createRole().setName(roleName).queue(); // Create the role
 					guild.getController().createTextChannel(roleName).setParent(guild.getCategoriesByName("Electives",true).get(0)).complete(); // Create the textChannel
 					TextChannel textChannel = guild.getTextChannelsByName(roleName,true).get(0); // Variable textChannel is the new channel
+
 					// Give role to all applicants
 					for (int i = 0; i < threshold; i++){
 						guild.getController().addRolesToMember(guild.getMemberById(applicants[i]),guild.getRolesByName(roleName,true)).queue();
 					}
+
 					// Prevent everyone from seeing the channel
 					textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(viewChannel).queue();
 					// Let people with the specified role see the channel and read/send messages
@@ -90,6 +103,7 @@ public class Join {
 					textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setDeny(Permission.MESSAGE_MENTION_EVERYONE).queue();
 					// Let moderators see the channel
 					textChannel.createPermissionOverride(guild.getRolesByName("Moderator",true).get(0)).setAllow(viewChannel).queue();
+
 					channel.sendMessage("The channel for your elective has been created! Only members of the channel can see it.").queue();
 				}
 				else{ // If number of applications is too low
@@ -100,7 +114,6 @@ public class Join {
 						channel.sendMessage("Role \"" + roleName + "\" does not exist, but the request has been noted.\nI need "+(threshold - applicationCount)+" more requests to make it").queue();
 					}
 				}
-
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -104,7 +104,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Show available Elective roles
 		else if (content.toLowerCase().equals("!roles")){
-			ShowRoles.showRoles(guild);
+			ShowRoles.showRoles(guild, channel);
 		}
 	}
 }

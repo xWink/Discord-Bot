@@ -14,9 +14,15 @@ public class TakeRole {
 			// If author is a moderator and target is not a moderator
 			if (auth.getRoles().containsAll(guild.getRolesByName("Moderator", true))
 					&& !member.getRoles().containsAll(guild.getRolesByName("Moderator", true))) {
-				guild.getController().removeRolesFromMember(member, guild.getRolesByName(roleName, true)).queue();
-				channel.sendMessage("Removed "+roleName+" role from <@"+member.getUser().getId()+">").queue();
-			} else {
+				if (!guild.getRolesByName(roleName, true).isEmpty()) {
+					guild.getController().removeRolesFromMember(member, guild.getRolesByName(roleName, true)).queue();
+					channel.sendMessage("Removed " + roleName + " role from <@" + member.getUser().getId() + ">").queue();
+				}
+				else{
+					channel.sendMessage("That role does not exist").queue();
+				}
+			}
+			else {
 				channel.sendMessage("You do not have permission to do that!").queue();
 			}
 		}catch (IndexOutOfBoundsException e){

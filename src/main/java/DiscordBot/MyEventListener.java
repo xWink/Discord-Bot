@@ -101,5 +101,10 @@ public class MyEventListener extends ListenerAdapter {
 		else if (content.toLowerCase().equals("!mybang")){
 			MyBang.myBang(author, channel, path3);
 		}
+
+		// Show available Elective roles
+		else if (content.toLowerCase().equals("!roles")){
+			ShowRoles.showRoles(guild, channel);
+		}
 	}
 }

@@ -18,8 +18,8 @@ public class ShowRoles {
         for (Channel channel:channelList) {
             if (channel.getParent() == guild.getCategoriesByName("electives", true).get(0)){
                 // Print elective name
-                msgChannel.sendMessage(channelCount+". "+channel.toString()).queue();
                 channelCount++;
+                msgChannel.sendMessage(channelCount+". "+channel.toString().substring(channel.toString().indexOf(":")+1,channel.toString().lastIndexOf("("))).queue();
             }
         }
 

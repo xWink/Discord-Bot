@@ -23,12 +23,10 @@ public class Join {
 		}
 		// If role exists and isn't restricted, assign user to role
 		if (!guild.getRolesByName(roleName,true).isEmpty()) {
-			System.out.println("Here0");
 			guild.getController().addRolesToMember(auth, guild.getRolesByName(roleName, true)).queue();
 			channel.sendMessage("Role \""+roleName+"\" added to "+auth.getAsMention()).queue();
 		}
 		else{ // If role does not exist
-System.out.println("Here1");
 			File file = new File(path);
 			try {
 				// Create writers, readers, threshold, etc
@@ -41,7 +39,6 @@ System.out.println("Here1");
 
 				// If file is empty, give it appropriate headers
 				if (reader.readLine() == null){
-System.out.println("Here2");
 					String[] header = {"CourseID", "Applicant"};
 					csvWriter.writeNext(header);
 				}
@@ -57,14 +54,12 @@ System.out.println("Here2");
 
 				// If this is a new application, add it to file
 				if (!alreadyExists) {
-System.out.println("Here3");
 					String[] application = {roleName, author.getId()};
 					csvWriter.writeNext(application, true);
 				}
 				reader.close();
 				csvWriter.close();
 				fileWriter.close();
-System.out.println("Here4");
 
 				// Check how many people applied for the same role
 				String[] applicants = new String[threshold];
@@ -73,7 +68,6 @@ System.out.println("Here4");
 				line = reader2.readLine();
 				while (line != null){
 					if (line.startsWith("\""+roleName+"\",")){
-System.out.println("Here5");
 						applicants[applicationCount] = line.substring(line.indexOf("\"",roleName.length()+3)+1,line.length()-1);
 						applicationCount++;
 					}

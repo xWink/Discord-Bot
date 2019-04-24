@@ -18,7 +18,7 @@ public class ShowRoles {
         for (Channel channel:channelList) {
             if (channel.getParent() == guild.getCategoriesByName("electives", true).get(0)){
                 if (channelCount == 0){
-                    msgChannel.sendMessage("**There are the available elective roles**").queue();
+                    msgChannel.sendMessage("**Available elective roles**").queue();
                 }
                 // Print elective name
                 channelCount++;

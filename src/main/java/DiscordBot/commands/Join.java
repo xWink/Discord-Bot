@@ -21,10 +21,8 @@ public class Join {
 			channel.sendMessage("I cannot set you to that role").queue();
 			return;
 		}
-		System.out.println(guild.getRolesByName(roleName,true).get(0).getName().toLowerCase());
-		System.out.println("Here");
 		// If role exists and isn't restricted, assign user to role
-		if (guild.getRolesByName(roleName,true).get(0).getName().toLowerCase().equals(roleName.toLowerCase())) {
+		if (!guild.getRolesByName(roleName,true).isEmpty()) {
 			System.out.println("Here0");
 			guild.getController().addRolesToMember(auth, guild.getRolesByName(roleName, true)).queue();
 			channel.sendMessage("Role \""+roleName+"\" added to "+auth.getAsMention()).queue();

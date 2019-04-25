@@ -57,13 +57,30 @@ public class GetConfig {
 
             // If the line is a token line
             else if (currLn.startsWith("TOKEN")) {
-                String parsedLn = new String (parseArg (currLn));
-                toReturn.token = parsedLn;
+                toReturn.token = new String (parseArg (currLn));
                 System.out.println (toReturn.token);
-                // TODO: Place sting into ConfigFile obj
             }
 
+            // If the line is a channel line
 
+
+            // If the line is an applicant path line
+            else if (currLn.startsWith("APPLICANT_PATH")) {
+                toReturn.applicant_path = new String (parseArg (currLn));
+                System.out.println (toReturn.applicant_path);
+            }
+
+            // If the line is a score path line
+            else if (currLn.startsWith("SCORE_PATH")) {
+                toReturn.score_path = new String (parseArg (currLn));
+                System.out.println (toReturn.score_path);
+            }
+
+            // If the line is a roulette path
+            else if (currLn.startsWith("ROULETTE_PATH")) {
+                toReturn.roulette_path = new String (parseArg (currLn));
+                System.out.println (toReturn.roulette_path);
+            }
         }
 
         return token;

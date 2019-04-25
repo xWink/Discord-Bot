@@ -8,11 +8,19 @@ import java.io.File;
 import java.util.Scanner;
 import java.util.ArrayList;
 
+import DiscordBot.ConfigFile;
+
 public class GetConfig {
+    public static String parseArg (String currLn) {
+        String parsedLn = new String (currLn.substring(currLn.indexOf('=') + 1));
+        return parsedLn;
+    }
+
     public static String getConfig() throws Exception {
         ArrayList<String> rawFile = new ArrayList<String>();
         int current = 0;
         String token = "NTcwNzA1MTU0MjU3NzE1MjMx.XMDK3A.GOVN1ytQ7O4sn5ediRhRiML9s_A"; // remove later
+        ConfigFile toReturn = new ConfigFile();
 
         // Set up file reading
         File file = new File(".rolebotconfig");
@@ -40,10 +48,28 @@ public class GetConfig {
         }
 
         // Parse through the rawContents array and get the important information
-        
+        for (int i = 0; i < current; i++) {
+            // Set current line
+            String currLn = new String(contents[i]);
+
+            // Ignore comment lines (lines that start with #
+            if (currLn.startsWith("#")) { break; }
+
+            // If the line is a token line
+            else if (currLn.startsWith("TOKEN")) {
+                String parsedLn = new String (parseArg (currLn));
+                toReturn.token = parsedLn;
+                System.out.println (toReturn.token);
+                // TODO: Place sting into ConfigFile obj
+            }
+
+
+        }
 
         return token;
 
 
     }
+
+
 }

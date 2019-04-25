@@ -18,6 +18,7 @@ public class GetConfig {
 
     public static String getConfig() throws Exception {
         ArrayList<String> rawFile = new ArrayList<String>();
+        ArrayList<String> rawChannels = new ArrayList<String>();
         int current = 0;
         String token = "NTcwNzA1MTU0MjU3NzE1MjMx.XMDK3A.GOVN1ytQ7O4sn5ediRhRiML9s_A"; // remove later
         ConfigFile toReturn = new ConfigFile();
@@ -43,9 +44,7 @@ public class GetConfig {
 
         // Place raw file contents into String array for easier manipulation
         String[] contents = rawFile.toArray(new String[0]);
-        for (int i = 0; i < current; i++) {
-            System.out.println (contents[i]);
-        }
+
 
         // Parse through the rawContents array and get the important information
         for (int i = 0; i < current; i++) {
@@ -61,8 +60,11 @@ public class GetConfig {
                 System.out.println (toReturn.token);
             }
 
-            // If the line is a channel line
-
+            // If the line is a channel line, add to rawChannels ArrayList
+            else if (currLn.startsWith("CHANNEL")) {
+                String tempChannel = new String (parseArg (currLn));
+                rawChannels.add(tempChannel); 
+            }
 
             // If the line is an applicant path line
             else if (currLn.startsWith("APPLICANT_PATH")) {
@@ -81,6 +83,12 @@ public class GetConfig {
                 toReturn.roulette_path = new String (parseArg (currLn));
                 System.out.println (toReturn.roulette_path);
             }
+        }
+
+        // Place the contents of rawChannels into ConfigFile object
+        toReturn.channel = rawChannels.toArray (new String[0]);
+        for (int i = 0; i < toReturn.channel.length; i++) {
+            System.out.println (toReturn.channel[i]);
         }
 
         return token;

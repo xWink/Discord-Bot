@@ -25,9 +25,9 @@ public class MyEventListener extends ListenerAdapter {
 		final MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
 		final Guild guild = event.getGuild(); // Variable guild is the Discord server
 		final Member auth = guild.getMember(author); // Variable auth is author of type Member
-		final String path = cfg.applicant_path; //"/home/botadmin/ElectiveRequests.csv"; // applicant file path
-		final String path2 = cfg.score_path; //"/home/botadmin/ScoreList.csv"; // score file path
-		final String path3 = cfg.roulette_path; //"/home/botadmin/RouletteData.csv"; // roulette file path
+		final String path = cfg.applicant_path; // applicant file path
+		final String path2 = cfg.score_path; // score file path
+		final String path3 = cfg.roulette_path; // roulette file path
 
 		// Check if the bot is allowed to send messages in the current channel
 		if ( !(cfg.channel[0].equals("all")) && !(Arrays.asList(cfg.channel).contains(channel.getId()))) return;

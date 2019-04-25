@@ -24,7 +24,6 @@ public class GetConfig {
         ArrayList<String> rawFile = new ArrayList<String>();
         ArrayList<String> rawChannels = new ArrayList<String>();
         int current = 0;
-        String token = "NTcwNzA1MTU0MjU3NzE1MjMx.XMDK3A.GOVN1ytQ7O4sn5ediRhRiML9s_A"; // remove later
         ConfigFile toReturn = new ConfigFile();
 
         // Set up file reading
@@ -57,7 +56,6 @@ public class GetConfig {
             // If the line is a token line
             if (currLn.startsWith("TOKEN")) {
                 toReturn.token = new String (parseArg (currLn));
-                System.out.println (toReturn.token);
                 logMessage ("Got token [" + toReturn.token + "]");
             }
 

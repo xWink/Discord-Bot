@@ -20,7 +20,7 @@ public class GetConfig {
         return parsedLn;
     }
 
-    public static String getConfig() throws Exception {
+    public static ConfigFile getConfig() throws Exception {
         ArrayList<String> rawFile = new ArrayList<String>();
         ArrayList<String> rawChannels = new ArrayList<String>();
         int current = 0;
@@ -113,6 +113,7 @@ public class GetConfig {
             System.exit(0);
         }
 
-        return token;
+        return toReturn;
     } // end getConfig()
+
 }

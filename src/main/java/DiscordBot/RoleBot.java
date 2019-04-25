@@ -6,27 +6,24 @@ import net.dv8tion.jda.core.JDABuilder;
 
 import java.io.File;
 import java.util.Scanner;
+
 import DiscordBot.GetConfig;
+import DiscordBot.ConfigFile;
 
 public class RoleBot {
+	public static ConfigFile config;
+
 	public static void main(String[] args) throws Exception{
 
 		try {
-			/*
-			File file = new File("token.txt");
-			Scanner scanner = new Scanner(file);
-			String token = scanner.nextLine();
-			scanner.close();
-			*/
-			String token = GetConfig.getConfig();
-
+			config = GetConfig.getConfig();
 
 			// Create bot with token given by Discord developer page
-			JDA api = new JDABuilder(AccountType.BOT).setToken(token).build();
+			JDA api = new JDABuilder(AccountType.BOT).setToken(config.token).build();
 			api.addEventListener(new MyEventListener());
 		}
 		
-		catch (Exception e){
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -21,15 +21,31 @@ public class GetConfig {
     }
 
     public static ConfigFile getConfig() throws Exception {
+        final String configFilename = ".rolebotconfig";
         ArrayList<String> rawFile = new ArrayList<String>();
         ArrayList<String> rawChannels = new ArrayList<String>();
         int current = 0;
         ConfigFile toReturn = new ConfigFile();
+        File working = new File (configFilename);
+        File home = new File (System.getProperty("user.home") + configFilename);
+        Scanner readConfig = null;
 
-        // Set up file reading
-        File file = new File(".rolebotconfig");
-        Scanner readConfig = new Scanner (file);
-        logMessage ("Reading config file...");
+        // Check whether config file exists in working (current) directory
+        if (working.exists()) {
+            logMessage ("Found [" + configFilename + "] in current directory");
+            readConfig = new Scanner (working);
+        }
+        // Check if file is in home directory
+        else if (home.exists()) {
+            logMessage ("Found [" + configFilename + "] in home directory");
+            readConfig = new Scanner (home);
+        }
+        // If the file cannot be found
+        if (readConfig == null) {
+            logMessage("Error: Ending execution due to missing `" + configFilename + "` file.");
+            logMessage("Place the file in the same directory as the .jar file or in the home directory and run the bot again");
+            System.exit(0);
+        }
 
         // Read the file
         try {

@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 
 public class GetBangScores {
 
-    public static BangHighScores getBangScores(MessageChannel channel, String path3, Guild guild){
+    public static BangHighScores getBangScores(String path3, Guild guild){
 
         try {
             Path scorePath = Paths.get(path3);

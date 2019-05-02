@@ -8,6 +8,7 @@ import DiscordBot.commands.*;
 public class MyEventListener extends ListenerAdapter {
 
 	int chamberCount = 6;
+	public static Guild guild;
 
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event){
@@ -18,7 +19,7 @@ public class MyEventListener extends ListenerAdapter {
 		final Message message = event.getMessage(); // Variable message is the detected message
 		final String content = message.getContentRaw(); // Variable content is the text of the message
 		final MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
-		final Guild guild = event.getGuild(); // Variable guild is the Discord server
+		guild = event.getGuild(); // Variable guild is the Discord server
 		final Member auth = guild.getMember(author); // Variable auth is author of type Member
 		final String path = "/home/botadmin/ElectiveRequests.csv"; // applicant file path
 		final String path2 = "/home/botadmin/ScoreList.csv"; // score file path

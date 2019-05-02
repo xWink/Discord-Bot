@@ -31,7 +31,7 @@ public class RoleBot {
 					UpdateBangRoles.updateBangRoles();
 				}
 			};
-			timer.schedule(task,1000*60*60,1000*60*60);
+			timer.schedule(task,1000*10,1000*60*60);
 		}catch (Exception e){
 			e.printStackTrace();
 		}

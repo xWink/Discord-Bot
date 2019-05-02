@@ -3,16 +3,20 @@ package DiscordBot;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+
+import java.util.Arrays;
+
 import DiscordBot.commands.*;
+import DiscordBot.ConfigFile;
 
 public class MyEventListener extends ListenerAdapter {
 
 	int chamberCount = 6;
 	public static Guild guild;
 	public static String path3;
-
-
-	@Override
+	ConfigFile cfg = RoleBot.config;
+	
+  @Override
 	public void onMessageReceived(MessageReceivedEvent event){
 
 		final User author = event.getAuthor(); // Variable author is the author of type User
@@ -23,12 +27,12 @@ public class MyEventListener extends ListenerAdapter {
 		final MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
 		guild = event.getGuild(); // Variable guild is the Discord server
 		final Member auth = guild.getMember(author); // Variable auth is author of type Member
-		final String path = "/home/botadmin/ElectiveRequests.csv"; // applicant file path
-		final String path2 = "/home/botadmin/ScoreList.csv"; // score file path
-		path3 = "/home/botadmin/RouletteData.csv"; // roulette file path
+		final String path = cfg.applicant_path; // applicant file path
+		final String path2 = cfg.score_path; // score file path
+		path3 = cfg.roulette_path; // roulette file path
 
-		// Only interact with messages in the bot channel
-		if (!channel.getId().equals("551828950871965696")) return;
+		// Check if the bot is allowed to send messages in the current channel
+		if ( !(cfg.channel[0].equals("all")) && !(Arrays.asList(cfg.channel).contains(channel.getId()))) return;
 
 		// Bot shows how to use !join
 		if (content.toLowerCase().equals("!join") || content.toLowerCase().equals("!join ")){
@@ -47,7 +51,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Bot responds with pong and latency
 		else if (content.toLowerCase().equals("!ping")) {
-			Ping.ping(author, event, channel ,path2);
+			Ping.ping(author, event, channel, path2);
 		}
 
 		// Bot creates new text channel and deletes old one (OWNER ONLY)

@@ -2,14 +2,14 @@ package src.main.java.DiscordBot.helpers;
 
 public class BangHighScores {
 
-    int attemptCount;
-    String mostAttemptsPlayer;
-    int deathCount;
-    String mostDeathsPlayer;
-    double bestRate;
-    String luckiest;
-    double worstRate;
-    String unluckiest;
+    public double attemptCount;
+    public String mostAttemptsPlayer;
+    public double deathCount;
+    public String mostDeathsPlayer;
+    public double bestRate;
+    public String luckiest;
+    public double worstRate;
+    public String unluckiest;
 
     public BangHighScores(int attemptCount,
             String mostAttemptsPlayer,

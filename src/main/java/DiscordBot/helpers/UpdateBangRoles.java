@@ -25,6 +25,7 @@ public class UpdateBangRoles {
                     guild.getController().removeRolesFromMember(guild.getMembersWithRoles(attemptsRole).get(0), attemptsRole).queue();
 
                 guild.getController().addRolesToMember(guild.getMembersByName(highScores.mostAttemptsPlayer, true).get(0), attemptsRole).queue();
+                guild.getTextChannelById("551828950871965696").sendMessage("Congrats "+highScores.mostAttemptsPlayer+" on your new role!").queue();
             }
             // Most deaths
             if (guild.getMembersWithRoles(deathsRole).size() == 0 || !guild.getMembersWithRoles(deathsRole).get(0).getUser().getName().equals(highScores.mostDeathsPlayer)) {
@@ -32,6 +33,7 @@ public class UpdateBangRoles {
                     guild.getController().removeRolesFromMember(guild.getMembersWithRoles(deathsRole).get(0), deathsRole).queue();
 
                 guild.getController().addRolesToMember(guild.getMembersByName(highScores.mostDeathsPlayer, true).get(0), deathsRole).queue();
+                guild.getTextChannelById("551828950871965696").sendMessage("Congrats "+highScores.mostDeathsPlayer+" on your new role!").queue();
             }
             // Luckiest
             if (guild.getMembersWithRoles(luckyRole).size() == 0 || !guild.getMembersWithRoles(luckyRole).get(0).getUser().getName().equals(highScores.luckiest)) {
@@ -39,6 +41,7 @@ public class UpdateBangRoles {
                     guild.getController().removeRolesFromMember(guild.getMembersWithRoles(luckyRole).get(0), luckyRole).queue();
 
                 guild.getController().addRolesToMember(guild.getMembersByName(highScores.luckiest, true).get(0), luckyRole).queue();
+                guild.getTextChannelById("551828950871965696").sendMessage("Congrats "+highScores.luckiest+" on your new role!").queue();
             }
             // Unluckiest
             if (guild.getMembersWithRoles(unluckyRole).size() == 0 || !guild.getMembersWithRoles(unluckyRole).get(0).getUser().getName().equals(highScores.unluckiest)) {
@@ -46,6 +49,7 @@ public class UpdateBangRoles {
                     guild.getController().removeRolesFromMember(guild.getMembersWithRoles(unluckyRole).get(0), unluckyRole).queue();
 
                 guild.getController().addRolesToMember(guild.getMembersByName(highScores.unluckiest, true).get(0), unluckyRole).queue();
+                guild.getTextChannelById("551828950871965696").sendMessage("Congrats "+highScores.unluckiest+" on your new role!").queue();
             }
         }
     }

@@ -2,9 +2,9 @@ package DiscordBot.helpers;
 
 public class BangPlayer {
 
-    String player;
-    double attempts;
-    double deaths;
+    public String player;
+    public double attempts;
+    public double deaths;
 
     public BangPlayer(String player, double attempts, double deaths){
         this.player = player;

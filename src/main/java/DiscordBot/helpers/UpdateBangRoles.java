@@ -25,7 +25,6 @@ public class UpdateBangRoles {
                     guild.getController().removeRolesFromMember(guild.getMembersWithRoles(attemptsRole).get(0), attemptsRole).queue();
 
                 guild.getController().addRolesToMember(guild.getMembersByName(highScores.mostAttemptsPlayer, true).get(0), attemptsRole).queue();
-System.out.println("Most attempts: "+highScores.mostAttemptsPlayer);
             }
             // Most deaths
             if (guild.getMembersWithRoles(deathsRole).size() == 0 || !guild.getMembersWithRoles(deathsRole).get(0).getUser().getName().equals(highScores.mostDeathsPlayer)) {

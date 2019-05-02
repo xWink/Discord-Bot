@@ -2,6 +2,7 @@ package DiscordBot.helpers;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.exceptions.PermissionException;
 import src.main.java.DiscordBot.helpers.BangHighScores;
 
 public class UpdateBangRoles {
@@ -20,37 +21,29 @@ public class UpdateBangRoles {
 
             // Remove role from loser and add role to new winner
             // Most attempts
-            if (guild.getMembersWithRoles(attemptsRole).size() == 0 || !guild.getMembersWithRoles(attemptsRole).get(0).getUser().getName().equals(highScores.mostAttemptsPlayer)) {
-                if (guild.getMembersWithRoles(attemptsRole).size() > 0)
-                    guild.getController().removeRolesFromMember(guild.getMembersWithRoles(attemptsRole).get(0), attemptsRole).queue();
-
-                guild.getController().addRolesToMember(guild.getMembersByName(highScores.mostAttemptsPlayer, true).get(0), attemptsRole).queue();
-                guild.getTextChannelById("551828950871965696").sendMessage("Congrats "+highScores.mostAttemptsPlayer+" on your new role!").queue();
-            }
+            giveAndTakeBangRoles(guild, attemptsRole, highScores.mostAttemptsPlayer);
             // Most deaths
-            if (guild.getMembersWithRoles(deathsRole).size() == 0 || !guild.getMembersWithRoles(deathsRole).get(0).getUser().getName().equals(highScores.mostDeathsPlayer)) {
-                if (guild.getMembersWithRoles(deathsRole).size() > 0)
-                    guild.getController().removeRolesFromMember(guild.getMembersWithRoles(deathsRole).get(0), deathsRole).queue();
-
-                guild.getController().addRolesToMember(guild.getMembersByName(highScores.mostDeathsPlayer, true).get(0), deathsRole).queue();
-                guild.getTextChannelById("551828950871965696").sendMessage("Congrats "+highScores.mostDeathsPlayer+" on your new role!").queue();
-            }
+            giveAndTakeBangRoles(guild, deathsRole, highScores.mostDeathsPlayer);
             // Luckiest
-            if (guild.getMembersWithRoles(luckyRole).size() == 0 || !guild.getMembersWithRoles(luckyRole).get(0).getUser().getName().equals(highScores.luckiest)) {
-                if (guild.getMembersWithRoles(luckyRole).size() > 0)
-                    guild.getController().removeRolesFromMember(guild.getMembersWithRoles(luckyRole).get(0), luckyRole).queue();
-
-                guild.getController().addRolesToMember(guild.getMembersByName(highScores.luckiest, true).get(0), luckyRole).queue();
-                guild.getTextChannelById("551828950871965696").sendMessage("Congrats "+highScores.luckiest+" on your new role!").queue();
-            }
+            giveAndTakeBangRoles(guild, luckyRole, highScores.luckiest);
             // Unluckiest
-            if (guild.getMembersWithRoles(unluckyRole).size() == 0 || !guild.getMembersWithRoles(unluckyRole).get(0).getUser().getName().equals(highScores.unluckiest)) {
-                if (guild.getMembersWithRoles(unluckyRole).size() > 0)
-                    guild.getController().removeRolesFromMember(guild.getMembersWithRoles(unluckyRole).get(0), unluckyRole).queue();
-
-                guild.getController().addRolesToMember(guild.getMembersByName(highScores.unluckiest, true).get(0), unluckyRole).queue();
-                guild.getTextChannelById("551828950871965696").sendMessage("Congrats "+highScores.unluckiest+" on your new role!").queue();
+            giveAndTakeBangRoles(guild, unluckyRole, highScores.unluckiest);
             }
+        }
+
+    private static void giveAndTakeBangRoles(Guild guild, Role role, String name){
+
+        try {
+            if (guild.getMembersWithRoles(role).size() == 0 || !guild.getMembersWithRoles(role).get(0).getUser().getName().equals(name)) {
+                if (guild.getMembersWithRoles(role).size() > 0)
+                    guild.getController().removeRolesFromMember(guild.getMembersWithRoles(role).get(0), role).queue();
+
+                guild.getController().addRolesToMember(guild.getMembersByName(name, true).get(0), role).queue();
+                guild.getTextChannelById("551828950871965696").sendMessage("Congrats " + name + " on your new role!").queue();
+            }
+        }
+        catch (PermissionException e){
+            e.printStackTrace();
         }
     }
 }

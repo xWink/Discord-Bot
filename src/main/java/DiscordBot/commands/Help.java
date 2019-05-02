@@ -6,8 +6,10 @@ public class Help {
 
     public static void help(MessageChannel channel){
 
-        channel.sendMessage("For instructions to join an elective group, say \"!join\" and to leave one, say \"!leave\". To see available channels, say \"!roles\"").queue();
-        channel.sendMessage("To play Russian Roulette, say \"!bang\" or to use Ping, say \"!ping\"").queue();
-        channel.sendMessage("To see roulette high-scores, say \"!bangscores\", to see personal roulette scores, say \"!mybang\" or to see Ping scores, say \"!scores\"").queue();
+        channel.sendMessage(
+                "`!join` & `!leave` - Instructions for joining or leaving a group\n\n" +
+                    "`!roles` - See available groups\n\n" +
+                    "`!bang` - Play Russian Roulette\n\n" +
+                    "`!bangscores` & `!mybang` - See Bang high scores or personal stats").queue();
     }
 }

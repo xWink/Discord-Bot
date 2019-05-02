@@ -1,4 +1,4 @@
-package DiscordBot.commands;
+package DiscordBot.helpers;
 
 public class BangPlayer {
 

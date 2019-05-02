@@ -11,9 +11,10 @@ public class BangHighScores {
     public double worstRate;
     public String unluckiest;
 
-    public BangHighScores(int attemptCount,
+    public BangHighScores(
+            double attemptCount,
             String mostAttemptsPlayer,
-            int deathCount,
+            double deathCount,
             String mostDeathsPlayer,
             double bestRate,
             String luckiest,

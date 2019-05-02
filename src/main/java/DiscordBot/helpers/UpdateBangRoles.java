@@ -18,11 +18,6 @@ public class UpdateBangRoles {
             Role luckyRole = guild.getRolesByName("Lucky Duck", true).get(0);
             Role unluckyRole = guild.getRolesByName("Snake Eyes", true).get(0);
 
-            // Remove special roles from everyone
-            guild.getController().removeRolesFromMember(guild.getMembersWithRoles(deathsRole).get(0),deathsRole).queue();
-            guild.getController().removeRolesFromMember(guild.getMembersWithRoles(luckyRole).get(0),luckyRole).queue();
-            guild.getController().removeRolesFromMember(guild.getMembersWithRoles(unluckyRole).get(0),unluckyRole).queue();
-
             // Remove role from loser and add role to new winner
             // Most attempts
             if (guild.getMembersWithRoles(attemptsRole).size() == 0 || !guild.getMembersWithRoles(attemptsRole).get(0).getUser().getName().equals(highScores.mostAttemptsPlayer)) {

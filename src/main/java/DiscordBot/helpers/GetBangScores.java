@@ -1,7 +1,6 @@
 package DiscordBot.helpers;
 
 import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import src.main.java.DiscordBot.helpers.BangHighScores;
 
 import java.io.BufferedReader;

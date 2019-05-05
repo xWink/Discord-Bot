@@ -10,17 +10,19 @@ import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import DiscordBot.GetConfig;
+import DiscordBot.ConfigFile;
+
 public class RoleBot {
+	public static ConfigFile config;
 
 	public static void main(String[] args) throws Exception{
 
 		try {
-			File file = new File("token.txt");
-			Scanner scanner = new Scanner(file);
-			String token = scanner.nextLine();
-			scanner.close();
+			config = GetConfig.getConfig();
+
 			// Create bot with token given by Discord developer page
-			JDA api = new JDABuilder(AccountType.BOT).setToken(token).build();
+			JDA api = new JDABuilder(AccountType.BOT).setToken(config.token).build();
 			api.addEventListener(new MyEventListener());
 
 			// Check Bang high scores every hour
@@ -32,7 +34,9 @@ public class RoleBot {
 				}
 			};
 			timer.schedule(task,1000*60*60,1000*60*60);
-		}catch (Exception e){
+		}
+		
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

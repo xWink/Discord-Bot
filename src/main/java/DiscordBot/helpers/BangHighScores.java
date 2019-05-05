@@ -1,4 +1,4 @@
-package src.main.java.DiscordBot.helpers;
+package DiscordBot.helpers;
 
 public class BangHighScores {
 

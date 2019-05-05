@@ -3,7 +3,6 @@ package DiscordBot.helpers;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import src.main.java.DiscordBot.helpers.BangHighScores;
 
 public class UpdateBangRoles {
 

@@ -5,18 +5,14 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import DiscordBot.helpers.UpdateBangRoles;
 
-import java.io.File;
-import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import DiscordBot.GetConfig;
-import DiscordBot.ConfigFile;
-
 public class RoleBot {
-	public static ConfigFile config;
 
-	public static void main(String[] args) throws Exception{
+	static ConfigFile config;
+
+	public static void main(String[] args){
 
 		try {
 			config = GetConfig.getConfig();

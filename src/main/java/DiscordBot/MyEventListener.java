@@ -7,14 +7,13 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import java.util.Arrays;
 
 import DiscordBot.commands.*;
-import DiscordBot.ConfigFile;
 
 public class MyEventListener extends ListenerAdapter {
 
-	int chamberCount = 6;
 	public static Guild guild;
 	public static String path3;
-	ConfigFile cfg = RoleBot.config;
+	private int chamberCount = 6;
+	private ConfigFile cfg = RoleBot.config;
 	
   @Override
 	public void onMessageReceived(MessageReceivedEvent event){

@@ -81,7 +81,7 @@ public class Roulette {
 		// Find user in database
 		Boolean exists = false;
 		try {
-			PreparedStatement st = conn.prepareStatement("SELECT * FROM items WHERE item="+author.getIdLong());
+			PreparedStatement st = conn.prepareStatement("SELECT * FROM items WHERE user="+author.getIdLong());
 			ResultSet rs = st.executeQuery();
 
 			if(rs != null){

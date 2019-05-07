@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
     implementation 'net.dv8tion:JDA:3.8.3_460'
+    implementation 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
     compile 'org.slf4j:slf4j-log4j12:1.7.25'
     compile 'com.opencsv:opencsv:4.5'
 }

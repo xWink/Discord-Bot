@@ -1,14 +1,13 @@
-/*
 plugins {
     id 'java'
     id 'application'
-    id "com.github.johnrengelman.shadow" version '2.0.4'
+    id "com.github.johnrengelman.shadow" version '4.0.4'
 }
 
+mainClassName = 'DiscordBot.RoleBot'
 group 'com.DiscordBot'
 version '1'
 
-mainClassName = 'DiscordBot.RoleBot'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -17,61 +16,9 @@ repositories {
     jcenter()
 }
 
-apply plugin: 'java-library'
-
-
 dependencies {
-    implementation 'net.dv8tion:JDA:3.8.3_460'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
-    compile 'org.slf4j:slf4j-log4j12:1.7.25'
-    compile 'com.opencsv:opencsv:4.5'
-}
-
-
-shadowJar {
-    mergeServiceFiles()
-}
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'DiscordBot Database',
-                'Implementation-Version': version,
-                'Main-Class': 'DiscordBot.RoleBot'
-    }
-}*/
-
-plugins {
-    id 'java'
-    id 'application'
-}
-
-apply plugin: 'java'
-
-version = '1.0'
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
-
-//create a single Jar with all dependencies
-task fatJar(type: Jar) {
-    manifest {
-        attributes 'Implementation-Title': 'RoleBot',
-                'Implementation-Version': version,
-                'Main-Class': 'DiscordBot.RoleBot'
-    }
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
-
-//Get dependencies from Maven central repository
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
-//Project dependencies
-dependencies {
-    implementation 'net.dv8tion:JDA:3.8.3_460'
-    implementation 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
+    compile 'net.dv8tion:JDA:3.8.3_460'
+    compile 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
     compile 'org.slf4j:slf4j-log4j12:1.7.25'
     compile 'com.opencsv:opencsv:4.5'
 }

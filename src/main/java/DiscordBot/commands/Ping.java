@@ -22,7 +22,7 @@ public class Ping {
 	public static void ping(User author, Event event, MessageChannel channel, String path2){
 
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("org.mariadb.jdbc.Driver");
 			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/bots", "admin", "xFc6zgmQ");
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate("INSERT INTO ping " + "VALUES ('test', 68, 69)");

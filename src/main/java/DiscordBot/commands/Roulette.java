@@ -7,6 +7,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.*;
+import java.text.DateFormat;
+import java.util.Date;
+import java.text.SimpleDateFormat;
 import java.util.Random;
 import java.lang.Math;
 
@@ -15,10 +19,26 @@ public class Roulette {
 	public static int roulette(User author, String path3, int chamberCount, MessageChannel channel){
 
 		Random rand = new Random();
-		File file = new File(path3);
+		Date date = new Date();
+		Connection conn = null;
+
+		//File file = new File(path3);
 		// Calculate whether the user died
 		int pull = rand.nextInt(chamberCount);
-		int boom;
+		int boom, jammed = 0;
+
+		// Connect to database
+		try {
+			Class.forName("org.mariadb.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", "admin", "xFc6zgmQ");
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		if (conn == null){
+			System.out.println("Failed to connect to database, terminating command");
+			return chamberCount;
+		}
 
 		if (pull == 0) {
 			// If there is one bullet left, there is a 1/10 chance of the gun jamming
@@ -28,6 +48,7 @@ public class Roulette {
 				if (jam == 4) {
 					boom = 0;
 					chamberCount = 6;
+					jammed = 1;
 					channel.sendMessage("The gun jammed... " + author.getName() + " survived <:poggers:564285288621539328>").queue();
 				}
 				
@@ -56,6 +77,37 @@ public class Roulette {
 
 		channel.sendMessage("Chambers left in the cylinder: ||  "+chamberCount+"  ||").queue();
 
+
+		// Find user in database
+		Boolean exists = false;
+		try {
+			PreparedStatement st = conn.prepareStatement("select * from bang where user = "+author.getName());
+			ResultSet r1=st.executeQuery();
+
+			if(r1.next()){
+				System.out.println("It already exists");
+				exists = true;
+			}
+		}
+		catch (SQLException e) {
+			System.out.println("SQL Exception: "+ e.toString());
+		}
+
+		// If user doesn't exist, add new user
+		if (!exists){
+			try{
+				Statement stmt = conn.createStatement();
+				stmt.executeUpdate("INSERT INTO bang VALUES ('"+author.getName()+"', 1, "+boom+", "+jammed+", "+date.getTime()+")");
+			}
+			catch (SQLException e){
+				e.printStackTrace();
+			}
+		}
+		System.out.println("Success");
+
+		// If user exists, update the scores based on boom and chamberCount value
+
+		/*
 		try {
 			// Create writers, readers, boolean, etc
 			Path filePath = Paths.get(path3);
@@ -129,7 +181,7 @@ public class Roulette {
 			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 		return chamberCount;
 	}
 }

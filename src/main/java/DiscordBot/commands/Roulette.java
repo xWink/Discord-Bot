@@ -84,7 +84,7 @@ public class Roulette {
 			PreparedStatement st = conn.prepareStatement("select * from bang where user = "+author.getName());
 			ResultSet r1=st.executeQuery();
 
-			if(r1.next()){
+			if(r1 != null){
 				System.out.println("It already exists");
 				exists = true;
 			}

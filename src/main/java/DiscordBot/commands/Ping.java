@@ -14,7 +14,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.Statement;
 
 public class Ping {
@@ -23,7 +22,7 @@ public class Ping {
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/bots", "admin", "xFc6zgmQ");
+			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", "admin", "xFc6zgmQ");
 			Statement stmt = conn.createStatement();
 			stmt.executeUpdate("INSERT INTO ping " + "VALUES ('test', 68, 69)");
 		}

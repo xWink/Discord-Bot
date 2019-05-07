@@ -66,7 +66,7 @@ class GetConfig {
             // If the line is a token line
             if (contents[i].startsWith("TOKEN")) {
                 toReturn.token = parseArg(contents[i]);
-                logMessage ("Got token [" + toReturn.token + "]");
+                logMessage ("Got token");
             }
 
             // If the line is a channel line, add to rawChannels ArrayList

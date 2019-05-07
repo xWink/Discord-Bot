@@ -81,10 +81,10 @@ public class Roulette {
 		// Find user in database
 		Boolean exists = false;
 		try {
-			PreparedStatement st = conn.prepareStatement("select * from bang where user = "+author.getName());
-			ResultSet r1=st.executeQuery();
+			PreparedStatement st = conn.prepareStatement("SELECT * FROM items WHERE item="+author.getIdLong());
+			ResultSet rs = st.executeQuery();
 
-			if(r1 != null){
+			if(rs != null){
 				System.out.println("It already exists");
 				exists = true;
 			}
@@ -97,10 +97,10 @@ public class Roulette {
 		if (!exists){
 			try{
 				Statement stmt = conn.createStatement();
-				stmt.executeUpdate("INSERT INTO bang VALUES ('"+author.getName()+"', 1, "+boom+", "+jammed+", "+date.getTime()+")");
+				stmt.executeUpdate("INSERT INTO bang VALUES ('"+author.getIdLong()+"', 1, "+boom+", "+jammed+", "+date.getTime()+")");
 			}
 			catch (SQLException e){
-				e.printStackTrace();
+				System.out.println("SQL Exception: "+ e.toString());
 			}
 		}
 		System.out.println("Success");

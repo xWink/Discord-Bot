@@ -24,7 +24,7 @@ public class Ping {
 			Class.forName("org.mariadb.jdbc.Driver");
 			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", "admin", "xFc6zgmQ");
 			Statement stmt = conn.createStatement();
-			stmt.executeUpdate("INSERT INTO ping " + "VALUES ('test', 68, 69)");
+			stmt.executeUpdate("INSERT INTO ping " + "VALUES ('12345', 68, 69)");
 		}
 		catch (Exception e){
 			e.printStackTrace();

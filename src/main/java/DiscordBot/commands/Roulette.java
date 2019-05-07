@@ -84,8 +84,7 @@ public class Roulette {
 			PreparedStatement st = conn.prepareStatement("SELECT * FROM bang WHERE user="+author.getIdLong());
 			ResultSet rs = st.executeQuery();
 
-			if(rs != null){
-				System.out.println("It already exists");
+			if(rs.next()){
 				exists = true;
 			}
 		}
@@ -97,7 +96,7 @@ public class Roulette {
 		if (!exists){
 			try{
 				Statement stmt = conn.createStatement();
-				stmt.executeUpdate("INSERT INTO bang VALUES ('"+author.getIdLong()+"', 1, "+boom+", "+jammed+", "+date.getTime()+")");
+				stmt.executeUpdate("INSERT INTO bang VALUES ('"+author.getId()+"', 1, "+boom+", "+jammed+", "+date.getTime()+")");
 			}
 			catch (SQLException e){
 				System.out.println("SQL Exception: "+ e.toString());

@@ -10,15 +10,11 @@ import java.lang.Math;
 
 public class Roulette {
 
-	public static int roulette(User author, String path3, int chamberCount, MessageChannel channel){
+	public static int roulette(User author, int chamberCount, MessageChannel channel){
 
 		Random rand = new Random();
 		Date date = new Date();
 		Connection conn;
-
-		// Calculate whether the user died
-		int pull = rand.nextInt(chamberCount);
-		int boom, jammed = 0;
 
 		// Connect to database
 		try {
@@ -31,36 +27,38 @@ public class Roulette {
 			return chamberCount;
 		}
 
+		// Calculate whether the user died
+		int pull = rand.nextInt(chamberCount);
+		int boom, jammed = 0;
+
 		// When pull == 0, the gun is supposed to go boom
 		if (pull == 0) {
-			// If there is one bullet left, there is a 1/10 chance of the gun jamming
+			// If there is one chamber left
 			if (chamberCount == 1) {
+				// There is a 1/10 chance of the gun jamming
 				int jam = 1 + (int)(Math.random() * 9);
-
+				// If the gun jams
 				if (jam == 4) {
 					boom = 0;
 					chamberCount = 6;
 					jammed = 1;
-					channel.sendMessage("The gun jammed... " + author.getName() + " survived <:poggers:564285288621539328>").queue();
+					channel.sendMessage("The gun jammed... " + author.getName() + " survived <:poggers:564285288621539328> <:poggers:564285288621539328> <:poggers:564285288621539328>").queue();
 				}
-				
-				// If the gun doesn't jam
+				// If the gun doesn't jam with one chamber left, boom
 				else {
 					boom = 1;
 					chamberCount = 6;
 					channel.sendMessage("Bang! " + author.getName() + " died :skull:").queue();
 				}
-			} 
-			
-			// >1 bullets left
+			}
+			// If there is more than 1 chamber left, boom
 			else {
 				boom = 1;
 				chamberCount = 6;
 				channel.sendMessage("Bang! " + author.getName() + " died :skull:").queue();
 			} 
 		}
-		
-		// User doesn't die
+		// No boom
 		else {
 			boom = 0;
 			chamberCount--;
@@ -111,82 +109,6 @@ public class Roulette {
 			}
 		}
 
-
-		/*
-		try {
-			// Create writers, readers, boolean, etc
-			Path filePath = Paths.get(path3);
-			BufferedReader reader = Files.newBufferedReader(filePath);
-			boolean found = false;
-			int attempts;
-			int deaths;
-
-			// Get number of lines
-			BufferedReader bufferedReader = Files.newBufferedReader(filePath);
-			int lineCount = 0;
-			int i = 0;
-			String line;
-			while (bufferedReader.readLine() != null) {
-				lineCount++;
-			}
-
-			// Store file content in array
-			String[] fileContent = new String[lineCount];
-			while ((line = reader.readLine()) != null) {
-				fileContent[i] = line + "\n";
-				i++;
-			}
-
-			// Find matching username
-			for (i = 0; i < lineCount; i++){
-				if (fileContent[i].startsWith("\""+author.getId()+"\"")){
-					found = true;
-
-					// Convert trigger pulls and deaths to ints and increase accordingly
-					attempts = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"")+3,fileContent[i].indexOf("\"", fileContent[i].indexOf("\",\"")+3)));
-					deaths = Integer.parseInt(fileContent[i].substring(fileContent[i].indexOf("\",\"", fileContent[i].indexOf("\",\"")+3)+3, fileContent[i].length()-2));
-					attempts++;
-					deaths += boom;
-
-					// Rewrite the line in fileContent with new numbers
-					fileContent[i] = "\""+author.getId()+"\",\""+Integer.toString(attempts)+"\",\""+Integer.toString(deaths)+"\"\n";
-					break;
-				}
-			}
-
-			// Create writers to append
-			FileWriter fw = new FileWriter(path3, true);
-			BufferedWriter bw = new BufferedWriter(fw);
-			PrintWriter appendWriter = new PrintWriter(bw);
-
-			// If user not found, add new name to file
-			if (!found){
-				String newPlayer = "\""+author.getId()+"\",\"1\",\""+Integer.toString(boom)+"\"\n";
-				appendWriter.append(newPlayer);
-			}
-			else {
-				// Erase file content
-				PrintWriter printWriter = new PrintWriter(file);
-				printWriter.write("");
-				printWriter.close();
-
-				// Rewrite file with new data
-				appendWriter.append("\n");
-				for (i = 0; i < lineCount; i++){
-					if (fileContent[i].length() > 0) {
-						appendWriter.append(fileContent[i]);
-					}
-				}
-			}
-
-			appendWriter.close();
-			bw.close();
-			fw.close();
-			bufferedReader.close();
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
 		return chamberCount;
 	}
 }

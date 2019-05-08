@@ -2,89 +2,71 @@ package DiscordBot.helpers;
 
 import net.dv8tion.jda.core.entities.Guild;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Date;
+
+import java.sql.*;
 
 public class GetBangScores {
 
-    public static BangHighScores getBangScores(String path3, Guild guild){
+    public static BangHighScores getBangScores(Guild guild){
 
+        double attemptCount, deathCount, bestRate, worstRate;
+        String mostAttemptsPlayer, mostDeathsPlayer, luckiestPlayer, unluckiestPlayer;
+        Date date = new Date();
+        Connection conn;
+        ResultSet mostAttempts, mostDeaths, luckiest, unluckiest;
+
+        // Connect to database
         try {
-            Path scorePath = Paths.get(path3);
-            BufferedReader reader = Files.newBufferedReader(scorePath);
-            BufferedReader bufferedReader = Files.newBufferedReader(scorePath);
-            String line;
-            int lineCount = 0, i = 0, mostAttempts = -1, mostDeaths = -1, luckiest = -1, unluckiest = -1;
-            double bestRate = -1.00, worstRate = 100.00, attemptCount = 0, deathCount = 0;
-
-            // Get number of lines
-            while ((line = bufferedReader.readLine()) != null) {
-                if (line.startsWith("\"")) {
-                    lineCount++;
-                }
-            }
-            bufferedReader.close();
-
-            BangPlayer playerArray[] = new BangPlayer[lineCount];
-
-            // Store file content in array of BangPlayers
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("\"")) {
-                    playerArray[i] = new BangPlayer(
-                            guild.getMemberById(line.substring(line.indexOf("\"") + 1, line.indexOf("\",\""))).getUser().getName(),
-                            (double) Integer.parseInt(line.substring(line.indexOf("\",\"") + 3, line.indexOf("\"", line.indexOf("\",\"") + 3))),
-                            (double) Integer.parseInt(line.substring(line.indexOf("\",\"", line.indexOf("\",\"") + 3) + 3, line.length() - 1))
-                    );
-                    i++;
-                }
-            }
-            reader.close();
-
-            // Find relevant scores
-            for (i = 0; i < lineCount; i++) {
-                double attempts = playerArray[i].attempts;
-                double deaths = playerArray[i].deaths;
-
-                // Most attempts
-                if (attempts > attemptCount) {
-                    mostAttempts = i;
-                    attemptCount = attempts;
-                }
-                // Most deaths
-                if (deaths > deathCount) {
-                    mostDeaths = i;
-                    deathCount = deaths;
-                }
-                // Luckiest
-                if (attempts >= 20 && 100 - (deaths / attempts * 100) > bestRate) {
-                    luckiest = i;
-                    bestRate = 100 - (deaths / attempts * 100);
-                }
-                // Unluckiest
-                if (attempts >= 20 && 100 - (deaths / attempts * 100) < worstRate) {
-                    unluckiest = i;
-                    worstRate = 100 - (deaths / attempts * 100);
-                }
-            }
-            bestRate = Math.round(bestRate * 10d) / 10d;
-            worstRate = Math.round(worstRate * 10d) / 10d;
-
-            return new BangHighScores(
-                    attemptCount,
-                    playerArray[mostAttempts].player,
-                    deathCount,
-                    playerArray[mostDeaths].player,
-                    bestRate,
-                    playerArray[luckiest].player,
-                    worstRate,
-                    playerArray[unluckiest].player);
+            Class.forName("org.mariadb.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", "admin", "xFc6zgmQ");
         }
-        catch (IOException | NullPointerException e){
+        catch (Exception e){
+            System.out.println("GetBangScores Exception 1");
+            System.out.println("Exception: "+ e.toString());
+            System.out.println("Failed to connect to database, terminating command");
+            return null;
+        }
+
+        // Find high score holders who have played within the last week
+        try {
+            // Most attempts
+            PreparedStatement getMostAttempts = conn.prepareStatement("SELECT *, MAX(tries) FROM bang WHERE "+date.getTime()+" - last_played > 604800000");
+            mostAttempts = getMostAttempts.executeQuery();
+            attemptCount = mostAttempts.getDouble("tries");
+            mostAttemptsPlayer = guild.getMemberById((long)mostAttempts.getDouble("user")).getUser().getName();
+
+            // Most deaths
+            PreparedStatement getMostDeaths = conn.prepareStatement("SELECT *, MAX(deaths) FROM bang WHERE "+date.getTime()+" - last_played > 604800000");
+            mostDeaths = getMostDeaths.executeQuery();
+            deathCount = mostDeaths.getDouble("deaths");
+            mostDeathsPlayer = guild.getMemberById((long)mostDeaths.getDouble("user")).getUser().getName();
+
+            // Luckiest
+            PreparedStatement getLuckiest = conn.prepareStatement("SELECT *, MIN(death_rate) FROM bang WHERE "+date.getTime()+" - last_played > 604800000");
+            luckiest = getLuckiest.executeQuery();
+            bestRate = Math.round(100 - (mostDeaths.getDouble("death_rate") * 100) * 10d) / 10d;
+            luckiestPlayer = guild.getMemberById((long)luckiest.getDouble("user")).getUser().getName();
+
+            // Unluckiest
+            PreparedStatement getUnluckiest = conn.prepareStatement("SELECT *, MAX(death_rate) FROM bang WHERE "+date.getTime()+" - last_played > 604800000");
+            unluckiest = getUnluckiest.executeQuery();
+            worstRate = Math.round(100 - (mostDeaths.getDouble("death_rate") * 100) * 10d) / 10d;
+            unluckiestPlayer = guild.getMemberById((long)unluckiest.getDouble("user")).getUser().getName();
+        }
+        catch (SQLException e) {
             e.printStackTrace();
             return null;
         }
+
+        return new BangHighScores(
+                attemptCount,
+                mostAttemptsPlayer,
+                deathCount,
+                mostDeathsPlayer,
+                bestRate,
+                luckiestPlayer,
+                worstRate,
+                unluckiestPlayer);
     }
 }

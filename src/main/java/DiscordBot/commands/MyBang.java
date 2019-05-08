@@ -1,6 +1,5 @@
 package DiscordBot.commands;
 
-import DiscordBot.helpers.*;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
@@ -8,7 +7,7 @@ import java.sql.*;
 
 public class MyBang {
 
-    public static void myBang(User author, MessageChannel channel, String path3){
+    public static void myBang(User author, MessageChannel channel){
 
         Connection conn;
         ResultSet rs = null;

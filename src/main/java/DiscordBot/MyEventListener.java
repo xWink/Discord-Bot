@@ -100,12 +100,12 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Russian roulette scores
 		else if (content.toLowerCase().equals("!bangscore") || content.toLowerCase().equals("!bangscores")){
-			BangScores.bangScores(channel, path3, guild);
+			BangScores.bangScores(channel, guild);
 		}
 
 		// Show bang scores for individual
 		else if (content.toLowerCase().equals("!mybang")){
-			MyBang.myBang(author, channel, path3);
+			MyBang.myBang(author, channel);
 		}
 
 		// Show available Elective roles

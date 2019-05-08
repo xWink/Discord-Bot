@@ -7,9 +7,9 @@ import DiscordBot.helpers.BangHighScores;
 
 public class BangScores {
 
-    public static void bangScores(MessageChannel channel, String path3, Guild guild){
+    public static void bangScores(MessageChannel channel, Guild guild){
 
-        BangHighScores highScores = GetBangScores.getBangScores(path3, guild);
+        BangHighScores highScores = GetBangScores.getBangScores(guild);
 
         if (highScores != null){
             channel.sendMessage("The player with the most attempts is "+highScores.mostAttemptsPlayer+" with a score of "+(int)highScores.attemptCount).queue();

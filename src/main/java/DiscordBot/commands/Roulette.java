@@ -22,6 +22,7 @@ public class Roulette {
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", "admin", "xFc6zgmQ");
 		}
 		catch (Exception e){
+			System.out.println("Roulette Exception 1");
 			System.out.println("Exception: "+ e.toString());
 			System.out.println("Failed to connect to database, terminating command");
 			return chamberCount;
@@ -69,44 +70,35 @@ public class Roulette {
 
 
 		// Find user in database
-		Boolean exists = false;
 		try {
+			Boolean exists = false;
 			PreparedStatement st = conn.prepareStatement("SELECT * FROM bang WHERE user="+author.getIdLong());
 			ResultSet rs = st.executeQuery();
 
 			if(rs.next()){
 				exists = true;
 			}
-		}
-		catch (SQLException e) {
-			System.out.println("SQL Exception: "+ e.toString());
-		}
 
-		// If user doesn't exist, add new user
-		if (!exists){
-			try{
+			// If user doesn't exist, add new user
+			if (!exists){
 				Statement stmt = conn.createStatement();
 				stmt.executeUpdate("INSERT INTO bang VALUES ('"+author.getId()+"', 1, "+boom+", "+jammed+", "+date.getTime()+")");
 			}
-			catch (SQLException e){
-				System.out.println("SQL Exception: "+ e.toString());
-			}
-		}
 
-		// If user exists, update the scores based on boom and chamberCount value
-		else{
-			try{
+			// If user exists, update the scores based on boom and jammed value
+			else {
 				Statement stmt = conn.createStatement();
 				if (boom == 1)
-					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, deaths = deaths + 1, last_played = "+date.getTime()+" WHERE user = "+author.getIdLong());
+					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, deaths = deaths + 1, last_played = " + date.getTime() + " WHERE user = " + author.getIdLong());
 				else if (jammed == 1)
-					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, jammed = jammed + 1, last_played = "+date.getTime()+" WHERE user = "+author.getIdLong());
+					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, jammed = jammed + 1, last_played = " + date.getTime() + " WHERE user = " + author.getIdLong());
 				else
-					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, last_played = "+date.getTime()+" WHERE user = "+author.getIdLong());
+					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, last_played = " + date.getTime() + " WHERE user = " + author.getIdLong());
 			}
-			catch (SQLException e){
-				System.out.println("SQL Exception: "+ e.toString());
-			}
+		}
+		catch (SQLException e) {
+			System.out.println("Roulette Exception 2");
+			System.out.println("SQL Exception: "+ e.toString());
 		}
 
 		return chamberCount;

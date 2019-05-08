@@ -1,5 +1,6 @@
 package DiscordBot.helpers;
 
+import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.Date;
@@ -19,7 +20,7 @@ public class GetBangScores {
         // Connect to database
         try {
             Class.forName("org.mariadb.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", "admin", "xFc6zgmQ");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
         }
         catch (Exception e){
             System.out.println("GetBangScores Exception 1");

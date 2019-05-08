@@ -92,6 +92,18 @@ class GetConfig {
                 toReturn.roulette_path = parseArg(contents[i]);
                 logMessage ("Got roulette file path [" + toReturn.roulette_path + "]");
             }
+
+            // If the line is a database username
+            else if (contents[i].startsWith("DB_USER")){
+                toReturn.db_user = parseArg(contents[i]);
+                logMessage("Got database username");
+            }
+
+            // If the line is a database password
+            else if (contents[i].startsWith("DB_PASS")){
+                toReturn.db_pass = parseArg(contents[i]);
+                logMessage("Got database password");
+            }
         }
 
         // Place the contents of rawChannels into ConfigFile object

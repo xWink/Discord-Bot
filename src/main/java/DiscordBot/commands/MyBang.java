@@ -12,6 +12,7 @@ public class MyBang {
 
         Connection conn;
         ResultSet rs = null;
+        Boolean exists = false;
 
         // Connect to database
         try {
@@ -19,7 +20,7 @@ public class MyBang {
             conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", "admin", "xFc6zgmQ");
         }
         catch (Exception e){
-            System.out.println("Exception: "+ e.toString());
+            System.out.println("MyBang Exception 1\nException: "+ e.toString());
             System.out.println("Failed to connect to database, terminating command");
             return;
         }
@@ -28,12 +29,15 @@ public class MyBang {
         try {
             PreparedStatement st = conn.prepareStatement("SELECT * FROM bang WHERE user="+author.getIdLong());
             rs = st.executeQuery();
+            if (rs.next())
+                exists = true;
         }
         catch (SQLException e) {
+            System.out.println("MyBang Exception 2");
             System.out.println("SQL Exception: "+ e.toString());
         }
 
-        if (rs == null)
+        if (!exists)
             channel.sendMessage(author.getName()+" could not be found in score list").queue();
         else{
             try {
@@ -45,6 +49,7 @@ public class MyBang {
                         "\nSurvival rate: " + survivalRate + "%").queue();
             }
             catch (SQLException e){
+                System.out.println("MyBang Exception 3");
                 System.out.println("Exception: "+ e.toString());
             }
         }

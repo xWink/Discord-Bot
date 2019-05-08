@@ -8,9 +8,8 @@ public class UpdateBangRoles {
 
     public static void updateBangRoles(){
 
-        final String path3 = DiscordBot.MyEventListener.path3; // roulette file path
         Guild guild = DiscordBot.MyEventListener.guild; // Current guild
-        BangHighScores highScores = GetBangScores.getBangScores(path3,guild); // Get high scores
+        BangHighScores highScores = GetBangScores.getBangScores(guild); // Get high scores
 
         if (highScores != null) {
             Role attemptsRole = guild.getRolesByName("Addict", true).get(0);

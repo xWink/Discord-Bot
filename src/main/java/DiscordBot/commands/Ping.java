@@ -26,7 +26,7 @@ public class Ping {
 		}
 
 		try{
-			PreparedStatement st = conn.prepareStatement("SELECT * FROM bang WHERE user="+author.getIdLong());
+			PreparedStatement st = conn.prepareStatement("SELECT * FROM ping WHERE user="+author.getIdLong());
 			rs = st.executeQuery();
 		}
 		catch (SQLException e){
@@ -52,6 +52,7 @@ public class Ping {
 			}
 		}
 		catch (SQLException e) {
+			System.out.println("Ping Exception 3");
 			e.printStackTrace();
 		}
 	}

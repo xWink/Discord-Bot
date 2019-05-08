@@ -31,31 +31,28 @@ public class GetBangScores {
         // Find high score holders who have played within the last week
         try {
             // Most attempts
-            PreparedStatement getMostAttempts = conn.prepareStatement("SELECT *, MAX(tries) FROM bang WHERE "+date.getTime()+" - last_played > 604800000");
+            PreparedStatement getMostAttempts = conn.prepareStatement("SELECT *, MAX(tries) FROM bang WHERE "+date.getTime()+" - last_played < 604800000");
             mostAttempts = getMostAttempts.executeQuery();
             mostAttempts.next();
             attemptCount = mostAttempts.getDouble("tries");
             mostAttemptsPlayer = guild.getMemberById((long)mostAttempts.getDouble("user")).getUser().getName();
 
-            System.out.println("works1");
             // Most deaths
-            PreparedStatement getMostDeaths = conn.prepareStatement("SELECT *, MAX(deaths) FROM bang WHERE "+date.getTime()+" - last_played > 604800000");
+            PreparedStatement getMostDeaths = conn.prepareStatement("SELECT *, MAX(deaths) FROM bang WHERE "+date.getTime()+" - last_played < 604800000");
             mostDeaths = getMostDeaths.executeQuery();
             mostDeaths.next();
             deathCount = mostDeaths.getDouble("deaths");
             mostDeathsPlayer = guild.getMemberById((long)mostDeaths.getDouble("user")).getUser().getName();
 
-            System.out.println("works 2");
             // Luckiest
-            PreparedStatement getLuckiest = conn.prepareStatement("SELECT *, MIN(death_rate) FROM bang WHERE "+date.getTime()+" - last_played > 604800000");
+            PreparedStatement getLuckiest = conn.prepareStatement("SELECT *, MIN(death_rate) FROM bang WHERE "+date.getTime()+" - last_played < 604800000");
             luckiest = getLuckiest.executeQuery();
             luckiest.next();
             bestRate = Math.round(100 - (mostDeaths.getDouble("death_rate") * 100) * 10d) / 10d;
             luckiestPlayer = guild.getMemberById((long)luckiest.getDouble("user")).getUser().getName();
 
-            System.out.println("works 3");
             // Unluckiest
-            PreparedStatement getUnluckiest = conn.prepareStatement("SELECT *, MAX(death_rate) FROM bang WHERE "+date.getTime()+" - last_played > 604800000");
+            PreparedStatement getUnluckiest = conn.prepareStatement("SELECT *, MAX(death_rate) FROM bang WHERE "+date.getTime()+" - last_played < 604800000");
             unluckiest = getUnluckiest.executeQuery();
             unluckiest.next();
             worstRate = Math.round(100 - (mostDeaths.getDouble("death_rate") * 100) * 10d) / 10d;

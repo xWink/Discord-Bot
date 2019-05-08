@@ -3,14 +3,8 @@ package DiscordBot.commands;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.*;
-import java.text.DateFormat;
 import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.util.Random;
 import java.lang.Math;
 
@@ -20,9 +14,8 @@ public class Roulette {
 
 		Random rand = new Random();
 		Date date = new Date();
-		Connection conn = null;
+		Connection conn;
 
-		//File file = new File(path3);
 		// Calculate whether the user died
 		int pull = rand.nextInt(chamberCount);
 		int boom, jammed = 0;
@@ -33,13 +26,12 @@ public class Roulette {
 			conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", "admin", "xFc6zgmQ");
 		}
 		catch (Exception e){
-			e.printStackTrace();
-		}
-		if (conn == null){
+			System.out.println("Exception: "+ e.toString());
 			System.out.println("Failed to connect to database, terminating command");
 			return chamberCount;
 		}
 
+		// When pull == 0, the gun is supposed to go boom
 		if (pull == 0) {
 			// If there is one bullet left, there is a 1/10 chance of the gun jamming
 			if (chamberCount == 1) {
@@ -102,9 +94,23 @@ public class Roulette {
 				System.out.println("SQL Exception: "+ e.toString());
 			}
 		}
-		System.out.println("Success");
 
 		// If user exists, update the scores based on boom and chamberCount value
+		else{
+			try{
+				Statement stmt = conn.createStatement();
+				if (boom == 1)
+					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, deaths = deaths + 1, last_played = "+date.getTime());
+				else if (jammed == 1)
+					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, jammed = jammed + 1, last_played = "+date.getTime());
+				else
+					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, last_played = "+date.getTime());
+			}
+			catch (SQLException e){
+				System.out.println("SQL Exception: "+ e.toString());
+			}
+		}
+
 
 		/*
 		try {

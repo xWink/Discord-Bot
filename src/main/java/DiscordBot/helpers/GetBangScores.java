@@ -31,31 +31,31 @@ public class GetBangScores {
         // Find high score holders who have played within the last week
         try {
             // Most attempts
-            PreparedStatement getMostAttempts = conn.prepareStatement("SELECT *, MAX(tries) FROM bang WHERE "+date.getTime()+" - last_played < 604800000");
+            PreparedStatement getMostAttempts = conn.prepareStatement("SELECT *, MAX(tries) FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, deaths, last_played, death_rate");
             mostAttempts = getMostAttempts.executeQuery();
             mostAttempts.next();
             attemptCount = mostAttempts.getDouble("tries");
             mostAttemptsPlayer = guild.getMemberById((long)mostAttempts.getDouble("user")).getUser().getName();
 
             // Most deaths
-            PreparedStatement getMostDeaths = conn.prepareStatement("SELECT *, MAX(deaths) FROM bang WHERE "+date.getTime()+" - last_played < 604800000");
+            PreparedStatement getMostDeaths = conn.prepareStatement("SELECT *, MAX(deaths) FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, tries, last_played, death_rate");
             mostDeaths = getMostDeaths.executeQuery();
             mostDeaths.next();
             deathCount = mostDeaths.getDouble("deaths");
             mostDeathsPlayer = guild.getMemberById((long)mostDeaths.getDouble("user")).getUser().getName();
 
             // Luckiest
-            PreparedStatement getLuckiest = conn.prepareStatement("SELECT *, MIN(death_rate) FROM bang WHERE "+date.getTime()+" - last_played < 604800000");
+            PreparedStatement getLuckiest = conn.prepareStatement("SELECT *, MIN(death_rate) FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, tries, deaths, last_played");
             luckiest = getLuckiest.executeQuery();
             luckiest.next();
-            bestRate = Math.round(100 - (mostDeaths.getDouble("death_rate") * 100) * 10d) / 10d;
+            bestRate = Math.round(100 - (mostDeaths.getDouble("death_rate") * 10d)) / 10d;
             luckiestPlayer = guild.getMemberById((long)luckiest.getDouble("user")).getUser().getName();
 
             // Unluckiest
-            PreparedStatement getUnluckiest = conn.prepareStatement("SELECT *, MAX(death_rate) FROM bang WHERE "+date.getTime()+" - last_played < 604800000");
+            PreparedStatement getUnluckiest = conn.prepareStatement("SELECT *, MAX(death_rate) FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, tries, deaths, last_played");
             unluckiest = getUnluckiest.executeQuery();
             unluckiest.next();
-            worstRate = Math.round(100 - (mostDeaths.getDouble("death_rate") * 100) * 10d) / 10d;
+            worstRate = Math.round(100 - (mostDeaths.getDouble("death_rate") * 10d)) / 10d;
             unluckiestPlayer = guild.getMemberById((long)unluckiest.getDouble("user")).getUser().getName();
         }
         catch (SQLException e) {

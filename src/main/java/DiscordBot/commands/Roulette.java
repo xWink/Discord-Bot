@@ -100,11 +100,11 @@ public class Roulette {
 			try{
 				Statement stmt = conn.createStatement();
 				if (boom == 1)
-					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, deaths = deaths + 1, last_played = "+date.getTime());
+					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, deaths = deaths + 1, last_played = "+date.getTime()+" WHERE user = "+author.getIdLong());
 				else if (jammed == 1)
-					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, jammed = jammed + 1, last_played = "+date.getTime());
+					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, jammed = jammed + 1, last_played = "+date.getTime()+" WHERE user = "+author.getIdLong());
 				else
-					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, last_played = "+date.getTime());
+					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, last_played = "+date.getTime()+" WHERE user = "+author.getIdLong());
 			}
 			catch (SQLException e){
 				System.out.println("SQL Exception: "+ e.toString());

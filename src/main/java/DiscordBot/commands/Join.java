@@ -19,7 +19,7 @@ public class Join {
 		}
 		// If role exists and isn't restricted, assign user to role
 		if (!guild.getRolesByName(roleName,true).isEmpty()) {
-			if (guild.getMember(author).getRoles().contains(guild.getRolesByName(roleName, true))){
+			if (guild.getMember(author).getRoles().contains((guild.getRolesByName(roleName, true).get(0)))){
 				System.out.println("Success");
 			}
 			guild.getController().addRolesToMember(auth, guild.getRolesByName(roleName, true)).queue();

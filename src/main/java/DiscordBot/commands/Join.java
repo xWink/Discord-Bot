@@ -128,12 +128,12 @@ public class Join {
 		// If the number of applicants is full, create the role and channel and assign previous applicants to them
 		long applicants[] = new long[4];
 		applicants[0] = author.getIdLong();
-
+System.out.println(applicants[0]);
 		try {
 			rs.first();
 			for (int i = 1; i < 4; i++) {
-				applicants[i] = (long)rs.getFloat("user"+i);
-				System.out.println(applicants[i]);
+				applicants[i] = rs.getLong("user"+i);
+System.out.println(applicants[i]);
 			}
 		}
 		catch(SQLException e){

@@ -45,7 +45,9 @@ public class Join {
 
 			// If role application doesn't exist, add it
 			try {
-				if (!rs.next()){
+System.out.println("Checking if empty");
+				if (!rs.isBeforeFirst()){
+System.out.println("It's empty");
 					PreparedStatement addRole = conn.prepareStatement("INSERT INTO roles VALUES ('"+roleName+"', "+author.getIdLong()+", null, null");
 					addRole.executeUpdate();
 					return;
@@ -55,7 +57,7 @@ public class Join {
 				System.out.println("Join Exception 2");
 				System.out.println("Exception: "+e.toString());
 			}
-
+System.out.println("Not empty");
 			// If role does exist, check if the applicant has already applied
 			try {
 				rs.first();

@@ -148,25 +148,32 @@ public class Join {
 
 		// Give role to all applicants
 		try {
-			for (int i = 0; i < 4; i++) {
-				if (guild.getMemberById(applicants[i]) != null)
-					guild.getController().addRolesToMember(guild.getMemberById(applicants[i]), guild.getRolesByName(roleName, true)).queue();
-			}
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[0]), guild.getRolesByName(roleName, true)).queue();
+			System.out.println("added 0");
 
-			// Prevent everyone from seeing the channel
-			textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(Permission.VIEW_CHANNEL).queue();
-			textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(Permission.MESSAGE_READ).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[1]), guild.getRolesByName(roleName, true)).queue();
+			System.out.println("added 1");
 
-			// Let people with the specified role see the channel and read/send messages
-			textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(Permission.VIEW_CHANNEL).queue();
-			textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(Permission.MESSAGE_READ).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[2]), guild.getRolesByName(roleName, true)).queue();
+			System.out.println("added 2");
 
-			// Do not let people with this role do @everyone
-			textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setDeny(Permission.MESSAGE_MENTION_EVERYONE).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[3]), guild.getRolesByName(roleName, true)).queue();
+			System.out.println("added 3");
 		}
 		catch (Exception e){
 			e.printStackTrace();
 		}
+
+		// Prevent everyone from seeing the channel
+		textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(Permission.VIEW_CHANNEL).queue();
+		textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(Permission.MESSAGE_READ).queue();
+
+		// Let people with the specified role see the channel and read/send messages
+		textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(Permission.VIEW_CHANNEL).queue();
+		textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(Permission.MESSAGE_READ).queue();
+
+		// Do not let people with this role do @everyone
+		textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setDeny(Permission.MESSAGE_MENTION_EVERYONE).queue();
 
 		channel.sendMessage("The channel you applied for was created! Only members of the channel can see it.").queue();
 	}

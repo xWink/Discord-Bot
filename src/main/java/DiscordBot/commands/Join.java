@@ -48,7 +48,7 @@ public class Join {
 System.out.println("Checking if empty");
 				if (!rs.isBeforeFirst()){
 System.out.println("It's empty");
-					PreparedStatement addRole = conn.prepareStatement("INSERT INTO roles VALUES ('"+roleName+"', "+author.getIdLong()+", null, null");
+					PreparedStatement addRole = conn.prepareStatement("INSERT INTO roles VALUES ('"+roleName+"', "+author.getIdLong()+", null, null)");
 					addRole.executeUpdate();
 					return;
 				}

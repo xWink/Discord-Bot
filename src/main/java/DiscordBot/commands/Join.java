@@ -40,25 +40,26 @@ public class Join {
 				System.out.println("Join Exception 1");
 				System.out.println("Exception: "+ e.toString());
 				System.out.println("Failed to connect to database, terminating command");
+				channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
 				return;
 			}
 
 			// If role application doesn't exist, add it
 			try {
-System.out.println("Checking if empty");
 				if (!rs.isBeforeFirst()){
-System.out.println("It's empty");
 					PreparedStatement addRole = conn.prepareStatement("INSERT INTO roles VALUES ('"+roleName+"', "+author.getIdLong()+", null, null)");
 					addRole.executeUpdate();
+					channel.sendMessage("Your role application was added to the server!").queue();
 					return;
 				}
 			}
 			catch (SQLException e){
 				System.out.println("Join Exception 2");
 				System.out.println("Exception: "+e.toString());
+				channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
 			}
-System.out.println("Not empty");
-			// If role does exist, check if the applicant has already applied
+
+			// If application does exist, check if the applicant has already applied
 			try {
 				rs.first();
 				if (rs.getFloat("user1") == author.getIdLong() ||
@@ -71,31 +72,30 @@ System.out.println("Not empty");
 			catch (SQLException e){
 				System.out.println("Join Exception 3");
 				System.out.println("Exception: "+e.toString());
+				channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
 			}
 
 			// If they haven't applied, check how many applicants there are
 			try {
 				rs.first();
 				// If the number of applicants is not full, add the applicant
-				if (rs.getObject("user1") == null){
-					PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user1 = "+author.getIdLong()+" WHERE name = "+roleName);
-					apply.executeUpdate();
-					return;
-				}
-				if (rs.getObject("user2") == null){
+				if (rs.getLong("user2") == 0){
 					PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user2 = "+author.getIdLong()+" WHERE name = "+roleName);
 					apply.executeUpdate();
+					channel.sendMessage("You are applicant #2 for this role!").queue();
 					return;
 				}
-				if (rs.getObject("user3") == null){
+				if (rs.getLong("user3") == 0){
 					PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user3 = "+author.getIdLong()+" WHERE name = "+roleName);
 					apply.executeUpdate();
+					channel.sendMessage("You are applicant #3 for this role!").queue();
 					return;
 				}
 			}
 			catch (SQLException e){
 				System.out.println("Join Exception 4");
 				System.out.println("Exception: "+e.toString());
+				channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
 			}
 
 			// If the number of applicants is full, create the role and channel and assign previous applicants to them
@@ -114,6 +114,7 @@ System.out.println("Not empty");
 			catch(SQLException e){
 				System.out.println("Join Exception 5");
 				System.out.println("Exception: "+e.toString());
+				channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
 			}
 
 			guild.getController().createRole().setName(roleName).queue(); // Create the role

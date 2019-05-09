@@ -31,20 +31,21 @@ public class GetBangScores {
 
         // Find high score holders who have played within the last week
         try {
+ System.out.println("here1");
             // Most attempts
             PreparedStatement getMostAttempts = conn.prepareStatement("SELECT user, tries FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, tries ORDER BY tries");
             mostAttempts = getMostAttempts.executeQuery();
             mostAttempts.last();
             attemptCount = mostAttempts.getDouble("tries");
             mostAttemptsPlayer = guild.getMemberById((long)mostAttempts.getDouble("user")).getUser().getName();
-
+ System.out.println("Here2");
             // Most deaths
             PreparedStatement getMostDeaths = conn.prepareStatement("SELECT user, deaths FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, deaths ORDER BY deaths");
             mostDeaths = getMostDeaths.executeQuery();
             mostDeaths.next();
             deathCount = mostDeaths.getDouble("deaths");
             mostDeathsPlayer = guild.getMemberById((long)mostDeaths.getDouble("user")).getUser().getName();
-
+ System.out.println("here3");
             // Get luckiest and unluckiest players
             PreparedStatement getLuckRanks = conn.prepareStatement("SELECT user, death_rate FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, death_rate ORDER BY death_rate");
             luck = getLuckRanks.executeQuery();
@@ -64,6 +65,7 @@ public class GetBangScores {
             e.printStackTrace();
             return null;
         }
+        System.out.println("returning");
 
         return new BangHighScores(
                 attemptCount,

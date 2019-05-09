@@ -87,18 +87,37 @@ public class Join {
 
 		// If they haven't applied, check how many applicants there are
 		try {
+			Boolean applied = false;
+			int applicationCount = 0;
 			rs.first();
+
 			// If the number of applicants is not full, add the applicant
+			if (rs.getLong("user1") == 0){
+				PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user2 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
+				apply.executeUpdate();
+				applied = true;
+			}
 			if (rs.getLong("user2") == 0){
 				PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user2 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
 				apply.executeUpdate();
-				channel.sendMessage("You are applicant #2 for this role!").queue();
-				return;
+				applied = true;
 			}
 			if (rs.getLong("user3") == 0){
 				PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user3 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
 				apply.executeUpdate();
-				channel.sendMessage("You are applicant #3 for this role!").queue();
+				applied = true;
+			}
+
+			// Send message response
+			if (applied){
+				if (rs.getLong("user1") != 0)
+					applicationCount++;
+				if (rs.getLong("user2") != 0)
+					applicationCount++;
+				if (rs.getLong("user3") != 0)
+					applicationCount++;
+
+				channel.sendMessage("You are applicant #"+applicationCount+" for this role!").queue();
 				return;
 			}
 		}

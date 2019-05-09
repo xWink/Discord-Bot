@@ -1,70 +1,75 @@
 package DiscordBot.commands;
 
-import com.opencsv.CSVWriter;
+import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.sql.*;
 
 public class Leave {
-	public static void leave(Member auth, User author, MessageChannel channel, Guild guild, String content, String path){
+
+	public static void leave(Member auth, User author, MessageChannel channel, Guild guild, String content){
+
 		String roleName = content.substring(7);
-		boolean eventHappened = false;
-		try {
-			Path filePath = Paths.get(path);
-			// Get number of lines
-			BufferedReader bufferedReader = Files.newBufferedReader(filePath);
-			int lineCount = 0;
-			int i = 0;
-			String line;
-			while(bufferedReader.readLine() != null){
-				lineCount++;
-			}
-			String[] fileContent = new String[lineCount];
+		Connection conn;
+		ResultSet rs;
+		Boolean removed = false;
 
-			// Store file content in array
-			BufferedReader reader = Files.newBufferedReader(filePath);
-			while((line = reader.readLine()) != null){
-				fileContent[i] = line+"\n";
-				i++;
-			}
-
-			// Find application and erase it from csv
-			for (i = 0; i < lineCount; i++){
-				if (fileContent[i].equals("\""+roleName+"\","+"\""+author.getId()+"\"\n")){
-					fileContent[i] = "";
-					eventHappened = true;
-					channel.sendMessage("I've deleted your application for \""+roleName+"\"").queue();
-				}
-			}
-
-			//Rewrite csv file
-			File file = new File(path);
-			FileWriter fileWriter = new FileWriter(file, false);
-			CSVWriter csvWriter = new CSVWriter(fileWriter);
-			for (i = 0; i < lineCount; i++) {
-				fileWriter.write(fileContent[i]);
-			}
-			csvWriter.close();
-			fileWriter.close();
-
-			// Remove role from user
-			try {
-				guild.getController().removeSingleRoleFromMember(auth, guild.getRolesByName(roleName, true).get(0)).queue();
-				channel.sendMessage(auth.getAsMention()+" left "+roleName).queue();
-			}catch(IndexOutOfBoundsException e){
-				if (!eventHappened) {
-					channel.sendMessage("You do not have this role!").queue();
-				}
-			}
-
-		}catch (IOException e){
-			e.printStackTrace();
+		// If user has role, remove it
+		if (!guild.getRolesByName(roleName,true).isEmpty() && auth.getRoles().contains(guild.getRolesByName(roleName,true).get(0))){
+			guild.getController().removeSingleRoleFromMember(auth,guild.getRolesByName(roleName,true).get(0)).queue();
+			channel.sendMessage("Removed "+roleName+" from "+auth.getAsMention()).queue();
+			return;
 		}
+
+		try {
+			// Connect to database
+			Class.forName("org.mariadb.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
+
+			// Look for the role application in the database
+			PreparedStatement findRole = conn.prepareStatement("SELECT * FROM roles WHERE name = '"+roleName+"'");
+			rs = findRole.executeQuery();
+		}
+		catch (Exception e){
+			System.out.println("Leave Exception 1");
+			System.out.println("Exception: "+ e.toString());
+			System.out.println("Failed to connect to database, terminating command");
+			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+			return;
+		}
+
+		// If role application exists and user applied for it, remove the application
+		try{
+			if (rs.next()){
+				if (rs.getFloat("user1") == author.getIdLong()){
+					PreparedStatement removeApplication = conn.prepareStatement("UPDATE roles SET user1 = null WHERE name = '"+roleName+"'");
+					removeApplication.executeUpdate();
+					removed = true;
+				}
+				if (rs.getFloat("user2") == author.getIdLong()){
+					PreparedStatement removeApplication = conn.prepareStatement("UPDATE roles SET user2 = null WHERE name = '"+roleName+"'");
+					removeApplication.executeUpdate();
+					removed = true;
+				}
+				if (rs.getFloat("user3") == author.getIdLong()){
+					PreparedStatement removeApplication = conn.prepareStatement("UPDATE roles SET user3 = null WHERE name = '"+roleName+"'");
+					removeApplication.executeUpdate();
+					removed = true;
+				}
+			}
+
+			if (removed){
+				channel.sendMessage("Your application for "+roleName+" has been removed").queue();
+				return;
+			}
+		}
+		catch (SQLException e){
+			System.out.println("Leave Exception 2");
+			System.out.println("Exception: "+ e.toString());
+			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+		}
+
+		// Tell them they didn't apply for it
+		channel.sendMessage("You don't have an application for this role!").queue();
 	}
 }

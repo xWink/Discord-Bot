@@ -25,7 +25,6 @@ public class MyEventListener extends ListenerAdapter {
 		final MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
 		guild = event.getGuild(); // Variable guild is the Discord server
 		final Member auth = guild.getMember(author); // Variable auth is author of type Member
-		final String path = cfg.applicant_path; // applicant file path
 
 		// Check if the bot is allowed to send messages in the current channel
 		if ( !(cfg.channel[0].equals("all")) && !(Arrays.asList(cfg.channel).contains(channel.getId()))) return;
@@ -72,7 +71,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Remove user's application from CSV file
 		else if (content.toLowerCase().startsWith("!leave ")){
-			Leave.leave(auth, author, channel, guild, content, path);
+			Leave.leave(auth, author, channel, guild, content);
 		}
 
 		// Delete all non-specified roles (OWNER ONLY)

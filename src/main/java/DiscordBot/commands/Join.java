@@ -111,12 +111,12 @@ public class Join {
 		// If the number of applicants is full, create the role and channel and assign previous applicants to them
 		ArrayList<Permission> viewChannel = new ArrayList<>(); // Permissions for that channel
 		viewChannel.add(0,Permission.VIEW_CHANNEL);
-		double applicants[] = new double[4];
+		long applicants[] = new long[4];
 		applicants[0] = author.getIdLong();
 
 		try {
 			for (int i = 1; i < 4; i++) {
-				applicants[i] = rs.getDouble("user"+i);
+				applicants[i] = (long)rs.getFloat("user"+i);
 				if (i < 3)
 					rs.next();
 			}
@@ -133,7 +133,7 @@ public class Join {
 
 		// Give role to all applicants
 		for (int i = 0; i < 4; i++){
-			guild.getController().addRolesToMember(guild.getMemberById((long)applicants[i]),guild.getRolesByName(roleName,true)).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[i]),guild.getRolesByName(roleName,true)).queue();
 		}
 
 		// Prevent everyone from seeing the channel

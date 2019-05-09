@@ -33,7 +33,7 @@ public class GetBangScores {
         try {
  System.out.println("here1");
             // Most attempts
-            PreparedStatement getMostAttempts = conn.prepareStatement("SELECT user, tries FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, tries ORDER BY tries");
+            PreparedStatement getMostAttempts = conn.prepareStatement("SELECT CAST user AS NUMERIC, tries FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, tries ORDER BY tries");
             mostAttempts = getMostAttempts.executeQuery();
             mostAttempts.last();
             System.out.println("tries: "+mostAttempts.getDouble("tries"));

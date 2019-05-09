@@ -108,15 +108,13 @@ public class Join {
 				applied = true;
 			}
 
-			// Send message response
 			if (applied){
-				if (rs.getLong("user1") != 0)
-					applicationCount++;
-				if (rs.getLong("user2") != 0)
-					applicationCount++;
-				if (rs.getLong("user3") != 0)
-					applicationCount++;
-
+				// Count number of applicants
+				for (int i = 1; i < 4; i++){
+					if (rs.getLong("user"+i) != 0)
+						applicationCount++;
+				}
+				// Send message response
 				channel.sendMessage("You are applicant #"+applicationCount+" for this role!").queue();
 				return;
 			}
@@ -134,10 +132,9 @@ public class Join {
 		applicants[0] = author.getIdLong();
 
 		try {
-			for (int i = 1; i < 3; i++) {
+			rs.first();
+			for (int i = 1; i < 4; i++) {
 				applicants[i] = (long)rs.getFloat("user"+i);
-				if (i < 2)
-					rs.next();
 			}
 		}
 		catch(SQLException e){

@@ -133,6 +133,7 @@ public class Join {
 			rs.first();
 			for (int i = 1; i < 4; i++) {
 				applicants[i] = (long)rs.getFloat("user"+i);
+				System.out.println(applicants[i]);
 			}
 		}
 		catch(SQLException e){
@@ -148,16 +149,16 @@ public class Join {
 
 		// Give role to all applicants
 		try {
-			guild.getController().addRolesToMember(guild.getMemberById(applicants[0]), guild.getRolesByName(roleName, true)).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[0]), guild.getRolesByName(roleName, true).get(0)).queue();
 			System.out.println("added 0");
 
-			guild.getController().addRolesToMember(guild.getMemberById(applicants[2]), guild.getRolesByName(roleName, true)).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[1]), guild.getRolesByName(roleName, true).get(0)).queue();
 			System.out.println("added 1");
 
-			guild.getController().addRolesToMember(guild.getMemberById(applicants[3]), guild.getRolesByName(roleName, true)).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[2]), guild.getRolesByName(roleName, true)).queue();
 			System.out.println("added 2");
 
-			guild.getController().addRolesToMember(guild.getMemberById(applicants[1]), guild.getRolesByName(roleName, true)).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[3]), guild.getRolesByName(roleName, true)).queue();
 			System.out.println("added 3");
 		}
 		catch (Exception e){

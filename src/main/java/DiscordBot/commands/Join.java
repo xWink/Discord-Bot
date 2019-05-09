@@ -143,11 +143,11 @@ public class Join {
 		guild.getController().createRole().setName(roleName).queue(); // Create the role
 		guild.getController().createTextChannel(roleName).setParent(guild.getCategoriesByName("Electives",true).get(0)).complete(); // Create the textChannel
 		TextChannel textChannel = guild.getTextChannelsByName(roleName,true).get(0); // Variable textChannel is the new channel
-
+		Role role = guild.getRolesByName(roleName,true).get(0);
 		// Give role to all applicants
 		try {
 			for (int i = 0; i < 4; i++)
-				guild.getController().addRolesToMember(guild.getMemberById(applicants[i]), guild.getRolesByName(roleName, true)).queue();
+				guild.getController().addRolesToMember(guild.getMemberById(applicants[i]), role).queue();
 		}
 		catch (Exception e){
 			System.out.println("Join Exception 6");
@@ -155,17 +155,20 @@ public class Join {
 		}
 
 		try {
-			System.out.println(guild.getRolesByName(roleName,true).get(0).getName());
+			System.out.println(role.getName());
+
+			if (textChannel.getPermissionOverride(role) == null)
+				textChannel.createPermissionOverride(role).complete();
 
 			// Let people with the specified role see the channel and read/send messages
-			textChannel.createPermissionOverride(guild.getRolesByName(roleName, true).get(0)).setAllow(Permission.VIEW_CHANNEL).queue();
-			textChannel.createPermissionOverride(guild.getRolesByName(roleName, true).get(0)).setAllow(Permission.MESSAGE_READ).queue();
+			textChannel.getPermissionOverride(role).getManager().grant(Permission.VIEW_CHANNEL).queue();
+			textChannel.getPermissionOverride(role).getManager().grant(Permission.MESSAGE_READ).queue();
 
 			// Prevent everyone from seeing the channel
-			textChannel.createPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).setDeny(Permission.MESSAGE_READ).queue();
+			textChannel.getPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).getManager().grant(Permission.MESSAGE_READ).queue();
 
 			// Do not let people with this role do @everyone
-			textChannel.createPermissionOverride(guild.getRolesByName(roleName, true).get(0)).setDeny(Permission.MESSAGE_MENTION_EVERYONE).queue();
+			textChannel.getPermissionOverride(role).getManager().deny(Permission.MESSAGE_READ).queue();
 
 			channel.sendMessage("The channel you applied for was created! Only members of the channel can see it.").queue();
 		}

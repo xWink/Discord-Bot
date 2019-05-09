@@ -126,8 +126,6 @@ public class Join {
 		}
 
 		// If the number of applicants is full, create the role and channel and assign previous applicants to them
-		ArrayList<Permission> viewChannel = new ArrayList<>(); // Permissions for that channel
-		viewChannel.add(0,Permission.VIEW_CHANNEL);
 		long applicants[] = new long[4];
 		applicants[0] = author.getIdLong();
 
@@ -143,6 +141,7 @@ public class Join {
 			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
 		}
 
+		// Create role and channel
 		guild.getController().createRole().setName(roleName).queue(); // Create the role
 		guild.getController().createTextChannel(roleName).setParent(guild.getCategoriesByName("Electives",true).get(0)).complete(); // Create the textChannel
 		TextChannel textChannel = guild.getTextChannelsByName(roleName,true).get(0); // Variable textChannel is the new channel
@@ -153,14 +152,15 @@ public class Join {
 		}
 
 		// Prevent everyone from seeing the channel
-		textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(viewChannel).queue();
+		textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(Permission.VIEW_CHANNEL).queue();
+		textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(Permission.MESSAGE_READ).queue();
 		// Let people with the specified role see the channel and read/send messages
-		textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(viewChannel).queue();
+		textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(Permission.VIEW_CHANNEL).queue();
 		textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(Permission.MESSAGE_READ).queue();
 		// Do not let people with this role do @everyone
 		textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setDeny(Permission.MESSAGE_MENTION_EVERYONE).queue();
 		// Let moderators see the channel
-		textChannel.createPermissionOverride(guild.getRolesByName("Moderator",true).get(0)).setAllow(viewChannel).queue();
+		textChannel.createPermissionOverride(guild.getRolesByName("Moderator",true).get(0)).setAllow(Permission.VIEW_CHANNEL).queue();
 
 		channel.sendMessage("The channel for your elective has been created! Only members of the channel can see it.").queue();
 	}

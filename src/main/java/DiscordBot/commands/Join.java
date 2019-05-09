@@ -168,15 +168,16 @@ public class Join {
 			if (textChannel.getPermissionOverride(guild.getRolesByName("@everyone", true).get(0)) == null)
 				textChannel.createPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).complete();
 
-			textChannel.getPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).getManager().grant(Permission.MESSAGE_READ).queue();
+			textChannel.getPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).getManager().deny(Permission.MESSAGE_READ).queue();
 
 			// Do not let people with this role do @everyone
-			textChannel.getPermissionOverride(role).getManager().deny(Permission.MESSAGE_READ).queue();
+			textChannel.getPermissionOverride(role).getManager().deny(Permission.MESSAGE_MENTION_EVERYONE).queue();
 
 			channel.sendMessage("The channel you applied for was created! Only members of the channel can see it.").queue();
 		}
 		catch (Exception e){
-			e.printStackTrace();
+			System.out.println("Join Exception 7");
+			System.out.println("Exception: "+e.toString());
 		}
 	}
 }

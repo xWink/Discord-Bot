@@ -79,6 +79,7 @@ public class Join {
 			try {
 				rs.first();
 				// If the number of applicants is not full, add the applicant
+				System.out.println(rs.getLong("user2"));
 				if (rs.getLong("user2") == 0){
 					PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user2 = "+author.getIdLong()+" WHERE name = "+roleName);
 					apply.executeUpdate();

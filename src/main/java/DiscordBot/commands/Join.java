@@ -152,7 +152,7 @@ public class Join {
 		// Give role to all applicants
 		try {
 			for (int i = 0; i < 4; i++) {
-				guild.getController().addRolesToMember(guild.getMemberById(applicants[i]), guild.getRolesByName(roleName, true).get(0)).queue();
+				guild.getController().addRolesToMember(guild.getMemberById(applicants[i]), guild.getRolesByName(roleName, true)).queue();
 			}
 		}
 		catch (Exception e){

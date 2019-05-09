@@ -165,6 +165,9 @@ public class Join {
 			textChannel.getPermissionOverride(role).getManager().grant(Permission.MESSAGE_READ).queue();
 
 			// Prevent everyone from seeing the channel
+			if (textChannel.getPermissionOverride(guild.getRolesByName("@everyone", true).get(0)) == null)
+				textChannel.createPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).complete();
+
 			textChannel.getPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).getManager().grant(Permission.MESSAGE_READ).queue();
 
 			// Do not let people with this role do @everyone

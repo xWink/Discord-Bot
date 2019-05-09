@@ -88,7 +88,7 @@ public class Join {
 		// If they haven't applied, check how many applicants there are
 		try {
 			Boolean applied = false;
-			int applicationCount = 0;
+			int applicationCount = 1;
 			rs.first();
 
 			// If the number of applicants is not full, add the applicant
@@ -134,9 +134,9 @@ public class Join {
 		applicants[0] = author.getIdLong();
 
 		try {
-			for (int i = 1; i < 4; i++) {
+			for (int i = 1; i < 3; i++) {
 				applicants[i] = (long)rs.getFloat("user"+i);
-				if (i < 3)
+				if (i < 2)
 					rs.next();
 			}
 		}

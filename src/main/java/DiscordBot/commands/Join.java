@@ -156,6 +156,8 @@ public class Join {
 		}
 
 		try {
+			System.out.println(guild.getRolesByName(roleName,true).get(0).getName());
+
 			// Prevent everyone from seeing the channel
 			textChannel.createPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).setDeny(Permission.VIEW_CHANNEL).queue();
 			textChannel.createPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).setDeny(Permission.MESSAGE_READ).queue();

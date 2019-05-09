@@ -46,7 +46,7 @@ public class Join {
 			// If role application doesn't exist, add it
 			try {
 				if (!rs.next()){
-					PreparedStatement addRole = conn.prepareStatement("INSERT INTO roles VALUES ('"+roleName+"', '"+author.getIdLong()+"', null, null");
+					PreparedStatement addRole = conn.prepareStatement("INSERT INTO roles VALUES ('"+roleName+"', "+author.getIdLong()+", null, null");
 					addRole.executeUpdate();
 					return;
 				}

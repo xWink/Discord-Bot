@@ -151,13 +151,13 @@ public class Join {
 			guild.getController().addRolesToMember(guild.getMemberById(applicants[0]), guild.getRolesByName(roleName, true)).queue();
 			System.out.println("added 0");
 
-			guild.getController().addRolesToMember(guild.getMemberById(applicants[1]), guild.getRolesByName(roleName, true)).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[2]), guild.getRolesByName(roleName, true)).queue();
 			System.out.println("added 1");
 
-			guild.getController().addRolesToMember(guild.getMemberById(applicants[2]), guild.getRolesByName(roleName, true)).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[3]), guild.getRolesByName(roleName, true)).queue();
 			System.out.println("added 2");
 
-			guild.getController().addRolesToMember(guild.getMemberById(applicants[3]), guild.getRolesByName(roleName, true)).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[1]), guild.getRolesByName(roleName, true)).queue();
 			System.out.println("added 3");
 		}
 		catch (Exception e){

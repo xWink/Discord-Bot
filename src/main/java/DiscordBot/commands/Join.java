@@ -151,16 +151,19 @@ public class Join {
 			guild.getController().addRolesToMember(guild.getMemberById(applicants[i]),guild.getRolesByName(roleName,true)).queue();
 		}
 
+		System.out.println("Here1");
 		// Prevent everyone from seeing the channel
 		textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(Permission.VIEW_CHANNEL).queue();
 		textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(Permission.MESSAGE_READ).queue();
+
+		System.out.println("Here2");
 		// Let people with the specified role see the channel and read/send messages
 		textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(Permission.VIEW_CHANNEL).queue();
 		textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(Permission.MESSAGE_READ).queue();
+
+		System.out.println("Here3");
 		// Do not let people with this role do @everyone
 		textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setDeny(Permission.MESSAGE_MENTION_EVERYONE).queue();
-		// Let moderators see the channel
-		textChannel.createPermissionOverride(guild.getRolesByName("Moderator",true).get(0)).setAllow(Permission.VIEW_CHANNEL).queue();
 
 		channel.sendMessage("The channel for your elective has been created! Only members of the channel can see it.").queue();
 	}

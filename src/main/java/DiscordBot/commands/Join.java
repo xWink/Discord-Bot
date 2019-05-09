@@ -5,7 +5,6 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 
 import java.sql.*;
-import java.util.ArrayList;
 
 public class Join {
 
@@ -156,14 +155,10 @@ public class Join {
 		}
 
 		try {
-			System.out.println(guild.getRolesByName(roleName,true).get(0).getName());
-
 			// Prevent everyone from seeing the channel
-			textChannel.createPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).setDeny(Permission.VIEW_CHANNEL).queue();
 			textChannel.createPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).setDeny(Permission.MESSAGE_READ).queue();
 
 			// Let people with the specified role see the channel and read/send messages
-			textChannel.createPermissionOverride(guild.getRolesByName(roleName, true).get(0)).setAllow(Permission.VIEW_CHANNEL).queue();
 			textChannel.createPermissionOverride(guild.getRolesByName(roleName, true).get(0)).setAllow(Permission.MESSAGE_READ).queue();
 
 			// Do not let people with this role do @everyone

@@ -148,9 +148,15 @@ public class Join {
 		TextChannel textChannel = guild.getTextChannelsByName(roleName,true).get(0); // Variable textChannel is the new channel
 
 		System.out.println("Here2");
+		System.out.println(applicants[0]+"\n"+applicants[1]);
 		// Give role to all applicants
-		for (int i = 0; i < 4; i++){
-			guild.getController().addRolesToMember(guild.getMemberById(applicants[i]),guild.getRolesByName(roleName,true).get(0)).queue();
+		try {
+			for (int i = 0; i < 4; i++) {
+				guild.getController().addRolesToMember(guild.getMemberById(applicants[i]), guild.getRolesByName(roleName, true).get(0)).queue();
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
 		}
 
 		System.out.println("Here3");

@@ -149,10 +149,10 @@ System.out.println(applicants[i]);
 
 		// Give role to all applicants
 		try {
-			guild.getController().addRolesToMember(guild.getMemberById(applicants[0]), guild.getRolesByName(roleName, true).get(0)).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[0]), guild.getRolesByName(roleName, true)).queue();
 			System.out.println("added 0");
 
-			guild.getController().addRolesToMember(guild.getMemberById(applicants[1]), guild.getRolesByName(roleName, true).get(0)).queue();
+			guild.getController().addRolesToMember(guild.getMemberById(applicants[1]), guild.getRolesByName(roleName, true)).queue();
 			System.out.println("added 1");
 
 			guild.getController().addRolesToMember(guild.getMemberById(applicants[2]), guild.getRolesByName(roleName, true)).queue();

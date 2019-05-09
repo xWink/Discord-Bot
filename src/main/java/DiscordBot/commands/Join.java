@@ -79,15 +79,14 @@ public class Join {
 			try {
 				rs.first();
 				// If the number of applicants is not full, add the applicant
-				System.out.println(rs.getLong("user2"));
 				if (rs.getLong("user2") == 0){
-					PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user2 = "+author.getIdLong()+" WHERE name = "+roleName);
+					PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user2 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
 					apply.executeUpdate();
 					channel.sendMessage("You are applicant #2 for this role!").queue();
 					return;
 				}
 				if (rs.getLong("user3") == 0){
-					PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user3 = "+author.getIdLong()+" WHERE name = "+roleName);
+					PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user3 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
 					apply.executeUpdate();
 					channel.sendMessage("You are applicant #3 for this role!").queue();
 					return;
@@ -102,12 +101,12 @@ public class Join {
 			// If the number of applicants is full, create the role and channel and assign previous applicants to them
 			ArrayList<Permission> viewChannel = new ArrayList<>(); // Permissions for that channel
 			viewChannel.add(0,Permission.VIEW_CHANNEL);
-			long applicants[] = new long[4];
+			double applicants[] = new double[4];
 			applicants[0] = author.getIdLong();
 
 			try {
 				for (int i = 1; i < 4; i++) {
-					applicants[i] = rs.getLong("user"+i);
+					applicants[i] = rs.getDouble("user"+i);
 					if (i < 3)
 						rs.next();
 				}
@@ -124,7 +123,7 @@ public class Join {
 
 			// Give role to all applicants
 			for (int i = 0; i < 4; i++){
-				guild.getController().addRolesToMember(guild.getMemberById(applicants[i]),guild.getRolesByName(roleName,true)).queue();
+				guild.getController().addRolesToMember(guild.getMemberById((long)applicants[i]),guild.getRolesByName(roleName,true)).queue();
 			}
 
 			// Prevent everyone from seeing the channel

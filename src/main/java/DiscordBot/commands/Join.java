@@ -93,16 +93,16 @@ public class Join {
 
 			// If the number of applicants is not full, add the applicant
 			if (rs.getLong("user1") == 0){
+				PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user1 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
+				apply.executeUpdate();
+				applied = true;
+			}
+			else if (rs.getLong("user2") == 0){
 				PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user2 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
 				apply.executeUpdate();
 				applied = true;
 			}
-			if (rs.getLong("user2") == 0){
-				PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user2 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
-				apply.executeUpdate();
-				applied = true;
-			}
-			if (rs.getLong("user3") == 0){
+			else if (rs.getLong("user3") == 0){
 				PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user3 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
 				apply.executeUpdate();
 				applied = true;

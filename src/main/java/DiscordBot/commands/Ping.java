@@ -44,12 +44,12 @@ public class Ping {
 				st.executeUpdate();
 			}
 			else if (ping > rs.getInt("max")){
-				channel.sendMessage("Wow, a new personal best!").queue();
+				channel.sendMessage("Lul, that's your worst ping so far").queue();
 				st = conn.prepareStatement("UPDATE ping SET max = "+ping+" WHERE user = "+author.getIdLong());
 				st.executeUpdate();
 			}
 			else if (ping < rs.getInt("min")){
-				channel.sendMessage("Lul, that's your worst ping so far").queue();
+				channel.sendMessage("Wow, a new personal best!").queue();
 				st = conn.prepareStatement("UPDATE ping SET min = "+ping+" WHERE user = "+author.getIdLong());
 				st.executeUpdate();
 			}

@@ -67,7 +67,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// User requests to join/create an elective role (EVERYONE)
 		else if(content.startsWith("!join ")){
-			Join.join(auth, author, channel, guild, content, path);
+			Join.join(auth, author, channel, guild, content);
 		}
 
 		// Remove user's application from CSV file

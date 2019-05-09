@@ -36,6 +36,8 @@ public class GetBangScores {
             PreparedStatement getMostAttempts = conn.prepareStatement("SELECT user, tries FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, tries ORDER BY tries");
             mostAttempts = getMostAttempts.executeQuery();
             mostAttempts.last();
+            System.out.println("tries: "+mostAttempts.getDouble("tries"));
+            System.out.println("user: "+mostAttempts.getDouble("user"));
             attemptCount = mostAttempts.getDouble("tries");
             mostAttemptsPlayer = guild.getMemberById((long)mostAttempts.getDouble("user")).getUser().getName();
  System.out.println("Here2");

@@ -33,7 +33,7 @@ public class Join {
 				conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
 
 				// Look for the role application in the database
-				PreparedStatement findRole = conn.prepareStatement("SELECT * FROM roles WHERE name = "+roleName);
+				PreparedStatement findRole = conn.prepareStatement("SELECT * FROM roles WHERE name = '"+roleName+"'");
 				rs = findRole.executeQuery();
 			}
 			catch (Exception e){

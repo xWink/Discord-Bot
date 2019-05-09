@@ -60,7 +60,7 @@ public class GetBangScores {
             worstRate = 100 - (Math.round(luck.getDouble("death_rate") * 10d) / 10d);
             unluckiestPlayer = guild.getMemberById((long)luck.getDouble("user")).getUser().getName();
         }
-        catch (SQLException e) {
+        catch (Exception e) {
             System.out.println("GetBangScores Exception 2");
             e.printStackTrace();
             return null;

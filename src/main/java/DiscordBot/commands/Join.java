@@ -155,8 +155,6 @@ public class Join {
 		}
 
 		try {
-			System.out.println(role.getName());
-
 			if (textChannel.getPermissionOverride(role) == null)
 				textChannel.createPermissionOverride(role).complete();
 

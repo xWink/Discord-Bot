@@ -84,11 +84,6 @@ public class MyEventListener extends ListenerAdapter {
 			CleanElectives.cleanElectives(auth, channel, guild);
 		}
 
-		// Show score
-		else if (content.toLowerCase().equals("!score") || content.toLowerCase().equals("!scores")){
-			Scores.scores(channel);
-		}
-
 		// Russian roulette
 		else if (content.toLowerCase().equals("!bang")) {
 			chamberCount = Roulette.roulette(author, chamberCount,  channel);

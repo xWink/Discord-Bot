@@ -75,24 +75,6 @@ class GetConfig {
                 logMessage ("Got channel [" + parseArg(contents[i]) + "]");
             }
 
-            // If the line is an applicant path line
-            else if (contents[i].startsWith("APPLICANT_PATH")) {
-                toReturn.applicant_path = parseArg(contents[i]);
-                logMessage ("Got applicant file path [" + toReturn.applicant_path + "]");
-            }
-
-            // If the line is a score path line
-            else if (contents[i].startsWith("SCORE_PATH")) {
-                toReturn.score_path = parseArg(contents[i]);
-                logMessage ("Got score file path [" + toReturn.score_path + "]");
-            }
-
-            // If the line is a roulette path
-            else if (contents[i].startsWith("ROULETTE_PATH")) {
-                toReturn.roulette_path = parseArg(contents[i]);
-                logMessage ("Got roulette file path [" + toReturn.roulette_path + "]");
-            }
-
             // If the line is a database username
             else if (contents[i].startsWith("DB_USER")){
                 toReturn.db_user = parseArg(contents[i]);
@@ -119,16 +101,12 @@ class GetConfig {
             logMessage ("If you would like the bot to work on all channels, use `CHANNEL=all`");
             System.exit(0);
         }
-        if ( (toReturn.applicant_path == null) || (toReturn.applicant_path.isEmpty()) ) {
-            logMessage ("Error: Ending execution due to missing APPLICANT_PATH in '.rolebotconfig' file. Make sure that the file has an APPLICANT_PATH field before running again");
+        if ( (toReturn.db_user == null) || (toReturn.db_user.isEmpty()) ) {
+            logMessage ("Error: Ending execution due to missing DB_USER in '.rolebotconfig' file. Make sure that the file has at least one DB_USER field before running again");
             System.exit(0);
         }
-        if ( (toReturn.score_path == null) || (toReturn.score_path.isEmpty()) ) {
-            logMessage ("Error: Ending execution due to missing SCORE_PATH in '.rolebotconfig' file. Make sure that the file has a SCORE_PATH field before running again");
-            System.exit(0);
-        }
-        if ( (toReturn.roulette_path == null) || (toReturn.roulette_path.isEmpty()) ) {
-            logMessage ("Error: Ending execution due to missing ROULETTE_PATH in '.rolebotconfig' file. Make sure that the file has a ROULETTE_PATH field before running again");
+        if ( (toReturn.db_pass == null) || (toReturn.db_pass.isEmpty()) ) {
+            logMessage ("Error: Ending execution due to missing DB_PASS in '.rolebotconfig' file. Make sure that the file has at least one DB_PASS field before running again");
             System.exit(0);
         }
 

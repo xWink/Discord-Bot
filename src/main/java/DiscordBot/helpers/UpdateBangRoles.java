@@ -32,7 +32,7 @@ public class UpdateBangRoles {
     private static void giveAndTakeBangRoles(Guild guild, Role role, String name){
 
         try {
-            if (guild.getMembersWithRoles(role).size() == 0 || !guild.getMembersWithRoles(role).get(0).getUser().getName().equals(name)) {
+            if (guild.getMembersWithRoles(role).isEmpty() || !guild.getMembersWithRoles(role).get(0).getUser().getName().equals(name)) {
                 if (guild.getMembersWithRoles(role).size() > 0)
                     guild.getController().removeRolesFromMember(guild.getMembersWithRoles(role).get(0), role).queue();
 
@@ -40,7 +40,7 @@ public class UpdateBangRoles {
                 guild.getTextChannelById("551828950871965696").sendMessage("Congrats " + name + " on your new role!").queue();
             }
         }
-        catch (PermissionException e){
+        catch (Exception e){
             e.printStackTrace();
         }
     }

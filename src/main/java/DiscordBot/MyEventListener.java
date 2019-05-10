@@ -11,7 +11,6 @@ import DiscordBot.commands.*;
 public class MyEventListener extends ListenerAdapter {
 
 	public static Guild guild;
-	public static String path3;
 	private int chamberCount = 6;
 	private ConfigFile cfg = RoleBot.config;
 	
@@ -26,9 +25,6 @@ public class MyEventListener extends ListenerAdapter {
 		final MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
 		guild = event.getGuild(); // Variable guild is the Discord server
 		final Member auth = guild.getMember(author); // Variable auth is author of type Member
-		final String path = cfg.applicant_path; // applicant file path
-		final String path2 = cfg.score_path; // score file path
-		path3 = cfg.roulette_path; // roulette file path
 
 		// Check if the bot is allowed to send messages in the current channel
 		if ( !(cfg.channel[0].equals("all")) && !(Arrays.asList(cfg.channel).contains(channel.getId()))) return;
@@ -50,7 +46,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Bot responds with pong and latency
 		else if (content.toLowerCase().equals("!ping")) {
-			Ping.ping(author, event, channel, path2);
+			Ping.ping(author, event, channel);
 		}
 
 		// Bot creates new text channel and deletes old one (OWNER ONLY)
@@ -70,12 +66,12 @@ public class MyEventListener extends ListenerAdapter {
 
 		// User requests to join/create an elective role (EVERYONE)
 		else if(content.startsWith("!join ")){
-			Join.join(auth, author, channel, guild, content, path);
+			Join.join(auth, author, channel, guild, content);
 		}
 
 		// Remove user's application from CSV file
 		else if (content.toLowerCase().startsWith("!leave ")){
-			Leave.leave(auth, author, channel, guild, content, path);
+			Leave.leave(auth, author, channel, guild, content);
 		}
 
 		// Delete all non-specified roles (OWNER ONLY)
@@ -88,24 +84,19 @@ public class MyEventListener extends ListenerAdapter {
 			CleanElectives.cleanElectives(auth, channel, guild);
 		}
 
-		// Show score
-		else if (content.toLowerCase().equals("!score") || content.toLowerCase().equals("!scores")){
-			Scores.scores(channel, path2);
-		}
-
 		// Russian roulette
 		else if (content.toLowerCase().equals("!bang")) {
-			chamberCount = Roulette.roulette(author, path3, chamberCount,  channel);
+			chamberCount = Roulette.roulette(author, chamberCount,  channel);
 		}
 
 		// Russian roulette scores
 		else if (content.toLowerCase().equals("!bangscore") || content.toLowerCase().equals("!bangscores")){
-			BangScores.bangScores(channel, path3, guild);
+			BangScores.bangScores(channel, guild);
 		}
 
 		// Show bang scores for individual
 		else if (content.toLowerCase().equals("!mybang")){
-			MyBang.myBang(author, channel, path3);
+			MyBang.myBang(author, channel);
 		}
 
 		// Show available Elective roles

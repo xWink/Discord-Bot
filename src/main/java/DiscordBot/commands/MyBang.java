@@ -1,46 +1,57 @@
 package DiscordBot.commands;
 
-import DiscordBot.helpers.*;
+import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.sql.*;
 
 public class MyBang {
 
-    public static void myBang(User author, MessageChannel channel, String path3){
+    public static void myBang(User author, MessageChannel channel){
 
+        Connection conn;
+        ResultSet rs = null;
+        Boolean exists = false;
+
+        // Connect to database
         try {
-            Path scorePath = Paths.get(path3);
-            BufferedReader reader = Files.newBufferedReader(scorePath);
-            String line;
-            BangPlayer player = null;
-            int lineCount = 0;
+            Class.forName("org.mariadb.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
+        }
+        catch (Exception e){
+            System.out.println("MyBang Exception 1\nException: "+ e.toString());
+            System.out.println("Failed to connect to database, terminating command");
+            return;
+        }
 
-            // Find player in scores file
-            while ((line = reader.readLine()) != null) {
-                if (line.startsWith("\""+author.getId()+"\"")) {
-                    player = new BangPlayer(
-                            author.getName(),
-                            (double)Integer.parseInt(line.substring(line.indexOf("\",\"") + 3, line.indexOf("\"", line.indexOf("\",\"") + 3))),
-                            (double)Integer.parseInt(line.substring(line.indexOf("\",\"", line.indexOf("\",\"") + 3) + 3, line.length() - 1)));
-                }
-            }
-            reader.close();
+        // Find user in database
+        try {
+            PreparedStatement st = conn.prepareStatement("SELECT * FROM bang WHERE user="+author.getIdLong());
+            rs = st.executeQuery();
+            if (rs.next())
+                exists = true;
+        }
+        catch (SQLException e) {
+            System.out.println("MyBang Exception 2");
+            System.out.println("SQL Exception: "+ e.toString());
+        }
 
-            // Post results
-            if (player != null){
-                double survivalRate = 100 - Math.round(player.deaths / player.attempts * 100 * 10d) / 10d;
-                channel.sendMessage("**"+author.getName()+"'s scores**\nAttempts: "+(int)player.attempts+"\nDeaths: "+(int)player.deaths+"\nSurvival rate: "+survivalRate+"%").queue();
-            }else{
-                channel.sendMessage(author.getName()+" could not be found in score list").queue();
+        if (!exists)
+            channel.sendMessage(author.getName()+" could not be found in score list").queue();
+        else{
+            try {
+                // Post results
+                double survivalRate = 100 - Math.round(rs.getDouble("deaths") / rs.getDouble("tries") * 100 * 10d) / 10d;
+                channel.sendMessage("**" + author.getName() +
+                        "'s scores**\nAttempts: " + (int) rs.getDouble("tries") +
+                        "\nDeaths: " + (int) rs.getDouble("deaths") +
+                        "\nSurvival rate: " + survivalRate + "%").queue();
             }
-        }catch (IOException e){
-            e.printStackTrace();
+            catch (SQLException e){
+                System.out.println("MyBang Exception 3");
+                System.out.println("Exception: "+ e.toString());
+            }
         }
     }
 }

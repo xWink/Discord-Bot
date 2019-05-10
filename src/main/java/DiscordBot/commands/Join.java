@@ -1,117 +1,181 @@
 package DiscordBot.commands;
 
-import com.opencsv.CSVWriter;
+import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.sql.*;
 
 public class Join {
-	public static void join(Member auth, User author, MessageChannel channel, Guild guild, String content, String path){
+
+	public static void join(Member auth, User author, MessageChannel channel, Guild guild, String content){
+
 		String roleName = content.substring(6);
+
 		// If role is restricted, don't assign user to role
 		if (roleName.toLowerCase().equals("moderator") || roleName.toLowerCase().contains("verified")){
 			channel.sendMessage("I cannot set you to that role").queue();
 			return;
 		}
-		// If role exists and isn't restricted, assign user to role
+
+		// If role exists and isn't restricted
 		if (!guild.getRolesByName(roleName,true).isEmpty()) {
-			guild.getController().addRolesToMember(auth, guild.getRolesByName(roleName, true)).queue();
-			channel.sendMessage("Role \""+roleName+"\" added to "+auth.getAsMention()).queue();
-		}
-		else{ // If role does not exist
-			File file = new File(path);
-			try {
-				// Create writers, readers, threshold, etc
-				int threshold = 4; // Required number of applicants for new role
-				boolean alreadyExists = false;
-				FileWriter fileWriter = new FileWriter(file, true);
-				CSVWriter csvWriter = new CSVWriter(fileWriter);
-				Path filePath = Paths.get(path);
-				BufferedReader reader = Files.newBufferedReader(filePath);
-
-				// If file is empty, give it appropriate headers
-				if (reader.readLine() == null){
-					String[] header = {"CourseID", "Applicant"};
-					csvWriter.writeNext(header);
-				}
-
-				// If user already requested this role, don't add this application to file
-				String line = reader.readLine();
-				while (line != null){
-					if (line.equals("\""+roleName+"\","+"\""+author.getId()+"\"")){
-						alreadyExists = true;
-					}
-					line = reader.readLine();
-				}
-
-				// If this is a new application, add it to file
-				if (!alreadyExists) {
-					String[] application = {roleName, author.getId()};
-					csvWriter.writeNext(application, true);
-				}
-				reader.close();
-				csvWriter.close();
-				fileWriter.close();
-
-				// Check how many people applied for the same role
-				String[] applicants = new String[threshold];
-				int applicationCount = 0;
-				BufferedReader reader2 = Files.newBufferedReader(filePath);
-				line = reader2.readLine();
-				while (line != null){
-					if (line.startsWith("\""+roleName+"\",")){
-						applicants[applicationCount] = line.substring(line.indexOf("\"",roleName.length()+3)+1,line.length()-1);
-						applicationCount++;
-					}
-					line = reader2.readLine();
-				}
-				reader2.close();
-
-				// If number of applications is sufficient, create role and channel for it, and assign all applicants to that role
-				if (applicationCount >= threshold && !alreadyExists){
-					ArrayList<Permission> viewChannel = new ArrayList<>(); // Permissions for that channel
-					viewChannel.add(0,Permission.VIEW_CHANNEL);
-
-					guild.getController().createRole().setName(roleName).queue(); // Create the role
-					guild.getController().createTextChannel(roleName).setParent(guild.getCategoriesByName("Electives",true).get(0)).complete(); // Create the textChannel
-					TextChannel textChannel = guild.getTextChannelsByName(roleName,true).get(0); // Variable textChannel is the new channel
-
-					// Give role to all applicants
-					for (int i = 0; i < threshold; i++){
-						guild.getController().addRolesToMember(guild.getMemberById(applicants[i]),guild.getRolesByName(roleName,true)).queue();
-					}
-
-					// Prevent everyone from seeing the channel
-					textChannel.createPermissionOverride(guild.getRolesByName("@everyone",true).get(0)).setDeny(viewChannel).queue();
-					// Let people with the specified role see the channel and read/send messages
-					textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(viewChannel).queue();
-					textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setAllow(Permission.MESSAGE_READ).queue();
-					// Do not let people with this role do @everyone
-					textChannel.createPermissionOverride(guild.getRolesByName(roleName,true).get(0)).setDeny(Permission.MESSAGE_MENTION_EVERYONE).queue();
-					// Let moderators see the channel
-					textChannel.createPermissionOverride(guild.getRolesByName("Moderator",true).get(0)).setAllow(viewChannel).queue();
-
-					channel.sendMessage("The channel for your elective has been created! Only members of the channel can see it.").queue();
-				}
-				else{ // If number of applications is too low
-					if (alreadyExists){
-						channel.sendMessage("You already applied for this role!\nI need "+(threshold - applicationCount)+" more requests to make it").queue();
-					}
-					else{
-						channel.sendMessage("Role \"" + roleName + "\" does not exist, but the request has been noted.\nI need "+(threshold - applicationCount)+" more requests to make it").queue();
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+			// If user already has the role, tell them
+			if (guild.getMember(author).getRoles().contains((guild.getRolesByName(roleName, true).get(0)))){
+				channel.sendMessage("You already have this role!").queue();
 			}
+			// If user doesn't have the role, give it to them
+			else {
+				guild.getController().addRolesToMember(auth, guild.getRolesByName(roleName, true)).queue();
+				channel.sendMessage("Role \"" + roleName + "\" added to " + auth.getAsMention()).queue();
+			}
+			return;
+		}
+
+		// If role does not exist
+		Connection conn;
+		ResultSet rs;
+
+		try {
+			// Connect to database
+			Class.forName("org.mariadb.jdbc.Driver");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
+
+			// Look for the role application in the database
+			PreparedStatement findRole = conn.prepareStatement("SELECT * FROM roles WHERE name = '"+roleName+"'");
+			rs = findRole.executeQuery();
+		}
+		catch (Exception e){
+			System.out.println("Join Exception 1");
+			System.out.println("Exception: "+ e.toString());
+			System.out.println("Failed to connect to database, terminating command");
+			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+			return;
+		}
+
+		// If role application doesn't exist, add it
+		try {
+			if (!rs.isBeforeFirst()){
+				PreparedStatement addRole = conn.prepareStatement("INSERT INTO roles VALUES ('"+roleName+"', "+author.getIdLong()+", null, null)");
+				addRole.executeUpdate();
+				channel.sendMessage("Your role application was added to the server!").queue();
+				return;
+			}
+		}
+		catch (SQLException e){
+			System.out.println("Join Exception 2");
+			System.out.println("Exception: "+e.toString());
+			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+		}
+
+		// If application does exist, check if the applicant has already applied
+		try {
+			rs.first();
+			if (rs.getFloat("user1") == author.getIdLong() ||
+					rs.getFloat("user2") == author.getIdLong() ||
+					rs.getFloat("user3") == author.getIdLong()){
+				channel.sendMessage("You have already applied for this role!").queue();
+				return;
+			}
+		}
+		catch (SQLException e){
+			System.out.println("Join Exception 3");
+			System.out.println("Exception: "+e.toString());
+			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+		}
+
+		// If they haven't applied, check how many applicants there are
+		try {
+			Boolean applied = false;
+			int applicationCount = 1;
+			rs.first();
+
+			// If the number of applicants is not full, add the applicant
+			if (rs.getLong("user1") == 0){
+				PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user1 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
+				apply.executeUpdate();
+				applied = true;
+			}
+			else if (rs.getLong("user2") == 0){
+				PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user2 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
+				apply.executeUpdate();
+				applied = true;
+			}
+			else if (rs.getLong("user3") == 0){
+				PreparedStatement apply = conn.prepareStatement("UPDATE roles SET user3 = "+author.getIdLong()+" WHERE name = '"+roleName+"'");
+				apply.executeUpdate();
+				applied = true;
+			}
+
+			if (applied){
+				// Count number of applicants
+				for (int i = 1; i < 4; i++){
+					if (rs.getLong("user"+i) != 0)
+						applicationCount++;
+				}
+				// Send message response
+				channel.sendMessage("You are applicant #"+applicationCount+" for this role!").queue();
+				return;
+			}
+		}
+		catch (SQLException e){
+			System.out.println("Join Exception 4");
+			System.out.println("Exception: "+e.toString());
+			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+		}
+
+		// If the number of applicants is full, create the role and channel and assign previous applicants to them
+		long applicants[] = new long[4];
+		applicants[0] = author.getIdLong();
+
+		try {
+			rs.first();
+			for (int i = 1; i < 4; i++)
+				applicants[i] = rs.getLong("user"+i);
+		}
+		catch(SQLException e){
+			System.out.println("Join Exception 5");
+			System.out.println("Exception: "+e.toString());
+			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+		}
+
+		// Create role and channel
+		guild.getController().createRole().setName(roleName).queue(); // Create the role
+		guild.getController().createTextChannel(roleName).setParent(guild.getCategoriesByName("Electives",true).get(0)).complete(); // Create the textChannel
+		TextChannel textChannel = guild.getTextChannelsByName(roleName,true).get(0); // Variable textChannel is the new channel
+		Role role = guild.getRolesByName(roleName,true).get(0);
+		// Give role to all applicants
+		try {
+			for (int i = 0; i < 4; i++)
+				guild.getController().addRolesToMember(guild.getMemberById(applicants[i]), role).queue();
+		}
+		catch (Exception e){
+			System.out.println("Join Exception 6");
+			System.out.println("Exception: "+e.toString());
+		}
+
+		try {
+			if (textChannel.getPermissionOverride(role) == null)
+				textChannel.createPermissionOverride(role).complete();
+
+			// Let people with the specified role see the channel and read/send messages
+			textChannel.getPermissionOverride(role).getManager().grant(Permission.VIEW_CHANNEL).queue();
+			textChannel.getPermissionOverride(role).getManager().grant(Permission.MESSAGE_READ).queue();
+
+			// Prevent everyone from seeing the channel
+			if (textChannel.getPermissionOverride(guild.getRolesByName("@everyone", true).get(0)) == null)
+				textChannel.createPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).complete();
+
+			textChannel.getPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).getManager().deny(Permission.MESSAGE_READ).queue();
+
+			// Do not let people with this role do @everyone
+			textChannel.getPermissionOverride(role).getManager().deny(Permission.MESSAGE_MENTION_EVERYONE).queue();
+
+			channel.sendMessage("The channel you applied for was created! Only members of the channel can see it.").queue();
+		}
+		catch (Exception e){
+			System.out.println("Join Exception 7");
+			System.out.println("Exception: "+e.toString());
 		}
 	}
 }

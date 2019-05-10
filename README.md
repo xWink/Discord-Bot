@@ -1,14 +1,12 @@
-Version 1.7.4
+Version 1.8
 # Purpose
-Manage Computer Science Discord elective roles and channels automatically.
+Manage Computer Science Discord elective roles and channels and entertain users with games
 
 # Commands
 ### Anyone
 `!help` - gives examples and instructions for using `!join` and `!leave`
 
-`!ping` - returns "pong!" and your latency in ms. Keeps track of best/worst scores
-
-`!score` or `!scores` - responds with best and worst latency scores and the users who got them
+`!ping` - returns "pong!" and your latency in ms. Keeps track of user's best/worst scores
 
 `!bang` - play Russian roulette
 

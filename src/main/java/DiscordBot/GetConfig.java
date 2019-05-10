@@ -66,7 +66,7 @@ class GetConfig {
             // If the line is a token line
             if (contents[i].startsWith("TOKEN")) {
                 toReturn.token = parseArg(contents[i]);
-                logMessage ("Got token [" + toReturn.token + "]");
+                logMessage ("Got token");
             }
 
             // If the line is a channel line, add to rawChannels ArrayList
@@ -91,6 +91,18 @@ class GetConfig {
             else if (contents[i].startsWith("ROULETTE_PATH")) {
                 toReturn.roulette_path = parseArg(contents[i]);
                 logMessage ("Got roulette file path [" + toReturn.roulette_path + "]");
+            }
+
+            // If the line is a database username
+            else if (contents[i].startsWith("DB_USER")){
+                toReturn.db_user = parseArg(contents[i]);
+                logMessage("Got database username");
+            }
+
+            // If the line is a database password
+            else if (contents[i].startsWith("DB_PASS")){
+                toReturn.db_pass = parseArg(contents[i]);
+                logMessage("Got database password");
             }
         }
 

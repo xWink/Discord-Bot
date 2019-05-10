@@ -58,7 +58,7 @@ public class Join {
 			if (!rs.isBeforeFirst()){
 				PreparedStatement addRole = conn.prepareStatement("INSERT INTO roles VALUES ('"+roleName+"', "+author.getIdLong()+", null, null)");
 				addRole.executeUpdate();
-				channel.sendMessage("Your role application was added to the server!").queue();
+				channel.sendMessage("Your role application was added to the server!").complete();
 				return;
 			}
 		}
@@ -144,6 +144,7 @@ public class Join {
 		guild.getController().createTextChannel(roleName).setParent(guild.getCategoriesByName("Electives",true).get(0)).complete(); // Create the textChannel
 		TextChannel textChannel = guild.getTextChannelsByName(roleName,true).get(0); // Variable textChannel is the new channel
 		Role role = guild.getRolesByName(roleName,true).get(0);
+
 		// Give role to all applicants
 		try {
 			for (int i = 0; i < 4; i++)
@@ -154,6 +155,7 @@ public class Join {
 			System.out.println("Exception: "+e.toString());
 		}
 
+		// Set new channel permissions
 		try {
 			if (textChannel.getPermissionOverride(role) == null)
 				textChannel.createPermissionOverride(role).complete();

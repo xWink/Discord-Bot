@@ -44,30 +44,30 @@ public class Roulette {
 					boom = 0;
 					chamberCount = 6;
 					jammed = 1;
-					channel.sendMessage("The gun jammed... " + author.getName() + " survived <:poggers:564285288621539328> <:poggers:564285288621539328> <:poggers:564285288621539328>").complete();
+					channel.sendMessage("The gun jammed... " + author.getName() + " survived <:poggers:564285288621539328> <:poggers:564285288621539328> <:poggers:564285288621539328>").queue();
 				}
 				// If the gun doesn't jam with one chamber left, boom
 				else {
 					boom = 1;
 					chamberCount = 6;
-					channel.sendMessage("Bang! " + author.getName() + " died :skull:").complete();
+					channel.sendMessage("Bang! " + author.getName() + " died :skull:").queue();
 				}
 			}
 			// If there is more than 1 chamber left, boom
 			else {
 				boom = 1;
 				chamberCount = 6;
-				channel.sendMessage("Bang! " + author.getName() + " died :skull:").complete();
+				channel.sendMessage("Bang! " + author.getName() + " died :skull:").queue();
 			} 
 		}
 		// No boom
 		else {
 			boom = 0;
 			chamberCount--;
-			channel.sendMessage("Click. " + author.getName() + " survived  <:poggies:564285288621539328>").complete();
+			channel.sendMessage("Click. " + author.getName() + " survived  <:poggies:564285288621539328>").queue();
 		}
 
-		channel.sendMessage("Chambers left in the cylinder: ||  "+chamberCount+"  ||").complete();
+		channel.sendMessage("Chambers left in the cylinder: ||  "+chamberCount+"  ||").queue();
 
 
 		// Find user in database

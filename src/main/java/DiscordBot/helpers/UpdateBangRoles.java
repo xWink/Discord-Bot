@@ -2,7 +2,6 @@ package DiscordBot.helpers;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.exceptions.PermissionException;
 
 public class UpdateBangRoles {
 

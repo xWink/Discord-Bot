@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.Arrays;
+import java.util.List;
 
 import DiscordBot.commands.*;
 
@@ -25,9 +26,10 @@ public class MyEventListener extends ListenerAdapter {
 		final MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
 		guild = event.getGuild(); // Variable guild is the Discord server
 		final Member auth = guild.getMember(author); // Variable auth is author of type Member
+	  	final List channels = Arrays.asList(cfg.channel);
 
 		// Check if the bot is allowed to send messages in the current channel
-		if ( !(cfg.channel[0].equals("all")) && !(Arrays.asList(cfg.channel).contains(channel.getId()))) {
+		if ( !cfg.channel[0].equals("all") && !channels.contains(channel.getId())) {
 			System.out.println("Improper channel detected. Message contents:\n"+content);
 			return;
 		}

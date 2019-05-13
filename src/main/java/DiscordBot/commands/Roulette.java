@@ -67,7 +67,7 @@ public class Roulette {
 			channel.sendMessage("Click. " + author.getName() + " survived  <:poggies:564285288621539328>").complete();
 		}
 
-		channel.sendMessage("Chambers left in the cylinder: ||  "+chamberCount+"  ||").queue();
+		channel.sendMessage("Chambers left in the cylinder: ||  "+chamberCount+"  ||").complete();
 
 
 		// Find user in database

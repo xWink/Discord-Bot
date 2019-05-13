@@ -36,7 +36,7 @@ public class UpdateBangRoles {
                     guild.getController().removeRolesFromMember(guild.getMembersWithRoles(role).get(0), role).queue();
 
                 guild.getController().addRolesToMember(guild.getMembersByName(name, true).get(0), role).queue();
-                guild.getTextChannelById("551828950871965696").sendMessage("Congrats " + name + " on your new role!").queue();
+                guild.getTextChannelById("551828950871965696").sendMessage("Congrats " + name + " on your new role!").complete();
             }
         }
         catch (Exception e){

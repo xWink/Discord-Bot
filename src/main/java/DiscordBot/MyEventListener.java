@@ -27,7 +27,10 @@ public class MyEventListener extends ListenerAdapter {
 		final Member auth = guild.getMember(author); // Variable auth is author of type Member
 
 		// Check if the bot is allowed to send messages in the current channel
-		if ( !(cfg.channel[0].equals("all")) && !(Arrays.asList(cfg.channel).contains(channel.getId()))) return;
+		if ( !(cfg.channel[0].equals("all")) && !(Arrays.asList(cfg.channel).contains(channel.getId()))) {
+			System.out.println("Improper channel detected. Message contents:\n"+content);
+			return;
+		}
 
 		// Bot shows how to use !join
 		if (content.toLowerCase().equals("!join") || content.toLowerCase().equals("!join ")){

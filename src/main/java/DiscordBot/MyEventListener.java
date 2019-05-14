@@ -29,84 +29,66 @@ public class MyEventListener extends ListenerAdapter {
 	  	final List channels = Arrays.asList(cfg.channel);
 
 		// Check if the bot is allowed to send messages in the current channel
-		if ( !cfg.channel[0].equals("all") && !channels.contains(channel.getId())) {
-			System.out.println("Improper channel detected. Message contents:\n"+content);
-			return;
-		}
+		if ( !cfg.channel[0].equals("all") && !channels.contains(channel.getId())) return;
 
 		// Bot shows how to use !join
-		if (content.toLowerCase().equals("!join") || content.toLowerCase().equals("!join ")){
+		if (content.toLowerCase().equals("!join") || content.toLowerCase().equals("!join "))
 			channel.sendMessage("Command: !join <courseID>\n\nExample: !join mcs2100").queue();
-		}
 
 		// Bot shows how to use !leave
-		else if (content.toLowerCase().equals("!leave") || content.toLowerCase().equals("!leave ")){
+		else if (content.toLowerCase().equals("!leave") || content.toLowerCase().equals("!leave "))
 			channel.sendMessage("Command: !leave <courseID>\n\nExample: !leave mcs2100").queue();
-		}
 
 		// Bot shows how to use !join and !leave
-		else if (content.toLowerCase().equals("!help")){
+		else if (content.toLowerCase().equals("!help"))
 			Help.help(channel);
-		}
 
 		// Bot responds with pong and latency
-		else if (content.toLowerCase().equals("!ping")) {
+		else if (content.toLowerCase().equals("!ping"))
 			Ping.ping(author, event, channel);
-		}
 
 		// Bot creates new text channel and deletes old one (OWNER ONLY)
-		else if (content.toLowerCase().equals("!totalchatwipe")) {
+		else if (content.toLowerCase().equals("!totalchatwipe"))
 			TotalChatWipe.chatWipe(auth, guild, channel);
-		}
 
 		// Bot gives requested role to target (MODERATOR->PEASANT ONLY)
-		else if(content.toLowerCase().startsWith("!giverole ")){
+		else if(content.toLowerCase().startsWith("!giverole "))
 			GiveRole.giveRole(auth, channel, guild, content, message);
-		}
 
 		// Bot removes requested role from user (MODERATOR->PEASANT ONLY)
-		else if(content.startsWith("!takerole ")) {
+		else if(content.startsWith("!takerole "))
 			TakeRole.takeRole(auth, channel, guild, content, message);
-		}
 
-		// User requests to join/create an elective role (EVERYONE)
-		else if(content.startsWith("!join ")){
+		// User requests to join/create an elective role
+		else if(content.startsWith("!join "))
 			Join.join(auth, author, channel, guild, content);
-		}
 
 		// Remove user's application from CSV file
-		else if (content.toLowerCase().startsWith("!leave ")){
+		else if (content.toLowerCase().startsWith("!leave "))
 			Leave.leave(auth, author, channel, guild, content);
-		}
 
 		// Delete all non-specified roles (OWNER ONLY)
-		else if (content.toLowerCase().equals("!cleanroles")){
+		else if (content.toLowerCase().equals("!cleanroles"))
 			CleanRoles.cleanRoles(auth, channel, guild);
-		}
 
 		// Delete all elective channels (OWNER ONLY)
-		else if(content.toLowerCase().equals("!cleanelectives")){
+		else if(content.toLowerCase().equals("!cleanelectives"))
 			CleanElectives.cleanElectives(auth, channel, guild);
-		}
 
 		// Russian roulette
-		else if (content.toLowerCase().equals("!bang")) {
+		else if (content.toLowerCase().equals("!bang"))
 			chamberCount = Roulette.roulette(author, chamberCount,  channel);
-		}
 
 		// Russian roulette scores
-		else if (content.toLowerCase().equals("!bangscore") || content.toLowerCase().equals("!bangscores")){
+		else if (content.toLowerCase().equals("!bangscore") || content.toLowerCase().equals("!bangscores"))
 			BangScores.bangScores(channel, guild);
-		}
 
 		// Show bang scores for individual
-		else if (content.toLowerCase().equals("!mybang")){
+		else if (content.toLowerCase().equals("!mybang"))
 			MyBang.myBang(author, channel);
-		}
 
 		// Show available Elective roles
-		else if (content.toLowerCase().equals("!roles")){
+		else if (content.toLowerCase().equals("!roles"))
 			ShowRoles.showRoles(guild, channel);
-		}
 	}
 }

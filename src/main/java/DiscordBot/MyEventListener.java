@@ -1,6 +1,7 @@
 package DiscordBot;
 
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -14,9 +15,14 @@ public class MyEventListener extends ListenerAdapter {
 	public static Guild guild;
 	private int chamberCount = 6;
 	private ConfigFile cfg = RoleBot.config;
+
+	@Override
+	public void onDisconnect(DisconnectEvent event){
+		System.out.println("Disconnected from server");
+	}
 	
-  @Override
-	public void onMessageReceived(MessageReceivedEvent event){
+  	@Override
+  	public void onMessageReceived(MessageReceivedEvent event){
 
 		final User author = event.getAuthor(); // Variable author is the author of type User
 		if (author.isBot()){

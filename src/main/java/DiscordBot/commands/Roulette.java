@@ -92,7 +92,7 @@ public class Roulette {
 				if (boom == 1)
 					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, deaths = deaths + 1, last_played = " + date.getTime() + " WHERE user = " + author.getIdLong());
 				else if (jammed == 1)
-					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, jammed = jammed + 1, last_played = " + date.getTime() + " WHERE user = " + author.getIdLong());
+					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, jams = jams + 1, last_played = " + date.getTime() + " WHERE user = " + author.getIdLong());
 				else
 					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, last_played = " + date.getTime() + " WHERE user = " + author.getIdLong());
 			}

@@ -20,7 +20,7 @@ public class RoleBot {
 			// Create bot with token given by Discord developer page
 			JDA api = new JDABuilder(AccountType.BOT).setToken(config.token).build();
 			api.addEventListener(new MyEventListener());
-/*
+
 			// Check Bang high scores every hour
 			Timer timer = new Timer();
 			TimerTask task = new TimerTask() {
@@ -30,7 +30,7 @@ public class RoleBot {
 				}
 			};
 			timer.schedule(task,1000*60*60,1000*60*60);
-*/
+
 		}
 		
 		catch (Exception e) {

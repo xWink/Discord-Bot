@@ -10,7 +10,7 @@ public class BangHighScores {
     public String luckiest;
     public double worstRate;
     public String unluckiest;
-    public double jamCount;
+    public int jamCount;
     public String mostJamsPlayer;
 
     public BangHighScores(
@@ -22,7 +22,7 @@ public class BangHighScores {
             String luckiest,
             double worstRate,
             String unluckiest,
-            double jamCount,
+            int jamCount,
             String mostJamsPlayer){
 
         this.attemptCount = attemptCount;

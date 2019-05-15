@@ -11,7 +11,8 @@ public class GetBangScores {
 
     public static BangHighScores getBangScores(Guild guild){
 
-        double attemptCount, deathCount, bestRate, worstRate, jamCount;
+        double attemptCount, deathCount, bestRate, worstRate;
+        int jamCount;
         String mostAttemptsPlayer, mostDeathsPlayer, luckiestPlayer, unluckiestPlayer, mostJamsPlayer;
         Date date = new Date();
         Connection conn;
@@ -63,7 +64,7 @@ public class GetBangScores {
             PreparedStatement getMostJams = conn.prepareStatement("SELECT user, jams FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, jams ORDER BY jams");
             mostJams = getMostJams.executeQuery();
             mostJams.last();
-            jamCount = mostJams.getDouble("jams");
+            jamCount = mostJams.getInt("jams");
             mostJamsPlayer = guild.getMemberById(mostJams.getLong("user")).getUser().getName();
         }
         catch (Exception e) {

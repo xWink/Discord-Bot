@@ -16,7 +16,7 @@ public class BangScores {
             channel.sendMessage("The player with the most deaths is "+highScores.mostDeathsPlayer+" with a score of "+(int)highScores.deathCount).complete();
             channel.sendMessage("The player with the best survival rate is "+highScores.luckiest+" at "+highScores.bestRate+"%").complete();
             channel.sendMessage("The player with the worst survival rate is "+highScores.unluckiest+" at "+highScores.worstRate+"%").complete();
-            channel.sendMessage("The player with the most jams survived is"+highScores.mostJamsPlayer+" at "+highScores.jamCount).complete();
+            channel.sendMessage("The player with the most jams survived is "+highScores.mostJamsPlayer+" at "+highScores.jamCount).complete();
         }
     }
 }

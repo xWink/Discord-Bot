@@ -46,7 +46,9 @@ public class MyBang {
                 channel.sendMessage("**" + author.getName() +
                         "'s scores**\nAttempts: " + (int) rs.getDouble("tries") +
                         "\nDeaths: " + (int) rs.getDouble("deaths") +
-                        "\nSurvival rate: " + survivalRate + "%").queue();
+                        "\nSurvival rate: " + survivalRate + "%").complete();
+                if (rs.getInt("jams") > 0)
+                    channel.sendMessage("Jams: "+rs.getInt("jams")).queue();
             }
             catch (SQLException e){
                 System.out.println("MyBang Exception 3");

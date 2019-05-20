@@ -12,10 +12,11 @@ public class GetBangScores {
     public static BangHighScores getBangScores(Guild guild){
 
         double attemptCount, deathCount, bestRate, worstRate;
-        String mostAttemptsPlayer, mostDeathsPlayer, luckiestPlayer, unluckiestPlayer;
+        int jamCount;
+        String mostAttemptsPlayer, mostDeathsPlayer, luckiestPlayer, unluckiestPlayer, mostJamsPlayer;
         Date date = new Date();
         Connection conn;
-        ResultSet mostAttempts, mostDeaths, luck;
+        ResultSet mostAttempts, mostDeaths, luck, mostJams;
 
         // Connect to database
         try {
@@ -58,6 +59,13 @@ public class GetBangScores {
             luck.last();
             worstRate = 100 - (Math.round(luck.getDouble("death_rate") * 10d) / 10d);
             unluckiestPlayer = guild.getMemberById(luck.getLong("user")).getUser().getName();
+
+            // Most jams
+            PreparedStatement getMostJams = conn.prepareStatement("SELECT user, jams FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, jams ORDER BY jams");
+            mostJams = getMostJams.executeQuery();
+            mostJams.last();
+            jamCount = mostJams.getInt("jams");
+            mostJamsPlayer = guild.getMemberById(mostJams.getLong("user")).getUser().getName();
         }
         catch (Exception e) {
             System.out.println("GetBangScores Exception 2");
@@ -73,6 +81,8 @@ public class GetBangScores {
                 bestRate,
                 luckiestPlayer,
                 worstRate,
-                unluckiestPlayer);
+                unluckiestPlayer,
+                jamCount,
+                mostJamsPlayer);
     }
 }

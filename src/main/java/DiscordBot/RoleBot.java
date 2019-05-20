@@ -30,6 +30,7 @@ public class RoleBot {
 				}
 			};
 			timer.schedule(task,1000*60*60,1000*60*60);
+
 		}
 		
 		catch (Exception e) {

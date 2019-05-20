@@ -1,4 +1,4 @@
-Version 1.8
+Version 1.9
 # Purpose
 Manage Computer Science Discord elective roles and channels and entertain users with games
 

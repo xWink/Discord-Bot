@@ -44,30 +44,30 @@ public class Roulette {
 					boom = 0;
 					chamberCount = 6;
 					jammed = 1;
-					channel.sendMessage("The gun jammed... " + author.getName() + " survived <:poggers:564285288621539328> <:poggers:564285288621539328> <:poggers:564285288621539328>").queue();
+					channel.sendMessage("The gun jammed... " + author.getName() + " survived <:poggers:564285288621539328> <:poggers:564285288621539328> <:poggers:564285288621539328>").complete();
 				}
 				// If the gun doesn't jam with one chamber left, boom
 				else {
 					boom = 1;
 					chamberCount = 6;
-					channel.sendMessage("Bang! " + author.getName() + " died :skull:").queue();
+					channel.sendMessage("Bang! " + author.getName() + " died :skull:").complete();
 				}
 			}
 			// If there is more than 1 chamber left, boom
 			else {
 				boom = 1;
 				chamberCount = 6;
-				channel.sendMessage("Bang! " + author.getName() + " died :skull:").queue();
+				channel.sendMessage("Bang! " + author.getName() + " died :skull:").complete();
 			} 
 		}
 		// No boom
 		else {
 			boom = 0;
 			chamberCount--;
-			channel.sendMessage("Click. " + author.getName() + " survived  <:poggies:564285288621539328>").queue();
+			channel.sendMessage("Click. " + author.getName() + " survived  <:poggies:564285288621539328>").complete();
 		}
 
-		channel.sendMessage("Chambers left in the cylinder: ||  "+chamberCount+"  ||").queue();
+		channel.sendMessage("Chambers left in the cylinder: ||  "+chamberCount+"  ||").complete();
 
 
 		// Find user in database
@@ -92,7 +92,7 @@ public class Roulette {
 				if (boom == 1)
 					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, deaths = deaths + 1, last_played = " + date.getTime() + " WHERE user = " + author.getIdLong());
 				else if (jammed == 1)
-					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, jammed = jammed + 1, last_played = " + date.getTime() + " WHERE user = " + author.getIdLong());
+					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, jams = jams + 1, last_played = " + date.getTime() + " WHERE user = " + author.getIdLong());
 				else
 					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, last_played = " + date.getTime() + " WHERE user = " + author.getIdLong());
 			}

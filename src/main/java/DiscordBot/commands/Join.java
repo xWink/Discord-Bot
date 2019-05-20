@@ -14,7 +14,7 @@ public class Join {
 
 		// If role is restricted, don't assign user to role
 		if (roleName.toLowerCase().equals("moderator") || roleName.toLowerCase().contains("verified")){
-			channel.sendMessage("I cannot set you to that role").queue();
+			channel.sendMessage("I cannot set you to that role").complete();
 			return;
 		}
 
@@ -22,12 +22,12 @@ public class Join {
 		if (!guild.getRolesByName(roleName,true).isEmpty()) {
 			// If user already has the role, tell them
 			if (guild.getMember(author).getRoles().contains((guild.getRolesByName(roleName, true).get(0)))){
-				channel.sendMessage("You already have this role!").queue();
+				channel.sendMessage("You already have this role!").complete();
 			}
 			// If user doesn't have the role, give it to them
 			else {
 				guild.getController().addRolesToMember(auth, guild.getRolesByName(roleName, true)).queue();
-				channel.sendMessage("Role \"" + roleName + "\" added to " + auth.getAsMention()).queue();
+				channel.sendMessage("Role \"" + roleName + "\" added to " + auth.getAsMention()).complete();
 			}
 			return;
 		}
@@ -49,7 +49,7 @@ public class Join {
 			System.out.println("Join Exception 1");
 			System.out.println("Exception: "+ e.toString());
 			System.out.println("Failed to connect to database, terminating command");
-			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 			return;
 		}
 
@@ -58,14 +58,14 @@ public class Join {
 			if (!rs.isBeforeFirst()){
 				PreparedStatement addRole = conn.prepareStatement("INSERT INTO roles VALUES ('"+roleName+"', "+author.getIdLong()+", null, null)");
 				addRole.executeUpdate();
-				channel.sendMessage("Your role application was added to the server!").queue();
+				channel.sendMessage("Your role application was added to the server!").complete();
 				return;
 			}
 		}
 		catch (SQLException e){
 			System.out.println("Join Exception 2");
 			System.out.println("Exception: "+e.toString());
-			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 
 		// If application does exist, check if the applicant has already applied
@@ -74,14 +74,14 @@ public class Join {
 			if (rs.getFloat("user1") == author.getIdLong() ||
 					rs.getFloat("user2") == author.getIdLong() ||
 					rs.getFloat("user3") == author.getIdLong()){
-				channel.sendMessage("You have already applied for this role!").queue();
+				channel.sendMessage("You have already applied for this role!").complete();
 				return;
 			}
 		}
 		catch (SQLException e){
 			System.out.println("Join Exception 3");
 			System.out.println("Exception: "+e.toString());
-			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 
 		// If they haven't applied, check how many applicants there are
@@ -114,14 +114,14 @@ public class Join {
 						applicationCount++;
 				}
 				// Send message response
-				channel.sendMessage("You are applicant #"+applicationCount+" for this role!").queue();
+				channel.sendMessage("You are applicant #"+applicationCount+" for this role!").complete();
 				return;
 			}
 		}
 		catch (SQLException e){
 			System.out.println("Join Exception 4");
 			System.out.println("Exception: "+e.toString());
-			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 
 		// If the number of applicants is full, create the role and channel and assign previous applicants to them
@@ -136,7 +136,7 @@ public class Join {
 		catch(SQLException e){
 			System.out.println("Join Exception 5");
 			System.out.println("Exception: "+e.toString());
-			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 
 		// Create role and channel
@@ -144,6 +144,7 @@ public class Join {
 		guild.getController().createTextChannel(roleName).setParent(guild.getCategoriesByName("Electives",true).get(0)).complete(); // Create the textChannel
 		TextChannel textChannel = guild.getTextChannelsByName(roleName,true).get(0); // Variable textChannel is the new channel
 		Role role = guild.getRolesByName(roleName,true).get(0);
+
 		// Give role to all applicants
 		try {
 			for (int i = 0; i < 4; i++)
@@ -154,6 +155,7 @@ public class Join {
 			System.out.println("Exception: "+e.toString());
 		}
 
+		// Set new channel permissions
 		try {
 			if (textChannel.getPermissionOverride(role) == null)
 				textChannel.createPermissionOverride(role).complete();

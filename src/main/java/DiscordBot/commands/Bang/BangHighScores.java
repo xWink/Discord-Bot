@@ -1,19 +1,19 @@
-package DiscordBot.helpers;
+package DiscordBot.commands.Bang;
 
-public class BangHighScores {
+class BangHighScores {
 
-    public double attemptCount;
-    public String mostAttemptsPlayer;
-    public double deathCount;
-    public String mostDeathsPlayer;
-    public double bestRate;
-    public String luckiest;
-    public double worstRate;
-    public String unluckiest;
-    public int jamCount;
-    public String mostJamsPlayer;
+    double attemptCount;
+    String mostAttemptsPlayer;
+    double deathCount;
+    String mostDeathsPlayer;
+    double bestRate;
+    String luckiest;
+    double worstRate;
+    String unluckiest;
+    int jamCount;
+    String mostJamsPlayer;
 
-    public BangHighScores(
+    BangHighScores(
             double attemptCount,
             String mostAttemptsPlayer,
             double deathCount,

@@ -1,5 +1,12 @@
 package DiscordBot;
 
+import DiscordBot.commands.AdminCommands.*;
+import DiscordBot.commands.Bang.BangScores;
+import DiscordBot.commands.Bang.MyBang;
+import DiscordBot.commands.Bang.Roulette;
+import DiscordBot.commands.Groups.Join;
+import DiscordBot.commands.Groups.Leave;
+import DiscordBot.commands.Groups.ShowRoles;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;

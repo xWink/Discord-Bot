@@ -1,9 +1,7 @@
-package DiscordBot.commands;
+package DiscordBot.commands.Bang;
 
-import DiscordBot.helpers.*;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import DiscordBot.helpers.BangHighScores;
 
 public class BangScores {
 

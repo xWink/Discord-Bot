@@ -3,7 +3,7 @@ package DiscordBot;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import DiscordBot.helpers.UpdateBangRoles;
+import DiscordBot.commands.Bang.UpdateBangRoles;
 
 import java.util.Timer;
 import java.util.TimerTask;

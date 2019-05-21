@@ -1,4 +1,4 @@
-package DiscordBot.helpers;
+package DiscordBot.commands.Bang;
 
 import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.Guild;
@@ -7,9 +7,9 @@ import java.util.Date;
 
 import java.sql.*;
 
-public class GetBangScores {
+class GetBangScores {
 
-    public static BangHighScores getBangScores(Guild guild){
+    static BangHighScores getBangScores(Guild guild){
 
         double attemptCount, deathCount, bestRate, worstRate;
         int jamCount;

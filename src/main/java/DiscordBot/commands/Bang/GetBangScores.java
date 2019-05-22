@@ -47,7 +47,7 @@ class GetBangScores {
             mostDeathsPlayer = guild.getMemberById(mostDeaths.getLong("user")).getUser().getName();
 
             // Get luckiest and unluckiest players
-            PreparedStatement getLuckRanks = conn.prepareStatement("SELECT user, death_rate FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, death_rate ORDER BY death_rate");
+            PreparedStatement getLuckRanks = conn.prepareStatement("SELECT user, death_rate FROM bang WHERE "+date.getTime()+" - last_played < 604800000 AND tries > 20 GROUP BY user, death_rate ORDER BY death_rate");
             luck = getLuckRanks.executeQuery();
 
             // Luckiest

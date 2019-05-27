@@ -1,7 +1,15 @@
 package DiscordBot;
 
+import DiscordBot.commands.AdminCommands.*;
+import DiscordBot.commands.Bang.BangScores;
+import DiscordBot.commands.Bang.MyBang;
+import DiscordBot.commands.Bang.Roulette;
+import DiscordBot.commands.Groups.Join;
+import DiscordBot.commands.Groups.Leave;
+import DiscordBot.commands.Groups.ShowRoles;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
+import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -15,6 +23,12 @@ public class MyEventListener extends ListenerAdapter {
 	public static Guild guild;
 	private int chamberCount = 6;
 	private ConfigFile cfg = RoleBot.config;
+
+	@Override
+	public void onGuildMemberJoin(GuildMemberJoinEvent event){
+		guild.getTextChannelById(cfg.channel[0]).sendMessage("Welcome "+event.getUser().getAsMention()+
+		"feel free to ask any questions in #general!\nIf you want to play with our bot, go to #bots and say `!help` :smiley:").queue();
+	}
 
 	@Override
 	public void onDisconnect(DisconnectEvent event){

@@ -1,4 +1,4 @@
-package DiscordBot.helpers;
+package DiscordBot.commands.Bang;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;

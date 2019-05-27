@@ -26,6 +26,7 @@ public class Roulette {
 			System.out.println("Roulette Exception 1");
 			System.out.println("Exception: "+ e.toString());
 			System.out.println("Failed to connect to database, terminating command");
+			channel.sendMessage("An error occurred, please contact a moderator :(").queue();
 			return chamberCount;
 		}
 
@@ -83,7 +84,7 @@ public class Roulette {
 			// If user doesn't exist, add new user
 			if (!exists){
 				Statement stmt = conn.createStatement();
-				stmt.executeUpdate("INSERT INTO bang VALUES ("+author.getIdLong()+", 1, "+boom+", "+jammed+", "+date.getTime()+")");
+				stmt.executeUpdate("INSERT INTO bang VALUES ("+author.getIdLong()+", 1, "+boom+", "+jammed+", "+date.getTime()+", "+boom+")");
 			}
 
 			// If user exists, update the scores based on boom and jammed value
@@ -100,6 +101,7 @@ public class Roulette {
 		catch (SQLException e) {
 			System.out.println("Roulette Exception 2");
 			System.out.println("SQL Exception: "+ e.toString());
+			channel.sendMessage("An error occurred, please contact a moderator :(").queue();
 		}
 
 		return chamberCount;

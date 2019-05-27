@@ -83,8 +83,8 @@ public class Roulette {
 
 			// If user doesn't exist, add new user
 			if (!exists){
-				Statement stmt = conn.createStatement();
-				stmt.executeUpdate("INSERT INTO bang VALUES ("+author.getIdLong()+", 1, "+boom+", "+jammed+", "+date.getTime()+", "+boom+")");
+				PreparedStatement stmt = conn.prepareStatement("INSERT INTO bang (user, tries, deaths, jams, last_played) VALUES ("+author.getIdLong()+", 1, "+boom+", "+jammed+", "+date.getTime()+")");
+				stmt.executeUpdate();
 			}
 
 			// If user exists, update the scores based on boom and jammed value

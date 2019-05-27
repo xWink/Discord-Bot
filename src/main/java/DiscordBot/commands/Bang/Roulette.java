@@ -76,12 +76,6 @@ public class Roulette {
 			PreparedStatement st = conn.prepareStatement("SELECT * FROM bang WHERE user="+author.getIdLong());
 			ResultSet rs = st.executeQuery();
 
-			if (author.getName().equalsIgnoreCase("wink")){
-				PreparedStatement stmt = conn.prepareStatement("INSERT INTO bang (user, tries, deaths, jams, last_played, death_rate) VALUES ("+author.getIdLong()+", 1, "+boom+", "+jammed+", "+date.getTime()+", NULL)");
-				stmt.executeUpdate();
-				return chamberCount;
-			}
-
 			if(rs.next()){
 				exists = true;
 			}

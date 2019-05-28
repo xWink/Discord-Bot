@@ -28,20 +28,20 @@ public class BlackJack {
 
     private static boolean gameInactive(Connection conn, User author){
 
-        boolean active = false;
+        boolean inactive = true;
 
         try {
             PreparedStatement st = conn.prepareStatement("SELECT * FROM blackjack WHERE user=" + author.getIdLong());
             ResultSet rs = st.executeQuery();
 
             if (rs.next())
-                active = true;
+                inactive = false;
         }
         catch (Exception e){
             System.out.println("BlackJack Exception 2\nException: "+e.toString());
         }
 
-        return active; // Return true if no active game is found, false if a game is found
+        return inactive; // Return true if no active game is found, false if a game is found
     }
 
     private static void createNewGame(Connection conn, User author, MessageChannel channel){
@@ -71,7 +71,7 @@ public class BlackJack {
         // Connect to database
         Connection conn;
         if ((conn = connect()) == null){
-            System.out.println("Cannot connect to database, aborting BlackJack game");
+            System.out.println("Cannot connect to database, aborting hit command");
             channel.sendMessage("Can't connect to database. Please contact a moderator!").queue();
             return;
         }
@@ -96,7 +96,7 @@ public class BlackJack {
         // Connect to database
         Connection conn;
         if ((conn = connect()) == null){
-            System.out.println("Cannot connect to database, aborting BlackJack game");
+            System.out.println("Cannot connect to database, aborting stand command");
             channel.sendMessage("Can't connect to database. Please contact a moderator!").queue();
             return;
         }

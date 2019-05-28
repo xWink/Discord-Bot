@@ -73,8 +73,6 @@ public class BlackJack {
         Card newCard = pickRandomCard(channel);
 
         try {
-            rs.next();
-
             // Find first empty column
             int index = 0;
             while (rs.getString(index) != null)

@@ -40,6 +40,6 @@ public class Card {
     }
 
     public String toEmote() {
-        return "[" + suit.getEmote() + rank.getSymbol() + "]";
+        return "[" + rank.getSymbol() + suit.getEmote() + "]";
     }
 }

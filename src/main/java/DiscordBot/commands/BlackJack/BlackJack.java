@@ -55,7 +55,7 @@ public class BlackJack {
         System.out.println("Here2");
 
         try {
-            PreparedStatement st = conn.prepareStatement("INSERT INTO blackjack (user, card1) VALUES ("+author.getIdLong()+", "+firstCard+")");
+            PreparedStatement st = conn.prepareStatement("INSERT INTO blackjack (user, card1) VALUES ("+author.getIdLong()+", '"+firstCard+"')");
             st.executeUpdate();
         }
         catch(Exception e){
@@ -102,7 +102,7 @@ public class BlackJack {
         }
 
         // Check if a game exists for the user
-        if (!gameInactive(conn, author)){
+        if (gameInactive(conn, author)){
             channel.sendMessage("You are not currently in a game!\n To start a new one, say `!hit`").queue();
             return;
         }

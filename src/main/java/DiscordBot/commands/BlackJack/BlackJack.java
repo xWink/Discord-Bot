@@ -74,8 +74,8 @@ public class BlackJack {
 
         try {
             // Find first empty column
-            int index = 0;
-            while (rs.getString(index) != null)
+            int index = 1;
+            while (rs.getString("card"+index) != null)
                 index++;
 
             PreparedStatement st = conn.prepareStatement("UPDATE blackjack SET card"+index+" = '"+newCard.toDbFormat()+"' WHERE user = "+author.getIdLong());

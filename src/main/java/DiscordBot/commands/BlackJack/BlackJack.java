@@ -48,8 +48,11 @@ public class BlackJack {
 
         // Pick a random card as their first card
         ArrayList<Card> deck = Card.newDeck();
+        System.out.println("Here0");
         Collections.shuffle(deck);
+        System.out.println("Here1");
         String firstCard = deck.get(0).getRank().getSymbol() + deck.get(0).getSuit().getInitial();
+        System.out.println("Here2");
 
         try {
             PreparedStatement st = conn.prepareStatement("INSERT INTO blackjack (user, card1) VALUES ("+author.getIdLong()+", "+firstCard+")");

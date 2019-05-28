@@ -4,6 +4,7 @@ import DiscordBot.commands.AdminCommands.*;
 import DiscordBot.commands.Bang.BangScores;
 import DiscordBot.commands.Bang.MyBang;
 import DiscordBot.commands.Bang.Roulette;
+import DiscordBot.commands.BlackJack.BlackJack;
 import DiscordBot.commands.Groups.Join;
 import DiscordBot.commands.Groups.Leave;
 import DiscordBot.commands.Groups.ShowRoles;
@@ -26,8 +27,8 @@ public class MyEventListener extends ListenerAdapter {
 
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event){
-		guild.getTextChannelById(cfg.channel[0]).sendMessage("Welcome "+event.getUser().getAsMention()+
-		"feel free to ask any questions in #general!\nIf you want to play with our bot, go to #bots and say `!help` :smiley:").queue();
+		guild.getTextChannelsByName("general", true).get(0).sendMessage("Welcome "+event.getUser().getAsMention()+
+		"! Feel free to ask any questions in #general!\nIf you want to play with our bot, go to #bots and say `!help` :smiley:").queue();
 	}
 
 	@Override
@@ -113,5 +114,13 @@ public class MyEventListener extends ListenerAdapter {
 		// Show available Elective roles
 		else if (content.toLowerCase().equals("!roles"))
 			ShowRoles.showRoles(guild, channel);
+
+		// Hit in blackjack
+		else if (content.toLowerCase().equalsIgnoreCase("!hit"))
+			BlackJack.hit(author, channel);
+
+		// Stand in blackjack
+		else if (content.toLowerCase().equalsIgnoreCase("!stand"))
+			BlackJack.stand(author, channel);
 	}
 }

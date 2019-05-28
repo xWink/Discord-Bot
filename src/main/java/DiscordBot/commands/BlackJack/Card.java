@@ -42,4 +42,8 @@ public class Card {
     public String toEmote() {
         return "[" + rank.getSymbol() + suit.getEmote() + "]";
     }
+
+    public String toDbFormat(){
+        return rank.getSymbol()+suit.getInitial();
+    }
 }

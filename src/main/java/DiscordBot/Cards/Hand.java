@@ -1,4 +1,4 @@
-package DiscordBot.commands.BlackJack;
+package DiscordBot.Cards;
 
 import java.util.ArrayList;
 import java.util.List;

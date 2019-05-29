@@ -4,7 +4,7 @@ import DiscordBot.commands.AdminCommands.*;
 import DiscordBot.commands.Bang.BangScores;
 import DiscordBot.commands.Bang.MyBang;
 import DiscordBot.commands.Bang.Roulette;
-import DiscordBot.commands.BlackJack.BlackJack;
+import DiscordBot.commands.BlackJack.BlackJackCommands;
 import DiscordBot.commands.Groups.Join;
 import DiscordBot.commands.Groups.Leave;
 import DiscordBot.commands.Groups.ShowRoles;
@@ -117,14 +117,14 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Hit in blackjack
 		else if (content.toLowerCase().equalsIgnoreCase("!hit"))
-			BlackJack.hit(author, channel);
+			BlackJackCommands.hit(author, channel);
 
 		// Stand in blackjack
 		else if (content.toLowerCase().equalsIgnoreCase("!stand"))
-			BlackJack.stand(author, channel);
+			BlackJackCommands.stand(author, channel);
 
 		// Show hand in blackjack
 		else if (content.toLowerCase().equalsIgnoreCase("!hand"))
-			BlackJack.myHand(author, channel);
+			BlackJackCommands.myHand(author, channel);
 	}
 }

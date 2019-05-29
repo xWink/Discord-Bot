@@ -1,6 +1,7 @@
-package DiscordBot.commands.BlackJack;
+package DiscordBot.Cards;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Card {
@@ -18,16 +19,16 @@ public class Card {
     private final CardRank rank;
     private final CardSuit suit;
 
-    Card(CardRank rank, CardSuit suit) {
+    public Card(CardRank rank, CardSuit suit) {
         this.rank = rank;
         this.suit = suit;
     }
 
-    static ArrayList<Card> newDeck() {
+    public static ArrayList<Card> newDeck() {
         return new ArrayList<>(protoDeck);
     }
 
-    CardRank getRank() {
+    public CardRank getRank() {
         return rank;
     }
 
@@ -39,11 +40,17 @@ public class Card {
         return rank.getSymbol() + " of " + suit.getName();
     }
 
-    String toEmote() {
+    public String toEmote() {
         return "[" + rank.getSymbol() + suit.getEmote() + "]";
     }
 
-    String toDbFormat(){
+    public String toDbFormat(){
         return rank.getSymbol()+suit.getInitial();
+    }
+
+    public static Card pickRandomCard(){
+        ArrayList<Card> deck = Card.newDeck(); // Create deck of cards
+        Collections.shuffle(deck); // Shuffle the deck
+        return deck.get(0); // Pick the top card from the deck
     }
 }

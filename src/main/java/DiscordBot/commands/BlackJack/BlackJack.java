@@ -1,5 +1,9 @@
 package DiscordBot.commands.BlackJack;
 
+import DiscordBot.Cards.Card;
+import DiscordBot.Cards.CardRank;
+import DiscordBot.Cards.CardSuit;
+import DiscordBot.Cards.Hand;
 import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -8,12 +12,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collections;
 
-public class BlackJack {
+class BlackJack {
 
-    private static Connection connect(){
+    static Connection connect(){
 
         // Connect to database
         try {
@@ -26,7 +28,7 @@ public class BlackJack {
         }
     }
 
-    private static ResultSet findGame(Connection conn, User author){
+    static ResultSet findGame(Connection conn, User author){
 
         try {
             PreparedStatement st = conn.prepareStatement("SELECT * FROM blackjack WHERE user=" + author.getIdLong());
@@ -42,10 +44,10 @@ public class BlackJack {
         return null; // Return null if no game found
     }
 
-    private static void createNewGame(Connection conn, User author, MessageChannel channel){
+    static void createNewGame(Connection conn, User author, MessageChannel channel){
 
-        Card firstCard = pickRandomCard();
-        Card secondCard = pickRandomCard();
+        Card firstCard = Card.pickRandomCard();
+        Card secondCard = Card.pickRandomCard();
         String firstCardString = firstCard.toDbFormat();
         String secondCardString = secondCard.toDbFormat();
 
@@ -61,16 +63,9 @@ public class BlackJack {
         channel.sendMessage(author.getName() + " received their first 2 cards: " + firstCard.toEmote() + " " + secondCard.toEmote()).complete();
     }
 
-    private static Card pickRandomCard(){
+    static void addCard(User author, Connection conn, MessageChannel channel, ResultSet rs){
 
-        ArrayList<Card> deck = Card.newDeck(); // Create deck of cards
-        Collections.shuffle(deck); // Shuffle the deck
-        return deck.get(0); // Pick the top card from the deck
-    }
-
-    private static void addCard(User author, Connection conn, MessageChannel channel, ResultSet rs){
-
-        Card newCard = pickRandomCard();
+        Card newCard = Card.pickRandomCard();
         channel.sendMessage(author.getName() + " received: " + newCard.toEmote()).complete();
 
         try {
@@ -88,7 +83,7 @@ public class BlackJack {
         }
     }
 
-    private static Hand getPlayerHand(User author, MessageChannel channel){
+    static Hand getPlayerHand(User author, MessageChannel channel){
 
         Connection conn;
         ResultSet rs;
@@ -148,12 +143,12 @@ public class BlackJack {
 
         // Give dealer new cards until hand value >= 18
         while (dealerHand.getValue() < 18)
-            dealerHand.add(pickRandomCard());
+            dealerHand.add(Card.pickRandomCard());
 
         return dealerHand;
     }
 
-    private static int checkWinner(User author, MessageChannel channel, Hand playerHand){
+    static int checkWinner(User author, MessageChannel channel, Hand playerHand){
 
         Hand dealerHand;
 
@@ -184,15 +179,18 @@ public class BlackJack {
         }
     }
 
-    private static void endGame(User author, Connection conn, MessageChannel channel, int winner){
+    static void endGame(User author, Connection conn, MessageChannel channel, int winner){
 
         switch (winner){
             case -1:
                 System.out.println("Dealer wins");
+                break;
             case 0:
                 System.out.println("Tie game");
+                break;
             case 1:
                 System.out.println("Player wins");
+                break;
         }
 
         // Delete user's line from database
@@ -204,82 +202,5 @@ public class BlackJack {
             System.out.println("BlackJack Exception 6\nException: "+ e.toString());
             channel.sendMessage("Error, could not end your game. Please contact a moderator!").queue();
         }
-    }
-
-    public static void hit(User author, MessageChannel channel) {
-
-        Connection conn;
-        ResultSet rs;
-        Hand hand;
-
-        // Connect to database
-        if ((conn = connect()) == null) {
-            System.out.println("Cannot connect to database, aborting hit command");
-            channel.sendMessage("Can't connect to database. Please contact a moderator!").queue();
-            return;
-        }
-
-        // If no game is active for the user
-        if ((rs = findGame(conn, author)) == null) {
-            createNewGame(conn, author, channel);
-            return;
-        }
-
-        // Add card
-        addCard(author, conn, channel, rs);
-
-        // Make sure hand is not null
-        if ((hand = getPlayerHand(author, channel)) == null){
-            channel.sendMessage("Error getting your hand").queue();
-            return;
-        }
-
-        // Check if over 21
-        if (hand.getValue() > 21) {
-            channel.sendMessage("You busted :(").queue();
-            int winner = checkWinner(author, channel, hand);
-            endGame(author, conn, channel, winner);
-        } else
-            channel.sendMessage(author.getName() + "'s hand is now:\n" + hand.showHand()).complete();
-    }
-
-    public static void myHand(User author, MessageChannel channel){
-
-        Hand hand;
-        if ((hand = getPlayerHand(author, channel)) != null)
-            channel.sendMessage(author.getName()+ "'s hand is:\n" + hand.showHand()).complete();
-    }
-
-
-    public static void stand(User author, MessageChannel channel){
-
-        Connection conn;
-        Hand playerHand;
-        int winner;
-
-        // Connect to database
-        if ((conn = connect()) == null){
-            System.out.println("Cannot connect to database, aborting stand command");
-            channel.sendMessage("Can't connect to database. Please contact a moderator!").queue();
-            return;
-        }
-
-        // Check if a game exists for the user
-        if (findGame(conn, author) == null){
-            channel.sendMessage("You are not currently in a game!\n To start a new one, say `!hit`").queue();
-            return;
-        }
-
-        // Make sure hand is not null
-        if ((playerHand = getPlayerHand(author, channel)) == null){
-            channel.sendMessage("Error getting your hand").queue();
-            return;
-        }
-
-        // Verify winner
-        winner = checkWinner(author, channel, playerHand);
-
-        // Distribute reward and remove line from db
-        endGame(author, conn, channel, winner);
     }
 }

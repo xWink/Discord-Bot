@@ -1,4 +1,4 @@
-package DiscordBot.commands.Groups;
+package DiscordBot.commands.groups;
 
 import net.dv8tion.jda.core.entities.Channel;
 import net.dv8tion.jda.core.entities.Guild;

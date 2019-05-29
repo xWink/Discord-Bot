@@ -1,13 +1,15 @@
 package DiscordBot;
 
-import DiscordBot.commands.AdminCommands.*;
-import DiscordBot.commands.Bang.BangScores;
-import DiscordBot.commands.Bang.MyBang;
-import DiscordBot.commands.Bang.Roulette;
-import DiscordBot.commands.BlackJack.BlackJackCommands;
-import DiscordBot.commands.Groups.Join;
-import DiscordBot.commands.Groups.Leave;
-import DiscordBot.commands.Groups.ShowRoles;
+import DiscordBot.commands.admin_commands.*;
+import DiscordBot.commands.bang.BangScores;
+import DiscordBot.commands.bang.MyBang;
+import DiscordBot.commands.bang.Roulette;
+import DiscordBot.commands.blackjack.BlackJackCommands;
+import DiscordBot.commands.groups.Join;
+import DiscordBot.commands.groups.Leave;
+import DiscordBot.commands.groups.ShowRoles;
+import DiscordBot.commands.misc.Help;
+import DiscordBot.commands.misc.Ping;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
@@ -16,8 +18,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.util.Arrays;
 import java.util.List;
-
-import DiscordBot.commands.*;
 
 public class MyEventListener extends ListenerAdapter {
 

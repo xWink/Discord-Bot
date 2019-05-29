@@ -1,9 +1,9 @@
-package DiscordBot.commands.BlackJack;
+package DiscordBot.commands.blackjack;
 
-import DiscordBot.Cards.Card;
-import DiscordBot.Cards.CardRank;
-import DiscordBot.Cards.CardSuit;
-import DiscordBot.Cards.Hand;
+import DiscordBot.util.cards.Card;
+import DiscordBot.util.cards.CardRank;
+import DiscordBot.util.cards.CardSuit;
+import DiscordBot.util.cards.Hand;
 import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -23,7 +23,7 @@ class BlackJack {
             return DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
         }
         catch (Exception e){
-            System.out.println("BlackJack Exception 1\nException: "+ e.toString());
+            System.out.println("blackjack Exception 1\nException: "+ e.toString());
             return null;
         }
     }
@@ -38,7 +38,7 @@ class BlackJack {
                 return rs; // Return the result set if game found
         }
         catch (Exception e){
-            System.out.println("BlackJack Exception 2\nException: "+e.toString());
+            System.out.println("blackjack Exception 2\nException: "+e.toString());
         }
 
         return null; // Return null if no game found
@@ -56,7 +56,7 @@ class BlackJack {
             st.executeUpdate();
         }
         catch(Exception e){
-            System.out.println("BlackJack Exception 3\nException: "+ e.toString());
+            System.out.println("blackjack Exception 3\nException: "+ e.toString());
             channel.sendMessage("Error, could not create a new game. Please contact a moderator!").queue();
         }
 
@@ -78,7 +78,7 @@ class BlackJack {
             st.executeUpdate();
         }
         catch(Exception e){
-            System.out.println("BlackJack Exception 4\nException: "+ e.toString());
+            System.out.println("blackjack Exception 4\nException: "+ e.toString());
             channel.sendMessage("Error, could not add card to database. Please contact a moderator!").queue();
         }
     }
@@ -130,7 +130,7 @@ class BlackJack {
             }
         }
         catch (Exception e){
-            System.out.println("BlackJack Exception 5\nException: "+ e.toString());
+            System.out.println("blackjack Exception 5\nException: "+ e.toString());
             channel.sendMessage("Error, could not get hand. Please contact a moderator!").queue();
         }
 
@@ -155,6 +155,8 @@ class BlackJack {
         // Get dealer's hand
         dealerHand = getDealerHand();
         channel.sendMessage("The dealer's hand is:\n" + dealerHand.showHand()).complete();
+        if (dealerHand.getValue() > 21)
+            channel.sendMessage("Dealer busted!").complete();
 
         // Make sure hand is not null
         if (playerHand == null){
@@ -164,7 +166,7 @@ class BlackJack {
 
         // If dealer wins
         if (dealerHand.getValue() <= 21 && (playerHand.getValue() < dealerHand.getValue() || playerHand.getValue() > 21)){
-            channel.sendMessage("Dealer wins :(").queue();
+            channel.sendMessage("Dealer wins :cry:").queue();
             return -1;
         }
         // If player wins
@@ -199,7 +201,7 @@ class BlackJack {
             st.executeUpdate();
         }
         catch(Exception e){
-            System.out.println("BlackJack Exception 6\nException: "+ e.toString());
+            System.out.println("blackjack Exception 6\nException: "+ e.toString());
             channel.sendMessage("Error, could not end your game. Please contact a moderator!").queue();
         }
     }

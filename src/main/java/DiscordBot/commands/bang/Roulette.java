@@ -1,4 +1,4 @@
-package DiscordBot.commands.Bang;
+package DiscordBot.commands.bang;
 
 import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -51,14 +51,14 @@ public class Roulette {
 				else {
 					boom = 1;
 					chamberCount = 6;
-					channel.sendMessage("Bang! " + author.getName() + " died :skull:").complete();
+					channel.sendMessage("bang! " + author.getName() + " died :skull:").complete();
 				}
 			}
 			// If there is more than 1 chamber left, boom
 			else {
 				boom = 1;
 				chamberCount = 6;
-				channel.sendMessage("Bang! " + author.getName() + " died :skull:").complete();
+				channel.sendMessage("bang! " + author.getName() + " died :skull:").complete();
 			} 
 		}
 		// No boom

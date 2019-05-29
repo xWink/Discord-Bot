@@ -1,4 +1,4 @@
-package DiscordBot.commands.AdminCommands;
+package DiscordBot.commands.admin_commands;
 
 import net.dv8tion.jda.core.entities.*;
 

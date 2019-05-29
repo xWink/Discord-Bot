@@ -1,13 +1,13 @@
-package DiscordBot.commands.BlackJack;
+package DiscordBot.commands.blackjack;
 
-import DiscordBot.Cards.Hand;
+import DiscordBot.util.cards.Hand;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 
-import static DiscordBot.commands.BlackJack.BlackJack.*;
+import static DiscordBot.commands.blackjack.BlackJack.*;
 
 public class BlackJackCommands {
 
@@ -41,7 +41,7 @@ public class BlackJackCommands {
 
         // Check if over 21
         if (hand.getValue() > 21) {
-            channel.sendMessage("You busted :(").queue();
+            channel.sendMessage("You busted").queue();
             int winner = checkWinner(author, channel, hand);
             endGame(author, conn, channel, winner);
         } else

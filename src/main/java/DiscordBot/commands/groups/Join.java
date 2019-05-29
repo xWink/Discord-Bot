@@ -1,4 +1,4 @@
-package DiscordBot.commands.Groups;
+package DiscordBot.commands.groups;
 
 import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.Permission;

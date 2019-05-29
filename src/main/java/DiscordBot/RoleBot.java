@@ -3,7 +3,7 @@ package DiscordBot;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import DiscordBot.commands.Bang.UpdateBangRoles;
+import DiscordBot.util.bang_util.UpdateBangRoles;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -21,7 +21,7 @@ public class RoleBot {
 			JDA api = new JDABuilder(AccountType.BOT).setToken(config.token).build();
 			api.addEventListener(new MyEventListener());
 
-			// Check Bang high scores every hour
+			// Check bang high scores every hour
 			Timer timer = new Timer();
 			TimerTask task = new TimerTask() {
 				@Override

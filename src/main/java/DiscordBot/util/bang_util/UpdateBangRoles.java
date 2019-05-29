@@ -1,4 +1,4 @@
-package DiscordBot.commands.Bang;
+package DiscordBot.util.bang_util;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
@@ -19,15 +19,15 @@ public class UpdateBangRoles {
 
             // Remove role from loser and add role to new winner
             // Most attempts
-            giveAndTakeBangRoles(guild, attemptsRole, highScores.mostAttemptsPlayer);
+            giveAndTakeBangRoles(guild, attemptsRole, highScores.getMostAttemptsPlayer());
             // Most deaths
-            giveAndTakeBangRoles(guild, deathsRole, highScores.mostDeathsPlayer);
+            giveAndTakeBangRoles(guild, deathsRole, highScores.getMostDeathsPlayer());
             // Luckiest
-            giveAndTakeBangRoles(guild, luckyRole, highScores.luckiest);
+            giveAndTakeBangRoles(guild, luckyRole, highScores.getLuckiest());
             // Unluckiest
-            giveAndTakeBangRoles(guild, unluckyRole, highScores.unluckiest);
+            giveAndTakeBangRoles(guild, unluckyRole, highScores.getUnluckiest());
             // Most jams
-            giveAndTakeBangRoles(guild, jamRole, highScores.mostJamsPlayer);
+            giveAndTakeBangRoles(guild, jamRole, highScores.getMostJamsPlayer());
         }
     }
 

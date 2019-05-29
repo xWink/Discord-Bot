@@ -1,4 +1,4 @@
-package DiscordBot.Cards;
+package DiscordBot.util.cards;
 
 import java.util.ArrayList;
 import java.util.Collections;

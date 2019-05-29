@@ -1,4 +1,4 @@
-package DiscordBot.commands.Bang;
+package DiscordBot.commands.bang;
 
 import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.MessageChannel;

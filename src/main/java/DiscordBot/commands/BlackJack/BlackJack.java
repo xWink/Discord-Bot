@@ -137,8 +137,8 @@ public class BlackJack {
             }
         }
         catch (Exception e){
-            System.out.println("BlackJack Exception 6\nException: "+ e.toString());
-            channel.sendMessage("Error, could not end your game. Please contact a moderator!").queue();
+            System.out.println("BlackJack Exception 5\nException: "+ e.toString());
+            channel.sendMessage("Error, could not get hand. Please contact a moderator!").queue();
         }
 
         return hand;
@@ -148,11 +148,11 @@ public class BlackJack {
 
         // Delete user's line from database
         try {
-            PreparedStatement st = conn.prepareStatement("DELETE * FROM blackjack WHERE user = " + author.getIdLong());
+            PreparedStatement st = conn.prepareStatement("DELETE FROM blackjack WHERE user = " + author.getIdLong());
             st.executeUpdate();
         }
         catch(Exception e){
-            System.out.println("BlackJack Exception 5\nException: "+ e.toString());
+            System.out.println("BlackJack Exception 6\nException: "+ e.toString());
             channel.sendMessage("Error, could not end your game. Please contact a moderator!").queue();
         }
     }

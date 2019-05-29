@@ -189,7 +189,7 @@ public class BlackJack {
 
         Hand hand;
         if ((hand = getHand(author, channel)) != null)
-            hand.showHand();
+            channel.sendMessage(hand.showHand()).queue();
     }
 
 

@@ -40,10 +40,8 @@ public class MyEventListener extends ListenerAdapter {
   	public void onMessageReceived(MessageReceivedEvent event){
 
 		final User author = event.getAuthor(); // Variable author is the author of type User
-		if (author.isBot()){
-			System.out.println(author+": "+event.getMessage().getContentRaw());
+		if (author.isBot())
 			return; // If the event is made by the bot, ignore it
-		}
 
 		final Message message = event.getMessage(); // Variable message is the detected message
 		final String content = message.getContentRaw(); // Variable content is the text of the message

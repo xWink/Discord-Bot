@@ -18,16 +18,16 @@ public class Card {
     private final CardRank rank;
     private final CardSuit suit;
 
-    private Card(CardRank rank, CardSuit suit) {
+    Card(CardRank rank, CardSuit suit) {
         this.rank = rank;
         this.suit = suit;
     }
 
-    public static ArrayList<Card> newDeck() {
+    static ArrayList<Card> newDeck() {
         return new ArrayList<>(protoDeck);
     }
 
-    public CardRank getRank() {
+    CardRank getRank() {
         return rank;
     }
 
@@ -39,11 +39,11 @@ public class Card {
         return rank.getSymbol() + " of " + suit.getName();
     }
 
-    public String toEmote() {
+    String toEmote() {
         return "[" + rank.getSymbol() + suit.getEmote() + "]";
     }
 
-    public String toDbFormat(){
+    String toDbFormat(){
         return rank.getSymbol()+suit.getInitial();
     }
 }

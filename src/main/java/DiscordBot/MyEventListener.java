@@ -122,5 +122,9 @@ public class MyEventListener extends ListenerAdapter {
 		// Stand in blackjack
 		else if (content.toLowerCase().equalsIgnoreCase("!stand"))
 			BlackJack.stand(author, channel);
+
+		// Show hand in blackjack
+		else if (content.toLowerCase().equalsIgnoreCase("!hand"))
+			BlackJack.myHand(author, channel);
 	}
 }

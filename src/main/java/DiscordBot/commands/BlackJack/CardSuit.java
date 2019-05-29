@@ -1,17 +1,27 @@
 package DiscordBot.commands.BlackJack;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum CardSuit {
 
-    SPADES("spades", ":spades:", 's'),
-    CLUBS("clubs", ":clubs:", 'c'),
-    HEARTS("hearts", ":hearts:", 'h'),
-    DIAMONDS("diamonds", ":diamonds:", 'd');
+    SPADES("spades", "\\♠", "s"),
+    CLUBS("clubs", "\\♣", "c"),
+    HEARTS("hearts", "\\♥", "h"),
+    DIAMONDS("diamonds", "\\♦", "d");
+
+    private static final Map<String, CardSuit> MY_MAP = new HashMap<>();
+    static {
+        for (CardSuit cardSuit : values()) {
+            MY_MAP.put(cardSuit.getInitial(), cardSuit);
+        }
+    }
 
     private final String name;
     private final String emote;
-    private final char initial;
+    private final String initial;
 
-    CardSuit(String name, String emote, char initial){
+    CardSuit(String name, String emote, String initial){
         this.name = name;
         this.emote = emote;
         this.initial = initial;
@@ -25,7 +35,11 @@ public enum CardSuit {
         return emote;
     }
 
-    public char getInitial(){
+    public String getInitial(){
         return initial;
+    }
+
+    public static CardSuit getByInitial(String initial){
+        return MY_MAP.get(initial);
     }
 }

@@ -11,6 +11,9 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static DiscordBot.commands.BlackJack.CardRank.TEN;
+import static DiscordBot.commands.BlackJack.CardSuit.SPADES;
+
 public class BlackJack {
 
     private static Connection connect(){
@@ -87,6 +90,60 @@ public class BlackJack {
         }
     }
 
+    private static Hand getHand(User author, MessageChannel channel){
+
+        Connection conn;
+        ResultSet rs;
+        int i = 1;
+        String cardString;
+        Hand hand = new Hand();
+
+        // Connect to database
+        if ((conn = connect()) == null){
+            System.out.println("Cannot connect to database, aborting stand command");
+            channel.sendMessage("Can't connect to database. Please contact a moderator!").queue();
+            return null;
+        }
+
+        // Check if a game exists for the user
+        if ((rs = findGame(conn, author)) == null){
+            channel.sendMessage("You are not currently in a game!\n To start a new one, say `!hit`").queue();
+            return null;
+        }
+
+        try {
+            // For each card in the player's hand
+            while ((cardString = rs.getString("card" + i)) != null){
+                String rankString;
+                String suitString;
+
+                // If the rank is anything other than 10
+                if (cardString.length() == 3) {
+                    rankString = cardString.substring(0, 2);
+                    suitString = cardString.substring(2);
+                }
+                else{ // rank is 10
+                    rankString = cardString.substring(0, 3);
+                    suitString = cardString.substring(3);
+                }
+
+                CardRank rank = CardRank.getBySymbol(rankString); // Make rank object
+                CardSuit suit = CardSuit.getByInitial(suitString); // Make suit object
+
+                Card card = new Card(rank, suit); // Make card object
+                hand.add(card);
+
+                i++;
+            }
+        }
+        catch (Exception e){
+            System.out.println("BlackJack Exception 6\nException: "+ e.toString());
+            channel.sendMessage("Error, could not end your game. Please contact a moderator!").queue();
+        }
+
+        return hand;
+    }
+
     private static void endGame(User author, Connection conn, MessageChannel channel){
 
         // Delete user's line from database
@@ -102,10 +159,10 @@ public class BlackJack {
 
     public static void hit(User author, MessageChannel channel){
 
+        Connection conn;
         ResultSet rs;
 
         // Connect to database
-        Connection conn;
         if ((conn = connect()) == null){
             System.out.println("Cannot connect to database, aborting hit command");
             channel.sendMessage("Can't connect to database. Please contact a moderator!").queue();
@@ -128,12 +185,20 @@ public class BlackJack {
         //If under 21, show hand and update db
     }
 
+    public static void myHand(User author, MessageChannel channel){
+
+        Hand hand;
+        if ((hand = getHand(author, channel)) != null)
+            hand.showHand();
+    }
+
+
     public static void stand(User author, MessageChannel channel){
 
+        Connection conn;
         ResultSet rs;
 
         // Connect to database
-        Connection conn;
         if ((conn = connect()) == null){
             System.out.println("Cannot connect to database, aborting stand command");
             channel.sendMessage("Can't connect to database. Please contact a moderator!").queue();

@@ -67,7 +67,7 @@ public class BlackJack {
     private static void addCard(User author, Connection conn, MessageChannel channel, ResultSet rs){
 
         Card newCard = pickRandomCard();
-        channel.sendMessage("You received: "+newCard.toEmote()).queue();
+        channel.sendMessage("You received: "+newCard.toEmote()).complete();
 
         try {
             // Find first empty column
@@ -155,6 +155,7 @@ public class BlackJack {
 
         // Get dealer's hand
         dealerHand = getDealerHand();
+        channel.sendMessage("The dealer's hand is:\n" + dealerHand.showHand()).complete();
 
         // Make sure hand is not null
         if (playerHand == null){
@@ -235,14 +236,14 @@ public class BlackJack {
             int winner = checkWinner(author, channel, hand);
             endGame(author, conn, channel, winner);
         } else
-            channel.sendMessage("Your hand is now:\n" + hand.showHand()).queue();
+            channel.sendMessage(author.getName() + "'s hand is now:\n" + hand.showHand()).complete();
     }
 
     public static void myHand(User author, MessageChannel channel){
 
         Hand hand;
         if ((hand = getPlayerHand(author, channel)) != null)
-            channel.sendMessage(hand.showHand()).queue();
+            channel.sendMessage(author.getName()+ "'s hand is:\n" + hand.showHand()).complete();
     }
 
 

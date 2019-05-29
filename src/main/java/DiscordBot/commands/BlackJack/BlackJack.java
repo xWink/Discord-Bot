@@ -58,7 +58,7 @@ public class BlackJack {
             channel.sendMessage("Error, could not create a new game. Please contact a moderator!").queue();
         }
 
-        channel.sendMessage("You received your first 2 cards: "+firstCard.toEmote()+" "+secondCard.toEmote()).complete();
+        channel.sendMessage(author.getName() + " received their first 2 cards: " + firstCard.toEmote() + " " + secondCard.toEmote()).complete();
     }
 
     private static Card pickRandomCard(){
@@ -71,7 +71,7 @@ public class BlackJack {
     private static void addCard(User author, Connection conn, MessageChannel channel, ResultSet rs){
 
         Card newCard = pickRandomCard();
-        channel.sendMessage("You received: "+newCard.toEmote()).complete();
+        channel.sendMessage(author.getName() + " received: " + newCard.toEmote()).complete();
 
         try {
             // Find first empty column

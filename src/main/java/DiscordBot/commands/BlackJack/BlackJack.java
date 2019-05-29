@@ -45,16 +45,20 @@ public class BlackJack {
     private static void createNewGame(Connection conn, User author, MessageChannel channel){
 
         Card firstCard = pickRandomCard();
-        String cardString = firstCard.toDbFormat();
+        Card secondCard = pickRandomCard();
+        String firstCardString = firstCard.toDbFormat();
+        String secondCardString = secondCard.toDbFormat();
 
         try {
-            PreparedStatement st = conn.prepareStatement("INSERT INTO blackjack (user, card1) VALUES ("+author.getIdLong()+", '"+cardString+"')");
+            PreparedStatement st = conn.prepareStatement("INSERT INTO blackjack (user, card1, card2) VALUES ("+author.getIdLong()+", '"+firstCardString+"', '"+secondCardString+"')");
             st.executeUpdate();
         }
         catch(Exception e){
             System.out.println("BlackJack Exception 3\nException: "+ e.toString());
             channel.sendMessage("Error, could not create a new game. Please contact a moderator!").queue();
         }
+
+        channel.sendMessage("You received your first 2 cards: "+firstCard.toEmote()+" "+secondCard.toEmote()).complete();
     }
 
     private static Card pickRandomCard(){
@@ -277,7 +281,5 @@ public class BlackJack {
 
         // Distribute reward and remove line from db
         endGame(author, conn, channel, winner);
-
-        channel.sendMessage("Ended your game!").queue();
     }
 }

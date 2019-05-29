@@ -10,7 +10,7 @@ public class Help {
                 "`!join` & `!leave` - Instructions for joining or leaving a group\n\n" +
                     "`!roles` - See available groups\n\n" +
                     "`!bang` - Play Russian Roulette\n\n" +
-                    "`!bangscores` & `!mybang` - See bang high scores or personal stats" +
+                    "`!bangscores` & `!mybang` - See bang high scores or personal stats\n\n" +
                     "`!hit`, `!hand`, `!stand` - Play blackjack").queue();
     }
 }

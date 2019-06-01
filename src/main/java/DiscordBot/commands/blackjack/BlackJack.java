@@ -5,13 +5,12 @@ import DiscordBot.util.cards.CardRank;
 import DiscordBot.util.cards.CardSuit;
 import DiscordBot.util.cards.Hand;
 import DiscordBot.RoleBot;
+import DiscordBot.util.wallet.Wallet;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
+import java.util.Objects;
 
 class BlackJack {
 
@@ -20,7 +19,9 @@ class BlackJack {
         // Connect to database
         try {
             Class.forName("org.mariadb.jdbc.Driver");
-            return DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
+            return DriverManager.getConnection("jdbc:mysql://localhost/discord_bot",
+                    RoleBot.config.db_user,
+                    RoleBot.config.db_pass);
         }
         catch (Exception e){
             System.out.println("blackjack Exception 1\nException: "+ e.toString());
@@ -31,7 +32,7 @@ class BlackJack {
     static ResultSet findGame(Connection conn, User author){
 
         try {
-            PreparedStatement st = conn.prepareStatement("SELECT * FROM blackjack WHERE user=" + author.getIdLong());
+            PreparedStatement st = conn.prepareStatement("SELECT * FROM blackjack WHERE user ="+author.getIdLong());
             ResultSet rs = st.executeQuery();
 
             if (rs.next())
@@ -44,15 +45,16 @@ class BlackJack {
         return null; // Return null if no game found
     }
 
-    static void createNewGame(Connection conn, User author, MessageChannel channel){
+    static void createNewGame(Connection conn, User author, MessageChannel channel, int betAmount){
 
         Card firstCard = Card.pickRandomCard();
         Card secondCard = Card.pickRandomCard();
-        String firstCardString = firstCard.toDbFormat();
+        String firstCardString = Card.pickRandomCard().toDbFormat();
         String secondCardString = secondCard.toDbFormat();
 
         try {
-            PreparedStatement st = conn.prepareStatement("INSERT INTO blackjack (user, card1, card2) VALUES ("+author.getIdLong()+", '"+firstCardString+"', '"+secondCardString+"')");
+            PreparedStatement st = conn.prepareStatement("INSERT INTO blackjack (user, bet, card1, card2) VALUES "+
+                    "("+author.getIdLong()+", " + betAmount + ", '"+firstCardString+"', '"+secondCardString+"')");
             st.executeUpdate();
         }
         catch(Exception e){
@@ -60,13 +62,14 @@ class BlackJack {
             channel.sendMessage("Error, could not create a new game. Please contact a moderator!").queue();
         }
 
-        channel.sendMessage(author.getName() + " received their first 2 cards: " + firstCard.toEmote() + " " + secondCard.toEmote()).complete();
+        channel.sendMessage(author.getName() + " received their first 2 cards: " +
+                firstCard.toEmote() + " " + secondCard.toEmote()).complete();
     }
 
     static void addCard(User author, Connection conn, MessageChannel channel, ResultSet rs){
 
         Card newCard = Card.pickRandomCard();
-        channel.sendMessage(author.getName() + " received: " + newCard.toEmote()).complete();
+        channel.sendMessage(author.getName() + " received: " + newCard.toEmote()).queue();
 
         try {
             // Find first empty column
@@ -74,8 +77,8 @@ class BlackJack {
             while (rs.getString("card"+index) != null)
                 index++;
 
-            PreparedStatement st = conn.prepareStatement("UPDATE blackjack SET card"+index+" = '"+newCard.toDbFormat()+"' WHERE user = "+author.getIdLong());
-            st.executeUpdate();
+            conn.prepareStatement("UPDATE blackjack SET card" + index + " = '" +
+                    newCard.toDbFormat() + "' WHERE user = " + author.getIdLong()).executeUpdate();
         }
         catch(Exception e){
             System.out.println("blackjack Exception 4\nException: "+ e.toString());
@@ -154,9 +157,9 @@ class BlackJack {
 
         // Get dealer's hand
         dealerHand = getDealerHand();
-        channel.sendMessage("The dealer's hand is:\n" + dealerHand.showHand()).complete();
+        channel.sendMessage("The dealer's hand is:\n" + dealerHand.showHand()).queue();
         if (dealerHand.getValue() > 21)
-            channel.sendMessage("Dealer busted!").complete();
+            channel.sendMessage("Dealer busted!").queue();
 
         // Make sure hand is not null
         if (playerHand == null){
@@ -165,12 +168,14 @@ class BlackJack {
         }
 
         // If dealer wins
-        if (dealerHand.getValue() <= 21 && (playerHand.getValue() < dealerHand.getValue() || playerHand.getValue() > 21)){
+        if (dealerHand.getValue() <= 21 &&
+                (playerHand.getValue() < dealerHand.getValue() || playerHand.getValue() > 21)){
             channel.sendMessage("Dealer wins :cry:").queue();
             return -1;
         }
         // If player wins
-        else if (playerHand.getValue() <= 21 && (dealerHand.getValue() < playerHand.getValue() || dealerHand.getValue() > 21)){
+        else if (playerHand.getValue() <= 21 &&
+                (dealerHand.getValue() < playerHand.getValue() || dealerHand.getValue() > 21)){
             channel.sendMessage(author.getName() + " wins! :money_mouth:").queue();
             return 1;
         }
@@ -183,26 +188,35 @@ class BlackJack {
 
     static void endGame(User author, Connection conn, MessageChannel channel, int winner){
 
+        Wallet wallet = new Wallet(author, conn);
+        int betAmount;
+
+        try {
+            betAmount = Objects.requireNonNull(findGame(conn, author)).getInt("bet");
+        }
+        catch(SQLException e){
+            e.printStackTrace();
+            return;
+        }
+
         switch (winner){
-            case -1:
-                System.out.println("Dealer wins");
-                break;
             case 0:
-                System.out.println("Tie game");
+                // Return the betted money
+                wallet.addMoney(author, conn, betAmount);
                 break;
             case 1:
-                System.out.println("Player wins");
+                // Double betted money and give it to the player
+                wallet.addMoney(author, conn, betAmount * 2);
                 break;
         }
 
         // Delete user's line from database
         try {
-            PreparedStatement st = conn.prepareStatement("DELETE FROM blackjack WHERE user = " + author.getIdLong());
-            st.executeUpdate();
+            conn.prepareStatement("DELETE FROM blackjack WHERE user = " + author.getIdLong()).executeUpdate();
         }
         catch(Exception e){
             System.out.println("blackjack Exception 6\nException: "+ e.toString());
-            channel.sendMessage("Error, could not end your game. Please contact a moderator!").queue();
+            channel.sendMessage("Error, could not end your game. Please contact a moderator!").complete();
         }
     }
 }

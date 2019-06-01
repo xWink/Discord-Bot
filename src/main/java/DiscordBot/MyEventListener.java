@@ -27,8 +27,13 @@ public class MyEventListener extends ListenerAdapter {
 
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event){
-		guild.getTextChannelsByName("general", true).get(0).sendMessage("Welcome "+event.getUser().getAsMention()+
-		"! Feel free to ask any questions in #general!\nIf you want to play with our bot, go to #bots and say `!help` :smiley:").queue();
+		TextChannel generalChannel = guild.getTextChannelsByName("general", true).get(0);
+		TextChannel botsChannel = guild.getTextChannelsByName("bots", true).get(0);
+
+		generalChannel.sendMessage("Welcome " + event.getUser().getAsMention() +
+				"! Feel free to ask any questions in " + generalChannel.getAsMention() +
+				"\nIf you want to play with our bot, made in-house, go to " + botsChannel.getAsMention() +
+				" and say `!help` :smiley:").queue();
 	}
 
 	@Override
@@ -106,23 +111,27 @@ public class MyEventListener extends ListenerAdapter {
 			BangScores.bangScores(channel, guild);
 
 		// Show bang scores for individual
-		else if (content.toLowerCase().equals("!mybang"))
+		else if (content.equalsIgnoreCase("!mybang"))
 			MyBang.myBang(author, channel);
 
 		// Show available Elective roles
-		else if (content.toLowerCase().equals("!roles"))
+		else if (content.equalsIgnoreCase("!roles"))
 			ShowRoles.showRoles(guild, channel);
 
+		// Bet money for blackjack
+		else if (content.toLowerCase().startsWith("!bet"))
+			BlackJackCommands.bet(author, channel, content);
+
 		// Hit in blackjack
-		else if (content.toLowerCase().equalsIgnoreCase("!hit"))
+		else if (content.equalsIgnoreCase("!hit"))
 			BlackJackCommands.hit(author, channel);
 
 		// Stand in blackjack
-		else if (content.toLowerCase().equalsIgnoreCase("!stand"))
+		else if (content.equalsIgnoreCase("!stand"))
 			BlackJackCommands.stand(author, channel);
 
 		// Show hand in blackjack
-		else if (content.toLowerCase().equalsIgnoreCase("!hand"))
+		else if (content.equalsIgnoreCase("!hand"))
 			BlackJackCommands.myHand(author, channel);
 	}
 }

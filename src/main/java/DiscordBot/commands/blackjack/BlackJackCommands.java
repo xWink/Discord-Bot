@@ -83,12 +83,16 @@ public class BlackJackCommands {
             int winner = checkWinner(author, channel, hand);
             endGame(author, conn, channel, winner);
         }
+
         // Check if busted
         else if (hand.getValue() > 21) {
             channel.sendMessage("You busted").queue();
             int winner = checkWinner(author, channel, hand);
             endGame(author, conn, channel, winner);
-        } else
+        }
+
+        // Not 21 or busted, continue game as normal
+        else
             channel.sendMessage(author.getName() + "'s hand is now:\n" + hand.showHand()).complete();
     }
 

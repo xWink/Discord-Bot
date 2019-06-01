@@ -49,7 +49,7 @@ class BlackJack {
 
         Card firstCard = Card.pickRandomCard();
         Card secondCard = Card.pickRandomCard();
-        String firstCardString = Card.pickRandomCard().toDbFormat();
+        String firstCardString = firstCard.toDbFormat();
         String secondCardString = secondCard.toDbFormat();
 
         try {

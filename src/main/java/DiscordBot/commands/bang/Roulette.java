@@ -37,7 +37,6 @@ public class Roulette {
 		if (highScores != null) {
 			if (author.equals(highScores.getLuckiest()) ||
 					author.equals(highScores.getMostAttemptsPlayer()) ||
-					author.equals(highScores.getMostDeathsPlayer()) ||
 					author.equals(highScores.getMostJamsPlayer()) ||
 					author.equals(highScores.getUnluckiest())) {
 				reward = 10;

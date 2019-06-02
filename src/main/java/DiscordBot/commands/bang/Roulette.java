@@ -28,33 +28,46 @@ public class Roulette {
 		return false;
 	}
 
-	private static void giveDailyReward(User author, Connection conn, TextChannel channel){
+	private static void giveDailyReward(User author, Connection conn, TextChannel channel) {
 
 		// Check if user is a high score holder
 		BangHighScores highScores = GetBangScores.getBangScores(channel.getGuild());
 		int reward = 5;
+		boolean hasHighscore = false;
 
 		if (highScores != null) {
 			if (author.equals(highScores.getLuckiest()) ||
 					author.equals(highScores.getMostAttemptsPlayer()) ||
 					author.equals(highScores.getMostJamsPlayer()) ||
 					author.equals(highScores.getUnluckiest())) {
-				reward = 10;
+				hasHighscore = true;
 			}
 		}
 
 		// Give user daily reward money
 		Wallet wallet = new Wallet(author, conn);
-		wallet.addMoney(conn, reward);
-		channel.sendMessage(author.getName() +
-				" received their daily reward of " + reward + " GryphCoins!").complete();
+
+		if (hasHighscore) {
+			wallet.addMoney(conn, reward * 2);
+			channel.sendMessage(author.getName() +
+					" received their daily reward of " + reward + " GryphCoins plus a bonus " + reward +
+					" GryphCoins for having a bang high score!").complete();
+		}
+		else{
+			wallet.addMoney(conn, reward);
+			channel.sendMessage(author.getName() +
+					" received their daily reward of " + reward + " GryphCoins!").complete();
+		}
+
+
+
 	}
 
 	public static int roulette(User author, int chamberCount, TextChannel channel, Connection conn){
 
 		Random rand = new Random();
 		Date date = new Date();
-		String emote = "<:poggers:564285288621539328>";
+		String poggers = "<:poggers:564285288621539328>";
 
 		// Calculate whether the user died
 		int pull = rand.nextInt(chamberCount);
@@ -72,7 +85,7 @@ public class Roulette {
 					chamberCount = 6;
 					jammed = 1;
 					channel.sendMessage("The gun jammed... " +
-							author.getName() + " survived "+emote+emote+emote).complete();
+							author.getName() + " survived " + poggers + poggers + poggers).complete();
 				}
 				// If the gun doesn't jam with one chamber left, boom
 				else {

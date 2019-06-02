@@ -87,4 +87,9 @@ public class Wallet {
         }
         return 0;
     }
+
+    public boolean canAfford(int cost){
+
+        return this.wealth - cost >= 0;
+    }
 }

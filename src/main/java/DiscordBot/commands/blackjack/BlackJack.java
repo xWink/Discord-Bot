@@ -186,6 +186,7 @@ class BlackJack {
         switch (winner){
             case -1:
                 channel.sendMessage(author.getName() + " lost " + betAmount + " GryphCoins").complete();
+                break;
             case 0:
                 // Return the betted money
                 wallet.addMoney(author, conn, betAmount);

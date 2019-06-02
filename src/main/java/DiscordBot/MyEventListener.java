@@ -11,6 +11,7 @@ import DiscordBot.commands.groups.ShowRoles;
 import DiscordBot.commands.misc.Help;
 import DiscordBot.commands.misc.MyWallet;
 import DiscordBot.commands.misc.Ping;
+import DiscordBot.util.economy.Market;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
@@ -58,7 +59,7 @@ public class MyEventListener extends ListenerAdapter {
 		guild = event.getGuild(); // Variable guild is the Discord server
 		final Member auth = guild.getMember(author); // Variable auth is author of type Member
 	  	final List channels = Arrays.asList(cfg.channel);
-	  	//final Market market = new Market(guild);
+	  	final Market market = new Market(guild);
 	  	Connection conn;
 
 		// Check if the bot is allowed to send messages in the current channel
@@ -150,13 +151,12 @@ public class MyEventListener extends ListenerAdapter {
 		else if (content.equalsIgnoreCase("!wallet"))
 			MyWallet.myWallet(author, channel, conn);
 
-		/* Show listings
+		// Show listings
 		else if (content.equalsIgnoreCase("!market"))
 			market.showListings(channel);
 
 		// Purchase listed colour
 		else if (content.toLowerCase().startsWith("!purchase"))
 			market.purchase(author, conn, content, channel);
-			*/
 	}
 }

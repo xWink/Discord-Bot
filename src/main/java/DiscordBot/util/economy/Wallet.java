@@ -67,7 +67,7 @@ public class Wallet {
     public int addMoney(Connection conn, int amount){
 
         try {
-            conn.prepareStatement("UPDATE economy SET economy = economy + " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
+            conn.prepareStatement("UPDATE economy SET wallet = wallet + " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
             return 1;
         }
         catch (SQLException e){
@@ -79,7 +79,7 @@ public class Wallet {
     public int removeMoney(Connection conn, int amount){
 
         try {
-            conn.prepareStatement("UPDATE economy SET economy = economy - " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
+            conn.prepareStatement("UPDATE economy SET wallet = wallet - " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
             return 1;
         }
         catch (SQLException e){

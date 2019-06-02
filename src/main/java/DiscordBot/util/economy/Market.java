@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class Market {
 
-    private ArrayList<Listing> listings;
+    private ArrayList<Listing> listings = new ArrayList<>();
 
     public Market(Guild guild){
 

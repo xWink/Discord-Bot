@@ -1,13 +1,13 @@
 package DiscordBot.commands.bang;
 
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.sql.*;
 
 public class MyBang {
 
-    public static void myBang(User author, MessageChannel channel, Connection conn){
+    public static void myBang(User author, TextChannel channel, Connection conn){
 
         ResultSet rs = null;
         Boolean exists = false;

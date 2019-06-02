@@ -1,4 +1,4 @@
-package DiscordBot.util.wallet;
+package DiscordBot.util.economy;
 
 import net.dv8tion.jda.core.entities.User;
 
@@ -23,7 +23,7 @@ public class Wallet {
                     this.wealth = 5; // Default wealth
                 }
                 else {
-                    this.wealth = rs.getInt("wallet"); // Get user's wealth
+                    this.wealth = rs.getInt("economy"); // Get user's wealth
                 }
             }
         }
@@ -64,11 +64,10 @@ public class Wallet {
         return 0;
     }
 
-    public int addMoney(User user, Connection conn, int amount){
+    public int addMoney(Connection conn, int amount){
 
         try {
-            conn.prepareStatement("UPDATE economy SET wallet = wallet + " + amount + " WHERE user = " + user.getIdLong()).executeQuery();
-            this.wealth = wealth + amount;
+            conn.prepareStatement("UPDATE economy SET economy = economy + " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
             return 1;
         }
         catch (SQLException e){
@@ -77,11 +76,10 @@ public class Wallet {
         return 0;
     }
 
-    public int removeMoney(User user, Connection conn, int amount){
+    public int removeMoney(Connection conn, int amount){
 
         try {
-            conn.prepareStatement("UPDATE economy SET wallet = wallet - " + amount + " WHERE user = " + user.getIdLong()).executeQuery();
-            this.wealth = wealth - amount;
+            conn.prepareStatement("UPDATE economy SET economy = economy - " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
             return 1;
         }
         catch (SQLException e){

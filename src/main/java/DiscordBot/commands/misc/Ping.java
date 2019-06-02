@@ -1,6 +1,7 @@
 package DiscordBot.commands.misc;
 
 import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 
@@ -10,7 +11,7 @@ import static DiscordBot.util.misc.DatabaseUtil.connect;
 
 public class Ping {
 
-	public static void ping(User author, Event event, MessageChannel channel){
+	public static void ping(User author, Event event, TextChannel channel){
 
 		Connection conn;
 		ResultSet rs = null;

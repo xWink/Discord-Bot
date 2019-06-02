@@ -1,8 +1,8 @@
 package DiscordBot.commands.blackjack;
 
 import DiscordBot.util.cards.Hand;
-import DiscordBot.util.wallet.Wallet;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import DiscordBot.util.economy.Wallet;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.sql.Connection;
@@ -12,7 +12,7 @@ import static DiscordBot.commands.blackjack.BlackJack.*;
 
 public class BlackJackCommands {
 
-    public static void bet(User author, MessageChannel channel, String content, Connection conn){
+    public static void bet(User author, TextChannel channel, String content, Connection conn){
 
         // Verify that the user is not already in a game
         if (findGame(conn, author) != null){
@@ -32,16 +32,16 @@ public class BlackJackCommands {
 
         if (betAmount > wallet.getWealth()){
             channel.sendMessage("You do not have enough money to make that bet!\n" +
-                    "Your wallet contains " + wallet.getWealth() + " GryphCoins").complete();
+                    "Your economy contains " + wallet.getWealth() + " GryphCoins").complete();
             return;
         }
 
-        // Move betted money from player's wallet to the game's bet pool and start the game
-        wallet.removeMoney(author, conn, betAmount);
+        // Move betted money from player's economy to the game's bet pool and start the game
+        wallet.removeMoney(conn, betAmount);
         createNewGame(conn, author, channel, betAmount);
     }
 
-    public static void hit(User author, MessageChannel channel, Connection conn) {
+    public static void hit(User author, TextChannel channel, Connection conn) {
 
         ResultSet rs;
         Hand hand;
@@ -64,14 +64,14 @@ public class BlackJackCommands {
         // Check if blackjack
         if (hand.getValue() == 21){
             channel.sendMessage("You got 21!").queue();
-            int winner = checkWinner(author, channel, hand);
+            int winner = checkWinner(channel, hand);
             endGame(author, conn, channel, winner);
         }
 
         // Check if busted
         else if (hand.getValue() > 21) {
             channel.sendMessage("You busted").queue();
-            int winner = checkWinner(author, channel, hand);
+            int winner = checkWinner(channel, hand);
             endGame(author, conn, channel, winner);
         }
 
@@ -80,7 +80,7 @@ public class BlackJackCommands {
             channel.sendMessage(author.getName() + "'s hand is now:\n" + hand.showHand()).complete();
     }
 
-    public static void myHand(User author, MessageChannel channel){
+    public static void myHand(User author, TextChannel channel){
 
         Hand hand;
         if ((hand = getPlayerHand(author, channel)) != null)
@@ -88,7 +88,7 @@ public class BlackJackCommands {
     }
 
 
-    public static void stand(User author, MessageChannel channel, Connection conn){
+    public static void stand(User author, TextChannel channel, Connection conn){
 
         Hand playerHand;
         int winner;
@@ -106,7 +106,7 @@ public class BlackJackCommands {
         }
 
         // Verify winner
-        winner = checkWinner(author, channel, playerHand);
+        winner = checkWinner(channel, playerHand);
 
         // Distribute reward and remove line from db
         endGame(author, conn, channel, winner);

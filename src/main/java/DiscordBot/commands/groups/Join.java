@@ -7,7 +7,7 @@ import java.sql.*;
 
 public class Join {
 
-	public static void join(Member auth, User author, MessageChannel channel, Guild guild, String content, Connection conn){
+	public static void join(Member auth, User author, TextChannel channel, Guild guild, String content, Connection conn){
 
 		String roleName = content.substring(6);
 

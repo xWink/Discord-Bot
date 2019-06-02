@@ -54,7 +54,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		final Message message = event.getMessage(); // Variable message is the detected message
 		final String content = message.getContentRaw(); // Variable content is the text of the message
-		final MessageChannel channel = event.getChannel(); // Variable channel is the text channel the message came from
+		final TextChannel channel = event.getTextChannel(); // Variable channel is the text channel the message came from
 		guild = event.getGuild(); // Variable guild is the Discord server
 		final Member auth = guild.getMember(author); // Variable auth is author of type Member
 	  	final List channels = Arrays.asList(cfg.channel);
@@ -145,8 +145,8 @@ public class MyEventListener extends ListenerAdapter {
 		else if (content.equalsIgnoreCase("!hand"))
 			BlackJackCommands.myHand(author, channel);
 
-		// Show wallet
-		else if (content.equalsIgnoreCase("!wallet"))
+		// Show economy
+		else if (content.equalsIgnoreCase("!economy"))
 			MyWallet.myWallet(author, channel, conn);
 	}
 }

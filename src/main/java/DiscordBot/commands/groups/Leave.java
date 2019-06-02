@@ -6,7 +6,7 @@ import java.sql.*;
 
 public class Leave {
 
-	public static void leave(Member auth, User author, MessageChannel channel, Guild guild, String content, Connection conn){
+	public static void leave(Member auth, User author, TextChannel channel, Guild guild, String content, Connection conn){
 
 		String roleName = content.substring(7);
 		ResultSet rs;

@@ -6,7 +6,7 @@ import java.util.List;
 
 public class CleanRoles {
 
-	public static void cleanRoles(Member auth, MessageChannel channel, Guild guild) {
+	public static void cleanRoles(Member auth, TextChannel channel, Guild guild) {
 
 		if (auth.isOwner()) {
 			List<Role> listRoles = guild.getRoles();

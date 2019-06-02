@@ -2,11 +2,11 @@ package DiscordBot.commands.admin_commands;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 
 public class TotalChatWipe {
-	public static void chatWipe(Member auth, Guild guild, MessageChannel channel){
+	public static void chatWipe(Member auth, Guild guild, TextChannel channel){
 		if (auth.equals(guild.getOwner())) {
 			guild.getTextChannelById(channel.getId()).createCopy().queue();
 			guild.getTextChannelById(channel.getId()).delete().queue();

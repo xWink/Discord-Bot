@@ -4,8 +4,8 @@ import DiscordBot.util.cards.Card;
 import DiscordBot.util.cards.CardRank;
 import DiscordBot.util.cards.CardSuit;
 import DiscordBot.util.cards.Hand;
-import DiscordBot.util.wallet.Wallet;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import DiscordBot.util.economy.Wallet;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.sql.*;
@@ -31,7 +31,7 @@ class BlackJack {
         return null; // Return null if no game found
     }
 
-    static void createNewGame(Connection conn, User author, MessageChannel channel, int betAmount){
+    static void createNewGame(Connection conn, User author, TextChannel channel, int betAmount){
 
         Card firstCard = Card.pickRandomCard();
         Card secondCard = Card.pickRandomCard();
@@ -48,12 +48,12 @@ class BlackJack {
             System.out.println("blackjack Exception 3\nException: "+ e.toString());
             channel.sendMessage("Error, could not create a new game. Please contact a moderator!").queue();
 
-            Wallet wallet = new  Wallet(author, conn);
-            wallet.addMoney(author, conn, betAmount); // Return user's money
+            Wallet wallet = new Wallet(author, conn);
+            wallet.addMoney(conn, betAmount); // Return user's money
         }
     }
 
-    static void addCard(User author, Connection conn, MessageChannel channel, ResultSet rs){
+    static void addCard(User author, Connection conn, TextChannel channel, ResultSet rs){
 
         Card newCard = Card.pickRandomCard();
 
@@ -75,7 +75,7 @@ class BlackJack {
         }
     }
 
-    static Hand getPlayerHand(User author, MessageChannel channel){
+    static Hand getPlayerHand(User author, TextChannel channel){
 
         Connection conn;
         ResultSet rs;
@@ -140,7 +140,7 @@ class BlackJack {
         return dealerHand;
     }
 
-    static int checkWinner(User author, MessageChannel channel, Hand playerHand){
+    static int checkWinner(TextChannel channel, Hand playerHand){
 
         Hand dealerHand;
 
@@ -159,13 +159,11 @@ class BlackJack {
         // If dealer wins
         if (dealerHand.getValue() <= 21 &&
                 (playerHand.getValue() < dealerHand.getValue() || playerHand.getValue() > 21)){
-            channel.sendMessage("Dealer wins :cry:").queue();
             return -1;
         }
         // If player wins
         else if (playerHand.getValue() <= 21 &&
                 (dealerHand.getValue() < playerHand.getValue() || dealerHand.getValue() > 21)){
-            channel.sendMessage(author.getName() + " wins! :money_mouth:").queue();
             return 1;
         }
         // If tied
@@ -175,10 +173,10 @@ class BlackJack {
         }
     }
 
-    static void endGame(User author, Connection conn, MessageChannel channel, int winner){
+    static void endGame(User author, Connection conn, TextChannel channel, int winner){
 
-        Wallet wallet = new Wallet(author, conn);
         int betAmount;
+        Wallet wallet = new Wallet(author, conn);
 
         try {
             betAmount = Objects.requireNonNull(findGame(conn, author)).getInt("bet");
@@ -193,20 +191,20 @@ class BlackJack {
                 if (betAmount == 1)
                     channel.sendMessage(author.getName() + " lost 1 GryphCoin").complete();
                 else
-                    channel.sendMessage(author.getName() + " lost " + betAmount + " GryphCoins").complete();
+                    channel.sendMessage(author.getName() + " lost " + betAmount + " GryphCoins :cry:").complete();
                 break;
             case 0:
                 // Return the betted money
-                wallet.addMoney(author, conn, betAmount);
+                wallet.addMoney(conn, betAmount);
                 channel.sendMessage(author.getName() + " got their money back").complete();
                 break;
             case 1:
                 // Double betted money and give it to the player
-                wallet.addMoney(author, conn, betAmount * 2);
+                wallet.addMoney(conn, betAmount * 2);
                 if (betAmount == 1)
                     channel.sendMessage(author.getName() + " earned 1 GryphCoin!").complete();
                 else
-                    channel.sendMessage(author.getName() + " earned " + betAmount + " GryphCoins!").complete();
+                    channel.sendMessage(author.getName() + " earned " + betAmount + " GryphCoins! :money_mouth:").complete();
                 break;
         }
 

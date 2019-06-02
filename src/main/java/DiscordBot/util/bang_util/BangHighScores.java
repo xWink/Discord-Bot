@@ -1,29 +1,31 @@
 package DiscordBot.util.bang_util;
 
+import net.dv8tion.jda.core.entities.User;
+
 public class BangHighScores {
 
     private double attemptCount;
-    private String mostAttemptsPlayer;
+    private User mostAttemptsPlayer;
     private double deathCount;
-    private String mostDeathsPlayer;
+    private User mostDeathsPlayer;
     private double bestRate;
-    private String luckiest;
+    private User luckiest;
     private double worstRate;
-    private String unluckiest;
+    private User unluckiest;
     private int jamCount;
-    private String mostJamsPlayer;
+    private User mostJamsPlayer;
 
     BangHighScores(
             double attemptCount,
-            String mostAttemptsPlayer,
+            User mostAttemptsPlayer,
             double deathCount,
-            String mostDeathsPlayer,
+            User mostDeathsPlayer,
             double bestRate,
-            String luckiest,
+            User luckiest,
             double worstRate,
-            String unluckiest,
+            User unluckiest,
             int jamCount,
-            String mostJamsPlayer){
+            User mostJamsPlayer){
 
         this.attemptCount = attemptCount;
         this.mostAttemptsPlayer = mostAttemptsPlayer;
@@ -41,7 +43,7 @@ public class BangHighScores {
         return attemptCount;
     }
 
-    public String getMostAttemptsPlayer() {
+    public User getMostAttemptsPlayer() {
         return mostAttemptsPlayer;
     }
 
@@ -49,7 +51,7 @@ public class BangHighScores {
         return deathCount;
     }
 
-    public String getMostDeathsPlayer() {
+    public User getMostDeathsPlayer() {
         return mostDeathsPlayer;
     }
 
@@ -57,7 +59,7 @@ public class BangHighScores {
         return bestRate;
     }
 
-    public String getLuckiest() {
+    public User getLuckiest() {
         return luckiest;
     }
 
@@ -65,7 +67,7 @@ public class BangHighScores {
         return worstRate;
     }
 
-    public String getUnluckiest() {
+    public User getUnluckiest() {
         return unluckiest;
     }
 
@@ -73,7 +75,7 @@ public class BangHighScores {
         return jamCount;
     }
 
-    public String getMostJamsPlayer() {
+    public User getMostJamsPlayer() {
         return mostJamsPlayer;
     }
 }

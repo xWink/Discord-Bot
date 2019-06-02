@@ -188,9 +188,12 @@ class BlackJack {
             return;
         }
 
-        switch (winner){
+        switch (winner) {
             case -1:
-                channel.sendMessage(author.getName() + " lost " + betAmount + " GryphCoins").complete();
+                if (betAmount == 1)
+                    channel.sendMessage(author.getName() + " lost 1 GryphCoin").complete();
+                else
+                    channel.sendMessage(author.getName() + " lost " + betAmount + " GryphCoins").complete();
                 break;
             case 0:
                 // Return the betted money
@@ -200,7 +203,10 @@ class BlackJack {
             case 1:
                 // Double betted money and give it to the player
                 wallet.addMoney(author, conn, betAmount * 2);
-                channel.sendMessage(author.getName() + " won " + betAmount + " GryphCoins!").complete();
+                if (betAmount == 1)
+                    channel.sendMessage(author.getName() + " earned 1 GryphCoin!").complete();
+                else
+                    channel.sendMessage(author.getName() + " earned " + betAmount + " GryphCoins!").complete();
                 break;
         }
 

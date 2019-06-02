@@ -40,20 +40,22 @@ class BlackJack {
             PreparedStatement st = conn.prepareStatement("INSERT INTO blackjack (user, bet, card1, card2) VALUES "+
                     "("+author.getIdLong()+", " + betAmount + ", '"+firstCard.toDbFormat()+"', '"+secondCard.toDbFormat()+"')");
             st.executeUpdate();
+
+            channel.sendMessage(author.getName() + " received their first 2 cards: " +
+                    firstCard.toEmote() + " " + secondCard.toEmote()).complete();
         }
         catch(Exception e){
             System.out.println("blackjack Exception 3\nException: "+ e.toString());
             channel.sendMessage("Error, could not create a new game. Please contact a moderator!").queue();
-        }
 
-        channel.sendMessage(author.getName() + " received their first 2 cards: " +
-                firstCard.toEmote() + " " + secondCard.toEmote()).complete();
+            Wallet wallet = new  Wallet(author, conn);
+            wallet.addMoney(author, conn, betAmount); // Return user's money
+        }
     }
 
     static void addCard(User author, Connection conn, MessageChannel channel, ResultSet rs){
 
         Card newCard = Card.pickRandomCard();
-        channel.sendMessage(author.getName() + " received: " + newCard.toEmote()).queue();
 
         try {
             // Find first empty column
@@ -63,6 +65,9 @@ class BlackJack {
 
             conn.prepareStatement("UPDATE blackjack SET card" + index + " = '" +
                     newCard.toDbFormat() + "' WHERE user = " + author.getIdLong()).executeUpdate();
+
+            channel.sendMessage(author.getName() + " received: " + newCard.toEmote()).queue();
+
         }
         catch(Exception e){
             System.out.println("blackjack Exception 4\nException: "+ e.toString());

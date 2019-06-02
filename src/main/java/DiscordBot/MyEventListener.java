@@ -146,7 +146,7 @@ public class MyEventListener extends ListenerAdapter {
 			BlackJackCommands.myHand(author, channel);
 
 		// Show economy
-		else if (content.equalsIgnoreCase("!economy"))
+		else if (content.equalsIgnoreCase("!wallet"))
 			MyWallet.myWallet(author, channel, conn);
 	}
 }

@@ -32,7 +32,7 @@ public class BlackJackCommands {
 
         if (betAmount > wallet.getWealth()){
             channel.sendMessage("You do not have enough money to make that bet!\n" +
-                    "Your economy contains " + wallet.getWealth() + " GryphCoins").complete();
+                    "Your wallet contains " + wallet.getWealth() + " GryphCoins").complete();
             return;
         }
 

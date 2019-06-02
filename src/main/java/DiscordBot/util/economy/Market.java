@@ -27,12 +27,12 @@ public class Market {
 
     public void showListings(TextChannel channel){
 
-        String string = "Colours available for sale:\n";
+        String string = "Colours available:\n";
         int i = 0;
 
         for (Listing colour : listings){
             i++;
-            string = string.concat(i + ". " + colour.getRole().getName() + " - " + colour.getCost() + "\n");
+            string = string.concat(i + ". " + colour.getRole().getName() + " - " + colour.getCost() + " GryphCoins\n");
         }
 
         channel.sendMessage(string).complete();
@@ -42,15 +42,19 @@ public class Market {
 
         Wallet userWallet = new Wallet(user, conn);
 
-        if (content.length() < 11 || !content.substring(10).matches("^[0-9]+$")){
+        if (content.length() < 11 ||
+                !content.substring(10).matches("^[0-9]+$") ||
+                Integer.parseInt(content.substring(10)) < 1 ||
+                Integer.parseInt(content.substring(10)) > this.listings.size()){
             channel.sendMessage("To purchase a colour, say `!purchase <colour number>`").complete();
         }
-        else if (!userWallet.canAfford(listings.get(Integer.parseInt(content.substring(10))).getCost())){
+        else if (!userWallet.canAfford(listings.get(Integer.parseInt(content.substring(10)) - 1).getCost())){
             channel.sendMessage("You can't afford to buy this role. Your wallet contains " +
-                    userWallet.getWealth() + "GryphCoins").complete();
+                    userWallet.getWealth() + " GryphCoins").complete();
         }
         else{
-            channel.sendMessage("This is a test, purchase not completed.\nTest successful").complete();
+            channel.sendMessage("This is a test, purchase not completed.\n" +
+                    "Test successful").complete();
         }
     }
 }

@@ -11,7 +11,7 @@ public class Hand {
         reset();
     }
 
-    public void reset(){
+    private void reset(){
         hand = new ArrayList<>();
     }
 

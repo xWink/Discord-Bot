@@ -4,7 +4,6 @@ import DiscordBot.util.cards.Card;
 import DiscordBot.util.cards.CardRank;
 import DiscordBot.util.cards.CardSuit;
 import DiscordBot.util.cards.Hand;
-import DiscordBot.RoleBot;
 import DiscordBot.util.wallet.Wallet;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -12,22 +11,9 @@ import net.dv8tion.jda.core.entities.User;
 import java.sql.*;
 import java.util.Objects;
 
+import static DiscordBot.util.misc.DatabaseUtil.connect;
+
 class BlackJack {
-
-    static Connection connect(){
-
-        // Connect to database
-        try {
-            Class.forName("org.mariadb.jdbc.Driver");
-            return DriverManager.getConnection("jdbc:mysql://localhost/discord_bot",
-                    RoleBot.config.db_user,
-                    RoleBot.config.db_pass);
-        }
-        catch (Exception e){
-            System.out.println("blackjack Exception 1\nException: "+ e.toString());
-            return null;
-        }
-    }
 
     static ResultSet findGame(Connection conn, User author){
 
@@ -49,12 +35,10 @@ class BlackJack {
 
         Card firstCard = Card.pickRandomCard();
         Card secondCard = Card.pickRandomCard();
-        String firstCardString = firstCard.toDbFormat();
-        String secondCardString = secondCard.toDbFormat();
 
         try {
             PreparedStatement st = conn.prepareStatement("INSERT INTO blackjack (user, bet, card1, card2) VALUES "+
-                    "("+author.getIdLong()+", " + betAmount + ", '"+firstCardString+"', '"+secondCardString+"')");
+                    "("+author.getIdLong()+", " + betAmount + ", '"+firstCard.toDbFormat()+"', '"+secondCard.toDbFormat()+"')");
             st.executeUpdate();
         }
         catch(Exception e){
@@ -200,13 +184,17 @@ class BlackJack {
         }
 
         switch (winner){
+            case -1:
+                channel.sendMessage(author.getName() + " lost " + betAmount + " GryphCoins").complete();
             case 0:
                 // Return the betted money
                 wallet.addMoney(author, conn, betAmount);
+                channel.sendMessage(author.getName() + " got their money back").complete();
                 break;
             case 1:
                 // Double betted money and give it to the player
                 wallet.addMoney(author, conn, betAmount * 2);
+                channel.sendMessage(author.getName() + " won " + betAmount + " GryphCoins!").complete();
                 break;
         }
 

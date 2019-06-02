@@ -1,11 +1,12 @@
 package DiscordBot.util.bang_util;
 
-import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.Guild;
 
 import java.util.Date;
 
 import java.sql.*;
+
+import static DiscordBot.util.misc.DatabaseUtil.connect;
 
 public class GetBangScores {
 
@@ -19,14 +20,8 @@ public class GetBangScores {
         ResultSet mostAttempts, mostDeaths, luck, mostJams;
 
         // Connect to database
-        try {
-            Class.forName("org.mariadb.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
-        }
-        catch (Exception e){
-            System.out.println("GetBangScores Exception 1");
-            System.out.println("Exception: "+ e.toString());
-            System.out.println("Failed to connect to database, terminating command");
+        if ((conn = connect()) == null){
+            System.out.println("Could not connect to database. Please contact a moderator :(");
             return null;
         }
 

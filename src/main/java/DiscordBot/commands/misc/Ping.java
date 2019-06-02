@@ -1,11 +1,12 @@
 package DiscordBot.commands.misc;
 
-import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 
 import java.sql.*;
+
+import static DiscordBot.util.misc.DatabaseUtil.connect;
 
 public class Ping {
 
@@ -15,14 +16,9 @@ public class Ping {
 		ResultSet rs = null;
 		long ping = event.getJDA().getPing();
 
-		try {
-			Class.forName("org.mariadb.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
-		}
-		catch (Exception e){
-			System.out.println("Ping Exception 1");
-			System.out.println("Exception: "+ e.toString());
-			System.out.println("Failed to connect to database, terminating command");
+		// Connect to database
+		if ((conn = connect()) == null){
+			channel.sendMessage("Could not connect to database. Please contact a moderator :(").complete();
 			return;
 		}
 

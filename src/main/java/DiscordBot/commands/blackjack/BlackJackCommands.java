@@ -12,15 +12,7 @@ import static DiscordBot.commands.blackjack.BlackJack.*;
 
 public class BlackJackCommands {
 
-    public static void bet(User author, MessageChannel channel, String content){
-
-        Connection conn;
-
-        // Connect to database
-        if ((conn = connect()) == null){
-            channel.sendMessage("Could not connect to database. Please contact a moderator :(").complete();
-            return;
-        }
+    public static void bet(User author, MessageChannel channel, String content, Connection conn){
 
         // Verify that the user is not already in a game
         if (findGame(conn, author) != null){
@@ -40,7 +32,7 @@ public class BlackJackCommands {
 
         if (betAmount > wallet.getWealth()){
             channel.sendMessage("You do not have enough money to make that bet!\n" +
-                    "Your wallet contains " + wallet.getWealth() + " coins").complete();
+                    "Your wallet contains " + wallet.getWealth() + " GryphCoins").complete();
             return;
         }
 
@@ -49,22 +41,14 @@ public class BlackJackCommands {
         createNewGame(conn, author, channel, betAmount);
     }
 
-    public static void hit(User author, MessageChannel channel) {
+    public static void hit(User author, MessageChannel channel, Connection conn) {
 
-        Connection conn;
         ResultSet rs;
         Hand hand;
 
-        // Connect to database
-        if ((conn = connect()) == null) {
-            System.out.println("Cannot connect to database, aborting hit command");
-            channel.sendMessage("Can't connect to database. Please contact a moderator!").queue();
-            return;
-        }
-
         // If no game is active for the user
         if ((rs = findGame(conn, author)) == null) {
-            channel.sendMessage("You haven't bet any coins yet!").complete();
+            channel.sendMessage("You haven't bet any GryphCoins yet!").complete();
             return;
         }
 
@@ -104,18 +88,10 @@ public class BlackJackCommands {
     }
 
 
-    public static void stand(User author, MessageChannel channel){
+    public static void stand(User author, MessageChannel channel, Connection conn){
 
-        Connection conn;
         Hand playerHand;
         int winner;
-
-        // Connect to database
-        if ((conn = connect()) == null){
-            System.out.println("Cannot connect to database, aborting stand command");
-            channel.sendMessage("Can't connect to database. Please contact a moderator!").queue();
-            return;
-        }
 
         // Check if a game exists for the user
         if (findGame(conn, author) == null){

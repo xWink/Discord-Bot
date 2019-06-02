@@ -1,6 +1,5 @@
 package DiscordBot.commands.bang;
 
-import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
@@ -11,24 +10,10 @@ import java.lang.Math;
 
 public class Roulette {
 
-	public static int roulette(User author, int chamberCount, MessageChannel channel){
+	public static int roulette(User author, int chamberCount, MessageChannel channel, Connection conn){
 
 		Random rand = new Random();
 		Date date = new Date();
-		Connection conn;
-
-		// Connect to database
-		try {
-			Class.forName("org.mariadb.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
-		}
-		catch (Exception e){
-			System.out.println("Roulette Exception 1");
-			System.out.println("Exception: "+ e.toString());
-			System.out.println("Failed to connect to database, terminating command");
-			channel.sendMessage("An error occurred, please contact a moderator :(").queue();
-			return chamberCount;
-		}
 
 		// Calculate whether the user died
 		int pull = rand.nextInt(chamberCount);

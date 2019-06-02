@@ -1,16 +1,14 @@
 package DiscordBot.commands.groups;
 
-import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.entities.*;
 
 import java.sql.*;
 
 public class Leave {
 
-	public static void leave(Member auth, User author, MessageChannel channel, Guild guild, String content){
+	public static void leave(Member auth, User author, MessageChannel channel, Guild guild, String content, Connection conn){
 
 		String roleName = content.substring(7);
-		Connection conn;
 		ResultSet rs;
 		Boolean removed = false;
 
@@ -22,19 +20,13 @@ public class Leave {
 		}
 
 		try {
-			// Connect to database
-			Class.forName("org.mariadb.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
-
 			// Look for the role application in the database
 			PreparedStatement findRole = conn.prepareStatement("SELECT * FROM roles WHERE name = '"+roleName+"'");
 			rs = findRole.executeQuery();
 		}
 		catch (Exception e){
-			System.out.println("Leave Exception 1");
-			System.out.println("Exception: "+ e.toString());
-			System.out.println("Failed to connect to database, terminating command");
-			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+			System.out.println("Leave Exception 1\nException: "+e.toString());
+			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 			return;
 		}
 
@@ -64,9 +56,8 @@ public class Leave {
 			}
 		}
 		catch (SQLException e){
-			System.out.println("Leave Exception 2");
-			System.out.println("Exception: "+ e.toString());
-			channel.sendMessage("Encountered an error. Please inform an admin :(").queue();
+			System.out.println("Leave Exception 1\nException: "+e.toString());
+			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 
 		// Tell them they didn't apply for it

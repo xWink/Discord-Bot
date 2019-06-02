@@ -9,6 +9,7 @@ import DiscordBot.commands.groups.Join;
 import DiscordBot.commands.groups.Leave;
 import DiscordBot.commands.groups.ShowRoles;
 import DiscordBot.commands.misc.Help;
+import DiscordBot.commands.misc.MyWallet;
 import DiscordBot.commands.misc.Ping;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
@@ -16,8 +17,11 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.List;
+
+import static DiscordBot.util.misc.DatabaseUtil.connect;
 
 public class MyEventListener extends ListenerAdapter {
 
@@ -54,65 +58,72 @@ public class MyEventListener extends ListenerAdapter {
 		guild = event.getGuild(); // Variable guild is the Discord server
 		final Member auth = guild.getMember(author); // Variable auth is author of type Member
 	  	final List channels = Arrays.asList(cfg.channel);
+	  	Connection conn;
 
 		// Check if the bot is allowed to send messages in the current channel
-		if ( !cfg.channel[0].equals("all") && !channels.contains(channel.getId())) return;
+		if ( !cfg.channel[0].equalsIgnoreCase("all") && !channels.contains(channel.getId())) return;
+
+		// Connect to database
+		if ((conn = connect()) == null){
+			channel.sendMessage("Could not connect to database. Please contact a moderator :(").complete();
+			return;
+		}
 
 		// Bot shows how to use !join
-		if (content.toLowerCase().equals("!join") || content.toLowerCase().equals("!join "))
+		if (content.equalsIgnoreCase("!join") || content.equalsIgnoreCase("!join "))
 			channel.sendMessage("Command: !join <courseID>\n\nExample: !join mcs2100").queue();
 
 		// Bot shows how to use !leave
-		else if (content.toLowerCase().equals("!leave") || content.toLowerCase().equals("!leave "))
+		else if (content.equalsIgnoreCase("!leave") || content.equalsIgnoreCase("!leave "))
 			channel.sendMessage("Command: !leave <courseID>\n\nExample: !leave mcs2100").queue();
 
-		// Bot shows how to use !join and !leave
-		else if (content.toLowerCase().equals("!help"))
+		// Bot shows how to use its commands
+		else if (content.equalsIgnoreCase("!help"))
 			Help.help(channel);
 
 		// Bot responds with pong and latency
-		else if (content.toLowerCase().equals("!ping"))
+		else if (content.equalsIgnoreCase("!ping"))
 			Ping.ping(author, event, channel);
 
 		// Bot creates new text channel and deletes old one (OWNER ONLY)
-		else if (content.toLowerCase().equals("!totalchatwipe"))
+		else if (content.equalsIgnoreCase("!totalchatwipe"))
 			TotalChatWipe.chatWipe(auth, guild, channel);
 
 		// Bot gives requested role to target (MODERATOR->PEASANT ONLY)
-		else if(content.toLowerCase().startsWith("!giverole "))
+		else if(content.equalsIgnoreCase("!giverole "))
 			GiveRole.giveRole(auth, channel, guild, content, message);
 
 		// Bot removes requested role from user (MODERATOR->PEASANT ONLY)
-		else if(content.startsWith("!takerole "))
+		else if(content.equalsIgnoreCase("!takerole "))
 			TakeRole.takeRole(auth, channel, guild, content, message);
 
 		// User requests to join/create an elective role
-		else if(content.startsWith("!join "))
-			Join.join(auth, author, channel, guild, content);
+		else if(content.equalsIgnoreCase("!join "))
+			Join.join(auth, author, channel, guild, content, conn);
 
 		// Remove user's application from CSV file
-		else if (content.toLowerCase().startsWith("!leave "))
-			Leave.leave(auth, author, channel, guild, content);
+		else if (content.equalsIgnoreCase("!leave "))
+			Leave.leave(auth, author, channel, guild, content, conn);
 
 		// Delete all non-specified roles (OWNER ONLY)
 		else if (content.toLowerCase().equals("!cleanroles"))
 			CleanRoles.cleanRoles(auth, channel, guild);
 
 		// Delete all elective channels (OWNER ONLY)
-		else if(content.toLowerCase().equals("!cleanelectives"))
+		else if(content.equalsIgnoreCase("!cleanelectives"))
 			CleanElectives.cleanElectives(auth, channel, guild);
 
 		// Russian roulette
-		else if (content.toLowerCase().equals("!bang"))
-			chamberCount = Roulette.roulette(author, chamberCount,  channel);
+		else if (content.equalsIgnoreCase("!bang"))
+			chamberCount = Roulette.roulette(author, chamberCount, channel, conn);
 
 		// Russian roulette scores
-		else if (content.toLowerCase().equals("!bangscore") || content.toLowerCase().equals("!bangscores"))
+		else if (content.equalsIgnoreCase("!bangscore") || content.equalsIgnoreCase("!bangscores"))
 			BangScores.bangScores(channel, guild);
 
 		// Show bang scores for individual
 		else if (content.equalsIgnoreCase("!mybang"))
-			MyBang.myBang(author, channel);
+			MyBang.myBang(author, channel, conn);
 
 		// Show available Elective roles
 		else if (content.equalsIgnoreCase("!roles"))
@@ -120,18 +131,22 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Bet money for blackjack
 		else if (content.toLowerCase().startsWith("!bet"))
-			BlackJackCommands.bet(author, channel, content);
+			BlackJackCommands.bet(author, channel, content, conn);
 
 		// Hit in blackjack
 		else if (content.equalsIgnoreCase("!hit"))
-			BlackJackCommands.hit(author, channel);
+			BlackJackCommands.hit(author, channel, conn);
 
 		// Stand in blackjack
 		else if (content.equalsIgnoreCase("!stand"))
-			BlackJackCommands.stand(author, channel);
+			BlackJackCommands.stand(author, channel, conn);
 
 		// Show hand in blackjack
 		else if (content.equalsIgnoreCase("!hand"))
 			BlackJackCommands.myHand(author, channel);
+
+		// Show wallet
+		else if (content.equalsIgnoreCase("!wallet"))
+			MyWallet.myWallet(author, channel, conn);
 	}
 }

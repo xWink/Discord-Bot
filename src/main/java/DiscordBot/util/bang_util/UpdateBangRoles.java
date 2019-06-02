@@ -12,7 +12,6 @@ public class UpdateBangRoles {
 
         if (highScores != null) {
             Role attemptsRole = guild.getRolesByName("Addict", true).get(0);
-            Role deathsRole = guild.getRolesByName("Dead Ringer", true).get(0);
             Role luckyRole = guild.getRolesByName("Lucky Duck", true).get(0);
             Role unluckyRole = guild.getRolesByName("Snake Eyes", true).get(0);
             Role jamRole = guild.getRolesByName("Too Angry To Die", true).get(0);
@@ -20,8 +19,6 @@ public class UpdateBangRoles {
             // Remove role from loser and add role to new winner
             // Most attempts
             giveAndTakeBangRoles(guild, attemptsRole, highScores.getMostAttemptsPlayer().getName());
-            // Most deaths
-            giveAndTakeBangRoles(guild, deathsRole, highScores.getMostDeathsPlayer().getName());
             // Luckiest
             giveAndTakeBangRoles(guild, luckyRole, highScores.getLuckiest().getName());
             // Unluckiest

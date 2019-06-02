@@ -6,8 +6,6 @@ public class BangHighScores {
 
     private double attemptCount;
     private User mostAttemptsPlayer;
-    private double deathCount;
-    private User mostDeathsPlayer;
     private double bestRate;
     private User luckiest;
     private double worstRate;
@@ -18,8 +16,6 @@ public class BangHighScores {
     BangHighScores(
             double attemptCount,
             User mostAttemptsPlayer,
-            double deathCount,
-            User mostDeathsPlayer,
             double bestRate,
             User luckiest,
             double worstRate,
@@ -29,8 +25,6 @@ public class BangHighScores {
 
         this.attemptCount = attemptCount;
         this.mostAttemptsPlayer = mostAttemptsPlayer;
-        this.deathCount = deathCount;
-        this.mostDeathsPlayer = mostDeathsPlayer;
         this.bestRate = bestRate;
         this.luckiest = luckiest;
         this.worstRate = worstRate;
@@ -45,14 +39,6 @@ public class BangHighScores {
 
     public User getMostAttemptsPlayer() {
         return mostAttemptsPlayer;
-    }
-
-    public double getDeathCount() {
-        return deathCount;
-    }
-
-    public User getMostDeathsPlayer() {
-        return mostDeathsPlayer;
     }
 
     public double getBestRate() {

@@ -13,12 +13,12 @@ public class GetBangScores {
 
     public static BangHighScores getBangScores(Guild guild){
 
-        double attemptCount, deathCount, bestRate, worstRate;
+        double attemptCount, bestRate, worstRate;
         int jamCount;
-        User mostAttemptsPlayer, mostDeathsPlayer, luckiestPlayer, unluckiestPlayer, mostJamsPlayer;
+        User mostAttemptsPlayer, luckiestPlayer, unluckiestPlayer, mostJamsPlayer;
         Date date = new Date();
         Connection conn;
-        ResultSet mostAttempts, mostDeaths, luck, mostJams;
+        ResultSet mostAttempts, luck, mostJams;
 
         // Connect to database
         if ((conn = connect()) == null){
@@ -34,13 +34,6 @@ public class GetBangScores {
             mostAttempts.last();
             attemptCount = mostAttempts.getDouble("tries");
             mostAttemptsPlayer = guild.getMemberById(mostAttempts.getLong("user")).getUser();
-
-            // Most deaths
-            PreparedStatement getMostDeaths = conn.prepareStatement("SELECT user, deaths FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, deaths ORDER BY deaths");
-            mostDeaths = getMostDeaths.executeQuery();
-            mostDeaths.last();
-            deathCount = mostDeaths.getDouble("deaths");
-            mostDeathsPlayer = guild.getMemberById(mostDeaths.getLong("user")).getUser();
 
             // Get luckiest and unluckiest players
             PreparedStatement getLuckRanks = conn.prepareStatement("SELECT user, death_rate FROM bang WHERE "+date.getTime()+" - last_played < 604800000 AND tries > 20 GROUP BY user, death_rate ORDER BY death_rate");
@@ -72,8 +65,6 @@ public class GetBangScores {
         return new BangHighScores(
                 attemptCount,
                 mostAttemptsPlayer,
-                deathCount,
-                mostDeathsPlayer,
                 bestRate,
                 luckiestPlayer,
                 worstRate,

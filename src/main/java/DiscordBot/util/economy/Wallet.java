@@ -23,7 +23,7 @@ public class Wallet {
                     this.wealth = 5; // Default wealth
                 }
                 else {
-                    this.wealth = rs.getInt("economy"); // Get user's wealth
+                    this.wealth = rs.getInt("wallet"); // Get user's wealth
                 }
             }
         }

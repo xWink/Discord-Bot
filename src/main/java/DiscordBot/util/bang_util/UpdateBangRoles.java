@@ -19,15 +19,15 @@ public class UpdateBangRoles {
 
             // Remove role from loser and add role to new winner
             // Most attempts
-            giveAndTakeBangRoles(guild, attemptsRole, highScores.getMostAttemptsPlayer());
+            giveAndTakeBangRoles(guild, attemptsRole, highScores.getMostAttemptsPlayer().getName());
             // Most deaths
-            giveAndTakeBangRoles(guild, deathsRole, highScores.getMostDeathsPlayer());
+            giveAndTakeBangRoles(guild, deathsRole, highScores.getMostDeathsPlayer().getName());
             // Luckiest
-            giveAndTakeBangRoles(guild, luckyRole, highScores.getLuckiest());
+            giveAndTakeBangRoles(guild, luckyRole, highScores.getLuckiest().getName());
             // Unluckiest
-            giveAndTakeBangRoles(guild, unluckyRole, highScores.getUnluckiest());
+            giveAndTakeBangRoles(guild, unluckyRole, highScores.getUnluckiest().getName());
             // Most jams
-            giveAndTakeBangRoles(guild, jamRole, highScores.getMostJamsPlayer());
+            giveAndTakeBangRoles(guild, jamRole, highScores.getMostJamsPlayer().getName());
         }
     }
 

@@ -40,52 +40,24 @@ public class Wallet {
         return wealth;
     }
 
-    private static ResultSet findUserWallet(User user, Connection conn){
-
-        try {
-            PreparedStatement st = conn.prepareStatement("SELECT * FROM economy WHERE user = " + user.getIdLong());
-            return st.executeQuery();
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        return null;
+    private static ResultSet findUserWallet(User user, Connection conn) throws SQLException{
+        PreparedStatement st = conn.prepareStatement("SELECT * FROM economy WHERE user = " + user.getIdLong());
+        return st.executeQuery();
     }
 
-    private static int addUserToEconomy(User user, Connection conn){
-
-        try {
-            conn.prepareStatement("INSERT INTO economy (user, wallet) VALUES (" + user.getIdLong() + ", 5)").executeUpdate();
-            return 1;
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        return 0;
+    private static int addUserToEconomy(User user, Connection conn) throws SQLException{
+        conn.prepareStatement("INSERT INTO economy (user, wallet, role_expiry) VALUES (" + user.getIdLong() + ", 5, 0)").executeUpdate();
+        return 1;
     }
 
-    public int addMoney(Connection conn, int amount){
-
-        try {
-            conn.prepareStatement("UPDATE economy SET wallet = wallet + " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
-            return 1;
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        return 0;
+    public int addMoney(Connection conn, int amount) throws SQLException{
+        conn.prepareStatement("UPDATE economy SET wallet = wallet + " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
+        return 1;
     }
 
-    public int removeMoney(Connection conn, int amount){
-
-        try {
-            conn.prepareStatement("UPDATE economy SET wallet = wallet - " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
-            return 1;
-        }
-        catch (SQLException e){
-            e.printStackTrace();
-        }
-        return 0;
+    public int removeMoney(Connection conn, int amount) throws SQLException{
+        conn.prepareStatement("UPDATE economy SET wallet = wallet - " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
+        return 1;
     }
 
     public boolean canAfford(int cost){

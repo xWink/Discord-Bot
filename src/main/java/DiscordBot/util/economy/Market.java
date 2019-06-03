@@ -45,12 +45,13 @@ public class Market {
     public void purchase(User user, Connection conn, String content, TextChannel channel) throws SQLException{
 
         Wallet userWallet = new Wallet(user, conn);
+        int value;
 
         // Check for improper input
-        if (content.length() < 11 ||
-                !content.substring(10).matches("^[0-9]+$") ||
-                Integer.parseInt(content.substring(10)) < 1 ||
-                Integer.parseInt(content.substring(10)) > this.listings.size()){
+        if (content.length() < 7 ||
+                !content.substring(6).matches("^[0-9]+$") ||
+                (value = Integer.parseInt(content.substring(6))) < 1 ||
+                value > listings.size()){
             channel.sendMessage("To purchase a colour, say `!purchase <colour number>`").complete();
         }
 
@@ -66,7 +67,7 @@ public class Market {
 
         // Give user the role and set expiry time
         else{
-            giveColour(user, conn, channel, Integer.parseInt(content.substring(10)) - 1);
+            giveColour(user, conn, channel, value-1);
         }
     }
 
@@ -88,7 +89,8 @@ public class Market {
         wallet.removeMoney(conn, listings.get(index).getCost());
 
         // Set expiry time in database
-        conn.prepareStatement("UPDATE economy SET role_expiry = " + (date.getTime() + 604800000)).executeUpdate();
+        conn.prepareStatement("UPDATE economy SET role_expiry = " + (date.getTime() + 604800000) +
+                " WHERE user = " + user.getIdLong()).executeUpdate();
 
         // Output
         channel.sendMessage("The colour you requested has been granted").complete();

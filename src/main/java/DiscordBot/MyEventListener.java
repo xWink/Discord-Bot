@@ -157,7 +157,7 @@ public class MyEventListener extends ListenerAdapter {
 			market.showListings(channel);
 
 		// Purchase listed colour
-		else if (content.toLowerCase().startsWith("!purchase")){
+		else if (content.toLowerCase().startsWith("!buy")){
 			try{
 				market.purchase(author, conn, content, channel);
 			}

@@ -83,7 +83,14 @@ public class Market {
         channel.getGuild().getController().addSingleRoleToMember(channel.getGuild().getMember(user),
                 listings.get(index).getRole()).complete();
 
+        // Remove money
+        Wallet wallet = new Wallet(user, conn);
+        wallet.removeMoney(conn, listings.get(index).getCost());
+
         // Set expiry time in database
         conn.prepareStatement("UPDATE economy SET role_expiry = " + (date.getTime() + 604800000)).executeUpdate();
+
+        // Output
+        channel.sendMessage("The colour you requested has been granted").complete();
     }
 }

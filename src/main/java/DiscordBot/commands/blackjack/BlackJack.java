@@ -31,7 +31,7 @@ class BlackJack {
         return null; // Return null if no game found
     }
 
-    static void createNewGame(Connection conn, User author, TextChannel channel, int betAmount){
+    static void createNewGame(Connection conn, User author, TextChannel channel, int betAmount) throws SQLException{
 
         Card firstCard = Card.pickRandomCard();
         Card secondCard = Card.pickRandomCard();
@@ -173,7 +173,7 @@ class BlackJack {
         }
     }
 
-    static void endGame(User author, Connection conn, TextChannel channel, int winner){
+    static void endGame(User author, Connection conn, TextChannel channel, int winner) throws SQLException{
 
         int betAmount;
         Wallet wallet = new Wallet(author, conn);

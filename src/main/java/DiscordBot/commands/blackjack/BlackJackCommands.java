@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.entities.User;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import static DiscordBot.commands.blackjack.BlackJack.*;
 
@@ -37,8 +38,14 @@ public class BlackJackCommands {
         }
 
         // Move betted money from player's economy to the game's bet pool and start the game
-        wallet.removeMoney(conn, betAmount);
-        createNewGame(conn, author, channel, betAmount);
+        try {
+            wallet.removeMoney(conn, betAmount);
+            createNewGame(conn, author, channel, betAmount);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            channel.sendMessage("An error occurred setting up your game. Please contact a moderator").complete();
+        }
     }
 
     public static void hit(User author, TextChannel channel, Connection conn) {
@@ -61,23 +68,29 @@ public class BlackJackCommands {
             return;
         }
 
-        // Check if blackjack
-        if (hand.getValue() == 21){
-            channel.sendMessage("You got 21!").queue();
-            int winner = checkWinner(channel, hand);
-            endGame(author, conn, channel, winner);
-        }
+        try {
+            // Check if blackjack
+            if (hand.getValue() == 21) {
+                channel.sendMessage("You got 21!").queue();
+                int winner = checkWinner(channel, hand);
+                endGame(author, conn, channel, winner);
+            }
 
-        // Check if busted
-        else if (hand.getValue() > 21) {
-            channel.sendMessage("You busted").queue();
-            int winner = checkWinner(channel, hand);
-            endGame(author, conn, channel, winner);
-        }
+            // Check if busted
+            else if (hand.getValue() > 21) {
+                channel.sendMessage("You busted").queue();
+                int winner = checkWinner(channel, hand);
+                endGame(author, conn, channel, winner);
+            }
 
-        // Not 21 or busted, continue game as normal
-        else
-            channel.sendMessage(author.getName() + "'s hand is now:\n" + hand.showHand()).complete();
+            // Not 21 or busted, continue game as normal
+            else
+                channel.sendMessage(author.getName() + "'s hand is now:\n" + hand.showHand()).complete();
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            channel.sendMessage("An error occurred. Please contact a moderator :(").complete();
+        }
     }
 
     public static void myHand(User author, TextChannel channel){
@@ -108,7 +121,13 @@ public class BlackJackCommands {
         // Verify winner
         winner = checkWinner(channel, playerHand);
 
-        // Distribute reward and remove line from db
-        endGame(author, conn, channel, winner);
+        try {
+            // Distribute reward and remove line from db
+            endGame(author, conn, channel, winner);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            channel.sendMessage("Failed to end your game. Please contact a moderator :(").complete();
+        }
     }
 }

@@ -60,7 +60,7 @@ public class Market {
             channel.sendMessage("You already have a colour!").complete();
 
         // Check if user can afford the role
-        else if (!userWallet.canAfford(listings.get(Integer.parseInt(content.substring(10)) - 1).getCost())){
+        else if (!userWallet.canAfford(listings.get(value-1).getCost())){
             channel.sendMessage("You can't afford to buy this role. Your wallet contains " +
                     userWallet.getWealth() + " GryphCoins").complete();
         }

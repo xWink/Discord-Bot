@@ -13,28 +13,20 @@ import java.lang.Math;
 
 public class Roulette {
 
-	private static boolean playedWithin24Hours(ResultSet rs){
+	private static boolean eligibleForReward(ResultSet rs) throws SQLException{
 
 		Date date = new Date();
-
-		try {
-			if (date.getTime() - rs.getLong("last_played") < 86400000) {
-				return true;
-			}
-		}
-		catch (SQLException e){
-			e.printStackTrace();
-		}
-		return false;
+		return date.getTime() - rs.getLong("last_daily") >= 86400000;
 	}
 
-	private static void giveDailyReward(User author, Connection conn, TextChannel channel) {
+	private static void giveDailyReward(User author, Connection conn, TextChannel channel) throws SQLException{
 
-		// Check if user is a high score holder
+		Date date = new Date();
 		BangHighScores highScores = GetBangScores.getBangScores(channel.getGuild());
 		int reward = 5;
 		boolean hasHighscore = false;
 
+		// Check if user is a high score holder
 		if (highScores != null) {
 			if (author.equals(highScores.getLuckiest()) ||
 					author.equals(highScores.getMostAttemptsPlayer()) ||
@@ -59,8 +51,7 @@ public class Roulette {
 					" received their daily reward of " + reward + " GryphCoins!").complete();
 		}
 
-
-
+		conn.prepareStatement("UPDATE bang SET last_daily = " + date.getTime()).executeUpdate();
 	}
 
 	public static int roulette(User author, int chamberCount, TextChannel channel, Connection conn){
@@ -130,7 +121,7 @@ public class Roulette {
 
 			// If user exists, update the scores based on boom and jammed value and give daily rewards
 			else {
-				if (!playedWithin24Hours(rs))
+				if (eligibleForReward(rs))
 					giveDailyReward(author, conn, channel);
 
 				Statement stmt = conn.createStatement();

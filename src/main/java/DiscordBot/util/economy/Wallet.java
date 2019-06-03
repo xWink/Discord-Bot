@@ -55,7 +55,7 @@ public class Wallet {
     private static int addUserToEconomy(User user, Connection conn){
 
         try {
-            conn.prepareStatement("INSERT INTO economy VALUES (" + user.getIdLong() + ", 5)").executeUpdate();
+            conn.prepareStatement("INSERT INTO economy (user, wallet) VALUES (" + user.getIdLong() + ", 5)").executeUpdate();
             return 1;
         }
         catch (SQLException e){

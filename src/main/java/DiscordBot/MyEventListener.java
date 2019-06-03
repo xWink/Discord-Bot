@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,8 +37,8 @@ public class MyEventListener extends ListenerAdapter {
 		TextChannel botsChannel = guild.getTextChannelsByName("bots", true).get(0);
 
 		generalChannel.sendMessage("Welcome " + event.getUser().getAsMention() +
-				"! Feel free to ask any questions in " + generalChannel.getAsMention() +
-				"\nIf you want to play with our bot, made in-house, go to " + botsChannel.getAsMention() +
+				"! Feel free to ask any questions, we are always looking to help each other out!\n" +
+				"If you want to play with our bot, made in-house, go to " + botsChannel.getAsMention() +
 				" and say `!help` :smiley:").queue();
 	}
 
@@ -156,7 +157,13 @@ public class MyEventListener extends ListenerAdapter {
 			market.showListings(channel);
 
 		// Purchase listed colour
-		else if (content.toLowerCase().startsWith("!purchase"))
-			market.purchase(author, conn, content, channel);
+		else if (content.toLowerCase().startsWith("!purchase")){
+			try{
+				market.purchase(author, conn, content, channel);
+			}
+			catch (SQLException e){
+				e.printStackTrace();
+			}
+		}
 	}
 }

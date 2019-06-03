@@ -48,8 +48,8 @@ public class Market {
         int value;
 
         // Check for improper input
-        if (content.length() < 7 ||
-                !content.substring(6).matches("^[0-9]+$") ||
+        if (content.length() < 6 ||
+                !content.substring(5).matches("^[0-9]+$") ||
                 (value = Integer.parseInt(content.substring(6))) < 1 ||
                 value > listings.size()){
             channel.sendMessage("To purchase a colour, say `!purchase <colour number>`").complete();

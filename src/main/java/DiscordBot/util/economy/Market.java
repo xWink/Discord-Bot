@@ -36,7 +36,7 @@ public class Market {
 
         for (Listing colour : listings){
             i++;
-            string = string.concat(i + ". " + colour.getRole().getName() + " - " + colour.getCost() + " GC\n");
+            string = string.concat(i + ". " + colour.getRole().getName() + " - " + colour.getCost() + " *gc*/week\n");
         }
 
         channel.sendMessage(string).complete();
@@ -84,6 +84,6 @@ public class Market {
                 listings.get(index).getRole()).complete();
 
         // Set expiry time in database
-        conn.prepareStatement("UPDATE economy SET role_expiry = " + date.getTime() + 604800000).executeUpdate();
+        conn.prepareStatement("UPDATE economy SET role_expiry = " + (date.getTime() + 604800000)).executeUpdate();
     }
 }

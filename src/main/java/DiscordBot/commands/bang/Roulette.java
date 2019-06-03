@@ -128,9 +128,14 @@ public class Roulette {
 				if (boom == 1)
 					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, deaths = deaths + 1, last_played = " +
 							date.getTime() + " WHERE user = " + author.getIdLong());
-				else if (jammed == 1)
+				else if (jammed == 1) {
 					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, jams = jams + 1, last_played = " +
 							date.getTime() + " WHERE user = " + author.getIdLong());
+
+					Wallet wallet = new Wallet(author, conn);
+					wallet.addMoney(conn, 10);
+					channel.sendMessage(author.getName() + " received a bonus 10 GryphCoins!").complete();
+				}
 				else
 					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, last_played = " +
 							date.getTime() + " WHERE user = " + author.getIdLong());

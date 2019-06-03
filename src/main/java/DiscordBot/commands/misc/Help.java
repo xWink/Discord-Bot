@@ -12,6 +12,7 @@ public class Help {
                     "`!bang` - Play Russian Roulette\n\n" +
                     "`!bangscores` & `!mybang` - See bang high scores or personal stats\n\n" +
                     "`!bet`, `!hit`, `!hand`, & `!stand` - Play blackjack\n\n" +
-                    "`!wallet` - Show how many GryphCoins you have").queue();
+                    "`!wallet` - Show how many GryphCoins you have\n\n" +
+                    "`!market` & `!buy <item #>` - Use the GryphCoin market").queue();
     }
 }

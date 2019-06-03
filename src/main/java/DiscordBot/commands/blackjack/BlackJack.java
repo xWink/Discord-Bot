@@ -178,13 +178,7 @@ class BlackJack {
         int betAmount;
         Wallet wallet = new Wallet(author, conn);
 
-        try {
-            betAmount = Objects.requireNonNull(findGame(conn, author)).getInt("bet");
-        }
-        catch(SQLException e){
-            e.printStackTrace();
-            return;
-        }
+        betAmount = Objects.requireNonNull(findGame(conn, author)).getInt("bet");
 
         switch (winner) {
             case -1:
@@ -209,12 +203,6 @@ class BlackJack {
         }
 
         // Delete user's line from database
-        try {
-            conn.prepareStatement("DELETE FROM blackjack WHERE user = " + author.getIdLong()).executeUpdate();
-        }
-        catch(Exception e){
-            System.out.println("blackjack Exception 6\nException: "+ e.toString());
-            channel.sendMessage("Error, could not end your game. Please contact a moderator!").complete();
-        }
+        conn.prepareStatement("DELETE FROM blackjack WHERE user = " + author.getIdLong()).executeUpdate();
     }
 }

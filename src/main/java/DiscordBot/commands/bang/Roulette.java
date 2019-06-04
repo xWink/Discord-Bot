@@ -51,7 +51,7 @@ public class Roulette {
 					" received their daily reward of " + reward + " GryphCoins!").complete();
 		}
 
-		conn.prepareStatement("UPDATE bang SET last_daily = " + date.getTime() + "WHERE user = " + author.getIdLong()).executeUpdate();
+		conn.prepareStatement("UPDATE bang SET last_daily = " + date.getTime() + " WHERE user = " + author.getIdLong()).executeUpdate();
 	}
 
 	public static int roulette(User author, int chamberCount, TextChannel channel, Connection conn){

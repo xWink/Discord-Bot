@@ -13,7 +13,7 @@ public class GiveRole {
 			if (auth.getRoles().containsAll(guild.getRolesByName("Moderator", true))
 					&& !member.getRoles().containsAll(guild.getRolesByName("Moderator", true))) {
 				if (!guild.getRolesByName(roleName, true).isEmpty()) {
-					guild.getController().addRolesToMember(member, guild.getRolesByName(roleName, true)).queue();
+					guild.getController().addSingleRoleToMember(member, guild.getRolesByName(roleName, true).get(0)).queue();
 					channel.sendMessage("Added " + roleName + " role to <@" + member.getUser().getId() + ">").queue();
 				}
 				else{

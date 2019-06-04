@@ -17,11 +17,11 @@ public class Market {
     public Market(Guild guild){
 
         // Add any listings to market here
-        listings.add(new Listing(guild.getRolesByName("orange", true).get(0), 75));
-        listings.add(new Listing(guild.getRolesByName("blue", true).get(0), 100));
-        listings.add(new Listing(guild.getRolesByName("green", true).get(0), 150));
-        listings.add(new Listing(guild.getRolesByName("purple", true).get(0), 200));
-        listings.add(new Listing(guild.getRolesByName("pink", true).get(0), 300));
+        listings.add(new Listing(guild.getRolesByName("orange", true).get(0), 25));
+        listings.add(new Listing(guild.getRolesByName("blue", true).get(0), 35));
+        listings.add(new Listing(guild.getRolesByName("green", true).get(0), 50));
+        listings.add(new Listing(guild.getRolesByName("purple", true).get(0), 75));
+        listings.add(new Listing(guild.getRolesByName("pink", true).get(0), 100));
     }
 
     public ArrayList<Listing> getListings(){

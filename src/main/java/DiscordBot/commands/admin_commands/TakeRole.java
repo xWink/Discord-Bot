@@ -13,7 +13,7 @@ public class TakeRole {
 			if (auth.getRoles().containsAll(guild.getRolesByName("Moderator", true))
 					&& !member.getRoles().containsAll(guild.getRolesByName("Moderator", true))) {
 				if (!guild.getRolesByName(roleName, true).isEmpty()) {
-					guild.getController().removeRolesFromMember(member, guild.getRolesByName(roleName, true)).queue();
+					guild.getController().removeSingleRoleFromMember(member, guild.getRolesByName(roleName, true).get(0)).queue();
 					channel.sendMessage("Removed " + roleName + " role from <@" + member.getUser().getId() + ">").queue();
 				}
 				else{

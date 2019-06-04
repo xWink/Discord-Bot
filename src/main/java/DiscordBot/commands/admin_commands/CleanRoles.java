@@ -12,7 +12,7 @@ public class CleanRoles {
 			List<Role> listRoles = guild.getRoles();
 			for (Role listRole : listRoles) { // Delete all roles that are not these
 				String substring = listRole.toString().toLowerCase().substring(2, listRole.toString().lastIndexOf("("));
-				if (!(substring.equals("moderator") || substring.equals("verified students") || substring.equals("@everyone") || substring.equals("discordbot"))) {
+				if (!(substring.equals("Moderator") || substring.equals("Verified Students") || substring.equals("@everyone") || substring.equals("BCompHelper"))) {
 					listRole.delete().queue();
 				}
 			}

@@ -50,21 +50,23 @@ public class MyEventListener extends ListenerAdapter {
   	@Override
   	public void onMessageReceived(MessageReceivedEvent event){
 
-		final User author = event.getAuthor(); // Variable author is the author of type User
-		if (author.isBot())
-			return; // If the event is made by the bot, ignore it
+		final User author = event.getAuthor(); // Author as type User
 
-		final Message message = event.getMessage(); // Variable message is the detected message
-		final String content = message.getContentRaw(); // Variable content is the text of the message
-		final TextChannel channel = event.getTextChannel(); // Variable channel is the text channel the message came from
-		guild = event.getGuild(); // Variable guild is the Discord server
-		final Member auth = guild.getMember(author); // Variable auth is author of type Member
-	  	final List channels = Arrays.asList(cfg.channel);
-	  	final Market market = new Market(guild);
+		// If the event is made by the bot, ignore it
+		if (author.isBot())
+			return;
+
+		guild = event.getGuild(); // Discord server
+		final Message message = event.getMessage(); // Detected message
+		final String content = message.getContentRaw(); // Text of the message
+		final TextChannel channel = event.getTextChannel(); // Text channel the message came from
+		final Member auth = guild.getMember(author); // Author as type Member
+	  	final List channels = Arrays.asList(cfg.channel); // List of channels bot can read from
+	  	final Market market = new Market(guild); // Roles for sale
 	  	Connection conn;
 
 		// Check if the bot is allowed to send messages in the current channel
-		if ( !cfg.channel[0].equalsIgnoreCase("all") && !channels.contains(channel.getId())) return;
+		if (!cfg.channel[0].equalsIgnoreCase("all") && !channels.contains(channel.getId())) return;
 
 		// Connect to database
 		if ((conn = connect()) == null){
@@ -104,7 +106,7 @@ public class MyEventListener extends ListenerAdapter {
 		else if(content.equalsIgnoreCase("!join "))
 			Join.join(auth, author, channel, guild, content, conn);
 
-		// Remove user's application from CSV file
+		// Remove user's application from database and removes them from the role
 		else if (content.equalsIgnoreCase("!leave "))
 			Leave.leave(auth, author, channel, guild, content, conn);
 

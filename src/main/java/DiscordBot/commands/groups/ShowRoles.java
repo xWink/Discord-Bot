@@ -13,22 +13,22 @@ public class ShowRoles {
         // Get all channels
         List<Channel> channelList = guild.getChannels();
         int channelCount = 0;
+        String message = "**Available elective roles**";
 
         // Find any channel in Electives category
         for (Channel channel:channelList) {
             if (channel.getParent() == guild.getCategoriesByName("electives", true).get(0)){
-                if (channelCount == 0){
-                    msgChannel.sendMessage("**Available elective roles**").queue();
-                }
                 // Print elective name
                 channelCount++;
-                msgChannel.sendMessage(channelCount+". "+channel.toString().substring(channel.toString().indexOf(":")+1,channel.toString().lastIndexOf("("))).queue();
+                message = message.concat(channelCount+". "+channel.toString().substring(channel.toString().indexOf(":")+1,channel.toString().lastIndexOf("(")) + "\n");
             }
         }
 
         // If no channels found
         if (channelCount == 0){
-            msgChannel.sendMessage("No available channels were found. You can apply to make new ones with `!join`").queue();
+            message = "No available channels were found. You can apply to make new ones with `!join`";
         }
+
+        msgChannel.sendMessage(message).complete();
     }
 }

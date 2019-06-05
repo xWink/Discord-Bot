@@ -33,11 +33,13 @@ public class MyEventListener extends ListenerAdapter {
 
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event){
+		TextChannel welcomeChannel = guild.getTextChannelsByName("welcome", true).get(0);
 		TextChannel generalChannel = guild.getTextChannelsByName("general", true).get(0);
 		TextChannel botsChannel = guild.getTextChannelsByName("bots", true).get(0);
 
-		generalChannel.sendMessage("Welcome " + event.getUser().getAsMention() +
-				"! Feel free to ask any questions, we are always looking to help each other out!\n" +
+		welcomeChannel.sendMessage("Welcome " + event.getUser().getAsMention() +
+				"! Feel free to ask any questions in " + generalChannel.getAsMention() +
+				", we are always looking to help each other out!\n\n" +
 				"If you want to play with our bot, made in-house, go to " + botsChannel.getAsMention() +
 				" and say `!help` :smiley:").queue();
 	}

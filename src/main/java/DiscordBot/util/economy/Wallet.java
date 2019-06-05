@@ -46,7 +46,7 @@ public class Wallet {
     }
 
     private static int addUserToEconomy(User user, Connection conn) throws SQLException{
-        conn.prepareStatement("INSERT INTO economy (user, wallet, role_expiry) VALUES (" + user.getIdLong() + ", 5, 0)").executeUpdate();
+        conn.prepareStatement("INSERT INTO economy (user, wallet, role_expiry, role_colour) VALUES (" + user.getIdLong() + ", 5, 0, NULL)").executeUpdate();
         return 1;
     }
 

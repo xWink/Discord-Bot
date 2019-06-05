@@ -1,9 +1,55 @@
-package DiscordBot.util.bang_util;
+package DiscordBot.util.misc;
 
+import DiscordBot.util.bang_util.BangHighScores;
+import DiscordBot.util.bang_util.GetBangScores;
 import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 
-public class UpdateBangRoles {
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Date;
+
+import static DiscordBot.util.misc.DatabaseUtil.connect;
+
+public class UpdateRoles {
+
+    public static void removeExpiredColours(){
+
+        Guild guild = DiscordBot.MyEventListener.guild; // Current guild
+        Connection conn;
+        Date date = new Date();
+
+        // Connect to database
+        if ((conn = connect()) == null){
+            System.out.println("Could not connect to database to remove expired colours");
+            return;
+        }
+
+        try{
+            // Find all expired roles
+            ResultSet rs = conn.prepareStatement("SELECT user, role_colour FROM economy WHERE role_expiry > 0 AND "+
+                    "role_expiry < " + date.getTime()).executeQuery();
+
+            // For each user with expired roles
+            while (rs.next()){
+                // Get member and role
+                Member member = guild.getMemberById(rs.getLong("user"));
+                Role role = guild.getRolesByName(rs.getString("role_colour"), true).get(0);
+
+                // Remove role from member
+                guild.getController().removeSingleRoleFromMember(member, role).complete();
+
+                // Update database
+                conn.prepareStatement("UPDATE economy SET role_expiry = 0, role_colour = NULL " +
+                        "WHERE user = " + member.getUser().getIdLong()).executeUpdate();
+            }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
 
     public static void updateBangRoles(){
 

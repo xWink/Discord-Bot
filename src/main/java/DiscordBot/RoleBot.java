@@ -3,7 +3,7 @@ package DiscordBot;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import DiscordBot.util.bang_util.UpdateBangRoles;
+import DiscordBot.util.misc.UpdateRoles;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -26,7 +26,8 @@ public class RoleBot {
 			TimerTask task = new TimerTask() {
 				@Override
 				public void run() {
-					UpdateBangRoles.updateBangRoles();
+					UpdateRoles.updateBangRoles();
+					UpdateRoles.removeExpiredColours();
 				}
 			};
 			timer.schedule(task,1000*60*60,1000*60*60);

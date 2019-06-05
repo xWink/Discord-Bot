@@ -90,7 +90,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Bot responds with pong and latency
 		else if (content.equalsIgnoreCase("!ping"))
-			Ping.ping(author, event, channel);
+			Ping.ping(author, event, channel, conn);
 
 		// Bot creates new text channel and deletes old one (OWNER ONLY)
 		else if (content.equalsIgnoreCase("!totalchatwipe"))

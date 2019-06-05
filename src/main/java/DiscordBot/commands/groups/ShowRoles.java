@@ -13,7 +13,7 @@ public class ShowRoles {
         // Get all channels
         List<Channel> channelList = guild.getChannels();
         int channelCount = 0;
-        String message = "**Available elective roles**";
+        String message = "**Available elective roles**\n";
 
         // Find any channel in Electives category
         for (Channel channel:channelList) {

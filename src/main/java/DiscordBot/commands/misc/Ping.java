@@ -1,34 +1,24 @@
 package DiscordBot.commands.misc;
 
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.Event;
 
 import java.sql.*;
 
-import static DiscordBot.util.misc.DatabaseUtil.connect;
-
 public class Ping {
 
-	public static void ping(User author, Event event, TextChannel channel){
+	public static void ping(User author, Event event, TextChannel channel, Connection conn){
 
-		Connection conn;
 		ResultSet rs = null;
 		long ping = event.getJDA().getPing();
-
-		// Connect to database
-		if ((conn = connect()) == null){
-			channel.sendMessage("Could not connect to database. Please contact a moderator :(").complete();
-			return;
-		}
 
 		try{
 			PreparedStatement st = conn.prepareStatement("SELECT * FROM ping WHERE user="+author.getIdLong());
 			rs = st.executeQuery();
 		}
 		catch (SQLException e){
-			System.out.println("Ping Exception 2");
+			System.out.println("Ping Exception 1");
 			System.out.println("SQL Exception: "+ e.toString());
 		}
 
@@ -52,7 +42,7 @@ public class Ping {
 			}
 		}
 		catch (SQLException e) {
-			System.out.println("Ping Exception 3");
+			System.out.println("Ping Exception 2");
 			e.printStackTrace();
 		}
 	}

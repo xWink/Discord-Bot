@@ -32,8 +32,8 @@ public class GetBangScores {
             PreparedStatement getMostAttempts = conn.prepareStatement("SELECT user, tries FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, tries ORDER BY tries");
             mostAttempts = getMostAttempts.executeQuery();
             mostAttempts.last();
-            mostAttemptsPlayer = guild.getMemberById(mostAttempts.getLong("user")).getUser();
             attemptCount = mostAttempts.getDouble("tries");
+            mostAttemptsPlayer = guild.getMemberById(mostAttempts.getLong("user")).getUser();
 
             // Get luckiest and unluckiest players
             PreparedStatement getLuckRanks = conn.prepareStatement("SELECT user, death_rate FROM bang WHERE "+date.getTime()+" - last_played < 604800000 AND tries > 20 GROUP BY user, death_rate ORDER BY death_rate");

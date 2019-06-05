@@ -42,7 +42,7 @@ public class Roulette {
 		if (hasHighscore) {
 			wallet.addMoney(conn, reward * 2);
 			channel.sendMessage(author.getName() +
-					" received their daily reward of " + reward + " GryphCoins plus a bonus " + reward +
+					" received their daily reward of " + reward + " GryphCoins\n***bonus*** " + reward +
 					" GryphCoins for having a bang high score!").complete();
 		}
 		else{

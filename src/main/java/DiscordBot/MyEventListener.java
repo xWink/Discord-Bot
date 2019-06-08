@@ -126,7 +126,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Russian roulette scores
 		else if (content.equalsIgnoreCase("!bangscore") || content.equalsIgnoreCase("!bangscores"))
-			BangScores.bangScores(channel, guild);
+			BangScores.bangScores(channel, guild, conn);
 
 		// Show bang scores for individual
 		else if (content.equalsIgnoreCase("!mybang"))

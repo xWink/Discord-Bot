@@ -27,8 +27,15 @@ public class BlackJackCommands {
             return;
         }
 
-        // Verify that the user has enough money
         int betAmount = Integer.parseInt(content.substring(5));
+
+        // Verify that user bet more than 0 GryphCoins
+        if (betAmount < 1){
+            channel.sendMessage("You must bet at least 1 GryphCoin!").complete();
+            return;
+        }
+
+        // Verify that the user has enough money
         Wallet wallet = new Wallet(author, conn);
 
         if (betAmount > wallet.getWealth()){
@@ -37,7 +44,7 @@ public class BlackJackCommands {
             return;
         }
 
-        // Move betted money from player's economy to the game's bet pool and start the game
+        // Move betted money from player's wallet to the game's bet pool and start the game
         try {
             wallet.removeMoney(conn, betAmount);
             createNewGame(conn, author, channel, betAmount);

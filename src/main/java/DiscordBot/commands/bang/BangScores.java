@@ -1,21 +1,34 @@
 package DiscordBot.commands.bang;
 
 import DiscordBot.util.bang_util.BangHighScores;
-import DiscordBot.util.bang_util.GetBangScores;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 
+import java.sql.Connection;
+
+import static DiscordBot.util.bang_util.GetBangScores.*;
+
 public class BangScores {
 
-    public static void bangScores(TextChannel channel, Guild guild){
+    public static void bangScores(TextChannel channel, Guild guild, Connection conn){
 
-        BangHighScores highScores = GetBangScores.getBangScores(guild);
+        BangHighScores highScores = getHighScores(guild);
+        String string = "";
 
+        // Make string with high scores
         if (highScores != null){
-            channel.sendMessage("The player with the most attempts is "+highScores.getMostAttemptsPlayer().getName()+" with a score of "+(int)highScores.getAttemptCount()+"\n"+
-            "The player with the best survival rate is "+highScores.getLuckiest().getName()+" at "+highScores.getBestRate()+"%\n"+
-            "The player with the worst survival rate is "+highScores.getUnluckiest().getName()+" at "+highScores.getWorstRate()+"%\n"+
-            "The player with the most jams survived is "+highScores.getMostJamsPlayer().getName()+" at "+highScores.getJamCount()).queue();
+            string = "Most attempts: "+highScores.getMostAttemptsPlayer().getName()+" with a score of "+(int)highScores.getAttemptCount()+"\n"+
+            "Best survival rate: "+highScores.getLuckiest().getName()+" at "+highScores.getBestRate()+"%\n"+
+            "Worst survival rate: "+highScores.getUnluckiest().getName()+" at "+highScores.getWorstRate()+"%\n"+
+            "Most jams: "+highScores.getMostJamsPlayer().getName()+" with a score of "+highScores.getJamCount()+"\n\n";
         }
+
+
+        // Concat string with total attempts/deaths
+        int[] totals = getTotalBangs(conn);
+        string = string.concat("Total attempts: " + totals[0] + "\nTotal deaths: " + totals[1]);
+
+        // Send message
+        channel.sendMessage(string).complete();
     }
 }

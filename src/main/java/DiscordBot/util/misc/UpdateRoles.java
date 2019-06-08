@@ -54,7 +54,7 @@ public class UpdateRoles {
     public static void updateBangRoles(){
 
         Guild guild = DiscordBot.MyEventListener.guild; // Current guild
-        BangHighScores highScores = GetBangScores.getBangScores(guild); // Get high scores
+        BangHighScores highScores = GetBangScores.getHighScores(guild); // Get high scores
 
         if (highScores != null) {
             Role attemptsRole = guild.getRolesByName("Addict", true).get(0);

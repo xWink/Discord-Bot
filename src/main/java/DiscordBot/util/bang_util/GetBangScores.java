@@ -11,7 +11,7 @@ import static DiscordBot.util.misc.DatabaseUtil.connect;
 
 public class GetBangScores {
 
-    public static BangHighScores getBangScores(Guild guild){
+    public static BangHighScores getHighScores(Guild guild){
 
         double attemptCount, bestRate, worstRate;
         int jamCount;
@@ -71,5 +71,23 @@ public class GetBangScores {
                 unluckiestPlayer,
                 jamCount,
                 mostJamsPlayer);
+    }
+
+    public static int[] getTotalBangs(Connection conn){
+
+        int[] values = {0,0};
+
+        try {
+            ResultSet rs = conn.prepareStatement("SELECT SUM(tries), SUM(deaths) FROM bang").executeQuery();
+            if (rs.next()){
+                values[0] = rs.getInt("SUM(tries)");
+                values[1] = rs.getInt("SUM(deaths)");
+            }
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return values;
     }
 }

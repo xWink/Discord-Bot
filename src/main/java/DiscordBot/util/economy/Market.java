@@ -93,6 +93,6 @@ public class Market {
                 " WHERE user = " + user.getIdLong()).executeUpdate();
 
         // Output
-        channel.sendMessage("The colour you requested has been granted").complete();
+        channel.sendMessage("Enjoy your new colour! :)").complete();
     }
 }

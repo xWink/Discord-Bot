@@ -22,7 +22,7 @@ public class Roulette {
 	private static void giveDailyReward(User author, Connection conn, TextChannel channel) throws SQLException{
 
 		Date date = new Date();
-		BangHighScores highScores = GetBangScores.getBangScores(channel.getGuild());
+		BangHighScores highScores = GetBangScores.getHighScores(channel.getGuild());
 		int reward = 5;
 		boolean hasHighscore = false;
 
@@ -42,7 +42,7 @@ public class Roulette {
 		if (hasHighscore) {
 			wallet.addMoney(conn, reward * 2);
 			channel.sendMessage(author.getName() +
-					" received their daily reward of " + reward + " GryphCoins\n***bonus*** " + reward +
+					" received their daily reward of " + reward + " GryphCoins\n***BONUS***  " + reward +
 					" GryphCoins for having a bang high score!").complete();
 		}
 		else{

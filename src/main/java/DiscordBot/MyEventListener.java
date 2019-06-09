@@ -97,19 +97,19 @@ public class MyEventListener extends ListenerAdapter {
 			TotalChatWipe.chatWipe(auth, guild, channel);
 
 		// Bot gives requested role to target (MODERATOR->PEASANT ONLY)
-		else if(content.equalsIgnoreCase("!giverole "))
+		else if(content.toLowerCase().startsWith("!giverole "))
 			GiveRole.giveRole(auth, channel, guild, content, message);
 
 		// Bot removes requested role from user (MODERATOR->PEASANT ONLY)
-		else if(content.equalsIgnoreCase("!takerole "))
+		else if(content.toLowerCase().startsWith("!takerole "))
 			TakeRole.takeRole(auth, channel, guild, content, message);
 
 		// User requests to join/create an elective role
-		else if(content.equalsIgnoreCase("!join "))
+		else if(content.toLowerCase().startsWith("!join "))
 			Join.join(auth, author, channel, guild, content, conn);
 
 		// Remove user's application from database and removes them from the role
-		else if (content.equalsIgnoreCase("!leave "))
+		else if (content.toLowerCase().startsWith("!leave "))
 			Leave.leave(auth, author, channel, guild, content, conn);
 
 		// Delete all non-specified roles (OWNER ONLY)

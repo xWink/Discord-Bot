@@ -90,7 +90,8 @@ public class Market {
 
         // Set expiry time in database
         conn.prepareStatement("UPDATE economy SET role_expiry = " + (date.getTime() + 604800000) +
-                " WHERE user = " + user.getIdLong()).executeUpdate();
+                ", role_colour = '" + listings.get(index).getRole().getName() +
+                "' WHERE user = " + user.getIdLong()).executeUpdate();
 
         // Output
         channel.sendMessage("Enjoy your new colour! :)").complete();

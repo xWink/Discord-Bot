@@ -52,7 +52,7 @@ public class Market {
                 !content.substring(5).matches("^[0-9]+$") ||
                 (value = Integer.parseInt(content.substring(5))) < 1 ||
                 value > listings.size()){
-            channel.sendMessage("To purchase a colour, say `!purchase <colour number>`").complete();
+            channel.sendMessage("To buy a colour, say `!buy <colour #>`\nExample: `!buy 1`").complete();
         }
 
         // Check if user already bought a role

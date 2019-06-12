@@ -33,6 +33,9 @@ public class GetBangScores {
             mostAttempts = getMostAttempts.executeQuery();
             mostAttempts.last();
             attemptCount = mostAttempts.getDouble("tries");
+            System.out.println(mostAttempts.getLong("user"));
+            System.out.println(mostAttempts.getFloat("user"));
+            System.out.println(mostAttempts.getDouble("user"));
             mostAttemptsPlayer = guild.getMemberById(mostAttempts.getLong("user")).getUser();
 
             // Get luckiest and unluckiest players

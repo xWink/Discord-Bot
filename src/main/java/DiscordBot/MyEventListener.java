@@ -61,7 +61,7 @@ public class MyEventListener extends ListenerAdapter {
 		final Message message = event.getMessage(); // Detected message
 		final String content = message.getContentRaw(); // Text of the message
 		final TextChannel channel = event.getTextChannel(); // Text channel the message came from
-System.out.println("Here1");
+System.out.println(cfg.guildId);
 		final Member auth = guild.getMember(author); // Author as type Member
 System.out.println("Here2");
 	  	final List channels = Arrays.asList(cfg.channel); // List of channels bot can read from

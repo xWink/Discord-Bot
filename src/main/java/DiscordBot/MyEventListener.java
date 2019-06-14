@@ -29,10 +29,10 @@ public class MyEventListener extends ListenerAdapter {
 
 	private int chamberCount = 6;
 	private ConfigFile cfg = RoleBot.config;
-	public static Guild guild = RoleBot.api.getGuildById(RoleBot.config.guildId);
 
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event){
+		Guild guild = RoleBot.api.getGuildById(RoleBot.config.guildId);
 		TextChannel welcomeChannel = guild.getTextChannelsByName("welcome", true).get(0);
 		TextChannel generalChannel = guild.getTextChannelsByName("general", true).get(0);
 		TextChannel botsChannel = guild.getTextChannelsByName("bots", true).get(0);
@@ -58,6 +58,7 @@ public class MyEventListener extends ListenerAdapter {
 		if (author.isBot())
 			return;
 
+		final Guild guild = RoleBot.api.getGuildById(Long.parseLong(RoleBot.config.guildId));
 		final Message message = event.getMessage(); // Detected message
 		final String content = message.getContentRaw(); // Text of the message
 		final TextChannel channel = event.getTextChannel(); // Text channel the message came from

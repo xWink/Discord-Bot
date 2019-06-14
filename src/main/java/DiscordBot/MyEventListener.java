@@ -61,6 +61,8 @@ public class MyEventListener extends ListenerAdapter {
 		final Message message = event.getMessage(); // Detected message
 		final String content = message.getContentRaw(); // Text of the message
 		final TextChannel channel = event.getTextChannel(); // Text channel the message came from
+		if (guild == null)
+			System.out.println("Guild is null!");
 System.out.println(cfg.guildId);
 		final Member auth = guild.getMember(author); // Author as type Member
 System.out.println("Here2");

@@ -1,5 +1,6 @@
 package DiscordBot.util.misc;
 
+import DiscordBot.RoleBot;
 import DiscordBot.util.bang_util.BangHighScores;
 import DiscordBot.util.bang_util.GetBangScores;
 import net.dv8tion.jda.core.entities.Guild;
@@ -17,7 +18,7 @@ public class UpdateRoles {
 
     public static void removeExpiredColours(){
 
-        Guild guild = DiscordBot.MyEventListener.guild; // Current guild
+        Guild guild = RoleBot.api.getGuildById(Long.parseLong(RoleBot.config.guildId)); // Current guild
         Connection conn;
         Date date = new Date();
 
@@ -53,7 +54,7 @@ public class UpdateRoles {
 
     public static void updateBangRoles(){
 
-        Guild guild = DiscordBot.MyEventListener.guild; // Current guild
+        Guild guild = RoleBot.api.getGuildById(Long.parseLong(RoleBot.config.guildId)); // Current guild
         BangHighScores highScores = GetBangScores.getHighScores(guild); // Get high scores
 
         if (highScores != null) {

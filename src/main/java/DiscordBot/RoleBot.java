@@ -11,7 +11,7 @@ import java.util.TimerTask;
 public class RoleBot {
 
 	public static ConfigFile config;
-	static JDA api;
+	public static JDA api;
 
 	public static void main(String[] args){
 

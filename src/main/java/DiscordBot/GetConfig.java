@@ -89,7 +89,7 @@ class GetConfig {
 
             // If the line is the guild ID
             else if (contents[i].startsWith("GUILD")){
-                toReturn.guild = parseArg(contents[i]);
+                toReturn.guildId = parseArg(contents[i]);
                 logMessage("Got guild ID");
             }
         }
@@ -115,7 +115,7 @@ class GetConfig {
             logMessage ("Error: Ending execution due to missing DB_PASS in '.rolebotconfig' file. Make sure that the file has a DB_PASS field before running again");
             System.exit(0);
         }
-        if (toReturn.guild == null || toReturn.guild.isEmpty()){
+        if (toReturn.guildId == null || toReturn.guildId.isEmpty()){
             logMessage ("Error: Ending execution due to missing GUILD in '.rolebotconfig' file. Make sure that the file has a GUILD field before running again");
             System.exit(0);
         }

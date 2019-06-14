@@ -9,6 +9,12 @@ public class Join {
 
 	public static void join(Member auth, User author, TextChannel channel, Guild guild, String content, Connection conn){
 
+		// If format is incorrect, show user how to properly format command
+		if (content.equalsIgnoreCase("!join") || content.equalsIgnoreCase("!join ")){
+			channel.sendMessage("Command: !join <courseID>\\n\\nExample: !join mcs2100").queue();
+			return;
+		}
+
 		String roleName = content.substring(6);
 
 		// If role is restricted, don't assign user to role

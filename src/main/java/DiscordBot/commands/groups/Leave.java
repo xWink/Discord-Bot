@@ -8,6 +8,12 @@ public class Leave {
 
 	public static void leave(Member auth, User author, TextChannel channel, Guild guild, String content, Connection conn){
 
+		// If format is incorrect, show user how to properly format command
+		if (content.equalsIgnoreCase("!leave") || content.equalsIgnoreCase("!leave ")){
+			channel.sendMessage("Command: !leave <courseID>\\n\\nExample: !leave mcs2100").queue();
+			return;
+		}
+
 		String roleName = content.substring(7);
 		ResultSet rs;
 		Boolean removed = false;

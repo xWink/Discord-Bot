@@ -5,5 +5,5 @@ public class ConfigFile {
     public String[] channel;
     public String db_user;
     public String db_pass;
-    public String guild;
+    public String guildId;
 }

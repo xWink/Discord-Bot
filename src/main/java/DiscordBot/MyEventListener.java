@@ -29,7 +29,7 @@ public class MyEventListener extends ListenerAdapter {
 
 	private int chamberCount = 6;
 	private ConfigFile cfg = RoleBot.config;
-	public static Guild guild = RoleBot.api.getGuildById(RoleBot.config.guild);
+	public static Guild guild = RoleBot.api.getGuildById(RoleBot.config.guildId);
 
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event){
@@ -61,7 +61,9 @@ public class MyEventListener extends ListenerAdapter {
 		final Message message = event.getMessage(); // Detected message
 		final String content = message.getContentRaw(); // Text of the message
 		final TextChannel channel = event.getTextChannel(); // Text channel the message came from
+System.out.println("Here1");
 		final Member auth = guild.getMember(author); // Author as type Member
+System.out.println("Here2");
 	  	final List channels = Arrays.asList(cfg.channel); // List of channels bot can read from
 	  	final Market market = new Market(guild); // Roles for sale
 	  	Connection conn;
@@ -74,17 +76,9 @@ public class MyEventListener extends ListenerAdapter {
 			channel.sendMessage("Could not connect to database. Please contact a moderator :(").complete();
 			return;
 		}
-
-		// Bot shows how to use !join
-		if (content.equalsIgnoreCase("!join") || content.equalsIgnoreCase("!join "))
-			channel.sendMessage("Command: !join <courseID>\n\nExample: !join mcs2100").queue();
-
-		// Bot shows how to use !leave
-		else if (content.equalsIgnoreCase("!leave") || content.equalsIgnoreCase("!leave "))
-			channel.sendMessage("Command: !leave <courseID>\n\nExample: !leave mcs2100").queue();
-
+System.out.println("here3");
 		// Bot shows how to use its commands
-		else if (content.equalsIgnoreCase("!help"))
+		if (content.equalsIgnoreCase("!help"))
 			Help.help(channel);
 
 		// Bot responds with pong and latency
@@ -104,11 +98,11 @@ public class MyEventListener extends ListenerAdapter {
 			TakeRole.takeRole(auth, channel, guild, content, message);
 
 		// User requests to join/create an elective role
-		else if(content.toLowerCase().startsWith("!join "))
+		else if(content.toLowerCase().startsWith("!join"))
 			Join.join(auth, author, channel, guild, content, conn);
 
 		// Remove user's application from database and removes them from the role
-		else if (content.toLowerCase().startsWith("!leave "))
+		else if (content.toLowerCase().startsWith("!leave"))
 			Leave.leave(auth, author, channel, guild, content, conn);
 
 		// Delete all non-specified roles (OWNER ONLY)

@@ -59,14 +59,15 @@ public class MyEventListener extends ListenerAdapter {
 			return;
 
 		final Guild guild = RoleBot.api.getGuildById(Long.parseLong(RoleBot.config.guildId));
+		if (guild == null){
+			System.out.println("Could not get guild from id, terminating event");
+			return;
+		}
+
 		final Message message = event.getMessage(); // Detected message
 		final String content = message.getContentRaw(); // Text of the message
 		final TextChannel channel = event.getTextChannel(); // Text channel the message came from
-		if (guild == null)
-			System.out.println("Guild is null!");
-System.out.println(cfg.guildId);
 		final Member auth = guild.getMember(author); // Author as type Member
-System.out.println("Here2");
 	  	final List channels = Arrays.asList(cfg.channel); // List of channels bot can read from
 	  	final Market market = new Market(guild); // Roles for sale
 	  	Connection conn;
@@ -79,7 +80,7 @@ System.out.println("Here2");
 			channel.sendMessage("Could not connect to database. Please contact a moderator :(").complete();
 			return;
 		}
-System.out.println("here3");
+
 		// Bot shows how to use its commands
 		if (content.equalsIgnoreCase("!help"))
 			Help.help(channel);

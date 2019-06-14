@@ -86,6 +86,12 @@ class GetConfig {
                 toReturn.db_pass = parseArg(contents[i]);
                 logMessage("Got database password");
             }
+
+            // If the line is the guild ID
+            else if (contents[i].startsWith("GUILD")){
+                toReturn.guild = parseArg(contents[i]);
+                logMessage("Got guild ID");
+            }
         }
 
         // Place the contents of rawChannels into ConfigFile object
@@ -102,11 +108,15 @@ class GetConfig {
             System.exit(0);
         }
         if ( (toReturn.db_user == null) || (toReturn.db_user.isEmpty()) ) {
-            logMessage ("Error: Ending execution due to missing DB_USER in '.rolebotconfig' file. Make sure that the file has at least one DB_USER field before running again");
+            logMessage ("Error: Ending execution due to missing DB_USER in '.rolebotconfig' file. Make sure that the file has a DB_USER field before running again");
             System.exit(0);
         }
         if ( (toReturn.db_pass == null) || (toReturn.db_pass.isEmpty()) ) {
-            logMessage ("Error: Ending execution due to missing DB_PASS in '.rolebotconfig' file. Make sure that the file has at least one DB_PASS field before running again");
+            logMessage ("Error: Ending execution due to missing DB_PASS in '.rolebotconfig' file. Make sure that the file has a DB_PASS field before running again");
+            System.exit(0);
+        }
+        if (toReturn.guild == null || toReturn.guild.isEmpty()){
+            logMessage ("Error: Ending execution due to missing GUILD in '.rolebotconfig' file. Make sure that the file has a GUILD field before running again");
             System.exit(0);
         }
 

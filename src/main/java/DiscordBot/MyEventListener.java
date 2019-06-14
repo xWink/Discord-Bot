@@ -27,9 +27,9 @@ import static DiscordBot.util.misc.DatabaseUtil.connect;
 
 public class MyEventListener extends ListenerAdapter {
 
-	public static Guild guild;
 	private int chamberCount = 6;
 	private ConfigFile cfg = RoleBot.config;
+	public static Guild guild = RoleBot.api.getGuildById(RoleBot.config.guild);
 
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event){
@@ -58,7 +58,6 @@ public class MyEventListener extends ListenerAdapter {
 		if (author.isBot())
 			return;
 
-		guild = event.getGuild(); // Discord server
 		final Message message = event.getMessage(); // Detected message
 		final String content = message.getContentRaw(); // Text of the message
 		final TextChannel channel = event.getTextChannel(); // Text channel the message came from

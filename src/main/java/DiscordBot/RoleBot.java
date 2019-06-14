@@ -11,6 +11,7 @@ import java.util.TimerTask;
 public class RoleBot {
 
 	public static ConfigFile config;
+	public static JDA api;
 
 	public static void main(String[] args){
 
@@ -18,7 +19,7 @@ public class RoleBot {
 			config = GetConfig.getConfig();
 
 			// Create bot with token given by Discord developer page
-			JDA api = new JDABuilder(AccountType.BOT).setToken(config.token).build();
+			api = new JDABuilder(AccountType.BOT).setToken(config.token).build();
 			api.addEventListener(new MyEventListener());
 
 			// Check bang high scores every hour

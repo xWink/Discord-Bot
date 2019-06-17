@@ -33,13 +33,16 @@ public class MyEventListener extends ListenerAdapter {
 	@Override
 	public void onGuildMemberJoin(GuildMemberJoinEvent event){
 		Guild guild = RoleBot.api.getGuildById(RoleBot.config.guildId);
-		TextChannel welcomeChannel = guild.getTextChannelsByName("welcome", true).get(0);
-		TextChannel generalChannel = guild.getTextChannelsByName("general", true).get(0);
-		TextChannel botsChannel = guild.getTextChannelsByName("bots", true).get(0);
+		TextChannel generalChannel = guild.getTextChannelById("486633949154770946");
+		TextChannel botsChannel = guild.getTextChannelById("551828950871965696");
 
-		welcomeChannel.sendMessage("Welcome " + event.getUser().getAsMention() +
-				"! Feel free to ask any questions in " + generalChannel.getAsMention() +
-				", we are always looking to help each other out!\n\n" +
+		if (generalChannel == null){
+			System.out.println("Could not find general channel!");
+			return;
+		}
+
+		generalChannel.sendMessage("Welcome " + event.getUser().getAsMention() +
+				"! Feel free to ask any questions in here, we are always looking to help each other out!\n\n" +
 				"If you want to play with our bot, made in-house, go to " + botsChannel.getAsMention() +
 				" and say `!help` :smiley:").queue();
 	}

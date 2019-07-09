@@ -1,29 +1,16 @@
-package DiscordBot.commands.Bang;
+package DiscordBot.commands.bang;
 
-import DiscordBot.RoleBot;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.sql.*;
 
 public class MyBang {
 
-    public static void myBang(User author, MessageChannel channel){
+    public static void myBang(User author, TextChannel channel, Connection conn){
 
-        Connection conn;
         ResultSet rs = null;
         Boolean exists = false;
-
-        // Connect to database
-        try {
-            Class.forName("org.mariadb.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
-        }
-        catch (Exception e){
-            System.out.println("MyBang Exception 1\nException: "+ e.toString());
-            System.out.println("Failed to connect to database, terminating command");
-            return;
-        }
 
         // Find user in database
         try {

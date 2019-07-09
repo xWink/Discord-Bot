@@ -1,14 +1,11 @@
-package DiscordBot.commands.AdminCommands;
+package DiscordBot.commands.admin_commands;
 
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.*;
 
 import java.util.List;
 
 public class CleanElectives {
-	public static void cleanElectives(Member auth, MessageChannel channel, Guild guild){
+	public static void cleanElectives(Member auth, TextChannel channel, Guild guild){
 		if (auth.isOwner()){
 			List<Channel> listChannels = guild.getChannels();
 			for (Channel listChannel : listChannels){

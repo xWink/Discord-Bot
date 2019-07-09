@@ -1,6 +1,5 @@
-package DiscordBot.commands.Groups;
+package DiscordBot.commands.groups;
 
-import DiscordBot.RoleBot;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 
@@ -8,7 +7,13 @@ import java.sql.*;
 
 public class Join {
 
-	public static void join(Member auth, User author, MessageChannel channel, Guild guild, String content){
+	public static void join(Member auth, User author, TextChannel channel, Guild guild, String content, Connection conn){
+
+		// If format is incorrect, show user how to properly format command
+		if (content.equalsIgnoreCase("!join") || content.equalsIgnoreCase("!join ")){
+			channel.sendMessage("Command: !join <courseID>\\n\\nExample: !join mcs2100").queue();
+			return;
+		}
 
 		String roleName = content.substring(6);
 
@@ -33,23 +38,16 @@ public class Join {
 		}
 
 		// If role does not exist
-		Connection conn;
 		ResultSet rs;
 
+		// Look for the role application in the database
 		try {
-			// Connect to database
-			Class.forName("org.mariadb.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot", RoleBot.config.db_user, RoleBot.config.db_pass);
-
-			// Look for the role application in the database
 			PreparedStatement findRole = conn.prepareStatement("SELECT * FROM roles WHERE name = '"+roleName+"'");
 			rs = findRole.executeQuery();
 		}
 		catch (Exception e){
-			System.out.println("Join Exception 1");
-			System.out.println("Exception: "+ e.toString());
-			System.out.println("Failed to connect to database, terminating command");
-			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
+			System.out.println("Join Exception 1\n Exception: "+ e.toString());
+			channel.sendMessage("Encountered an error. Please inform a moderator :(").complete();
 			return;
 		}
 
@@ -63,8 +61,7 @@ public class Join {
 			}
 		}
 		catch (SQLException e){
-			System.out.println("Join Exception 2");
-			System.out.println("Exception: "+e.toString());
+			System.out.println("Join Exception 2\nException: " + e.toString());
 			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 
@@ -79,8 +76,7 @@ public class Join {
 			}
 		}
 		catch (SQLException e){
-			System.out.println("Join Exception 3");
-			System.out.println("Exception: "+e.toString());
+			System.out.println("Join Exception 3\nException: "+e.toString());
 			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 
@@ -119,8 +115,7 @@ public class Join {
 			}
 		}
 		catch (SQLException e){
-			System.out.println("Join Exception 4");
-			System.out.println("Exception: "+e.toString());
+			System.out.println("Join Exception 4\nException: "+e.toString());
 			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 
@@ -134,8 +129,7 @@ public class Join {
 				applicants[i] = rs.getLong("user"+i);
 		}
 		catch(SQLException e){
-			System.out.println("Join Exception 5");
-			System.out.println("Exception: "+e.toString());
+			System.out.println("Join Exception 5\nException: "+e.toString());
 			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 
@@ -151,8 +145,8 @@ public class Join {
 				guild.getController().addRolesToMember(guild.getMemberById(applicants[i]), role).queue();
 		}
 		catch (Exception e){
-			System.out.println("Join Exception 6");
-			System.out.println("Exception: "+e.toString());
+			System.out.println("Join Exception 6\nException: "+e.toString());
+			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 
 		// Set new channel permissions
@@ -176,8 +170,8 @@ public class Join {
 			channel.sendMessage("The channel you applied for was created! Only members of the channel can see it.").queue();
 		}
 		catch (Exception e){
-			System.out.println("Join Exception 7");
-			System.out.println("Exception: "+e.toString());
+			System.out.println("Join Exception 7\nException: "+e.toString());
+			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 	}
 }

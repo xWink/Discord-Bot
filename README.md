@@ -14,6 +14,10 @@ Manage Computer Science Discord elective roles and channels and entertain users 
 
 `!bangscore` or `!bangscores` - shows high scores for attempts, deaths, survival rate, and death rate
 
+`!bet`, `!hit`, `!stand` - play blackjack against the computer
+
+`!market` and `!buy <item #>` - view and purchase roles/colours
+
 `!roles` - shows a list of available roles to join
 
 `!join [role name]` - if the role already exists, it is assigned to the user. Else, the user's id and requested role are stored in a database. If enough users apply for the same role, the role and a private text channel are created and all applicants are assigned to it

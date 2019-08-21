@@ -31,10 +31,10 @@ public class Daily {
     // Output that time as a date/time
     public static void daily(User author, Connection conn, MessageChannel channel) {
 
-        // Format acquired date to desired style
-        SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss");
-        df.setTimeZone(TimeZone.getTimeZone("EST"));
-        Date date = new Date(getDaily(author, conn, channel));
+        SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss"); // Set format of date/time
+        TimeZone zone = TimeZone.getTimeZone("Canada/Toronto"); // Get timezone
+        df.setTimeZone(zone); // Apply timezone to format
+        Date date = new Date(getDaily(author, conn, channel)); // Get date
 
         channel.sendMessage("Your next daily reward is available on: "+df.format(date)).queue();
     }

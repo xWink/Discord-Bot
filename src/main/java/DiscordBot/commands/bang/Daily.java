@@ -4,7 +4,6 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.sql.*;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -35,6 +34,6 @@ public class Daily {
         SimpleDateFormat df = new SimpleDateFormat("MMM dd hh:mm:ss");
         Date date = new Date(getDaily(author, conn, channel));
 
-        channel.sendMessage("Next daily available at: `"+df.format(date)+"`").queue();
+        channel.sendMessage("Your next daily reward is available on: "+df.format(date)).queue();
     }
 }

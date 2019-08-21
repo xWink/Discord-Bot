@@ -10,7 +10,7 @@ Manage Computer Science Discord elective roles and channels and entertain users 
 
 `!bang` - play Russian roulette
 
-`!mybang` - shows player's bang scores
+`!mybang` and `!daily` - shows player's bang scores and when their daily reward resets
 
 `!bangscore` or `!bangscores` - shows high scores for attempts, deaths, survival rate, and death rate
 

@@ -18,6 +18,8 @@ public class Daily {
             rs.next();
 
             // Add 24 hours to the time
+            Date date = new Date(rs.getLong("last_daily"));
+            channel.sendMessage("Last daily acquired on: "+date.toString()).queue();
             return rs.getLong("last_daily") + 86400000;
         }
         catch (SQLException e){

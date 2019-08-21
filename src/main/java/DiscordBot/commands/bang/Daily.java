@@ -32,7 +32,7 @@ public class Daily {
     public static void daily(User author, Connection conn, MessageChannel channel) {
 
         SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss"); // Set format of date/time
-        TimeZone zone = TimeZone.getTimeZone("Canada/Toronto"); // Get timezone
+        TimeZone zone = TimeZone.getTimeZone("America/New_York"); // Get timezone
         df.setTimeZone(zone); // Apply timezone to format
         Date date = new Date(getDaily(author, conn, channel)); // Get date
 

@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.entities.User;
 import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Daily {
 
@@ -18,8 +19,6 @@ public class Daily {
             rs.next();
 
             // Add 24 hours to the time
-            Date date = new Date(rs.getLong("last_daily"));
-            channel.sendMessage("Last daily acquired on: "+date.toString()).queue();
             return rs.getLong("last_daily") + 86400000;
         }
         catch (SQLException e){
@@ -33,7 +32,8 @@ public class Daily {
     public static void daily(User author, Connection conn, MessageChannel channel) {
 
         // Format acquired date to desired style
-        SimpleDateFormat df = new SimpleDateFormat("MMM dd hh:mm:ss");
+        SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss");
+        df.setTimeZone(TimeZone.getTimeZone("EST"));
         Date date = new Date(getDaily(author, conn, channel));
 
         channel.sendMessage("Your next daily reward is available on: "+df.format(date)).queue();

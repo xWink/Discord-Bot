@@ -11,7 +11,7 @@ public class Join {
 
 		// If format is incorrect, show user how to properly format command
 		if (content.equalsIgnoreCase("!join") || content.equalsIgnoreCase("!join ")){
-			channel.sendMessage("Command: !join <courseID>\\n\\nExample: !join mcs2100").queue();
+			channel.sendMessage("Command: !join <courseID>\nExample: !join mcs2100").queue();
 			return;
 		}
 

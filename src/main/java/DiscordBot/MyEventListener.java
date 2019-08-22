@@ -2,6 +2,7 @@ package DiscordBot;
 
 import DiscordBot.commands.admin_commands.*;
 import DiscordBot.commands.bang.BangScores;
+import DiscordBot.commands.bang.Daily;
 import DiscordBot.commands.bang.MyBang;
 import DiscordBot.commands.bang.Roulette;
 import DiscordBot.commands.blackjack.BlackJackCommands;
@@ -131,6 +132,10 @@ public class MyEventListener extends ListenerAdapter {
 		// Show bang scores for individual
 		else if (content.equalsIgnoreCase("!mybang"))
 			MyBang.myBang(author, channel, conn);
+
+		// Show daily reset time for bang
+		else if (content.equalsIgnoreCase("!daily"))
+			Daily.daily(author, conn, channel);
 
 		// Show available Elective roles
 		else if (content.equalsIgnoreCase("!roles"))

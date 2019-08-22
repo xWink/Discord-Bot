@@ -115,7 +115,7 @@ public class BlackJackCommands {
 
         // Check if a game exists for the user
         if (findGame(conn, author) == null){
-            channel.sendMessage("You are not currently in a game!\n To start a new one, say `!hit`").queue();
+            channel.sendMessage("You are not currently in a game!\n To start a new one, say `!bet <amount>`").queue();
             return;
         }
 

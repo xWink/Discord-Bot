@@ -34,8 +34,14 @@ public class Daily {
         SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss"); // Set format of date/time
         TimeZone zone = TimeZone.getTimeZone("America/New_York"); // Get timezone
         df.setTimeZone(zone); // Apply timezone to format
-        Date date = new Date(getDaily(author, conn, channel)); // Get date
+        long resetTime = getDaily(author, conn, channel); // Get reset time
+        Date now = new Date();
 
-        channel.sendMessage("Your next daily reward is available on: "+df.format(date)).queue();
+        if (resetTime == -1)
+            channel.sendMessage("Error, please contact a moderator!").queue();
+        else if (resetTime <= now.getTime())
+            channel.sendMessage("Your daily reward is available now!").queue();
+        else
+            channel.sendMessage("Your next daily reward is available on: "+df.format(new Date(resetTime))).queue();
     }
 }

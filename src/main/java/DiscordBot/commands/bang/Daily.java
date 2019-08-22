@@ -31,7 +31,7 @@ public class Daily {
     // Output that time as a date/time
     public static void daily(User author, Connection conn, MessageChannel channel) {
 
-        SimpleDateFormat df = new SimpleDateFormat("hh:mm a"); // Set format of date/time
+        SimpleDateFormat df = new SimpleDateFormat("h:mm a"); // Set format of date/time
         TimeZone zone = TimeZone.getTimeZone("America/New_York"); // Get timezone
         df.setTimeZone(zone); // Apply timezone to format
         long resetTime = getDaily(author, conn, channel); // Get reset time

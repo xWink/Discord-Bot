@@ -18,8 +18,8 @@ public class Daily {
             ResultSet rs = st.executeQuery();
             rs.next();
 
-            // Add 24 hours to the time
-            return rs.getLong("last_daily") + 86400000;
+            // Add 24 hours and 1 minute to the time
+            return rs.getLong("last_daily") + 86460000;
         }
         catch (SQLException e){
             channel.sendMessage("Error fetching your daily time, please contact a moderator!").queue();
@@ -31,17 +31,16 @@ public class Daily {
     // Output that time as a date/time
     public static void daily(User author, Connection conn, MessageChannel channel) {
 
-        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss"); // Set format of date/time
+        SimpleDateFormat df = new SimpleDateFormat("hh:mm a"); // Set format of date/time
         TimeZone zone = TimeZone.getTimeZone("America/New_York"); // Get timezone
         df.setTimeZone(zone); // Apply timezone to format
         long resetTime = getDaily(author, conn, channel); // Get reset time
-        Date now = new Date();
 
-        if (resetTime == -1)
+        if (resetTime == -1) // Check if error returned
             channel.sendMessage("Error, please contact a moderator!").queue();
-        else if (resetTime <= now.getTime())
+        else if (resetTime <= new Date().getTime()) // Check if reward is available now
             channel.sendMessage("Your daily reward is available now!").queue();
-        else
-            channel.sendMessage("Your next daily reward is available at: "+df.format(new Date(resetTime))).queue();
+        else // Output when reward is available
+            channel.sendMessage("Your next daily reward is available at "+df.format(new Date(resetTime))).queue();
     }
 }

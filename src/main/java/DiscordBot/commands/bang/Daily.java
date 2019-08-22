@@ -31,7 +31,7 @@ public class Daily {
     // Output that time as a date/time
     public static void daily(User author, Connection conn, MessageChannel channel) {
 
-        SimpleDateFormat df = new SimpleDateFormat("MMM dd HH:mm:ss"); // Set format of date/time
+        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss"); // Set format of date/time
         TimeZone zone = TimeZone.getTimeZone("America/New_York"); // Get timezone
         df.setTimeZone(zone); // Apply timezone to format
         long resetTime = getDaily(author, conn, channel); // Get reset time
@@ -42,6 +42,6 @@ public class Daily {
         else if (resetTime <= now.getTime())
             channel.sendMessage("Your daily reward is available now!").queue();
         else
-            channel.sendMessage("Your next daily reward is available on: "+df.format(new Date(resetTime))).queue();
+            channel.sendMessage("Your next daily reward is available at: "+df.format(new Date(resetTime))).queue();
     }
 }

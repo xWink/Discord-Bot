@@ -53,7 +53,7 @@ public class GetBangScores {
             PreparedStatement getWealthiest = conn.prepareStatement("SELECT user, wallet FROM economy GROUP BY user, wallet ORDER BY wallet");
             mostWealth = getWealthiest.executeQuery();
             mostWealth.last();
-            wealth = mostWealth.getInt("jams");
+            wealth = mostWealth.getInt("wallet");
             wealthiestPlayer = guild.getMemberById(mostWealth.getLong("user")).getUser();
         }
         catch (Exception e) {

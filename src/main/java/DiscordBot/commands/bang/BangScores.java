@@ -20,7 +20,7 @@ public class BangScores {
             string = "Most attempts: "+highScores.getMostAttemptsPlayer().getName()+" with a score of "+(int)highScores.getAttemptCount()+"\n"+
             "Best survival rate: "+highScores.getLuckiest().getName()+" at "+highScores.getBestRate()+"%\n"+
             "Worst survival rate: "+highScores.getUnluckiest().getName()+" at "+highScores.getWorstRate()+"%\n"+
-            "Wealthiest player: "+highScores.getWealthiest().getName()+" with "+highScores.getWealth()+" GC's\n\n";
+            "Wealthiest player: "+highScores.getWealthiest().getName()+" with "+highScores.getWealth()+" gc\n\n";
         }
 
 

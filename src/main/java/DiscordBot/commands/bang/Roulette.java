@@ -30,7 +30,7 @@ public class Roulette {
 		if (highScores != null) {
 			if (author.equals(highScores.getLuckiest()) ||
 					author.equals(highScores.getMostAttemptsPlayer()) ||
-					author.equals(highScores.getMostJamsPlayer()) ||
+					author.equals(highScores.getWealthiest()) ||
 					author.equals(highScores.getUnluckiest())) {
 				hasHighscore = true;
 			}
@@ -133,7 +133,7 @@ public class Roulette {
 							date.getTime() + " WHERE user = " + author.getIdLong());
 
 					Wallet wallet = new Wallet(author, conn);
-					wallet.addMoney(conn, 10);
+					wallet.addMoney(conn, 50);
 					channel.sendMessage(author.getName() + " received a bonus 10 GryphCoins!").complete();
 				}
 				else

@@ -14,11 +14,11 @@ public class GetBangScores {
     public static BangHighScores getHighScores(Guild guild){
 
         double attemptCount, bestRate, worstRate;
-        int jamCount;
-        User mostAttemptsPlayer, luckiestPlayer, unluckiestPlayer, mostJamsPlayer;
+        int wealth;
+        User mostAttemptsPlayer, luckiestPlayer, unluckiestPlayer, wealthiestPlayer;
         Date date = new Date();
         Connection conn;
-        ResultSet mostAttempts, luck, mostJams;
+        ResultSet mostAttempts, luck, mostWealth;
 
         // Connect to database
         if ((conn = connect()) == null){
@@ -49,12 +49,12 @@ public class GetBangScores {
             worstRate = 100 - (Math.round(luck.getDouble("death_rate") * 10d) / 10d);
             unluckiestPlayer = guild.getMemberById(luck.getLong("user")).getUser();
 
-            // Most jams
-            PreparedStatement getMostJams = conn.prepareStatement("SELECT user, jams FROM bang WHERE "+date.getTime()+" - last_played < 604800000 GROUP BY user, jams ORDER BY jams");
-            mostJams = getMostJams.executeQuery();
-            mostJams.last();
-            jamCount = mostJams.getInt("jams");
-            mostJamsPlayer = guild.getMemberById(mostJams.getLong("user")).getUser();
+            // Wealthiest
+            PreparedStatement getWealthiest = conn.prepareStatement("SELECT user, wallet FROM economy GROUP BY user, wallet ORDER BY wallet");
+            mostWealth = getWealthiest.executeQuery();
+            mostWealth.last();
+            wealth = mostWealth.getInt("jams");
+            wealthiestPlayer = guild.getMemberById(mostWealth.getLong("user")).getUser();
         }
         catch (Exception e) {
             System.out.println("GetBangScores Exception 2");
@@ -69,8 +69,8 @@ public class GetBangScores {
                 luckiestPlayer,
                 worstRate,
                 unluckiestPlayer,
-                jamCount,
-                mostJamsPlayer);
+                wealth,
+                wealthiestPlayer);
     }
 
     public static int[] getTotalBangs(Connection conn){

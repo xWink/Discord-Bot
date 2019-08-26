@@ -10,8 +10,8 @@ public class BangHighScores {
     private User luckiest;
     private double worstRate;
     private User unluckiest;
-    private int jamCount;
-    private User mostJamsPlayer;
+    private int wealth;
+    private User wealthiest;
 
     BangHighScores(
             double attemptCount,
@@ -20,8 +20,8 @@ public class BangHighScores {
             User luckiest,
             double worstRate,
             User unluckiest,
-            int jamCount,
-            User mostJamsPlayer){
+            int wealth,
+            User wealthiest){
 
         this.attemptCount = attemptCount;
         this.mostAttemptsPlayer = mostAttemptsPlayer;
@@ -29,8 +29,8 @@ public class BangHighScores {
         this.luckiest = luckiest;
         this.worstRate = worstRate;
         this.unluckiest = unluckiest;
-        this.jamCount = jamCount;
-        this.mostJamsPlayer = mostJamsPlayer;
+        this.wealth = wealth;
+        this.wealthiest = wealthiest;
     }
 
     public double getAttemptCount(){
@@ -57,11 +57,11 @@ public class BangHighScores {
         return unluckiest;
     }
 
-    public int getJamCount() {
-        return jamCount;
+    public int getWealth() {
+        return wealth;
     }
 
-    public User getMostJamsPlayer() {
-        return mostJamsPlayer;
+    public User getWealthiest() {
+        return wealthiest;
     }
 }

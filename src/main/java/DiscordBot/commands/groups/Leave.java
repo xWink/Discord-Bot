@@ -16,7 +16,7 @@ public class Leave {
 
 		String roleName = content.substring(7);
 		ResultSet rs;
-		Boolean removed = false;
+		boolean removed = false;
 
 		// If user has role
 		if (!guild.getRolesByName(roleName,true).isEmpty() && auth.getRoles().contains(guild.getRolesByName(roleName,true).get(0))) {

@@ -18,7 +18,7 @@ public class Join {
 		String roleName = content.substring(6);
 
 		// If role is restricted, don't assign user to role
-		if (roleName.toLowerCase().equals("moderator") || roleName.toLowerCase().contains("verified")){
+		if (!guild.getJDA().getCategoryById("556266020625711130").getTextChannels().contains(guild.getTextChannelsByName(roleName,true))){
 			channel.sendMessage("I cannot set you to that role").complete();
 			return;
 		}

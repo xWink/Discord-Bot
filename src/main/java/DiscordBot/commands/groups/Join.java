@@ -24,7 +24,7 @@ public class Join {
 				channel.sendMessage("You already have this role!").complete();
 			}
 			// If role is restricted, don't assign user to role
-			else if (!guild.getJDA().getCategoryById("556266020625711130").getTextChannels().contains(guild.getTextChannelsByName(roleName, true).get(0))){
+			else if (guild.getTextChannelsByName(roleName,true).isEmpty() || !guild.getJDA().getCategoryById("556266020625711130").getTextChannels().contains(guild.getTextChannelsByName(roleName, true).get(0))){
 				channel.sendMessage("I cannot set you to that role").complete();
 			}
 			// If user doesn't have the role and it is not restricted, give it to them

@@ -16,18 +16,17 @@ public class Join {
 		}
 
 		String roleName = content.substring(6);
-System.out.println("hi 0");
 
 		// If role is restricted, don't assign user to role
 		if (!guild.getJDA().getCategoryById("556266020625711130").getTextChannels().contains(guild.getTextChannelsByName(roleName,true).get(0))){
+			System.out.println("hi 0");
 			channel.sendMessage("I cannot set you to that role").complete();
+			System.out.println("hi 1");
 			return;
 		}
-System.out.println("hi 1");
 
 		// If role exists and isn't restricted
 		if (!guild.getRolesByName(roleName,true).isEmpty()) {
-System.out.println("hi 2");
 			// If user already has the role, tell them
 			if (guild.getMember(author).getRoles().contains((guild.getRolesByName(roleName, true).get(0)))){
 				channel.sendMessage("You already have this role!").complete();

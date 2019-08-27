@@ -17,12 +17,15 @@ public class Join {
 
 		String roleName = content.substring(6);
 
-		// If role is restricted, don't assign user to role
-		if (!guild.getJDA().getCategoryById("556266020625711130").getTextChannels().contains(guild.getTextChannelsByName(roleName,true).get(0))){
-			System.out.println("hi 0");
-			channel.sendMessage("I cannot set you to that role").complete();
-			System.out.println("hi 1");
-			return;
+		try {
+			// If role is restricted, don't assign user to role
+			if (!guild.getJDA().getCategoryById("556266020625711130").getTextChannels().contains(guild.getTextChannelsByName(roleName, true).get(0))) {
+				channel.sendMessage("I cannot set you to that role").complete();
+				return;
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
 		}
 
 		// If role exists and isn't restricted

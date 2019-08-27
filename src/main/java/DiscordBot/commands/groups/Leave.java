@@ -21,7 +21,7 @@ public class Leave {
 		// If user has role
 		if (!guild.getRolesByName(roleName,true).isEmpty() && auth.getRoles().contains(guild.getRolesByName(roleName,true).get(0))) {
 			// If role is in the Electives category
-			if (guild.getJDA().getCategoryById("556266020625711130").getTextChannels().contains(guild.getTextChannelsByName(roleName, true).get(0))) {
+			if (guild.getTextChannelsByName(roleName,true).isEmpty() || guild.getJDA().getCategoryById("556266020625711130").getTextChannels().contains(guild.getTextChannelsByName(roleName, true).get(0))) {
 				guild.getController().removeSingleRoleFromMember(auth, guild.getRolesByName(roleName, true).get(0)).queue();
 				channel.sendMessage("Removed " + roleName + " from " + auth.getAsMention()).queue();
 			}

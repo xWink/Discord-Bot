@@ -17,24 +17,17 @@ public class Join {
 
 		String roleName = content.substring(6);
 
-		try {
-			// If role is restricted, don't assign user to role
-			if (!guild.getJDA().getCategoryById("556266020625711130").getTextChannels().contains(guild.getTextChannelsByName(roleName, true).get(0))) {
-				channel.sendMessage("I cannot set you to that role").complete();
-				return;
-			}
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-
-		// If role exists and isn't restricted
+		// If role exists
 		if (!guild.getRolesByName(roleName,true).isEmpty()) {
 			// If user already has the role, tell them
-			if (guild.getMember(author).getRoles().contains((guild.getRolesByName(roleName, true).get(0)))){
+			if (guild.getMember(author).getRoles().contains((guild.getRolesByName(roleName, true).get(0)))) {
 				channel.sendMessage("You already have this role!").complete();
 			}
-			// If user doesn't have the role, give it to them
+			// If role is restricted, don't assign user to role
+			else if (!guild.getJDA().getCategoryById("556266020625711130").getTextChannels().contains(guild.getTextChannelsByName(roleName, true).get(0))){
+				channel.sendMessage("I cannot set you to that role").complete();
+			}
+			// If user doesn't have the role and it is not restricted, give it to them
 			else {
 				guild.getController().addRolesToMember(auth, guild.getRolesByName(roleName, true)).queue();
 				channel.sendMessage("Role \"" + roleName + "\" added to " + auth.getAsMention()).complete();

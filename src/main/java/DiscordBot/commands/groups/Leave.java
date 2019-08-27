@@ -18,10 +18,16 @@ public class Leave {
 		ResultSet rs;
 		Boolean removed = false;
 
-		// If user has role, remove it
-		if (!guild.getRolesByName(roleName,true).isEmpty() && auth.getRoles().contains(guild.getRolesByName(roleName,true).get(0))){
-			guild.getController().removeSingleRoleFromMember(auth,guild.getRolesByName(roleName,true).get(0)).queue();
-			channel.sendMessage("Removed "+roleName+" from "+auth.getAsMention()).queue();
+		// If user has role
+		if (!guild.getRolesByName(roleName,true).isEmpty() && auth.getRoles().contains(guild.getRolesByName(roleName,true).get(0))) {
+			// If role is in the Electives category
+			if (guild.getJDA().getCategoryById("556266020625711130").getTextChannels().contains(guild.getTextChannelsByName(roleName, true).get(0))) {
+				guild.getController().removeSingleRoleFromMember(auth, guild.getRolesByName(roleName, true).get(0)).queue();
+				channel.sendMessage("Removed " + roleName + " from " + auth.getAsMention()).queue();
+			}
+			else{
+				channel.sendMessage("I cannot remove you from this role!").complete();
+			}
 			return;
 		}
 

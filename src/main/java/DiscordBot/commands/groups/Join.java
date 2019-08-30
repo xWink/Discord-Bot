@@ -45,7 +45,7 @@ public class Join {
 			return;
 
 		// Ensure new role application is in course ID format
-		if (!content.substring(6).matches("^(([A-Z][A-Z][A-Z][A-Z]?)|([a-z][a-z][a-z][a-z]?))[0-9][0-9][0-9][0-9]$")){
+		if (!content.substring(5).matches("^ (([A-Z][A-Z][A-Z][A-Z]?)|([a-z][a-z][a-z][a-z]?))[0-9][0-9][0-9][0-9]$")){
 			channel.sendMessage("You can only apply to join roles for a course ID\nExample: !join biol2400").queue();
 			return;
 		}

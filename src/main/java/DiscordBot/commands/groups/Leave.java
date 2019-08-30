@@ -17,6 +17,7 @@ public class Leave {
 		String roleName = content.substring(7);
 		ResultSet rs;
 		boolean removed = false;
+		int empty = 0;
 
 		// If user has role
 		if (!guild.getRolesByName(roleName,true).isEmpty() && auth.getRoles().contains(guild.getRolesByName(roleName,true).get(0))) {
@@ -50,20 +51,34 @@ public class Leave {
 					removeApplication.executeUpdate();
 					removed = true;
 				}
+				else if (rs.getFloat("user1") == 0)
+					empty++;
+
 				if (rs.getFloat("user2") == author.getIdLong()){
 					PreparedStatement removeApplication = conn.prepareStatement("UPDATE roles SET user2 = null WHERE name = '"+roleName+"'");
 					removeApplication.executeUpdate();
 					removed = true;
 				}
+				else if (rs.getFloat("user2") == 0)
+					empty++;
+
 				if (rs.getFloat("user3") == author.getIdLong()){
 					PreparedStatement removeApplication = conn.prepareStatement("UPDATE roles SET user3 = null WHERE name = '"+roleName+"'");
 					removeApplication.executeUpdate();
 					removed = true;
 				}
+				else if (rs.getFloat("user3") == 0)
+					empty++;
 			}
 
 			if (removed){
+				// Output for removal
 				channel.sendMessage("Your application for "+roleName+" has been removed").queue();
+				// Check if row is now empty and delete it if it is
+				if (empty >= 2){
+					PreparedStatement deleteRow = conn.prepareStatement("DELETE FROM roles WHERE name = '"+roleName+"'");
+					deleteRow.executeUpdate();
+				}
 				return;
 			}
 		}
@@ -72,7 +87,7 @@ public class Leave {
 			channel.sendMessage("Encountered an error. Please inform an admin :(").complete();
 		}
 
-		// Tell them they didn't apply for it
+		// Tell user they didn't apply for the role
 		channel.sendMessage("You don't have an application for this role!").queue();
 	}
 }

@@ -48,7 +48,7 @@ public class Market {
         int value;
 
         // Check for improper input
-        if (content.length() < 6 ||
+        if (content.length() < 6 || content.length() > 14 ||
                 !content.substring(5).matches("^[0-9]+$") ||
                 (value = Integer.parseInt(content.substring(5))) < 1 ||
                 value > listings.size()){

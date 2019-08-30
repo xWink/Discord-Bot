@@ -27,6 +27,11 @@ public class BlackJackCommands {
             return;
         }
 
+        if (content.length() > 14){
+            channel.sendMessage("That amount is too large!").complete();
+            return;
+        }
+
         int betAmount = Integer.parseInt(content.substring(5));
 
         // Verify that user bet more than 0 GryphCoins

@@ -49,9 +49,7 @@ public class MyEventListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onDisconnect(DisconnectEvent event){
-		System.out.println("Disconnected from server");
-	}
+	public void onDisconnect(DisconnectEvent event){}
 	
   	@Override
   	public void onMessageReceived(MessageReceivedEvent event){

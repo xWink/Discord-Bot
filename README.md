@@ -1,4 +1,4 @@
-Version 1.10
+Version 1.11
 # Purpose
 Manage Computer Science Discord elective roles and channels and entertain users with games
 

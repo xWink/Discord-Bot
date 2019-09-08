@@ -45,19 +45,16 @@ public class Wallet {
         return st.executeQuery();
     }
 
-    private static int addUserToEconomy(User user, Connection conn) throws SQLException{
+    private static void addUserToEconomy(User user, Connection conn) throws SQLException{
         conn.prepareStatement("INSERT INTO economy (user, wallet, role_expiry, role_colour) VALUES (" + user.getIdLong() + ", 5, 0, NULL)").executeUpdate();
-        return 1;
     }
 
-    public int addMoney(Connection conn, int amount) throws SQLException{
+    public void addMoney(Connection conn, int amount) throws SQLException{
         conn.prepareStatement("UPDATE economy SET wallet = wallet + " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
-        return 1;
     }
 
-    public int removeMoney(Connection conn, int amount) throws SQLException{
+    public void removeMoney(Connection conn, int amount) throws SQLException{
         conn.prepareStatement("UPDATE economy SET wallet = wallet - " + amount + " WHERE user = " + this.user.getIdLong()).executeQuery();
-        return 1;
     }
 
     public boolean canAfford(int cost){

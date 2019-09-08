@@ -12,6 +12,7 @@ import DiscordBot.commands.groups.ShowRoles;
 import DiscordBot.commands.misc.Help;
 import DiscordBot.commands.misc.MyWallet;
 import DiscordBot.commands.misc.Ping;
+import DiscordBot.commands.tictactoe.TicTacToe;
 import DiscordBot.util.economy.Market;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
@@ -169,6 +170,15 @@ public class MyEventListener extends ListenerAdapter {
 				market.purchase(author, conn, content, channel);
 			}
 			catch (SQLException e){
+				e.printStackTrace();
+			}
+		}
+
+		// Create TicTacToe wager
+		else if (content.toLowerCase().startsWith("!wager")){
+			try {
+				TicTacToe.wager(author, channel, conn, content, message);
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}

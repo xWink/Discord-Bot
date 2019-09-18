@@ -91,7 +91,9 @@ public class Wager {
     public void createPendingWager() {
 
         // Check if author already has a wager pending
+        System.out.println("Made list of wagers");
         ListOfWagers wagers = new ListOfWagers();
+        System.out.println("Going through list of wagers");
         for (Wager w: wagers.getWagers()) {
             if (w.getChallengerId() == this.challengerId){
                 channel.sendMessage("You already have a pending wager!").complete();

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 public class ListOfWagers {
 
-    private static ArrayList<Wager> listOfWagers;
+    private static ArrayList<Wager> listOfWagers = new ArrayList<>();
 
     public ListOfWagers(){
 

@@ -11,15 +11,15 @@ public class ListOfWagers {
 
     private static ArrayList<Wager> listOfWagers;
 
-    private ListOfWagers(){
+    ListOfWagers(){
 
     }
 
-    public static void addNewWager(Wager wager) {
+    void addNewWager(Wager wager) {
         listOfWagers.add(wager);
     }
 
-    public static void removeWager(Wager wager) {
+    void removeWager(Wager wager) {
         for (Wager w : listOfWagers) {
             if (w == wager) {
                 listOfWagers.remove(w);
@@ -27,7 +27,7 @@ public class ListOfWagers {
         }
     }
 
-    public static ArrayList<Wager> getWagers() {
+    public ArrayList<Wager> getWagers() {
         return listOfWagers;
     }
 

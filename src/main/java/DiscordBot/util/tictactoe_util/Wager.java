@@ -91,7 +91,8 @@ public class Wager {
     public void createPendingWager() {
 
         // Check if author already has a wager pending
-        for (Wager w: ListOfWagers.getWagers()) {
+        ListOfWagers wagers = new ListOfWagers();
+        for (Wager w: wagers.getWagers()) {
             if (w.getChallengerId() == this.challengerId){
                 channel.sendMessage("You already have a pending wager!").complete();
                 return;
@@ -99,12 +100,12 @@ public class Wager {
         }
         System.out.println("Pending wager doesn't exist, adding new wager");
         // Add new wager
-        ListOfWagers.addNewWager(this);
+        wagers.addNewWager(this);
         System.out.println("New wager added");
         // Wait 5 minutes and prune expired wager
         try {
             Thread.sleep(300000);
-            ListOfWagers.removeWager(this);
+            wagers.removeWager(this);
         } catch (InterruptedException e) {
             e.printStackTrace();
             channel.sendMessage("Error in pruning timer. Please contact a moderator!").complete();
@@ -116,7 +117,7 @@ public class Wager {
             PreparedStatement st = conn.prepareStatement("INSERT INTO tictactoe VALUES ("
                     + this.challengerId + ", " + this.targetId + ", " + wagerAmount
                     + "null, null, null, null, null, null, null, null, null)");
-        } catch (SQLException e){
+        } catch (Exception e){
             e.printStackTrace();
             channel.sendMessage("Could not push your wager to database. Please contact a moderator!").queue();
         }

@@ -97,10 +97,10 @@ public class Wager {
                 return;
             }
         }
-
+        System.out.println("Pending wager doesn't exist, adding new wager");
         // Add new wager
         ListOfWagers.addNewWager(this);
-
+        System.out.println("New wager added");
         // Wait 5 minutes and prune expired wager
         try {
             Thread.sleep(300000);
@@ -114,7 +114,8 @@ public class Wager {
     public void pushWager(MessageChannel channel, Connection conn) {
         try {
             PreparedStatement st = conn.prepareStatement("INSERT INTO tictactoe VALUES ("
-                    + this.challengerId + ", " + this.targetId + ", " + wagerAmount + ")");
+                    + this.challengerId + ", " + this.targetId + ", " + wagerAmount
+                    + "null, null, null, null, null, null, null, null, null)");
         } catch (SQLException e){
             e.printStackTrace();
             channel.sendMessage("Could not push your wager to database. Please contact a moderator!").queue();

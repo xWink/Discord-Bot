@@ -15,11 +15,11 @@ public class ListOfWagers {
 
     }
 
-    void addNewWager(Wager wager) {
+    public void addNewWager(Wager wager) {
         listOfWagers.add(wager);
     }
 
-    void removeWager(Wager wager) {
+    public void removeWager(Wager wager) {
         for (Wager w : listOfWagers) {
             if (w == wager) {
                 listOfWagers.remove(w);

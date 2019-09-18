@@ -4,44 +4,41 @@ import DiscordBot.util.economy.Wallet;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 
+import java.util.Date;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 public class Wager {
 
     private long challengerId = -1;
     private long targetId = -1;
+    private long creationTime = -1;
     private int wagerAmount = -1;
     private Connection conn;
     private MessageChannel channel;
 
     public Wager(Connection conn, MessageChannel channel){
+        Date date = new Date();
         this.conn = conn;
         this.channel = channel;
-        /*switch (setWager(channel, message, content.substring(6))) {
-            case -1:
-                channel.sendMessage("Invalid input!").complete();
-                return;
-            case 0:
-                pushNewWager(channel, conn);
-                channel.sendMessage("Your wager against the CPU has been set!").complete();
-            case 1:
-                createPendingWager(channel, message, content, conn);
-                channel.sendMessage("Your wager against a player is pending acceptance!").complete();
-        }*/
+        this.creationTime = date.getTime();
     }
 
     public long getChallengerId() {
-        return challengerId;
+        return this.challengerId;
     }
 
     public long getTargetId() {
-        return targetId;
+        return this.targetId;
     }
 
     public int getWagerAmount() {
-        return wagerAmount;
+        return this.wagerAmount;
+    }
+
+    public long getCreationTime() {
+        return this.creationTime;
     }
 
     public boolean setChallengerId(Message message) {
@@ -104,14 +101,6 @@ public class Wager {
         // Add new wager
         wagers.addNewWager(this);
         System.out.println("New wager added");
-        // Wait 5 minutes and prune expired wager
-        try {
-            Thread.sleep(300000);
-            wagers.removeWager(this);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            channel.sendMessage("Error in pruning timer. Please contact a moderator!").complete();
-        }
     }
 
     public void pushWager(MessageChannel channel, Connection conn) {
@@ -119,6 +108,7 @@ public class Wager {
             PreparedStatement st = conn.prepareStatement("INSERT INTO tictactoe VALUES ("
                     + this.challengerId + ", " + this.targetId + ", " + wagerAmount
                     + "null, null, null, null, null, null, null, null, null)");
+            st.executeUpdate();
         } catch (Exception e){
             e.printStackTrace();
             channel.sendMessage("Could not push your wager to database. Please contact a moderator!").queue();

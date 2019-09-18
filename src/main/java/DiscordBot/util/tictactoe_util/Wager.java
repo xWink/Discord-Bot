@@ -75,7 +75,7 @@ public class Wager {
     private boolean verifyFormat(Message message) {
         String content = message.getContentRaw().trim().substring(6);
         return content.matches("^ [0-9]+$")
-                || content.matches("^ @<.+> [0-9]+$");
+                || content.matches("^ <@[0-9]+> [0-9]+$");
     }
 
     private int setWager(MessageChannel channel, Message message, String content){

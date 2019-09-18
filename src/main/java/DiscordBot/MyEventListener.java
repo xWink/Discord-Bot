@@ -187,7 +187,7 @@ public class MyEventListener extends ListenerAdapter {
 				System.out.println("Wager returned true");
 			}
 			System.out.println("Raw message: " + message.getContentRaw());
-			channel.sendMessage("Wagerer: @<" + wager.getChallengerId() + ">").queue();
+			channel.sendMessage("Wagerer: <@" + wager.getChallengerId() + ">").queue();
 			channel.sendMessage("Wager amount: " + wager.getWagerAmount()).queue();
 		}
 	}

@@ -12,8 +12,9 @@ import DiscordBot.commands.groups.ShowRoles;
 import DiscordBot.commands.misc.Help;
 import DiscordBot.commands.misc.MyWallet;
 import DiscordBot.commands.misc.Ping;
-import DiscordBot.commands.tictactoe.TicTacToe;
+import DiscordBot.commands.tictactoe.ListOfWagers;
 import DiscordBot.util.economy.Market;
+import DiscordBot.util.tictactoe_util.Wager;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
@@ -68,7 +69,7 @@ public class MyEventListener extends ListenerAdapter {
 		}
 
 		final Message message = event.getMessage(); // Detected message
-		final String content = message.getContentRaw(); // Text of the message
+		final String content = message.getContentRaw().trim(); // Text of the message
 		final TextChannel channel = event.getTextChannel(); // Text channel the message came from
 		final Member auth = guild.getMember(author); // Author as type Member
 	  	final List channels = Arrays.asList(cfg.channel); // List of channels bot can read from
@@ -176,11 +177,7 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Create TicTacToe wager
 		else if (content.toLowerCase().startsWith("!wager")){
-			try {
-				TicTacToe.wager(author, channel, conn, content, message);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			Wager wager = new Wager(channel, message, content, conn);
 		}
 	}
 }

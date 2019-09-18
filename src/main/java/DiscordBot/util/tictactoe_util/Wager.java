@@ -22,8 +22,10 @@ public class Wager {
                 return;
             case 0:
                 pushNewWager(channel, conn);
+                channel.sendMessage("Your wager against the CPU has been set!").complete();
             case 1:
                 createPendingWager(channel, message, content, conn);
+                channel.sendMessage("Your wager against a player is pending acceptance!").complete();
         }
     }
 

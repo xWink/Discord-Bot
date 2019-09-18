@@ -178,6 +178,7 @@ public class MyEventListener extends ListenerAdapter {
 		// Create TicTacToe wager
 		else if (content.toLowerCase().startsWith("!wager")){
 			Wager wager = new Wager(channel, message, content, conn);
+			channel.sendMessage("Wager amount: " + wager.getWagerAmount()).complete();
 		}
 	}
 }

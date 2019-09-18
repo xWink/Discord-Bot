@@ -42,36 +42,37 @@ public class Wager {
     }
 
     public boolean setChallengerId(Message message) {
-        if (!verifyFormat(message)) {
-            return false;
+        if (verifyFormat(message)) {
+            this.challengerId = message.getAuthor().getIdLong();
+            return true;
         }
-        this.challengerId = message.getAuthor().getIdLong();
-        return true;
+        return false;
     }
 
     public boolean setTargetId(Message message) {
-        if (!verifyFormat(message)) {
-            return false;
+        if (verifyFormat(message)) {
+            if (message.getMentionedUsers().isEmpty()) {
+                this.targetId = 0;
+            } else {
+                this.targetId = message.getMentionedUsers().get(0).getIdLong();
+            }
+            return true;
         }
-        if (message.getMentionedUsers().isEmpty()) {
-            this.targetId = 0;
-        } else {
-            this.targetId = message.getMentionedUsers().get(0).getIdLong();
-        }
-        return true;
+        return false;
     }
 
     public boolean setWagerAmount(Message message) {
-        if (!verifyFormat(message)) {
-            return false;
+        if (verifyFormat(message)) {
+            this.wagerAmount = Integer.parseInt(message.getContentRaw().substring(message.getContentRaw().lastIndexOf(" ")));
+            return true;
         }
-        this.wagerAmount = Integer.parseInt(message.getContentRaw().substring(message.getContentRaw().lastIndexOf(" ")));
-        return true;
+        return false;
     }
 
     private boolean verifyFormat(Message message) {
-        return message.getContentRaw().trim().matches("^ [0-9]*$")
-                || message.getContentRaw().trim().matches("^ @.* [0-9]*$");
+        String content = message.getContentRaw().trim().substring(6);
+        return content.matches("^ [0-9]+$")
+                || content.matches("^ @.+ [0-9]+$");
     }
 
     private int setWager(MessageChannel channel, Message message, String content){

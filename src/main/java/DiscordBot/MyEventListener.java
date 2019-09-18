@@ -180,7 +180,8 @@ public class MyEventListener extends ListenerAdapter {
 			wager.setChallengerId(message);
 			wager.setTargetId(message);
 			wager.setWagerAmount(message);
-			channel.sendMessage("Wager amount: " + wager.getWagerAmount()).complete();
+			channel.sendMessage("Wagerer: <" + wager.getChallengerId() + ">").queue();
+			channel.sendMessage("Wager amount: " + wager.getWagerAmount()).queue();
 		}
 	}
 }

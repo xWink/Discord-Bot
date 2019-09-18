@@ -1,6 +1,5 @@
 package DiscordBot.util.tictactoe_util;
 
-import DiscordBot.commands.tictactoe.ListOfWagers;
 import DiscordBot.util.economy.Wallet;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -14,8 +13,12 @@ public class Wager {
     private long challengerId = -1;
     private long targetId = -1;
     private int wagerAmount = -1;
+    private Connection conn;
+    private MessageChannel channel;
 
-    public Wager(){
+    public Wager(Connection conn, MessageChannel channel){
+        this.conn = conn;
+        this.channel = channel;
         /*switch (setWager(channel, message, content.substring(6))) {
             case -1:
                 channel.sendMessage("Invalid input!").complete();
@@ -43,11 +46,9 @@ public class Wager {
 
     public boolean setChallengerId(Message message) {
         if (verifyFormat(message)) {
-            System.out.println("Verify is true");
             this.challengerId = message.getAuthor().getIdLong();
             return true;
         }
-        System.out.println("Verify is false");
         return false;
     }
 
@@ -67,7 +68,14 @@ public class Wager {
         String content = message.getContentRaw().trim();
         if (verifyFormat(message)) {
             this.wagerAmount = Integer.parseInt(content.substring(message.getContentRaw().trim().lastIndexOf(" ")+1));
-            return true;
+            // Check if author can afford the wager
+            Wallet challengerWallet = new Wallet(message.getAuthor(), this.conn);
+            if (!challengerWallet.canAfford(this.wagerAmount)){
+                this.channel.sendMessage("You can't afford that wager!").complete();
+                return false;
+            } else {
+                return true;
+            }
         }
         return false;
     }
@@ -78,47 +86,9 @@ public class Wager {
                 || content.matches("^ <@[0-9]+> [0-9]+$");
     }
 
-    private int setWager(MessageChannel channel, Message message, String content){
+    //TODO: Verify that target exists and is not author
 
-        int returnValue = -1;
-        // If wager size is too large, return -1
-        if (content.substring(message.getContentRaw().lastIndexOf(' ')).length() >= 6) {
-            return -1;
-        }
-
-        if (content.matches("^ [0-9]*$")) { // Challenging CPU format
-            this.targetId = 0;
-            returnValue = 0;
-        }
-        else if (content.matches("^ @.* [0-9]*$")){ // Challenging human format
-            if (message.getMentionedUsers().isEmpty()) {
-                channel.sendMessage("Your target user does not exist!").complete();
-                return -1;
-            }
-            this.targetId = message.getMentionedUsers().get(0).getIdLong();
-            returnValue = 1;
-        }
-
-        if (returnValue > -1) {
-            this.challengerId = message.getAuthor().getIdLong();
-            this.wagerAmount = Integer.parseInt(content.substring(content.lastIndexOf(" ")));
-            return returnValue;
-        } else {
-            return -1;
-        }
-    }
-
-    private void pushNewWager(MessageChannel channel, Connection conn) {
-        try {
-            PreparedStatement challengeCpu = conn.prepareStatement("INSERT INTO tictactoe VALUES ("
-            + this.challengerId + ", " + this.targetId + ", " + wagerAmount + ")");
-        } catch (SQLException e){
-            e.printStackTrace();
-            channel.sendMessage("Could not push your wager to database. Please contact a moderator!").queue();
-        }
-    }
-
-    private void createPendingWager(MessageChannel channel, Message message, String content, Connection conn) {
+    public void createPendingWager() {
 
         // Check if author already has a wager pending
         for (Wager w: ListOfWagers.getWagers()) {
@@ -128,19 +98,8 @@ public class Wager {
             }
         }
 
-        // Check if author can afford the wager
-        Wallet challengerWallet = new Wallet(message.getAuthor(), conn);
-        if (!challengerWallet.canAfford(this.wagerAmount)){
-            channel.sendMessage("You can't afford that wager!").complete();
-            return;
-        }
-
-        // Check if target can afford the wager
-        Wallet targetWallet = new Wallet(message.getMentionedUsers().get(0), conn);
-        if (!targetWallet.canAfford(wagerAmount)) {
-            channel.sendMessage("Your target cannot afford this wager.").queue();
-            return;
-        }
+        // Add new wager
+        ListOfWagers.addNewWager(this);
 
         // Wait 5 minutes and prune expired wager
         try {
@@ -149,6 +108,16 @@ public class Wager {
         } catch (InterruptedException e) {
             e.printStackTrace();
             channel.sendMessage("Error in pruning timer. Please contact a moderator!").complete();
+        }
+    }
+
+    public void pushWager(MessageChannel channel, Connection conn) {
+        try {
+            PreparedStatement st = conn.prepareStatement("INSERT INTO tictactoe VALUES ("
+                    + this.challengerId + ", " + this.targetId + ", " + wagerAmount + ")");
+        } catch (SQLException e){
+            e.printStackTrace();
+            channel.sendMessage("Could not push your wager to database. Please contact a moderator!").queue();
         }
     }
 }

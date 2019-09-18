@@ -13,6 +13,7 @@ import DiscordBot.commands.misc.Help;
 import DiscordBot.commands.misc.MyWallet;
 import DiscordBot.commands.misc.Ping;
 import DiscordBot.util.economy.Market;
+import DiscordBot.util.tictactoe_util.ListOfWagers;
 import DiscordBot.util.tictactoe_util.Wager;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
@@ -176,19 +177,18 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Create TicTacToe wager
 		else if (content.toLowerCase().startsWith("!wager")){
-			Wager wager = new Wager();
-			if (wager.setChallengerId(message)) {
-				System.out.println("Challenger returned true");
+			Wager wager = new Wager(conn, channel);
+			wager.setChallengerId(message);
+			wager.setTargetId(message);
+			wager.setWagerAmount(message);
+			if (wager.getTargetId() == 0) {
+				wager.pushWager(channel, conn);
+			} else {
+				wager.createPendingWager();
+				for (Wager w : ListOfWagers.getWagers()) {
+					System.out.println("Wager Amount: " + w.getWagerAmount());
+				}
 			}
-			if (wager.setTargetId(message)) {
-				System.out.println("Target returned true");
-			}
-			if (wager.setWagerAmount(message)) {
-				System.out.println("Wager returned true");
-			}
-			System.out.println("Raw message: " + message.getContentRaw());
-			channel.sendMessage("Wagerer: <@" + wager.getChallengerId() + ">").queue();
-			channel.sendMessage("Wager amount: " + wager.getWagerAmount()).queue();
 		}
 	}
 }

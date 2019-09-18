@@ -1,6 +1,5 @@
-package DiscordBot.commands.tictactoe;
+package DiscordBot.util.tictactoe_util;
 
-import DiscordBot.util.tictactoe_util.Wager;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;

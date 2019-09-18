@@ -177,9 +177,15 @@ public class MyEventListener extends ListenerAdapter {
 		// Create TicTacToe wager
 		else if (content.toLowerCase().startsWith("!wager")){
 			Wager wager = new Wager();
-			wager.setChallengerId(message);
-			wager.setTargetId(message);
-			wager.setWagerAmount(message);
+			if (wager.setChallengerId(message)) {
+				System.out.println("Challenger returned true");
+			}
+			if (wager.setTargetId(message)) {
+				System.out.println("Target returned true");
+			}
+			if (wager.setWagerAmount(message)) {
+				System.out.println("Wager returned true");
+			}
 			channel.sendMessage("Wagerer: <" + wager.getChallengerId() + ">").queue();
 			channel.sendMessage("Wager amount: " + wager.getWagerAmount()).queue();
 		}

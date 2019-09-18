@@ -43,9 +43,11 @@ public class Wager {
 
     public boolean setChallengerId(Message message) {
         if (verifyFormat(message)) {
+            System.out.println("Verify is true");
             this.challengerId = message.getAuthor().getIdLong();
             return true;
         }
+        System.out.println("Verify is false");
         return false;
     }
 
@@ -62,8 +64,9 @@ public class Wager {
     }
 
     public boolean setWagerAmount(Message message) {
+        String content = message.getContentRaw().trim();
         if (verifyFormat(message)) {
-            this.wagerAmount = Integer.parseInt(message.getContentRaw().substring(message.getContentRaw().lastIndexOf(" ")));
+            this.wagerAmount = Integer.parseInt(content.substring(message.getContentRaw().trim().lastIndexOf(" ")+1));
             return true;
         }
         return false;

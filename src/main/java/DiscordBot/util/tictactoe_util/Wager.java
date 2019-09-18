@@ -105,7 +105,7 @@ public class Wager {
 
     public void pushWager(MessageChannel channel, Connection conn) {
         try {
-            PreparedStatement st = conn.prepareStatement("INSERT INTO tictactoe VALUES (challenger, target, wager) ("
+            PreparedStatement st = conn.prepareStatement("INSERT INTO tictactoe (challenger, target, wager) VALUES ("
                     + this.challengerId + ", " + this.targetId + ", " + wagerAmount + ")");
             st.executeUpdate();
         } catch (Exception e){

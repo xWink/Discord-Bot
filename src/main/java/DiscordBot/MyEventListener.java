@@ -181,10 +181,14 @@ public class MyEventListener extends ListenerAdapter {
 			wager.setChallengerId(message);
 			wager.setTargetId(message);
 			wager.setWagerAmount(message);
+			System.out.println("Setters done");
 			if (wager.getTargetId() == 0) {
 				wager.pushWager(channel, conn);
+				System.out.println("Push done");
 			} else {
+				System.out.println("Creating wager");
 				wager.createPendingWager();
+				System.out.println("Wager created, list incoming:");
 				for (Wager w : ListOfWagers.getWagers()) {
 					System.out.println("Wager Amount: " + w.getWagerAmount());
 				}

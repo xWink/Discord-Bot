@@ -15,8 +15,8 @@ public class Wager {
     private long targetId = -1;
     private int wagerAmount = -1;
 
-    public Wager(MessageChannel channel, Message message, String content, Connection conn){
-        switch (setWager(channel, message, content.substring(6))) {
+    public Wager(){
+        /*switch (setWager(channel, message, content.substring(6))) {
             case -1:
                 channel.sendMessage("Invalid input!").complete();
                 return;
@@ -26,7 +26,7 @@ public class Wager {
             case 1:
                 createPendingWager(channel, message, content, conn);
                 channel.sendMessage("Your wager against a player is pending acceptance!").complete();
-        }
+        }*/
     }
 
     public long getChallengerId() {
@@ -39,6 +39,39 @@ public class Wager {
 
     public int getWagerAmount() {
         return wagerAmount;
+    }
+
+    public boolean setChallengerId(Message message) {
+        if (!verifyFormat(message)) {
+            return false;
+        }
+        this.challengerId = message.getAuthor().getIdLong();
+        return true;
+    }
+
+    public boolean setTargetId(Message message) {
+        if (!verifyFormat(message)) {
+            return false;
+        }
+        if (message.getMentionedUsers().isEmpty()) {
+            this.targetId = 0;
+        } else {
+            this.targetId = message.getMentionedUsers().get(0).getIdLong();
+        }
+        return true;
+    }
+
+    public boolean setWagerAmount(Message message) {
+        if (!verifyFormat(message)) {
+            return false;
+        }
+        this.wagerAmount = Integer.parseInt(message.getContentRaw().substring(message.getContentRaw().lastIndexOf(" ")));
+        return true;
+    }
+
+    private boolean verifyFormat(Message message) {
+        return message.getContentRaw().trim().matches("^ [0-9]*$")
+                || message.getContentRaw().trim().matches("^ @.* [0-9]*$");
     }
 
     private int setWager(MessageChannel channel, Message message, String content){

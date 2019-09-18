@@ -12,7 +12,6 @@ import DiscordBot.commands.groups.ShowRoles;
 import DiscordBot.commands.misc.Help;
 import DiscordBot.commands.misc.MyWallet;
 import DiscordBot.commands.misc.Ping;
-import DiscordBot.commands.tictactoe.ListOfWagers;
 import DiscordBot.util.economy.Market;
 import DiscordBot.util.tictactoe_util.Wager;
 import net.dv8tion.jda.core.entities.*;
@@ -177,7 +176,10 @@ public class MyEventListener extends ListenerAdapter {
 
 		// Create TicTacToe wager
 		else if (content.toLowerCase().startsWith("!wager")){
-			Wager wager = new Wager(channel, message, content, conn);
+			Wager wager = new Wager();
+			wager.setChallengerId(message);
+			wager.setTargetId(message);
+			wager.setWagerAmount(message);
 			channel.sendMessage("Wager amount: " + wager.getWagerAmount()).complete();
 		}
 	}

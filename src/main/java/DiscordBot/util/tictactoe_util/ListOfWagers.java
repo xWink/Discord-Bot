@@ -11,7 +11,7 @@ public class ListOfWagers {
 
     private static ArrayList<Wager> listOfWagers;
 
-    ListOfWagers(){
+    public ListOfWagers(){
 
     }
 

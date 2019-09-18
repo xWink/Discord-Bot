@@ -189,7 +189,8 @@ public class MyEventListener extends ListenerAdapter {
 				System.out.println("Creating wager");
 				wager.createPendingWager();
 				System.out.println("Wager created, list incoming:");
-				for (Wager w : ListOfWagers.getWagers()) {
+				ListOfWagers wagers = new ListOfWagers();
+				for (Wager w : wagers.getWagers()) {
 					System.out.println("Wager Amount: " + w.getWagerAmount());
 				}
 			}

@@ -134,7 +134,7 @@ public class Roulette {
 
 					Wallet wallet = new Wallet(author, conn);
 					wallet.addMoney(conn, 50);
-					channel.sendMessage(author.getName() + " received a bonus 10 GryphCoins!").complete();
+					channel.sendMessage(author.getName() + " received a bonus 50 GryphCoins!").complete();
 				}
 				else
 					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, last_played = " +

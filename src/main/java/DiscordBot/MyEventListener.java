@@ -76,7 +76,7 @@ public class MyEventListener extends ListenerAdapter {
 				ResultSet rs = checkIfExists.executeQuery();
 				if (!rs.next()) {
 					conn.prepareStatement("INSERT INTO karma (user, upvotes, downvotes) VALUES (" + messageAuthId
-							+ "0, 0)").executeUpdate();
+							+ ", 0, 0)").executeUpdate();
 				}
 
 				// If upvote, add upvotes

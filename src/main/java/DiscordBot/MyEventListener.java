@@ -146,11 +146,11 @@ public class MyEventListener extends ListenerAdapter {
 		final User author = event.getAuthor(); // Author as type User
 
 		// If the event is made by the bot, ignore it
-		if (author.isBot())
+		if (author.isBot() || !event.getMessage().getTextChannel().getId().equals("551828950871965696"))
 			return;
 
 		final Guild guild = RoleBot.api.getGuildById(Long.parseLong(RoleBot.config.guildId));
-		if (guild == null){
+		if (guild == null) {
 			System.out.println("Could not get guild from id, terminating event");
 			return;
 		}

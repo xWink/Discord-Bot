@@ -70,42 +70,37 @@ public class MyEventListener extends ListenerAdapter {
 				.complete().getAuthor().getIdLong();
 
 		if (this.conn != null) {
-			// If upvote, add upvotes
-			if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
-				try {
-					PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
-							+ messageAuthId);
-					ResultSet rs = checkIfExists.executeQuery();
-					if (rs.next()) {
-						PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes + 1 "
-								+ "WHERE user = " + messageAuthId);
-						st.executeUpdate();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
+			try {
+				PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
+						+ messageAuthId);
+				ResultSet rs = checkIfExists.executeQuery();
+				if (!rs.next()) {
+					conn.prepareStatement("INSERT INTO karma (user, upvotes, downvotes) VALUES (" + messageAuthId
+							+ "0, 0)").executeUpdate();
 				}
-			}
 
-			// If downvote, add downvotes
-			if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
-				try {
-					PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
-							+ messageAuthId);
-					ResultSet rs = checkIfExists.executeQuery();
-					if (rs.next()) {
-						PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes - 1 "
-								+ "WHERE user = " + messageAuthId);
-						st.executeUpdate();
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
+				// If upvote, add upvotes
+				if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
+					PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes + 1 "
+							+ "WHERE user = " + messageAuthId);
+					st.executeUpdate();
 				}
+
+				// If downvote, add downvotes
+				if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
+
+					PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes - 1 "
+							+ "WHERE user = " + messageAuthId);
+					st.executeUpdate();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 	}
-	
-  	@Override
-  	public void onMessageReceived(MessageReceivedEvent event) {
+
+	@Override
+	public void onMessageReceived(MessageReceivedEvent event) {
 
 		final User author = event.getAuthor(); // Author as type User
 
@@ -123,8 +118,8 @@ public class MyEventListener extends ListenerAdapter {
 		final String content = message.getContentRaw().trim(); // Text of the message
 		final TextChannel channel = event.getTextChannel(); // Text channel the message came from
 		final Member auth = guild.getMember(author); // Author as type Member
-	  	final List channels = Arrays.asList(cfg.channel); // List of channels bot can read from
-	  	final Market market = new Market(guild); // Roles for sale
+		final List channels = Arrays.asList(cfg.channel); // List of channels bot can read from
+		final Market market = new Market(guild); // Roles for sale
 
 
 		// Check if the bot is allowed to send messages in the current channel
@@ -140,83 +135,83 @@ public class MyEventListener extends ListenerAdapter {
 		if (content.equalsIgnoreCase("!help"))
 			Help.help(channel);
 
-		// Bot responds with pong and latency
+			// Bot responds with pong and latency
 		else if (content.equalsIgnoreCase("!ping"))
 			Ping.ping(author, event, channel, conn);
 
-		// Bot creates new text channel and deletes old one (OWNER ONLY)
+			// Bot creates new text channel and deletes old one (OWNER ONLY)
 		else if (content.equalsIgnoreCase("!totalchatwipe"))
 			TotalChatWipe.chatWipe(auth, guild, channel);
 
-		// Bot gives requested role to target (MODERATOR->PEASANT ONLY)
+			// Bot gives requested role to target (MODERATOR->PEASANT ONLY)
 		else if(content.toLowerCase().startsWith("!giverole "))
 			GiveRole.giveRole(auth, channel, guild, content, message);
 
-		// Bot removes requested role from user (MODERATOR->PEASANT ONLY)
+			// Bot removes requested role from user (MODERATOR->PEASANT ONLY)
 		else if(content.toLowerCase().startsWith("!takerole "))
 			TakeRole.takeRole(auth, channel, guild, content, message);
 
-		// User requests to join/create an elective role
+			// User requests to join/create an elective role
 		else if(content.toLowerCase().startsWith("!join"))
 			Join.join(auth, author, channel, guild, content, conn);
 
-		// Remove user's application from database and removes them from the role
+			// Remove user's application from database and removes them from the role
 		else if (content.toLowerCase().startsWith("!leave"))
 			Leave.leave(auth, author, channel, guild, content, conn);
 
-		// Delete all non-specified roles (OWNER ONLY)
+			// Delete all non-specified roles (OWNER ONLY)
 		else if (content.toLowerCase().equals("!cleanroles"))
 			CleanRoles.cleanRoles(auth, channel, guild);
 
-		// Delete all elective channels (OWNER ONLY)
+			// Delete all elective channels (OWNER ONLY)
 		else if(content.equalsIgnoreCase("!cleanelectives"))
 			CleanElectives.cleanElectives(auth, channel, guild);
 
-		// Russian roulette
+			// Russian roulette
 		else if (content.equalsIgnoreCase("!bang"))
 			chamberCount = Roulette.roulette(author, chamberCount, channel, conn);
 
-		// Russian roulette scores
+			// Russian roulette scores
 		else if (content.equalsIgnoreCase("!bangscore") || content.equalsIgnoreCase("!bangscores"))
 			BangScores.bangScores(channel, guild, conn);
 
-		// Show bang scores for individual
+			// Show bang scores for individual
 		else if (content.equalsIgnoreCase("!mybang"))
 			MyBang.myBang(author, channel, conn);
 
-		// Show daily reset time for bang
+			// Show daily reset time for bang
 		else if (content.equalsIgnoreCase("!daily"))
 			Daily.daily(author, conn, channel);
 
-		// Show available Elective roles
+			// Show available Elective roles
 		else if (content.equalsIgnoreCase("!roles"))
 			ShowRoles.showRoles(guild, channel);
 
-		// Bet money for blackjack
+			// Bet money for blackjack
 		else if (content.toLowerCase().startsWith("!bet"))
 			BlackJackCommands.bet(author, channel, content, conn);
 
-		// Hit in blackjack
+			// Hit in blackjack
 		else if (content.equalsIgnoreCase("!hit"))
 			BlackJackCommands.hit(author, channel, conn);
 
-		// Stand in blackjack
+			// Stand in blackjack
 		else if (content.equalsIgnoreCase("!stand"))
 			BlackJackCommands.stand(author, channel, conn);
 
-		// Show hand in blackjack
+			// Show hand in blackjack
 		else if (content.equalsIgnoreCase("!hand"))
 			BlackJackCommands.myHand(author, channel);
 
-		// Show economy
+			// Show economy
 		else if (content.equalsIgnoreCase("!wallet"))
 			MyWallet.myWallet(author, channel, conn);
 
-		// Show listings
+			// Show listings
 		else if (content.equalsIgnoreCase("!market"))
 			market.showListings(channel);
 
-		// Purchase listed colour
+			// Purchase listed colour
 		else if (content.toLowerCase().startsWith("!buy")){
 			try{
 				market.purchase(author, conn, content, channel);

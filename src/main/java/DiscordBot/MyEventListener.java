@@ -96,7 +96,7 @@ public class MyEventListener extends ListenerAdapter {
 				// If downvote, add downvotes
 				if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
 
-					PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes - 1 "
+					PreparedStatement st = conn.prepareStatement("UPDATE karma SET downvotes = downvotes + 1 "
 							+ "WHERE user = " + messageAuthId);
 					st.executeUpdate();
 				}
@@ -130,7 +130,7 @@ public class MyEventListener extends ListenerAdapter {
 				// If downvote, add downvotes
 				if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
 
-					PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes + 1 "
+					PreparedStatement st = conn.prepareStatement("UPDATE karma SET downvotes = downvotes - 1 "
 							+ "WHERE user = " + messageAuthId);
 					st.executeUpdate();
 				}

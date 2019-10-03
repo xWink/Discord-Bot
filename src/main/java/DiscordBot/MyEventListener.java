@@ -19,9 +19,12 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -32,9 +35,16 @@ public class MyEventListener extends ListenerAdapter {
 
 	private int chamberCount = 6;
 	private ConfigFile cfg = RoleBot.config;
+	private Connection conn;
+
+	public MyEventListener () {
+		if ((this.conn = connect()) == null) {
+			System.out.println("Failed to connect to db");
+		}
+	}
 
 	@Override
-	public void onGuildMemberJoin(GuildMemberJoinEvent event){
+	public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 		Guild guild = RoleBot.api.getGuildById(RoleBot.config.guildId);
 		TextChannel generalChannel = guild.getTextChannelById("486633949154770946");
 		TextChannel botsChannel = guild.getTextChannelById("551828950871965696");
@@ -51,10 +61,32 @@ public class MyEventListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onDisconnect(DisconnectEvent event){}
+	public void onDisconnect(DisconnectEvent event) {}
+
+	@Override
+	public void onMessageReactionAdd(MessageReactionAddEvent event) {
+		System.out.println(event.getReactionEmote().toString());
+		System.out.println(event.getUser().getName());
+
+		if (event.getReactionEmote().toString().equals(":upvote:")) {
+			if (this.conn != null) {
+				System.out.println("SUCCESS");
+				/*try {
+					PreparedStatement st = conn.prepareStatement("UPDATE karma ");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}*/
+			}
+		}
+	}
+
+	@Override
+	public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
+
+	}
 	
   	@Override
-  	public void onMessageReceived(MessageReceivedEvent event){
+  	public void onMessageReceived(MessageReceivedEvent event) {
 
 		final User author = event.getAuthor(); // Author as type User
 
@@ -74,13 +106,13 @@ public class MyEventListener extends ListenerAdapter {
 		final Member auth = guild.getMember(author); // Author as type Member
 	  	final List channels = Arrays.asList(cfg.channel); // List of channels bot can read from
 	  	final Market market = new Market(guild); // Roles for sale
-	  	Connection conn;
+
 
 		// Check if the bot is allowed to send messages in the current channel
 		if (!cfg.channel[0].equalsIgnoreCase("all") && !channels.contains(channel.getId())) return;
 
 		// Connect to database
-		if ((conn = connect()) == null){
+		if (this.conn == null) {
 			channel.sendMessage("Could not connect to database. Please contact a moderator :(").complete();
 			return;
 		}

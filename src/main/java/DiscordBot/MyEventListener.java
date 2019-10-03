@@ -66,7 +66,7 @@ public class MyEventListener extends ListenerAdapter {
 	@Override
 	public void onMessageReactionAdd(MessageReactionAddEvent event) {
 		System.out.println(event.getReactionEmote().toString());
-		System.out.println(event.getUser().getName());
+		System.out.println(event.getMessageId());
 
 		if (event.getReactionEmote().toString().equals(":upvote:")) {
 			if (this.conn != null) {

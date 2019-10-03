@@ -66,13 +66,12 @@ public class MyEventListener extends ListenerAdapter {
 
 	@Override
 	public void onMessageReactionAdd(MessageReactionAddEvent event) {
-		System.out.println(event.getReactionEmote().getEmote().getName());
 		long messageAuthId = event.getTextChannel().getMessageById(event.getMessageId())
 				.complete().getAuthor().getIdLong();
 
 		if (this.conn != null) {
 			// If upvote, add upvotes
-			if (event.getReactionEmote().getEmote().getName().equals("upvote")) {
+			if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
 				try {
 					PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
 							+ messageAuthId);
@@ -87,7 +86,7 @@ public class MyEventListener extends ListenerAdapter {
 			}
 
 			// If downvote, add downvotes
-			if (event.getReactionEmote().getEmote().getName().equals("downvote")) {
+			if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
 				try {
 					PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
 							+ messageAuthId);

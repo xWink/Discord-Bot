@@ -25,6 +25,7 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
@@ -65,26 +66,41 @@ public class MyEventListener extends ListenerAdapter {
 
 	@Override
 	public void onMessageReactionAdd(MessageReactionAddEvent event) {
-		System.out.println(event.getReactionEmote().getEmote().getIdLong());
+		System.out.println(event.getReactionEmote().getEmote().getName());
 		long messageAuthId = event.getTextChannel().getMessageById(event.getMessageId())
 				.complete().getAuthor().getIdLong();
 
-
-		if (event.getReactionEmote().getEmote().getIdLong() != 0) {
-			if (this.conn != null) {
-				System.out.println("SUCCESS");
-				/*try {
-					PreparedStatement st = conn.prepareStatement("UPDATE karma ");
+		if (this.conn != null) {
+			// If upvote, add upvotes
+			if (event.getReactionEmote().getEmote().getName().equals("upvote")) {
+				try {
+					PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
+							+ messageAuthId);
+					ResultSet rs = checkIfExists.executeQuery();
+					if (rs.next()) {
+						PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes + 1 "
+								+ "WHERE user = " + messageAuthId);
+					}
 				} catch (SQLException e) {
 					e.printStackTrace();
-				}*/
+				}
+			}
+
+			// If downvote, add downvotes
+			if (event.getReactionEmote().getEmote().getName().equals("downvote")) {
+				try {
+					PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
+							+ messageAuthId);
+					ResultSet rs = checkIfExists.executeQuery();
+					if (rs.next()) {
+						PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes - 1 "
+								+ "WHERE user = " + messageAuthId);
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
 		}
-	}
-
-	@Override
-	public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
-
 	}
 	
   	@Override

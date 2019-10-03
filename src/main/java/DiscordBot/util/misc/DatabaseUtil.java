@@ -7,8 +7,7 @@ import java.sql.DriverManager;
 
 public class DatabaseUtil {
 
-    public static Connection connect(){
-
+    public static Connection connect() {
         // Connect to database
         try {
             Class.forName("org.mariadb.jdbc.Driver");

@@ -79,6 +79,7 @@ public class MyEventListener extends ListenerAdapter {
 					if (rs.next()) {
 						PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes + 1 "
 								+ "WHERE user = " + messageAuthId);
+						st.executeUpdate();
 					}
 				} catch (SQLException e) {
 					e.printStackTrace();
@@ -94,6 +95,7 @@ public class MyEventListener extends ListenerAdapter {
 					if (rs.next()) {
 						PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes - 1 "
 								+ "WHERE user = " + messageAuthId);
+						st.executeUpdate();
 					}
 				} catch (SQLException e) {
 					e.printStackTrace();

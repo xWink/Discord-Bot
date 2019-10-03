@@ -17,8 +17,11 @@ import DiscordBot.util.tictactoe_util.ListOfWagers;
 import DiscordBot.util.tictactoe_util.Wager;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
+import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageUpdateEvent;
+import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -64,10 +67,14 @@ public class MyEventListener extends ListenerAdapter {
 	@Override
 	public void onDisconnect(DisconnectEvent event) {}
 
+	private long getMessageAuthId(GenericMessageReactionEvent event) {
+		return event.getTextChannel().getMessageById(event.getMessageId())
+				.complete().getAuthor().getIdLong();
+	}
+
 	@Override
 	public void onMessageReactionAdd(MessageReactionAddEvent event) {
-		long messageAuthId = event.getTextChannel().getMessageById(event.getMessageId())
-				.complete().getAuthor().getIdLong();
+		long messageAuthId = getMessageAuthId(event);
 
 		if (this.conn != null) {
 			try {
@@ -90,6 +97,40 @@ public class MyEventListener extends ListenerAdapter {
 				if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
 
 					PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes - 1 "
+							+ "WHERE user = " + messageAuthId);
+					st.executeUpdate();
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
+		long messageAuthId = getMessageAuthId(event);
+
+		if (this.conn != null) {
+			try {
+				PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
+						+ messageAuthId);
+				ResultSet rs = checkIfExists.executeQuery();
+				if (!rs.next()) {
+					conn.prepareStatement("INSERT INTO karma (user, upvotes, downvotes) VALUES (" + messageAuthId
+							+ ", 0, 0)").executeUpdate();
+				}
+
+				// If upvote, add upvotes
+				if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
+					PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes - 1 "
+							+ "WHERE user = " + messageAuthId);
+					st.executeUpdate();
+				}
+
+				// If downvote, add downvotes
+				if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
+
+					PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes + 1 "
 							+ "WHERE user = " + messageAuthId);
 					st.executeUpdate();
 				}

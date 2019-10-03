@@ -65,12 +65,12 @@ public class MyEventListener extends ListenerAdapter {
 
 	@Override
 	public void onMessageReactionAdd(MessageReactionAddEvent event) {
-		System.out.println(event.getReactionEmote().getEmote().getName());
+		System.out.println(event.getReactionEmote().getEmote().getIdLong());
 		long messageAuthId = event.getTextChannel().getMessageById(event.getMessageId())
 				.complete().getAuthor().getIdLong();
 
 
-		if (event.getReactionEmote().getEmote().getName().equals("arrow_up")) {
+		if (event.getReactionEmote().getEmote().getIdLong() != 0) {
 			if (this.conn != null) {
 				System.out.println("SUCCESS");
 				/*try {

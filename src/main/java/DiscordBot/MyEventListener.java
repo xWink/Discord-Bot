@@ -76,7 +76,7 @@ public class MyEventListener extends ListenerAdapter {
 	public void onMessageReactionAdd(MessageReactionAddEvent event) {
 		long messageAuthId = getMessageAuthId(event);
 
-		if (this.conn != null) {
+		if (this.conn != null && event.getUser().getIdLong() != messageAuthId) {
 			try {
 				PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
 						+ messageAuthId);
@@ -110,7 +110,7 @@ public class MyEventListener extends ListenerAdapter {
 	public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
 		long messageAuthId = getMessageAuthId(event);
 
-		if (this.conn != null) {
+		if (this.conn != null && event.getUser().getIdLong() != messageAuthId) {
 			try {
 				PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
 						+ messageAuthId);

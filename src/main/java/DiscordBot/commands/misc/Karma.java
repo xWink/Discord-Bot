@@ -21,7 +21,7 @@ public class Karma {
         if (!userExistsInTable("karma", userId)) addNewUser(userId);
         try {
             ResultSet rs = getUserRowInTable("karma", userId);
-            assert rs != null;
+            rs.next();
             upVotes = rs.getInt("upvotes");
             downVotes = rs.getInt("downvotes");
         } catch (Exception e) {

@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class DatabaseUtil {
 
@@ -44,13 +45,9 @@ public class DatabaseUtil {
         }
     }
 
-    public static ResultSet getUserRowInTable(String tableName, long userId) {
-        try {
-            PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + tableName
-                    + " WHERE user = " + userId);
-            return ps.executeQuery();
-        } catch (Exception e) {
-            return null;
-        }
+    public static ResultSet getUserRowInTable(String tableName, long userId) throws SQLException {
+        PreparedStatement ps = conn.prepareStatement("SELECT * FROM " + tableName
+                + " WHERE user = " + userId);
+        return ps.executeQuery();
     }
 }

@@ -10,17 +10,14 @@ import DiscordBot.commands.groups.Join;
 import DiscordBot.commands.groups.Leave;
 import DiscordBot.commands.groups.ShowRoles;
 import DiscordBot.commands.misc.Help;
+import DiscordBot.commands.misc.Karma;
 import DiscordBot.commands.misc.MyWallet;
 import DiscordBot.commands.misc.Ping;
 import DiscordBot.util.economy.Market;
-import DiscordBot.util.tictactoe_util.ListOfWagers;
-import DiscordBot.util.tictactoe_util.Wager;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
-import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
@@ -33,7 +30,11 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static DiscordBot.util.misc.DatabaseUtil.connect;
+import static DiscordBot.util.database.DatabaseUtil.getConnection;
+import static DiscordBot.util.database.DatabaseUtil.userExistsInTable;
+import static DiscordBot.util.database.KarmaDB.addDownVotes;
+import static DiscordBot.util.database.KarmaDB.addNewUser;
+import static DiscordBot.util.database.KarmaDB.addUpVotes;
 
 public class MyEventListener extends ListenerAdapter {
 
@@ -42,7 +43,7 @@ public class MyEventListener extends ListenerAdapter {
 	private Connection conn;
 
 	public MyEventListener () {
-		if ((this.conn = connect()) == null) {
+		if ((this.conn = getConnection()) == null) {
 			System.out.println("Failed to connect to db");
 		}
 	}
@@ -65,7 +66,9 @@ public class MyEventListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onDisconnect(DisconnectEvent event) {}
+	public void onDisconnect(DisconnectEvent event) {
+		System.out.println("Attempting reconnect");
+	}
 
 	private long getMessageAuthId(GenericMessageReactionEvent event) {
 		return event.getTextChannel().getMessageById(event.getMessageId())
@@ -75,33 +78,17 @@ public class MyEventListener extends ListenerAdapter {
 	@Override
 	public void onMessageReactionAdd(MessageReactionAddEvent event) {
 		long messageAuthId = getMessageAuthId(event);
-
-		if (this.conn != null && event.getUser().getIdLong() != messageAuthId) {
-			try {
-				PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
-						+ messageAuthId);
-				ResultSet rs = checkIfExists.executeQuery();
-				if (!rs.next()) {
-					conn.prepareStatement("INSERT INTO karma (user, upvotes, downvotes) VALUES (" + messageAuthId
-							+ ", 0, 0)").executeUpdate();
-				}
-
-				// If upvote, add upvotes
-				if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
-					PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes + 1 "
-							+ "WHERE user = " + messageAuthId);
-					st.executeUpdate();
-				}
-
-				// If downvote, add downvotes
-				if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
-
-					PreparedStatement st = conn.prepareStatement("UPDATE karma SET downvotes = downvotes + 1 "
-							+ "WHERE user = " + messageAuthId);
-					st.executeUpdate();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
+		if (getConnection() != null && event.getUser().getIdLong() != messageAuthId) {
+			if (!userExistsInTable("karma", messageAuthId)) {
+				addNewUser(messageAuthId);
+			}
+			// If upvote, add upvotes
+			if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
+				addUpVotes(messageAuthId, 1);
+			}
+			// If downvote, add downvotes
+			if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
+				addDownVotes(messageAuthId, 1);
 			}
 		}
 	}
@@ -253,13 +240,19 @@ public class MyEventListener extends ListenerAdapter {
 			market.showListings(channel);
 
 			// Purchase listed colour
-		else if (content.toLowerCase().startsWith("!buy")){
-			try{
+		else if (content.toLowerCase().startsWith("!buy")) {
+			try {
 				market.purchase(author, conn, content, channel);
 			}
 			catch (SQLException e){
 				e.printStackTrace();
 			}
+		}
+
+			// Show karma
+		else if (content.equalsIgnoreCase("!karma")) {
+			channel.sendMessage(author.getName() + "'s Karma:\n"
+					+ new Karma(author.getIdLong()).getSummary()).complete();
 		}
 
 		/* Create TicTacToe wager

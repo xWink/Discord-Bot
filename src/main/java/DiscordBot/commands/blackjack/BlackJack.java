@@ -11,7 +11,8 @@ import net.dv8tion.jda.core.entities.User;
 import java.sql.*;
 import java.util.Objects;
 
-import static DiscordBot.util.misc.DatabaseUtil.connect;
+import static DiscordBot.util.database.DatabaseUtil.connect;
+import static DiscordBot.util.database.DatabaseUtil.getConnection;
 
 class BlackJack {
 
@@ -84,7 +85,7 @@ class BlackJack {
         Hand hand = new Hand();
 
         // Connect to database
-        if ((conn = connect()) == null){
+        if ((conn = getConnection()) == null){
             System.out.println("Cannot connect to database, aborting stand command");
             channel.sendMessage("Can't connect to database. Please contact a moderator!").queue();
             return null;

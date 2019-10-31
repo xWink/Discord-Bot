@@ -5,7 +5,7 @@ import DiscordBot.util.tictactoe_util.Wager;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
-import DiscordBot.util.misc.UpdateRoles;
+import DiscordBot.util.database.UpdateRoles;
 
 import java.util.Date;
 import java.util.Timer;

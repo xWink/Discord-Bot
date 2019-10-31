@@ -11,7 +11,6 @@ import net.dv8tion.jda.core.entities.User;
 import java.sql.*;
 import java.util.Objects;
 
-import static DiscordBot.util.database.DatabaseUtil.connect;
 import static DiscordBot.util.database.DatabaseUtil.getConnection;
 
 class BlackJack {

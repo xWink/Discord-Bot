@@ -7,7 +7,6 @@ import java.util.Date;
 
 import java.sql.*;
 
-import static DiscordBot.util.database.DatabaseUtil.connect;
 import static DiscordBot.util.database.DatabaseUtil.getConnection;
 
 public class GetBangScores {

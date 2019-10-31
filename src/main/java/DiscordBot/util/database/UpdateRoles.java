@@ -12,7 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import static DiscordBot.util.database.DatabaseUtil.connect;
 import static DiscordBot.util.database.DatabaseUtil.getConnection;
 
 public class UpdateRoles {

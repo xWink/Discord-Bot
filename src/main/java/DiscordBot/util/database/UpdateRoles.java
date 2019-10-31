@@ -1,4 +1,4 @@
-package DiscordBot.util.misc;
+package DiscordBot.util.database;
 
 import DiscordBot.RoleBot;
 import DiscordBot.util.bang_util.BangHighScores;
@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-import static DiscordBot.util.misc.DatabaseUtil.connect;
+import static DiscordBot.util.database.DatabaseUtil.getConnection;
 
 public class UpdateRoles {
 
@@ -23,7 +23,7 @@ public class UpdateRoles {
         Date date = new Date();
 
         // Connect to database
-        if ((conn = connect()) == null){
+        if ((conn = getConnection()) == null){
             System.out.println("Could not connect to database to remove expired colours");
             return;
         }

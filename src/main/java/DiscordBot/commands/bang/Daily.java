@@ -16,10 +16,15 @@ public class Daily {
         try{
             PreparedStatement st = conn.prepareStatement("SELECT last_daily FROM bang WHERE user="+author.getIdLong());
             ResultSet rs = st.executeQuery();
-            rs.next();
-
-            // Add 24 hours and 1 minute to the time
-            return rs.getLong("last_daily") + 86460000;
+            // If user exists in database
+            if (rs.next()) {
+                // Add 24 hours and 1 minute to the time
+                return rs.getLong("last_daily") + 86460000;
+            }
+            // If user doesn't exist in database, their daily is available
+            else{
+                return 1;
+            }
         }
         catch (SQLException e){
             channel.sendMessage("Error fetching your daily time, please contact a moderator!").queue();

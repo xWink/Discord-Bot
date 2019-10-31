@@ -7,7 +7,7 @@ import java.util.Date;
 
 import java.sql.*;
 
-import static DiscordBot.util.misc.DatabaseUtil.connect;
+import static DiscordBot.util.database.DatabaseUtil.getConnection;
 
 public class GetBangScores {
 
@@ -21,7 +21,7 @@ public class GetBangScores {
         ResultSet mostAttempts, luck, mostWealth;
 
         // Connect to database
-        if ((conn = connect()) == null){
+        if ((conn = getConnection()) == null){
             System.out.println("Could not connect to database. Please contact a moderator :(");
             return null;
         }

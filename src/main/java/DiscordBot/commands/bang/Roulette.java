@@ -103,7 +103,7 @@ public class Roulette {
 
 		// Find user in database
 		try {
-			Boolean exists = false;
+			boolean exists = false;
 			PreparedStatement st = conn.prepareStatement("SELECT * FROM bang WHERE user="+author.getIdLong());
 			ResultSet rs = st.executeQuery();
 
@@ -134,7 +134,7 @@ public class Roulette {
 
 					Wallet wallet = new Wallet(author, conn);
 					wallet.addMoney(conn, 50);
-					channel.sendMessage(author.getName() + " received a bonus 10 GryphCoins!").complete();
+					channel.sendMessage(author.getName() + " received a bonus 50 GryphCoins!").complete();
 				}
 				else
 					stmt.executeUpdate("UPDATE bang SET tries = tries + 1, last_played = " +

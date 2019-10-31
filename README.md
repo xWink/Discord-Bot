@@ -1,6 +1,6 @@
 Version 1.11
 # Purpose
-Manage Computer Science Discord elective roles and channels and entertain users with games.
+Manage Computer Science Discord elective roles and channels and entertain users with games and karma system
 
 # Commands
 ### Anyone
@@ -23,6 +23,8 @@ Manage Computer Science Discord elective roles and channels and entertain users 
 `!join [role name]` - If the role already exists, it is assigned to the user. Otherwise, the user's id and requested role are stored in a database. If enough users apply for the same role, the role and a private text channel are created and all applicants are assigned to it.
 
 `!leave [role name]` - Unassigns the role from user and removes their application for that role from the database.
+
+`!karma` - displays user's upvotes, downvotes, and total karma
 
 ### Moderator+
 `!giverole [mentioned user] [role name]` - If the target is not a moderator, the role is assigned to the target.

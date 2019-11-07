@@ -1,4 +1,4 @@
-package DiscordBot;
+package main;
 
 import DiscordBot.commands.admin_commands.*;
 import DiscordBot.commands.bang.BangScores;
@@ -14,6 +14,7 @@ import DiscordBot.commands.misc.Karma;
 import DiscordBot.commands.misc.MyWallet;
 import DiscordBot.commands.misc.Ping;
 import DiscordBot.util.economy.Market;
+
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;

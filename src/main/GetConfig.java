@@ -1,6 +1,7 @@
-package DiscordBot;
+package main;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -14,7 +15,7 @@ class GetConfig {
         return currLn.substring(currLn.indexOf('=') + 1);
     }
 
-    static ConfigFile getConfig() throws Exception {
+    static ConfigFile getConfig() throws FileNotFoundException {
 
         final String configFilename = ".rolebotconfig";
         ArrayList<String> rawFile = new ArrayList<>();
@@ -28,13 +29,13 @@ class GetConfig {
         // Check whether config file exists in working (current) directory
         if (working.exists()) {
             logMessage ("Found [" + configFilename + "] in current directory");
-            readConfig = new Scanner (working);
+            readConfig = new Scanner(working);
         }
 
         // Check if file is in home directory
         else if (home.exists()) {
             logMessage ("Found [" + configFilename + "] in home directory");
-            readConfig = new Scanner (home);
+            readConfig = new Scanner(home);
         }
 
         // If the file cannot be found

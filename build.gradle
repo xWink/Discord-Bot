@@ -4,7 +4,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version '4.0.4'
 }
 
-mainClassName = 'DiscordBot.RoleBot'
+mainClassName = 'main.RoleBot'
 group 'com.DiscordBot'
 version '1'
 

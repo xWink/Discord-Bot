@@ -1,4 +1,4 @@
-package DiscordBot;
+package main;
 
 public class ConfigFile {
     public String token;

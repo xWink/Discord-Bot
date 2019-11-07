@@ -1,6 +1,6 @@
 package DiscordBot.util.database;
 
-import DiscordBot.RoleBot;
+import main.RoleBot;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

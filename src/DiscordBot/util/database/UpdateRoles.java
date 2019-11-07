@@ -1,6 +1,6 @@
 package DiscordBot.util.database;
 
-import DiscordBot.RoleBot;
+import main.RoleBot;
 import DiscordBot.util.bang_util.BangHighScores;
 import DiscordBot.util.bang_util.GetBangScores;
 import net.dv8tion.jda.core.entities.Guild;

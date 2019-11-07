@@ -1,7 +1,8 @@
 Version 1.11
 ### Incoming update
-Massive overhaul of code and project structure to simplify future expansions
-PvP/PvCPU Tic Tac Toe eta: December 2019
+Massive overhaul of code and project structure to simplify future expansions.
+
+PvP/PvCPU Tic Tac Toe eta: December 2019.
 
 # Purpose
 Manage Computer Science Discord elective roles and channels and entertain users with games and karma system

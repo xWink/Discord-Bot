@@ -1,6 +1,7 @@
 package main;
 
 import main.eventlistener.ConnectionEventListener;
+import main.eventlistener.JoinLeaveEventListener;
 import main.eventlistener.MessageEventListener;
 import main.eventlistener.ReactionEventListener;
 import net.dv8tion.jda.core.AccountType;
@@ -9,6 +10,8 @@ import net.dv8tion.jda.core.JDABuilder;
 
 public class RoleBot {
 
+	private static JDA api;
+
 	/**
 	 * Acquires settings from config file, activates bot based on token in file,
 	 * and adds the needed EventListeners.
@@ -16,14 +19,19 @@ public class RoleBot {
 	 */
 	public static void main(String[] args) {
 		try {
-			JDA api = new JDABuilder(AccountType.BOT).setToken(Config.getToken()).build();
+			api = new JDABuilder(AccountType.BOT).setToken(Config.getToken()).build();
 			api.addEventListener(new MessageEventListener());
 			api.addEventListener(new ReactionEventListener());
 			api.addEventListener(new ConnectionEventListener());
+			api.addEventListener(new JoinLeaveEventListener());
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static JDA getJDA() {
+		return api;
 	}
 
 	private void updateBangScores() {

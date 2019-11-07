@@ -40,31 +40,6 @@ import static DiscordBot.util.database.KarmaDB.addUpVotes;
 public class MyEventListener extends ListenerAdapter {
 
 	private int chamberCount = 6;
-	private ConfigFile cfg = RoleBot.config;
-	private Connection conn;
-
-	public MyEventListener () {
-		if ((this.conn = getConnection()) == null) {
-			System.out.println("Failed to connect to db");
-		}
-	}
-
-	@Override
-	public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-		Guild guild = RoleBot.api.getGuildById(RoleBot.config.guildId);
-		TextChannel generalChannel = guild.getTextChannelById("486633949154770946");
-		TextChannel botsChannel = guild.getTextChannelById("551828950871965696");
-
-		if (generalChannel == null){
-			System.out.println("Could not find general channel!");
-			return;
-		}
-
-		generalChannel.sendMessage("Welcome " + event.getUser().getAsMention() +
-				"! Feel free to ask any questions in here, we are always looking to help each other out!\n\n" +
-				"If you want to play with our bot, made in-house, go to " + botsChannel.getAsMention() +
-				" and say `!help` :smiley:").queue();
-	}
 
 	@Override
 	public void onDisconnect(DisconnectEvent event) {

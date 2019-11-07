@@ -1,6 +1,5 @@
 package command;
 
-import net.dv8tion.jda.core.events.Event;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 /**

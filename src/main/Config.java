@@ -98,6 +98,10 @@ public class Config {
         return db_pass;
     }
 
+    public static String getGuildId() {
+        return guildId;
+    }
+
 
     private static void parseLine(String contents) {
         // If the line is a token line

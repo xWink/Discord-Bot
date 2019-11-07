@@ -12,7 +12,7 @@ public class ReactionEventListener extends ListenerAdapter {
 
 
     /**
-     * Initializes KarmaConnector instance variable.
+     * Initializes KarmaConnector.
      */
     public ReactionEventListener() {
         kc = new KarmaConnector();
@@ -42,7 +42,7 @@ public class ReactionEventListener extends ListenerAdapter {
         long messageAuthId = getMessageAuthId(event);
         if (event.getUser().getIdLong() != messageAuthId) {
             // If new user, add them to table
-            if (!kc.userExistsInTable(messageAuthId)) {
+            if (!kc.userExists(messageAuthId)) {
                 kc.addUser(messageAuthId);
             }
             // If upVote, add upVotes
@@ -67,7 +67,7 @@ public class ReactionEventListener extends ListenerAdapter {
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
         long messageAuthId = getMessageAuthId(event);
         if (event.getUser().getIdLong() != messageAuthId) {
-            if (!kc.userExistsInTable(messageAuthId)) {
+            if (!kc.userExists(messageAuthId)) {
                 kc.addUser(messageAuthId);
             }
             // If upVote removed, remove upVote

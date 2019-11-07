@@ -5,9 +5,9 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-class Config {
+public class Config {
 
-    private final String configFilename = ".rolebotconfig";
+    private final static String configFilename = ".rolebotconfig";
     private static ArrayList<String> rawChannels;
     private static String token;
     private static String[] channels;
@@ -16,7 +16,7 @@ class Config {
     private static String guildId;
 
 
-    Config() {
+    static {
         rawChannels = new ArrayList<>();
         try {
             getConfig();
@@ -27,17 +27,17 @@ class Config {
     }
 
 
-    private void logMessage (String m) {
+    private static void logMessage(String m) {
         System.out.println(m);
     }
 
 
-    private String parseArg (String currLn) {
+    private static String parseArg(String currLn) {
         return currLn.substring(currLn.indexOf('=') + 1);
     }
 
 
-    private void getConfig() throws FileNotFoundException {
+    private static void getConfig() throws FileNotFoundException {
         ArrayList<String> rawFile = new ArrayList<>();
         File working = new File (configFilename);
         File home = new File (System.getProperty("user.home") + configFilename);
@@ -67,7 +67,7 @@ class Config {
     }
 
 
-    private Scanner getScanner(File working, File home) throws FileNotFoundException {
+    private static Scanner getScanner(File working, File home) throws FileNotFoundException {
         // Check whether config file exists in working (current) directory
         if (working.exists()) {
             logMessage ("Found [" + configFilename + "] in current directory");
@@ -86,12 +86,20 @@ class Config {
     }
 
 
-    String getToken() {
+    static String getToken() {
         return token;
     }
 
+    public static String getDb_user() {
+        return db_user;
+    }
 
-    private void parseLine(String contents) {
+    public static String getDb_pass() {
+        return db_pass;
+    }
+
+
+    private static void parseLine(String contents) {
         // If the line is a token line
         if (contents.startsWith("TOKEN")) {
             token = parseArg(contents);
@@ -120,7 +128,7 @@ class Config {
     }
 
 
-    private void checkForErrors() {
+    private static void checkForErrors() {
         // Ensure that all fields are filled
         if ((token == null) || (token.isEmpty())) {
             logMessage ("Error: Ending execution due to missing TOKEN in '.rolebotconfig' file. Make sure that the file has a TOKEN field before running again");

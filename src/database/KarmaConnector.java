@@ -5,9 +5,8 @@ import java.sql.ResultSet;
 
 public class KarmaConnector extends Connector {
 
-
     public KarmaConnector() {
-        super();
+        super("karma");
     }
 
 
@@ -19,8 +18,9 @@ public class KarmaConnector extends Connector {
      */
     public void updateUpVotes(long userId, int numUpVotes) {
         try {
-            getConnection().prepareStatement("UPDATE karma SET upvotes = upvotes + "
-                    + numUpVotes + " WHERE user = " + userId).executeUpdate();
+            getConnection().prepareStatement("UPDATE " + getTable()
+                    + " SET upvotes = upvotes + " + numUpVotes
+                    + " WHERE user = " + userId).executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -35,8 +35,9 @@ public class KarmaConnector extends Connector {
      */
     public void updateDownVotes(long userId, int numDownVotes) {
         try {
-            getConnection().prepareStatement("UPDATE karma SET downvotes = downvotes + "
-                    + numDownVotes + " WHERE user = " + userId).executeUpdate();
+            getConnection().prepareStatement("UPDATE " + getTable()
+                    + " SET downvotes = downvotes + " + numDownVotes
+                    + " WHERE user = " + userId).executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,8 +51,8 @@ public class KarmaConnector extends Connector {
      * @param userId the id number of the Discord user being searched for
      * @return true if found, false if not found or error occurs
      */
-    public boolean userExistsInTable(long userId) {
-        return super.userExistsInTable("karma", userId);
+    public boolean userExists(long userId) {
+        return super.userExists(userId, getTable());
     }
 
 
@@ -63,7 +64,7 @@ public class KarmaConnector extends Connector {
      * @return the ResultSet of the query
      */
     public ResultSet getUserRow(long userId) {
-        return super.getUserRow("karma", userId);
+        return super.getUserRow(userId, getTable());
     }
 
 
@@ -79,14 +80,15 @@ public class KarmaConnector extends Connector {
 
 
     /**
-     * Adds a new user to a specified ta a table based on their ID
+     * Adds a new user to the karma table based on their ID
      *
      * @param userId the ID number of the new user being added
      */
     @Override
     public void addUser(long userId) {
         try {
-            getConnection().prepareStatement("INSERT INTO karma (user, upvotes, downvotes) "
+            getConnection().prepareStatement("INSERT INTO " + getTable()
+                    + " (user, upvotes, downvotes) "
                     + "VALUES (" + userId + ", 0, 0)").executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

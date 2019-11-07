@@ -16,8 +16,7 @@ public class RoleBot {
 	 */
 	public static void main(String[] args) {
 		try {
-			Config config = new Config();
-			JDA api = new JDABuilder(AccountType.BOT).setToken(config.getToken()).build();
+			JDA api = new JDABuilder(AccountType.BOT).setToken(Config.getToken()).build();
 			api.addEventListener(new MessageEventListener());
 			api.addEventListener(new ReactionEventListener());
 			api.addEventListener(new ConnectionEventListener());

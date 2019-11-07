@@ -1,6 +1,6 @@
 package database;
 
-import main.RoleBot;
+import main.Config;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,14 +13,16 @@ import java.sql.ResultSet;
 abstract class Connector {
 
     private static Connection connection;
+    private String table;
 
 
-    Connector() {
+    Connector(String table) {
         try {
             Class.forName("org.mariadb.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot",
-                    RoleBot.config.db_user,
-                    RoleBot.config.db_pass);
+                    Config.getDb_user(),
+                    Config.getDb_pass());
+            this.table = table;
         }
         catch (Exception e){
             System.out.println("Failed to connect to database. Shutting down...");
@@ -40,14 +42,24 @@ abstract class Connector {
 
 
     /**
+     * Table getter.
+     *
+     * @return the name of the table the connector associates with.
+     */
+    String getTable() {
+        return table;
+    }
+
+
+    /**
      * Searches the table for a row with a matching user ID and returns whether
      * or not such a row was found.
      *
-     * @param table the name of the table being queried
      * @param userId the id number of the Discord user being searched for
+     * @param table the name of the table being queried
      * @return true if found, false if not found or error occurs
      */
-    boolean userExistsInTable(String table, long userId) {
+    boolean userExists(long userId, String table) {
         try {
             PreparedStatement checkIfExists = connection.prepareStatement("SELECT * FROM " + table
                     + " WHERE user = " + userId);
@@ -63,11 +75,11 @@ abstract class Connector {
      * Searches the table for a row with matching user ID and returns
      * the ResultSet of the query.
      *
-     * @param table the name of the table being queried
      * @param userId the id number of the Discord user being searched for
+     * @param table the name of the table being queried
      * @return the ResultSet of the query
      */
-    ResultSet getUserRow(String table, long userId) {
+    ResultSet getUserRow(long userId, String table) {
         try {
             return connection.prepareStatement("SELECT * FROM " + table
                     + " WHERE user = " + userId).executeQuery();

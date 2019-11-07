@@ -1,4 +1,4 @@
-package main;
+/*package main;
 
 import DiscordBot.commands.admin_commands.*;
 import DiscordBot.commands.bang.BangScores;
@@ -275,6 +275,7 @@ public class MyEventListener extends ListenerAdapter {
 					System.out.println("Wager Amount: " + w.getWagerAmount());
 				}
 			}
-		}*/
+		}
 	}
 }
+*/

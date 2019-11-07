@@ -9,9 +9,6 @@ import net.dv8tion.jda.core.JDABuilder;
 
 public class RoleBot {
 
-	public static ConfigFile config;
-	public static JDA api;
-
 	/**
 	 * Acquires settings from config file, activates bot based on token in file,
 	 * and adds the needed EventListeners.
@@ -19,8 +16,8 @@ public class RoleBot {
 	 */
 	public static void main(String[] args) {
 		try {
-			config = GetConfig.getConfig();
-			api = new JDABuilder(AccountType.BOT).setToken(config.token).build();
+			Config config = new Config();
+			JDA api = new JDABuilder(AccountType.BOT).setToken(config.getToken()).build();
 			api.addEventListener(new MessageEventListener());
 			api.addEventListener(new ReactionEventListener());
 			api.addEventListener(new ConnectionEventListener());

@@ -7,7 +7,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
  * Every command has a key, which is the
  * input a user must provide to activate the command.
  */
-abstract class Command {
+public abstract class Command {
 
     private String key;
 
@@ -38,11 +38,11 @@ abstract class Command {
      * @param string the user's input being compared to the key
      * @return returns true if the key matches and false otherwise
      */
-    abstract boolean keyMatches(String string);
+    public abstract boolean keyMatches(String string);
 
 
     /**
      * Every command must be able to be activated based on the event.
      */
-    abstract void start(MessageReceivedEvent event);
+    public abstract void start(MessageReceivedEvent event);
 }

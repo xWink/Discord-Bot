@@ -42,68 +42,6 @@ public class MyEventListener extends ListenerAdapter {
 	private int chamberCount = 6;
 
 	@Override
-	public void onDisconnect(DisconnectEvent event) {
-		System.out.println("Attempting reconnect");
-	}
-
-	private long getMessageAuthId(GenericMessageReactionEvent event) {
-		return event.getTextChannel().getMessageById(event.getMessageId())
-				.complete().getAuthor().getIdLong();
-	}
-
-	@Override
-	public void onMessageReactionAdd(MessageReactionAddEvent event) {
-		long messageAuthId = getMessageAuthId(event);
-		if (getConnection() != null && event.getUser().getIdLong() != messageAuthId) {
-			if (!userExistsInTable("karma", messageAuthId)) {
-				addNewUser(messageAuthId);
-			}
-			// If upvote, add upvotes
-			if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
-				addUpVotes(messageAuthId, 1);
-			}
-			// If downvote, add downvotes
-			if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
-				addDownVotes(messageAuthId, 1);
-			}
-		}
-	}
-
-	@Override
-	public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
-		long messageAuthId = getMessageAuthId(event);
-
-		if (this.conn != null && event.getUser().getIdLong() != messageAuthId) {
-			try {
-				PreparedStatement checkIfExists = conn.prepareStatement("SELECT * FROM karma WHERE user = "
-						+ messageAuthId);
-				ResultSet rs = checkIfExists.executeQuery();
-				if (!rs.next()) {
-					conn.prepareStatement("INSERT INTO karma (user, upvotes, downvotes) VALUES (" + messageAuthId
-							+ ", 0, 0)").executeUpdate();
-				}
-
-				// If upvote, add upvotes
-				if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
-					PreparedStatement st = conn.prepareStatement("UPDATE karma SET upvotes = upvotes - 1 "
-							+ "WHERE user = " + messageAuthId);
-					st.executeUpdate();
-				}
-
-				// If downvote, add downvotes
-				if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
-
-					PreparedStatement st = conn.prepareStatement("UPDATE karma SET downvotes = downvotes - 1 "
-							+ "WHERE user = " + messageAuthId);
-					st.executeUpdate();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
 
 		final User author = event.getAuthor(); // Author as type User

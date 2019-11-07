@@ -1,3 +1,4 @@
 # Files to Ignore
 build/*
 .gradle/*
+/Discord-Bot-Old/

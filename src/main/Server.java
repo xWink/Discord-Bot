@@ -8,12 +8,15 @@ import net.dv8tion.jda.core.entities.TextChannel;
 /**
  * Contains critical details about the server based on information in the config file.
  */
-public class Server {
+public final class Server {
 
     private static JDA api;
     private static TextChannel generalChannel;
     private static TextChannel botsChannel;
 
+    private Server() {
+
+    }
 
     static {
         try {
@@ -32,7 +35,7 @@ public class Server {
 
 
     /**
-     * Returns the JDA object which was built from the bot's token
+     * Returns the JDA object which was built from the bot's token.
      *
      * @return JDA's API
      */

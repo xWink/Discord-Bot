@@ -5,6 +5,9 @@ import java.sql.ResultSet;
 
 public class KarmaConnector extends Connector {
 
+    /**
+     * Initializes the table as "karma".
+     */
     public KarmaConnector() {
         super("karma");
     }
@@ -86,7 +89,7 @@ public class KarmaConnector extends Connector {
 
 
     /**
-     * Adds a new user to the karma table based on their ID
+     * Adds a new user to the karma table based on their ID.
      *
      * @param userId the ID number of the new user being added
      */

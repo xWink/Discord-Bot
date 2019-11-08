@@ -5,16 +5,19 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class Config {
+public final class Config {
 
-    private final static String configFilename = ".rolebotconfig";
     private static ArrayList<String> rawChannels;
     private static String token;
     private static String[] channels;
-    private static String db_user;
-    private static String db_pass;
+    private static String dbUser;
+    private static String dbPass;
     private static String guildId;
+    private static final String CONFIG_FILENAME = ".rolebotconfig";
 
+    private Config() {
+
+    }
 
     static {
         rawChannels = new ArrayList<>();
@@ -39,8 +42,8 @@ public class Config {
 
     private static void getConfig() throws FileNotFoundException {
         ArrayList<String> rawFile = new ArrayList<>();
-        File working = new File (configFilename);
-        File home = new File (System.getProperty("user.home") + configFilename);
+        File working = new File(CONFIG_FILENAME);
+        File home = new File(System.getProperty("user.home") + CONFIG_FILENAME);
         Scanner readConfig = getScanner(working, home);
         int current = 0;
 
@@ -70,16 +73,14 @@ public class Config {
     private static Scanner getScanner(File working, File home) throws FileNotFoundException {
         // Check whether config file exists in working (current) directory
         if (working.exists()) {
-            logMessage ("Found [" + configFilename + "] in current directory");
+            logMessage("Found [" + CONFIG_FILENAME + "] in current directory");
             return new Scanner(working);
-        }
-        // Check if file is in home directory
-        else if (home.exists()) {
-            logMessage ("Found [" + configFilename + "] in home directory");
+        } else if (home.exists()) { // Check if file is in home directory
+            logMessage("Found [" + CONFIG_FILENAME + "] in home directory");
             return new Scanner(home);
         }
         // If the file cannot be found
-        logMessage("Error: Ending execution due to missing `" + configFilename + "` file.");
+        logMessage("Error: Ending execution due to missing `" + CONFIG_FILENAME + "` file.");
         logMessage("Place the file in the same directory as the .jar file or in the home directory and run the bot again");
         System.exit(0);
         return null;
@@ -90,42 +91,45 @@ public class Config {
         return token;
     }
 
-    public static String getDb_user() {
-        return db_user;
+    /**
+     * Database username getter.
+     * @return the database's username for login
+     */
+    public static String getDbUser() {
+        return dbUser;
     }
 
-    public static String getDb_pass() {
-        return db_pass;
+    /**
+     * Database password getter.
+     * @return the database's password for login
+     */
+    public static String getDbPass() {
+        return dbPass;
     }
 
+    /**
+     * Guild ID getter.
+     * @return the ID of the guild to connect to
+     */
     public static String getGuildId() {
         return guildId;
     }
 
 
     private static void parseLine(String contents) {
-        // If the line is a token line
-        if (contents.startsWith("TOKEN")) {
+        if (contents.startsWith("TOKEN")) { // If the line is a token line
             token = parseArg(contents);
-            logMessage ("Got token");
-        }
-        // If the line is a channel line, add to rawChannels ArrayList
-        else if (contents.startsWith("CHANNEL")) {
+            logMessage("Got token");
+        } else if (contents.startsWith("CHANNEL")) { // If the line is a channel line, add to rawChannels ArrayList
             rawChannels.add(parseArg(contents));
-            logMessage ("Got channel [" + parseArg(contents) + "]");
-        }
-        // If the line is a database username
-        else if (contents.startsWith("DB_USER")){
-            db_user = parseArg(contents);
+            logMessage("Got channel [" + parseArg(contents) + "]");
+        } else if (contents.startsWith("DB_USER")) { // If the line is a database username
+            dbUser = parseArg(contents);
             logMessage("Got database username");
-        }
-        // If the line is a database password
-        else if (contents.startsWith("DB_PASS")){
-            db_pass = parseArg(contents);
+        } else if (contents.startsWith("DB_PASS")) { // If the line is a database password
+            dbPass = parseArg(contents);
             logMessage("Got database password");
-        }
-        // If the line is the guild ID
-        else if (contents.startsWith("GUILD")){
+        } else if (contents.startsWith("GUILD")) { // If the line is the guild ID
             guildId = parseArg(contents);
             logMessage("Got guild ID");
         }
@@ -135,24 +139,24 @@ public class Config {
     private static void checkForErrors() {
         // Ensure that all fields are filled
         if ((token == null) || (token.isEmpty())) {
-            logMessage ("Error: Ending execution due to missing TOKEN in '.rolebotconfig' file. Make sure that the file has a TOKEN field before running again");
+            logMessage("Error: Ending execution due to missing TOKEN in '.rolebotconfig' file. Make sure that the file has a TOKEN field before running again");
             System.exit(0);
         }
         if ((channels[0] == null) || (channels[0].isEmpty())) {
-            logMessage ("Error: Ending execution due to missing CHANNEL in '.rolebotconfig' file. Make sure that the file has at least one CHANNEL field before running again");
-            logMessage ("If you would like the bot to work on all channels, use `CHANNEL=all`");
+            logMessage("Error: Ending execution due to missing CHANNEL in '.rolebotconfig' file. Make sure that the file has at least one CHANNEL field before running again");
+            logMessage("If you would like the bot to work on all channels, use `CHANNEL=all`");
             System.exit(0);
         }
-        if ((db_user == null) || (db_user.isEmpty())) {
-            logMessage ("Error: Ending execution due to missing DB_USER in '.rolebotconfig' file. Make sure that the file has a DB_USER field before running again");
+        if ((dbUser == null) || (dbUser.isEmpty())) {
+            logMessage("Error: Ending execution due to missing DB_USER in '.rolebotconfig' file. Make sure that the file has a DB_USER field before running again");
             System.exit(0);
         }
-        if ((db_pass == null) || (db_pass.isEmpty())) {
-            logMessage ("Error: Ending execution due to missing DB_PASS in '.rolebotconfig' file. Make sure that the file has a DB_PASS field before running again");
+        if ((dbPass == null) || (dbPass.isEmpty())) {
+            logMessage("Error: Ending execution due to missing DB_PASS in '.rolebotconfig' file. Make sure that the file has a DB_PASS field before running again");
             System.exit(0);
         }
         if (guildId == null || guildId.isEmpty()) {
-            logMessage ("Error: Ending execution due to missing GUILD in '.rolebotconfig' file. Make sure that the file has a GUILD field before running again");
+            logMessage("Error: Ending execution due to missing GUILD in '.rolebotconfig' file. Make sure that the file has a GUILD field before running again");
             System.exit(0);
         }
     }

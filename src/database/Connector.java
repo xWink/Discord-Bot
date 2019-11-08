@@ -16,15 +16,14 @@ abstract class Connector {
     private String table;
 
 
-    Connector(String table) {
+    Connector(String tableName) {
         try {
             Class.forName("org.mariadb.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot",
-                    Config.getDb_user(),
-                    Config.getDb_pass());
-            this.table = table;
-        }
-        catch (Exception e){
+                    Config.getDbUser(),
+                    Config.getDbPass());
+            this.table = tableName;
+        } catch (Exception e) {
             System.out.println("Failed to connect to database. Shutting down...");
             System.exit(-1);
         }
@@ -56,12 +55,12 @@ abstract class Connector {
      * or not such a row was found.
      *
      * @param userId the id number of the Discord user being searched for
-     * @param table the name of the table being queried
+     * @param tableName the name of the table being queried
      * @return true if found, false if not found or error occurs
      */
-    boolean userExists(long userId, String table) {
+    boolean userExists(long userId, String tableName) {
         try {
-            PreparedStatement checkIfExists = connection.prepareStatement("SELECT * FROM " + table
+            PreparedStatement checkIfExists = connection.prepareStatement("SELECT * FROM " + tableName
                     + " WHERE user = " + userId);
             ResultSet rs = checkIfExists.executeQuery();
             return rs.next();
@@ -76,12 +75,12 @@ abstract class Connector {
      * the ResultSet of the query.
      *
      * @param userId the id number of the Discord user being searched for
-     * @param table the name of the table being queried
+     * @param tableName the name of the table being queried
      * @return the ResultSet of the query
      */
-    ResultSet getUserRow(long userId, String table) {
+    ResultSet getUserRow(long userId, String tableName) {
         try {
-            return connection.prepareStatement("SELECT * FROM " + table
+            return connection.prepareStatement("SELECT * FROM " + tableName
                     + " WHERE user = " + userId).executeQuery();
         } catch (Exception e) {
             return null;
@@ -90,7 +89,7 @@ abstract class Connector {
 
 
     /**
-     * Adds a new user to a specified ta a table based on their ID
+     * Adds a new user to a specified ta a table based on their ID.
      *
      * @param userId the ID number of the new user being added
      */

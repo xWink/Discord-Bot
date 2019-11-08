@@ -6,7 +6,7 @@ import java.sql.SQLException;
 public class PingConnector extends Connector {
 
     /**
-     * Initializes key to "ping".
+     * Initializes table to "ping".
      */
     public PingConnector() {
         super("ping");
@@ -28,8 +28,10 @@ public class PingConnector extends Connector {
     /**
      * Checks if ping value is the new max.
      *
+     * @param userId the Discord user's ID number
      * @param ping the ping value the user just achieved
      * @return true if the ping value is higher than max, otherwise false
+     * @throws SQLException may be thrown when getting "max" row in a ResultSet
      */
     public boolean isMax(long userId, int ping) throws SQLException {
         if (!userExists(userId)) {
@@ -43,8 +45,10 @@ public class PingConnector extends Connector {
     /**
      * Checks if ping value is the new min.
      *
+     * @param userId the Discord user's ID number
      * @param ping the ping value the user just achieved
      * @return true if the ping value is lower than min, otherwise false
+     * @throws SQLException may be thrown when getting "min" row in a ResultSet
      */
     public boolean isMin(long userId, int ping) throws SQLException {
         if (!userExists(userId)) {

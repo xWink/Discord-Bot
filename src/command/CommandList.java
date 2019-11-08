@@ -6,10 +6,13 @@ import java.util.ArrayList;
  * Container class for a list of all the commands
  * available in the server.
  */
-public class CommandList {
+public final class CommandList {
 
     private static ArrayList<Command> commands;
 
+    private CommandList() {
+
+    }
 
     static {
         commands = new ArrayList<>();

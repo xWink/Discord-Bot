@@ -15,10 +15,10 @@ public abstract class Command {
     /**
      * Initializes the command's key.
      *
-     * @param key the command's key
+     * @param theKey the command's key
      */
-    Command(String key) {
-        this.key = key;
+    Command(String theKey) {
+        key = theKey;
     }
 
 
@@ -44,6 +44,8 @@ public abstract class Command {
 
     /**
      * Every command must be able to be activated based on the event.
+     *
+     * @param event the MessageReceivedEvent that triggered the command
      */
     public abstract void start(MessageReceivedEvent event);
 }

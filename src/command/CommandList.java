@@ -11,10 +11,6 @@ public class CommandList {
     private static ArrayList<Command> commands;
 
 
-    /**
-     * Initializes the ArrayList of commands and
-     * populates it with every possible command.
-     */
     static {
         commands = new ArrayList<>();
         addAllCommands();
@@ -36,5 +32,7 @@ public class CommandList {
      */
     private static void addAllCommands() {
         commands.add(new Ping());
+        commands.add(new Help());
+        commands.add(new Karma());
     }
 }

@@ -17,6 +17,9 @@ public class KarmaConnector extends Connector {
      * @param numUpVotes the number of upVotes to add (pass negative value to remove votes)
      */
     public void updateUpVotes(long userId, int numUpVotes) {
+        if (!userExists(userId)) {
+            addUser(userId);
+        }
         try {
             getConnection().prepareStatement("UPDATE " + getTable()
                     + " SET upvotes = upvotes + " + numUpVotes
@@ -34,6 +37,9 @@ public class KarmaConnector extends Connector {
      * @param numDownVotes the number of downVotes to add (pass negative value to remove votes)
      */
     public void updateDownVotes(long userId, int numDownVotes) {
+        if (!userExists(userId)) {
+            addUser(userId);
+        }
         try {
             getConnection().prepareStatement("UPDATE " + getTable()
                     + " SET downvotes = downvotes + " + numDownVotes

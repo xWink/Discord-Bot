@@ -11,6 +11,7 @@ public abstract class Command {
 
     private String key;
 
+
     /**
      * Initializes the command's key.
      *

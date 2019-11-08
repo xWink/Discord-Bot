@@ -7,8 +7,11 @@ public class Ping extends Command {
 
     private PingConnector pc;
 
+    /**
+     * Initializes command's key to "!ping".
+     */
     public Ping() {
-        super("ping");
+        super("!ping");
         pc = new PingConnector();
     }
 

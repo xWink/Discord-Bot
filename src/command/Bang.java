@@ -1,6 +1,7 @@
 package command;
 
 import database.BangConnector;
+import database.EconomyConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Random;
@@ -8,6 +9,7 @@ import java.util.Random;
 public class Bang extends Command {
 
     private BangConnector bc;
+    private EconomyConnector ec;
     private static int chambers;
     private static boolean jammed;
     private static boolean killed;
@@ -19,6 +21,7 @@ public class Bang extends Command {
     Bang() {
         super("!bang");
         bc = new BangConnector();
+        ec = new EconomyConnector();
         resetJammed();
         resetKilled();
         resetChambers();
@@ -53,6 +56,7 @@ public class Bang extends Command {
         } else {
             killed = true;
         }
+        resetChambers();
     }
 
 
@@ -85,7 +89,10 @@ public class Bang extends Command {
 
     /**
      * Plays Russian Roulette. The gun may jam on the last round.
+     * If the gun fires or jams, chambers is reset back to 6,
+     * in any other case, chambers is decremented.
      * Info about the attempt is added to the bang table.
+     * Rewards associated with the attempt are added to the economy table.
      *
      * @param event the MessageReceivedEvent that triggered the command
      */
@@ -93,11 +100,12 @@ public class Bang extends Command {
     public void start(MessageReceivedEvent event) {
         int pull = new Random().nextInt(chambers);
         if (pull == 0) tryToKill();
-        chambers = chambers == 1 ? 6 : chambers - 1;
+        else chambers--;
         try {
             reward = bc.isEligibleForDaily(event.getAuthor().getIdLong());
             bc.updateUserRow(event.getAuthor().getIdLong(), jammed, killed, reward);
-            //TODO: Update reward in economy
+            //TODO: fix amount to account for records (just an "if record" to add to the reward amount)
+            if (reward) ec.addMoney(event.getAuthor().getIdLong(), 5);
             String output = getOutput(event);
             output += "Chambers left in the cylinder: ||  " + chambers + "  ||";
             event.getChannel().sendMessage(output).queue();
@@ -106,7 +114,8 @@ public class Bang extends Command {
             resetJammed();
         } catch (Exception e) {
             e.printStackTrace();
-            event.getChannel().sendMessage("An error occurred with Bang. Please contact a moderator!").queue();
+            event.getChannel().sendMessage("An error occurred with Bang. "
+                    + "Please contact a moderator!").queue();
         }
     }
 }

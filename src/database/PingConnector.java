@@ -100,6 +100,18 @@ public class PingConnector extends Connector {
 
 
     /**
+     * Searches the ping table for a row with matching user ID and returns
+     * the ResultSet of the query.
+     *
+     * @param userId the id number of the Discord user being searched for
+     * @return the ResultSet of the query
+     */
+    public ResultSet getUserRow(long userId) {
+        return super.getUserRow(userId, getTable());
+    }
+
+
+    /**
      * Adds a new user to the ping table based on their ID.
      *
      * @param userId the ID number of the new user being added

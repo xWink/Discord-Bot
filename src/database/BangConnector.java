@@ -12,6 +12,17 @@ public class BangConnector extends Connector {
         super("bang");
     }
 
+    /**
+     * Searches the bang table for a row with a matching user ID and returns
+     * whether or not such a row was found.
+     *
+     * @param userId the id number of the Discord user being searched for
+     * @return true if found, false if not found or error occurs
+     */
+    public boolean userExists(long userId) {
+        return super.userExists(userId, getTable());
+    }
+
 
     /**
      * Checks if the user is eligible for their daily reward.
@@ -36,6 +47,8 @@ public class BangConnector extends Connector {
      * @throws SQLException may be thrown when making a prepared statement
      */
     public void updateUserRow(long userId, boolean jammed, boolean killed, boolean reward) throws SQLException {
+        if (!userExists(userId)) addUser(userId);
+
         getConnection().prepareStatement("UPDATE bang SET tries = tries + 1,"
                 + " last_played = " + new Date().getTime()
                 + (jammed ? ", jams = jams + 1" : "")

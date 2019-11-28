@@ -26,11 +26,13 @@ public final class Server {
             System.exit(-1);
         }
         //general channel ID = 486633949154770946
-        generalChannel = getApi().getGuildById(Config.getGuildId())
-                .getTextChannelsByName("general", true).get(0);
+        generalChannel = getApi().getTextChannelById("486633949154770946");
+//        generalChannel = getApi().getGuildById(Config.getGuildId())
+//                .getTextChannelsByName("general", true).get(0);
         //bots channel ID = 551828950871965696
-        botsChannel = getApi().getGuildById(Config.getGuildId())
-                .getTextChannelsByName("bots", true).get(0);
+        botsChannel = getApi().getTextChannelById("551828950871965696");
+//        botsChannel = getApi().getGuildById(Config.getGuildId())
+//                .getTextChannelsByName("bots", true).get(0);
     }
 
 

@@ -5,11 +5,18 @@ plugins {
 }
 
 mainClassName = 'main.RoleBot'
-group 'com.DiscordBot'
-version '1'
+version '2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
 
 repositories {
     mavenCentral()

@@ -11,16 +11,14 @@ public abstract class Command {
 
     private String key;
 
-
     /**
      * Initializes the command's key.
      *
      * @param theKey the command's key
      */
-    Command(String theKey) {
+    public Command(String theKey) {
         key = theKey;
     }
-
 
     /**
      * Key getter.
@@ -31,7 +29,6 @@ public abstract class Command {
         return key;
     }
 
-
     /**
      * Every command must be able to compare a string
      * to its key to check for a match.
@@ -39,8 +36,23 @@ public abstract class Command {
      * @param string the user's input being compared to the key
      * @return returns true if the key matches and false otherwise
      */
-    public abstract boolean keyMatches(String string);
+    public boolean keyMatches(String string) {
+        return string.equalsIgnoreCase(getKey());
+    }
 
+    /**
+     * Prints the stack trace of an error and sends
+     * a message to the channel that called the command
+     * that experienced the exception indicating that an error
+     * occurred.
+     * @param event the MessageReceivedEvent that called the command
+     * @param e the exception that was thrown
+     */
+    void printStackTraceAndSendMessage(MessageReceivedEvent event, Exception e) {
+        e.printStackTrace();
+        event.getChannel().sendMessage("An error occurred with " + getKey()
+                + ". Please contact a moderator!").queue();
+    }
 
     /**
      * Every command must be able to be activated based on the event.

@@ -19,7 +19,6 @@ public final class CommandList {
         addAllCommands();
     }
 
-
     /**
      * Commands list getter.
      *
@@ -29,7 +28,6 @@ public final class CommandList {
         return commands;
     }
 
-
     /**
      * Populates the commands list with every command.
      */
@@ -37,5 +35,7 @@ public final class CommandList {
         commands.add(new Ping());
         commands.add(new Help());
         commands.add(new Karma());
+        commands.add(new Daily());
+        commands.add(new MyBang());
     }
 }

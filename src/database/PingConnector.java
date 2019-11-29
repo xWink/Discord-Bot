@@ -20,7 +20,7 @@ public class PingConnector extends Connector {
      * @param userId the id number of the Discord user being searched for
      * @return true if found, false if not found or error occurs
      */
-    public boolean userExists(long userId) {
+    private boolean userExists(long userId) {
         return super.userExists(userId, getTable());
     }
 
@@ -34,9 +34,7 @@ public class PingConnector extends Connector {
      * @throws SQLException may be thrown when getting "max" row in a ResultSet
      */
     public boolean isMax(long userId, int ping) throws SQLException {
-        if (!userExists(userId)) {
-            addUser(userId);
-        }
+        if (!userExists(userId)) addUser(userId);
         ResultSet rs = getUserRow(userId, getTable());
         return ping > rs.getInt("max");
     }
@@ -51,9 +49,7 @@ public class PingConnector extends Connector {
      * @throws SQLException may be thrown when getting "min" row in a ResultSet
      */
     public boolean isMin(long userId, int ping) throws SQLException {
-        if (!userExists(userId)) {
-            addUser(userId);
-        }
+        if (!userExists(userId)) addUser(userId);
         ResultSet rs = getUserRow(userId, getTable());
         return ping < rs.getInt("min");
     }
@@ -66,9 +62,7 @@ public class PingConnector extends Connector {
      * @param ping the new max ping for the user
      */
     public void setMaxPing(long userId, int ping) {
-        if (!userExists(userId)) {
-            addUser(userId);
-        }
+        if (!userExists(userId)) addUser(userId);
         try {
             getConnection().prepareStatement("UPDATE " + getTable()
                     + " SET max = " + ping
@@ -86,9 +80,7 @@ public class PingConnector extends Connector {
      * @param ping the new min ping for the user
      */
     public void setMinPing(long userId, int ping) {
-        if (!userExists(userId)) {
-            addUser(userId);
-        }
+        if (!userExists(userId)) addUser(userId);
         try {
             getConnection().prepareStatement("UPDATE " + getTable()
                     + " SET min = " + ping
@@ -107,6 +99,7 @@ public class PingConnector extends Connector {
      * @return the ResultSet of the query
      */
     public ResultSet getUserRow(long userId) {
+        if (!userExists(userId)) addUser(userId);
         return super.getUserRow(userId, getTable());
     }
 

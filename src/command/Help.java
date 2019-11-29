@@ -19,9 +19,8 @@ public class Help extends Command {
      */
     @Override
     public boolean keyMatches(String string) {
-        return string.equalsIgnoreCase(getKey());
+        return super.keyMatches(string);
     }
-
 
     /**
      * Displays the help interface, which shows all the commands a regular

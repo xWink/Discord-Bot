@@ -23,7 +23,6 @@ public class EconomyConnector extends Connector {
      */
     public void addMoney(long userId, int amount) throws SQLException {
         if (!userExists(userId)) addUser(userId);
-
         getConnection().prepareStatement("UPDATE " + getTable()
                 + " SET wallet = wallet + " + amount
                 + " WHERE user = " + userId).executeUpdate();
@@ -76,7 +75,7 @@ public class EconomyConnector extends Connector {
      * @param userId the id number of the Discord user being searched for
      * @return true if found, false if not found or error occurs
      */
-    public boolean userExists(long userId) {
+    private boolean userExists(long userId) {
         return super.userExists(userId, getTable());
     }
 

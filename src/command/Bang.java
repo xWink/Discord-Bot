@@ -83,7 +83,7 @@ public class Bang extends Command {
      */
     @Override
     public boolean keyMatches(String string) {
-        return string.equalsIgnoreCase(getKey());
+        return super.keyMatches(string);
     }
 
 
@@ -113,9 +113,7 @@ public class Bang extends Command {
             resetKilled();
             resetJammed();
         } catch (Exception e) {
-            e.printStackTrace();
-            event.getChannel().sendMessage("An error occurred with Bang. "
-                    + "Please contact a moderator!").queue();
+            printStackTraceAndSendMessage(event, e);
         }
     }
 }

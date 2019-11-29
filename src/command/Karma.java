@@ -15,7 +15,6 @@ public class Karma extends Command {
         kc = new KarmaConnector();
     }
 
-
     /**
      * Checks if string matches to key.
      *
@@ -27,7 +26,6 @@ public class Karma extends Command {
         return string.equalsIgnoreCase(getKey());
     }
 
-
     /**
      * Messages the user's upVotes, downVotes, and upVotes - downVotes
      * in the channel.
@@ -36,25 +34,15 @@ public class Karma extends Command {
      */
     @Override
     public void start(final MessageReceivedEvent event) {
-        long authorId = event.getAuthor().getIdLong();
-        if (!kc.userExists(authorId)) {
-            kc.addUser(authorId);
-        }
-        event.getChannel().sendMessage(getKarmaData(event)).queue();
-    }
-
-    private String getKarmaData(final MessageReceivedEvent event) {
         try {
-            int upVotes = kc.getUserRow(event.getAuthor().getIdLong())
-                    .getInt("upvotes");
-            int downVotes = kc.getUserRow(event.getAuthor().getIdLong())
-                    .getInt("downvotes");
-            return "Upvotes: " + upVotes
+            int upVotes = kc.getUserRow(event.getAuthor().getIdLong()).getInt("upvotes");
+            int downVotes = kc.getUserRow(event.getAuthor().getIdLong()).getInt("downvotes");
+
+            event.getChannel().sendMessage("Upvotes: " + upVotes
                     + "\nDownvotes: " + downVotes
-                    + "\nKarma: " + (upVotes - downVotes);
+                    + "\nKarma: " + (upVotes - downVotes)).queue();
         } catch (Exception e) {
-            e.printStackTrace();
-            return "Failed to get karma data. Please contact a moderator!";
+            printStackTraceAndSendMessage(event, e);
         }
     }
 }

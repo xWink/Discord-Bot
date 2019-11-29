@@ -20,9 +20,7 @@ public class KarmaConnector extends Connector {
      * @param numUpVotes the number of upVotes to add (pass negative value to remove votes)
      */
     public void updateUpVotes(long userId, int numUpVotes) {
-        if (!userExists(userId)) {
-            addUser(userId);
-        }
+        if (!userExists(userId)) addUser(userId);
         try {
             getConnection().prepareStatement("UPDATE " + getTable()
                     + " SET upvotes = upvotes + " + numUpVotes
@@ -40,9 +38,7 @@ public class KarmaConnector extends Connector {
      * @param numDownVotes the number of downVotes to add (pass negative value to remove votes)
      */
     public void updateDownVotes(long userId, int numDownVotes) {
-        if (!userExists(userId)) {
-            addUser(userId);
-        }
+        if (!userExists(userId)) addUser(userId);
         try {
             getConnection().prepareStatement("UPDATE " + getTable()
                     + " SET downvotes = downvotes + " + numDownVotes
@@ -60,7 +56,7 @@ public class KarmaConnector extends Connector {
      * @param userId the id number of the Discord user being searched for
      * @return true if found, false if not found or error occurs
      */
-    public boolean userExists(long userId) {
+    private boolean userExists(long userId) {
         return super.userExists(userId, getTable());
     }
 
@@ -73,6 +69,7 @@ public class KarmaConnector extends Connector {
      * @return the ResultSet of the query
      */
     public ResultSet getUserRow(long userId) {
+        if (!userExists(userId)) addUser(userId);
         return super.getUserRow(userId, getTable());
     }
 

@@ -1,5 +1,6 @@
 package database;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -19,10 +20,9 @@ public class BangConnector extends Connector {
      * @param userId the id number of the Discord user being searched for
      * @return true if found, false if not found or error occurs
      */
-    public boolean userExists(long userId) {
+    private boolean userExists(long userId) {
         return super.userExists(userId, getTable());
     }
-
 
     /**
      * Checks if the user is eligible for their daily reward.
@@ -36,7 +36,6 @@ public class BangConnector extends Connector {
                 .getLong("last_daily") >= 86400000;
     }
 
-
     /**
      * Updates a user's row in the table based on the results of a bang.
      *
@@ -48,7 +47,6 @@ public class BangConnector extends Connector {
      */
     public void updateUserRow(long userId, boolean jammed, boolean killed, boolean reward) throws SQLException {
         if (!userExists(userId)) addUser(userId);
-
         getConnection().prepareStatement("UPDATE bang SET tries = tries + 1,"
                 + " last_played = " + new Date().getTime()
                 + (jammed ? ", jams = jams + 1" : "")
@@ -57,6 +55,36 @@ public class BangConnector extends Connector {
                 + " WHERE user = " + userId).executeUpdate();
     }
 
+    /**
+     * Returns a user's row in the table.
+     *
+     * @param userId the user's ID number
+     * @return a ResultSet containing the user's entire row in bang
+     * @throws SQLException may be thrown when making a prepared statement
+     */
+    public ResultSet getUserRow(long userId) throws SQLException {
+        if (!userExists(userId)) addUser(userId);
+        ResultSet rs = getConnection()
+                .prepareStatement("SELECT * FROM bang WHERE user = " + userId)
+                .executeQuery();
+        rs.next();
+        return rs;
+    }
+
+    /**
+     * Returns the time at which a user last received a daily reward.
+     *
+     * @param userId the user's ID number
+     * @return the long int that is the time at which the last daily reward was received
+     * @throws SQLException may be thrown when making a prepared statement
+     */
+    public long getDaily(long userId) throws SQLException {
+        if (!userExists(userId)) addUser(userId);
+        ResultSet rs = getConnection()
+                .prepareStatement("SELECT last_daily FROM bang WHERE user=" + userId)
+                .executeQuery();
+        return rs.getLong("last_daily") + 86460000;
+    }
 
     /**
      * Adds a new user to the bang table based on their ID.

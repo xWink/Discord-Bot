@@ -10,11 +10,10 @@ public class Ping extends Command {
     /**
      * Initializes command's key to "!ping".
      */
-    public Ping() {
+    Ping() {
         super("!ping");
         pc = new PingConnector();
     }
-
 
     /**
      * Checks if string matches to key.
@@ -26,7 +25,6 @@ public class Ping extends Command {
     public boolean keyMatches(String string) {
         return string.equalsIgnoreCase(getKey());
     }
-
 
     /**
      * Gets Discord's ping and outputs it for the user. Also
@@ -51,7 +49,7 @@ public class Ping extends Command {
                 pc.setMinPing(authorId, ping);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            printStackTraceAndSendMessage(event, e);
         }
     }
 }

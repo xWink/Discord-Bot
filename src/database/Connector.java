@@ -80,8 +80,10 @@ abstract class Connector {
      */
     ResultSet getUserRow(long userId, String tableName) {
         try {
-            return connection.prepareStatement("SELECT * FROM " + tableName
+            ResultSet rs = connection.prepareStatement("SELECT * FROM " + tableName
                     + " WHERE user = " + userId).executeQuery();
+            rs.next();
+            return rs;
         } catch (Exception e) {
             return null;
         }

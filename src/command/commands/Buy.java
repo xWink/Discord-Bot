@@ -18,6 +18,7 @@ public class Buy extends Command {
      */
     public Buy() {
         super("!buy");
+        ec = new EconomyConnector();
     }
 
     /**

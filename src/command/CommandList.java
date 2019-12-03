@@ -2,6 +2,7 @@ package command;
 
 import command.commands.Daily;
 import command.commands.Help;
+import command.commands.Info;
 import command.commands.Karma;
 import command.commands.MyBang;
 import command.commands.Ping;
@@ -45,5 +46,6 @@ public final class CommandList {
         commands.add(new Daily());
         commands.add(new MyBang());
         commands.add(new Wallet());
+        commands.add(new Info());
     }
 }

@@ -1,9 +1,11 @@
 package database.connectors;
 
 import database.Connector;
+import util.economy.RoleListing;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 
 public class EconomyConnector extends Connector {
 
@@ -14,7 +16,6 @@ public class EconomyConnector extends Connector {
         super("economy");
     }
 
-
     /**
      * Adds/removes a specified amount of money to the user's wealth column in
      * the economy table.
@@ -23,13 +24,12 @@ public class EconomyConnector extends Connector {
      * @param amount the amount of money to add (negative value to remove)
      * @throws SQLException may be thrown when creating a PreparedStatement
      */
-    public void addMoney(long userId, int amount) throws SQLException {
+    public void addOrRemoveMoney(long userId, int amount) throws SQLException {
         if (!userExists(userId)) addUser(userId);
         getConnection().prepareStatement("UPDATE " + getTable()
                 + " SET wallet = wallet + " + amount
                 + " WHERE user = " + userId).executeUpdate();
     }
-
 
     /**
      * Checks if the user can afford a certain expense.
@@ -44,7 +44,6 @@ public class EconomyConnector extends Connector {
         return getUserRow(userId).getInt("wallet") - cost > 0;
     }
 
-
     /**
      * Getter for the amount of wealth a user has.
      *
@@ -57,6 +56,36 @@ public class EconomyConnector extends Connector {
         return getUserRow(userId).getInt("wallet");
     }
 
+    /**
+     * Checks if a user already has an active colour role.
+     *
+     * @param userId the ID number of the user
+     * @return true if the user has a colour role, false if not
+     * @throws SQLException may be thrown when creating a PreparedStatement
+     */
+    public boolean userHasColour(long userId) throws SQLException {
+        if (userExists(userId)) addUser(userId);
+        ResultSet rs = getConnection()
+                .prepareStatement("SELECT * FROM economy WHERE user = " + userId)
+                .executeQuery();
+
+        return rs.getLong("role_expiry") > 0;
+    }
+
+    /**
+     * Sets a user's role and its expiry time in the database.
+     *
+     * @param userId the ID number of the user
+     * @param listing the RoleListing that the user purchased
+     * @throws SQLException may be thrown when creating a PreparedStatement
+     */
+    public void setRole(long userId, RoleListing listing) throws SQLException {
+        Date date = new Date();
+        getConnection().prepareStatement("UPDATE economy "
+                + "SET role_expiry = " + (date.getTime() + 604800000)
+                + ", role_colour = '" + listing.getRole().getName()
+                + "' WHERE user = " + userId).executeUpdate();
+    }
 
     /**
      * Searches the economy table for a row with matching user ID and returns
@@ -66,9 +95,9 @@ public class EconomyConnector extends Connector {
      * @return the ResultSet of the query
      */
     public ResultSet getUserRow(long userId) {
+        if (userExists(userId)) addUser(userId);
         return super.getUserRow(userId, getTable());
     }
-
 
     /**
      * Searches the econommy table for a row with a matching user ID and returns
@@ -80,7 +109,6 @@ public class EconomyConnector extends Connector {
     private boolean userExists(long userId) {
         return super.userExists(userId, getTable());
     }
-
 
     /**
      * Adds a new user to the economy table based on their ID.

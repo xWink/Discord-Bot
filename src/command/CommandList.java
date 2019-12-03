@@ -1,9 +1,11 @@
 package command;
 
+import command.commands.Buy;
 import command.commands.Daily;
 import command.commands.Help;
 import command.commands.Info;
 import command.commands.Karma;
+import command.commands.Market;
 import command.commands.MyBang;
 import command.commands.Ping;
 import command.commands.Wallet;
@@ -47,5 +49,7 @@ public final class CommandList {
         commands.add(new MyBang());
         commands.add(new Wallet());
         commands.add(new Info());
+        commands.add(new Market());
+        commands.add(new Buy());
     }
 }

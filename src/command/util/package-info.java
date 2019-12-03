@@ -3,4 +3,4 @@
  * for the general functionality of the commands.
  */
 
-package util;
+package command.util;

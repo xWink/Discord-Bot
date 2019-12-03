@@ -2,8 +2,8 @@ package command.commands;
 
 import command.Command;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import util.economy.Listing;
-import util.economy.Marketplace;
+import command.util.economy.Listing;
+import command.util.economy.Marketplace;
 
 public class Market extends Command {
 

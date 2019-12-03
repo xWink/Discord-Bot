@@ -5,4 +5,4 @@
  * Marketplace class).
  */
 
-package util.economy;
+package command.util.economy;

@@ -5,6 +5,7 @@
  * meant to be run.
  *
  * All commands are stored within the commands package.
+ * All utility classes for the commands are stored within the util package.
  */
 
 package command;

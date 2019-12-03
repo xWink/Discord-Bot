@@ -1,4 +1,4 @@
-package util.economy;
+package command.util.economy;
 
 public abstract class Listing {
 

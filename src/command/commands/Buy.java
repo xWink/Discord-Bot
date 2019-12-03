@@ -5,9 +5,9 @@ import database.connectors.EconomyConnector;
 import main.Server;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import util.economy.Listing;
-import util.economy.Marketplace;
-import util.economy.RoleListing;
+import command.util.economy.Listing;
+import command.util.economy.Marketplace;
+import command.util.economy.RoleListing;
 
 public class Buy extends Command {
 

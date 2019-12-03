@@ -4,6 +4,9 @@ import main.eventlisteners.ConnectionEventListener;
 import main.eventlisteners.JoinLeaveEventListener;
 import main.eventlisteners.MessageEventListener;
 import main.eventlisteners.ReactionEventListener;
+import main.timertasks.RemoveExpiredRoles;
+
+import java.util.Timer;
 
 public class RoleBot {
 
@@ -18,6 +21,9 @@ public class RoleBot {
             Server.getApi().addEventListener(new ReactionEventListener());
             Server.getApi().addEventListener(new ConnectionEventListener());
             Server.getApi().addEventListener(new JoinLeaveEventListener());
+
+            Timer timer = new Timer();
+            timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
         } catch (Exception e) {
             e.printStackTrace();
         }

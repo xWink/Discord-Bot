@@ -1,7 +1,7 @@
 package database.connectors;
 
 import database.Connector;
-import util.economy.RoleListing;
+import command.util.economy.RoleListing;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -91,12 +91,35 @@ public class EconomyConnector extends Connector {
      * Searches the economy table for a row with matching user ID and returns
      * the ResultSet of the query.
      *
-     * @param userId the id number of the Discord user being searched for
+     * @param userId the ID number of the user
      * @return the ResultSet of the query
      */
     public ResultSet getUserRow(long userId) {
         if (userExists(userId)) addUser(userId);
         return super.getUserRow(userId, getTable());
+    }
+
+    /**
+     * Gets a ResultSet containing all rows with expired roles.
+     *
+     * @return ResultSet containing all rows with expired roles
+     * @throws SQLException may be thrown when creating a PreparedStatement
+     */
+    public ResultSet getExpiredRoles() throws SQLException {
+        Date date = new Date();
+        return getConnection().prepareStatement("SELECT user, role_colour FROM economy "
+                + "WHERE role_expiry > 0 AND role_expiry < " + date.getTime()).executeQuery();
+    }
+
+    /**
+     * Resets a user's role and expiry date.
+     *
+     * @param userId the ID number of the user
+     * @throws SQLException may be thrown when creating a PreparedStatement
+     */
+    public void resetUserRole(long userId) throws SQLException {
+        getConnection().prepareStatement("UPDATE economy SET role_expiry = 0, role_colour = NULL "
+                + "WHERE user = " + userId).executeUpdate();
     }
 
     /**

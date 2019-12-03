@@ -1,4 +1,4 @@
-package util.economy;
+package command.util.economy;
 
 import main.Server;
 import net.dv8tion.jda.core.entities.Role;

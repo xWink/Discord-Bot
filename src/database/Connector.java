@@ -10,13 +10,13 @@ import java.sql.ResultSet;
  * Abstraction of the connection between the bot and the database.
  * Contains Connection instance variable that is utilized by subclasses.
  */
-abstract class Connector {
+public abstract class Connector {
 
     private static Connection connection;
     private String table;
 
 
-    Connector(String tableName) {
+    protected Connector(String tableName) {
         try {
             Class.forName("org.mariadb.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot",
@@ -35,7 +35,7 @@ abstract class Connector {
      *
      * @return the database connection
      */
-    Connection getConnection() {
+    protected Connection getConnection() {
         return connection;
     }
 
@@ -45,7 +45,7 @@ abstract class Connector {
      *
      * @return the name of the table the connector associates with.
      */
-    String getTable() {
+    protected String getTable() {
         return table;
     }
 
@@ -58,7 +58,7 @@ abstract class Connector {
      * @param tableName the name of the table being queried
      * @return true if found, false if not found or error occurs
      */
-    boolean userExists(long userId, String tableName) {
+    protected boolean userExists(long userId, String tableName) {
         try {
             PreparedStatement checkIfExists = connection.prepareStatement("SELECT * FROM " + tableName
                     + " WHERE user = " + userId);
@@ -78,7 +78,7 @@ abstract class Connector {
      * @param tableName the name of the table being queried
      * @return the ResultSet of the query
      */
-    ResultSet getUserRow(long userId, String tableName) {
+    protected ResultSet getUserRow(long userId, String tableName) {
         try {
             ResultSet rs = connection.prepareStatement("SELECT * FROM " + tableName
                     + " WHERE user = " + userId).executeQuery();
@@ -95,5 +95,5 @@ abstract class Connector {
      *
      * @param userId the ID number of the new user being added
      */
-    abstract void addUser(long userId);
+    protected abstract void addUser(long userId);
 }

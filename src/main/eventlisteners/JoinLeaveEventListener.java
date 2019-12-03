@@ -1,4 +1,4 @@
-package main.eventlistener;
+package main.eventlisteners;
 
 import main.Server;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;

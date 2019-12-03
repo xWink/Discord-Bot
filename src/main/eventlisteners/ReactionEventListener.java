@@ -1,6 +1,6 @@
-package main.eventlistener;
+package main.eventlisteners;
 
-import database.KarmaConnector;
+import database.connectors.KarmaConnector;
 import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;

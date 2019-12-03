@@ -1,5 +1,6 @@
-package command;
+package command.commands;
 
+import command.Command;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class Help extends Command {
@@ -7,7 +8,7 @@ public class Help extends Command {
     /**
      * Initializes the command's key to "!help".
      */
-    Help() {
+    public Help() {
         super("!help");
     }
 

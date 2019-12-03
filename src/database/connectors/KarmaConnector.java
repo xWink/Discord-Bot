@@ -1,4 +1,6 @@
-package database;
+package database.connectors;
+
+import database.Connector;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -56,7 +58,7 @@ public class KarmaConnector extends Connector {
      * @param userId the id number of the Discord user being searched for
      * @return true if found, false if not found or error occurs
      */
-    private boolean userExists(long userId) {
+    public boolean userExists(long userId) {
         return super.userExists(userId, getTable());
     }
 

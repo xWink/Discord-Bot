@@ -1,7 +1,8 @@
-package command;
+package command.commands;
 
-import database.BangConnector;
-import database.EconomyConnector;
+import command.Command;
+import database.connectors.BangConnector;
+import database.connectors.EconomyConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.Random;

@@ -1,4 +1,6 @@
-package database;
+package database.connectors;
+
+import database.Connector;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

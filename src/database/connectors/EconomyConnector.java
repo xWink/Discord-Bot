@@ -1,4 +1,6 @@
-package database;
+package database.connectors;
+
+import database.Connector;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -86,7 +88,7 @@ public class EconomyConnector extends Connector {
      * @param userId the ID number of the new user being added
      */
     @Override
-    void addUser(long userId) {
+    public void addUser(long userId) {
         try {
             getConnection().prepareStatement("INSERT INTO " + getTable()
                     + " (user, wallet, role_expiry, role_colour)"

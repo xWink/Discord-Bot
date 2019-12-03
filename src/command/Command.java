@@ -25,7 +25,7 @@ public abstract class Command {
      *
      * @return the class's key
      */
-    String getKey() {
+    public String getKey() {
         return key;
     }
 
@@ -48,7 +48,7 @@ public abstract class Command {
      * @param event the MessageReceivedEvent that called the command
      * @param e the exception that was thrown
      */
-    void printStackTraceAndSendMessage(MessageReceivedEvent event, Exception e) {
+    protected void printStackTraceAndSendMessage(MessageReceivedEvent event, Exception e) {
         e.printStackTrace();
         event.getChannel().sendMessage("An error occurred with " + getKey()
                 + ". Please contact a moderator!").queue();

@@ -1,9 +1,9 @@
 package main;
 
-import main.eventlistener.ConnectionEventListener;
-import main.eventlistener.JoinLeaveEventListener;
-import main.eventlistener.MessageEventListener;
-import main.eventlistener.ReactionEventListener;
+import main.eventlisteners.ConnectionEventListener;
+import main.eventlisteners.JoinLeaveEventListener;
+import main.eventlisteners.MessageEventListener;
+import main.eventlisteners.ReactionEventListener;
 
 public class RoleBot {
 

@@ -1,4 +1,4 @@
-package main.eventlistener;
+package main.eventlisteners;
 
 import command.Command;
 import command.CommandList;

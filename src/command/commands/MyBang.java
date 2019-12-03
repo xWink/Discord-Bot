@@ -1,6 +1,7 @@
-package command;
+package command.commands;
 
-import database.BangConnector;
+import command.Command;
+import database.connectors.BangConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.sql.ResultSet;
@@ -12,7 +13,7 @@ public class MyBang extends Command {
     /**
      * Initializes the command's key to "!mybang".
      */
-    MyBang() {
+    public MyBang() {
         super("!mybang");
         bc = new BangConnector();
     }

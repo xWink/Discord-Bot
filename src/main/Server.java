@@ -3,6 +3,7 @@ package main;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 /**
@@ -13,6 +14,7 @@ public final class Server {
     private static JDA api;
     private static TextChannel generalChannel;
     private static TextChannel botsChannel;
+    private static Guild guild;
 
     private Server() {
 
@@ -33,6 +35,7 @@ public final class Server {
         botsChannel = getApi().getTextChannelById("551828950871965696");
 //        botsChannel = getApi().getGuildById(Config.getGuildId())
 //                .getTextChannelsByName("bots", true).get(0);
+        guild = getGeneralChannel().getGuild();
     }
 
 
@@ -61,5 +64,14 @@ public final class Server {
      */
     public static TextChannel getGeneralChannel() {
         return generalChannel;
+    }
+
+    /**
+     * guild getter.
+     *
+     * @return the Discord server (guild) the bot is running on
+     */
+    public static Guild getGuild() {
+        return guild;
     }
 }

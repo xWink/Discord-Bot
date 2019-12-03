@@ -1,5 +1,12 @@
 package command;
 
+import command.commands.Daily;
+import command.commands.Help;
+import command.commands.Karma;
+import command.commands.MyBang;
+import command.commands.Ping;
+import command.commands.Wallet;
+
 import java.util.ArrayList;
 
 /**
@@ -31,11 +38,12 @@ public final class CommandList {
     /**
      * Populates the commands list with every command.
      */
-    private static void addAllCommands() {
+    private static void addAllCommands() { //TODO: Add Bang when it's done
         commands.add(new Ping());
         commands.add(new Help());
         commands.add(new Karma());
         commands.add(new Daily());
         commands.add(new MyBang());
+        commands.add(new Wallet());
     }
 }

@@ -1,6 +1,7 @@
-package command;
+package command.commands;
 
-import database.BangConnector;
+import command.Command;
+import database.connectors.BangConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;
@@ -15,7 +16,7 @@ public class Daily extends Command {
     /**
      * Initializes the command's key to "!daily".
      */
-    Daily() {
+    public Daily() {
         super("!daily");
         bc = new BangConnector();
     }

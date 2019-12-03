@@ -1,6 +1,7 @@
-package command;
+package command.commands;
 
-import database.KarmaConnector;
+import command.Command;
+import database.connectors.KarmaConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class Karma extends Command {
@@ -10,7 +11,7 @@ public class Karma extends Command {
     /**
      * Initializes the command's key to "!karma".
      */
-    Karma() {
+    public Karma() {
         super("!karma");
         kc = new KarmaConnector();
     }

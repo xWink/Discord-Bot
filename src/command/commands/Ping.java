@@ -1,6 +1,7 @@
-package command;
+package command.commands;
 
-import database.PingConnector;
+import command.Command;
+import database.connectors.PingConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class Ping extends Command {
@@ -10,7 +11,7 @@ public class Ping extends Command {
     /**
      * Initializes command's key to "!ping".
      */
-    Ping() {
+    public Ping() {
         super("!ping");
         pc = new PingConnector();
     }

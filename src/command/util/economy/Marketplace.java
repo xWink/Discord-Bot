@@ -48,7 +48,7 @@ public final class Marketplace {
      *
      * @return an ArrayList with all listings in the marketplace
      */
-    public static ArrayList<Listing> getListings() {
+    public ArrayList<Listing> getListings() {
         return listings;
     }
 
@@ -58,7 +58,7 @@ public final class Marketplace {
      * @param i the index of the listing in the marketplace
      * @return the listing at the specified index in the marketplace
      */
-    public static Listing getListing(int i) {
+    public Listing getListing(int i) {
         return listings.get(i);
     }
 }

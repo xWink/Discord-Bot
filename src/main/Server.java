@@ -28,6 +28,8 @@ public final class Server {
             System.exit(-1);
         }
 
+        //THESE DO NOT WORK
+
         //general channel ID = 486633949154770946
         generalChannel = api.getTextChannelById("486633949154770946");
 //        generalChannel = getApi().getGuildById(Config.getGuildId())

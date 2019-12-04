@@ -11,6 +11,7 @@ import command.util.economy.RoleListing;
 public class Buy extends Command {
 
     private EconomyConnector ec;
+    private Marketplace mp;
 
     /**
      * Initializes the command's key to "!buy".
@@ -31,6 +32,7 @@ public class Buy extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
+        mp = new Marketplace(event.getGuild());
         String[] strings = event.getMessage().getContentRaw().split(" ");
         MessageChannel channel = event.getChannel();
         long userId = event.getAuthor().getIdLong();
@@ -38,7 +40,7 @@ public class Buy extends Command {
         if (!verifyInput(strings, channel)) return;
 
         try {
-            Listing listing = Marketplace.getListing(Integer.parseInt(strings[1]));
+            Listing listing = mp.getListing(Integer.parseInt(strings[1]));
 
             if (!ec.canAfford(userId, listing.getCost())) {
                 channel.sendMessage("You cannot afford this item.").queue();
@@ -84,7 +86,7 @@ public class Buy extends Command {
 
         try {
             int index = Integer.parseInt(strings[1]);
-            if (index > Marketplace.getListings().size() || index < 1) {
+            if (index > mp.getListings().size() || index < 1) {
                 channel.sendMessage("Error: listing # must be within market range").queue();
                 return false;
             }

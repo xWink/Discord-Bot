@@ -16,6 +16,7 @@ public final class Marketplace {
 
     private void setListings() {
         Role orange = Server.getGuild().getRolesByName("orange", true).get(0);
+        System.out.println(orange.getColor() + "\n" + orange.getName());
         Role blue = Server.getGuild().getRolesByName("blue", true).get(0);
         Role green = Server.getGuild().getRolesByName("green", true).get(0);
         Role purple = Server.getGuild().getRolesByName("purple", true).get(0);
@@ -34,6 +35,8 @@ public final class Marketplace {
         listings.add(new RoleListing(2500, 36500, green));
         listings.add(new RoleListing(2500, 36500, purple));
         listings.add(new RoleListing(2500, 36500, pink));
+
+        System.out.println(listings.get(0).toString());
     }
 
     /**

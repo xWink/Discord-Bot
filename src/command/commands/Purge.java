@@ -35,7 +35,8 @@ public class Purge extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (!event.getMember().canInteract(event.getGuild().getRoleById("486635066928136194"))) {
+        if (!event.getMember().getRoles().contains(event.getGuild().getRoleById("486635066928136194"))
+                && !event.getMember().isOwner()) {
             return;
         }
 

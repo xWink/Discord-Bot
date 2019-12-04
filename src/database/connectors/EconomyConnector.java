@@ -68,7 +68,7 @@ public class EconomyConnector extends Connector {
         ResultSet rs = getConnection()
                 .prepareStatement("SELECT * FROM economy WHERE user = " + userId)
                 .executeQuery();
-
+        rs.next();
         return rs.getLong("role_expiry") > 0;
     }
 

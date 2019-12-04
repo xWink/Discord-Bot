@@ -23,8 +23,9 @@ public class Market extends Command {
     public void start(MessageReceivedEvent event) {
         try {
             String output = "**Current Listings:**\n";
+            int num = 1;
             for (Listing listing : new Marketplace(event.getGuild()).getListings()) {
-                output = output.concat(listing.toString() + "\n");
+                output = output.concat(num++ + ". " + listing.toString() + "\n");
             }
             event.getChannel().sendMessage(output).queue();
         } catch (Exception e) {

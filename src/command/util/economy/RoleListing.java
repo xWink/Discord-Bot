@@ -30,7 +30,7 @@ public class RoleListing extends Listing {
      */
     @Override
     public String toString() {
-        return role.getName() + " (" + getDuration() + ") - " + getCost() + " *gc*";
+        return role.getName() + " (" + getDuration() + " days) - " + getCost() + " *gc*";
     }
 
     /**

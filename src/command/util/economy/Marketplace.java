@@ -36,11 +36,11 @@ public final class Marketplace {
         listings.add(new RoleListing(75, 7, pink));
 
         // Lasts 100 years
-        listings.add(new RoleListing(2500, 36500, orange));
-        listings.add(new RoleListing(2500, 36500, blue));
-        listings.add(new RoleListing(2500, 36500, green));
-        listings.add(new RoleListing(2500, 36500, purple));
-        listings.add(new RoleListing(2500, 36500, pink));
+        listings.add(new RoleListing(2500, 99999, orange));
+        listings.add(new RoleListing(2500, 99999, blue));
+        listings.add(new RoleListing(2500, 99999, green));
+        listings.add(new RoleListing(2500, 99999, purple));
+        listings.add(new RoleListing(2500, 99999, pink));
     }
 
     /**

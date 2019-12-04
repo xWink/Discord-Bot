@@ -27,7 +27,6 @@ public final class Server {
             e.printStackTrace();
             System.exit(-1);
         }
-        System.out.println(api.getSelfUser().getMutualGuilds().size());
         System.out.println(api.getGuildCache().size());
 
         //general channel ID = 486633949154770946

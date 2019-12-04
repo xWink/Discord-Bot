@@ -28,6 +28,6 @@ public class Help extends Command {
                         + "`!bet`, `!hit`, `!hand`, & `!stand` - Play blackjack\n\n"
                         + "`!wallet` - Show how many GryphCoins you have\n\n"
                         + "`!market` & `!buy <item #>` - Use the GryphCoin market\n\n"
-                        + "`karma` - Show how many upvotes and downvotes you have").queue();
+                        + "`!karma` - Show how many upvotes and downvotes you have").queue();
     }
 }

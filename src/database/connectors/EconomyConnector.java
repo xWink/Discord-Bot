@@ -40,7 +40,7 @@ public class EconomyConnector extends Connector {
      * @throws SQLException may be thrown by getting "wallet" integer in ResultSet
      */
     public boolean canAfford(long userId, int cost) throws SQLException {
-        if (userExists(userId)) addUser(userId);
+        if (!userExists(userId)) addUser(userId);
         return getUserRow(userId).getInt("wallet") - cost > 0;
     }
 
@@ -52,7 +52,7 @@ public class EconomyConnector extends Connector {
      * @throws SQLException may be thrown by getting "wallet" integer in ResultSet
      */
     public int getWealth(long userId) throws SQLException {
-        if (userExists(userId)) addUser(userId);
+        if (!userExists(userId)) addUser(userId);
         return getUserRow(userId).getInt("wallet");
     }
 
@@ -64,7 +64,7 @@ public class EconomyConnector extends Connector {
      * @throws SQLException may be thrown when creating a PreparedStatement
      */
     public boolean userHasColour(long userId) throws SQLException {
-        if (userExists(userId)) addUser(userId);
+        if (!userExists(userId)) addUser(userId);
         ResultSet rs = getConnection()
                 .prepareStatement("SELECT * FROM economy WHERE user = " + userId)
                 .executeQuery();
@@ -80,6 +80,7 @@ public class EconomyConnector extends Connector {
      * @throws SQLException may be thrown when creating a PreparedStatement
      */
     public void setRole(long userId, RoleListing listing) throws SQLException {
+        if (!userExists(userId)) addUser(userId);
         Date date = new Date();
         getConnection().prepareStatement("UPDATE economy "
                 + "SET role_expiry = " + (date.getTime() + 604800000)
@@ -95,7 +96,7 @@ public class EconomyConnector extends Connector {
      * @return the ResultSet of the query
      */
     public ResultSet getUserRow(long userId) {
-        if (userExists(userId)) addUser(userId);
+        if (!userExists(userId)) addUser(userId);
         return super.getUserRow(userId, getTable());
     }
 

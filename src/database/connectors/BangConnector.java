@@ -85,6 +85,7 @@ public class BangConnector extends Connector {
         ResultSet rs = getConnection()
                 .prepareStatement("SELECT last_daily FROM bang WHERE user=" + userId)
                 .executeQuery();
+        rs.next();
         return rs.getLong("last_daily") + 86460000;
     }
 

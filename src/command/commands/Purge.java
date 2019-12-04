@@ -13,7 +13,7 @@ public class Purge extends Command {
      * Initializes the command's key to "!purge".
      */
     public Purge() {
-        super("!purge");
+        super("!purge", true);
     }
 
     /**
@@ -39,14 +39,12 @@ public class Purge extends Command {
                 && !event.getMember().isOwner()) {
             return;
         }
-
+//TODO: add purge by user as well
         try {
             int numMessages = Integer.parseInt((event.getMessage().getContentRaw().split(" "))[1]);
             MessageHistory history = new MessageHistory(event.getTextChannel());
             List<Message> messages = history.retrievePast(numMessages).complete();
             event.getTextChannel().deleteMessages(messages).queue();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception ignored) { }
     }
 }

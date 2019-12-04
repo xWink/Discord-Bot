@@ -17,7 +17,7 @@ public class Daily extends Command {
      * Initializes the command's key to "!daily".
      */
     public Daily() {
-        super("!daily");
+        super("!daily", false);
         bc = new BangConnector();
     }
 

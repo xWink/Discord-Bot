@@ -12,7 +12,7 @@ public class Karma extends Command {
      * Initializes the command's key to "!karma".
      */
     public Karma() {
-        super("!karma");
+        super("!karma", false);
         kc = new KarmaConnector();
     }
 

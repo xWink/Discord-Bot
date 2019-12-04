@@ -17,7 +17,7 @@ public class Info extends Command {
      * Sets up the file reader for the tsv.
      */
     public Info() {
-        super("!info");
+        super("!info", true);
     }
 
     /**

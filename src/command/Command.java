@@ -10,14 +10,16 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public abstract class Command {
 
     private String key;
+    private boolean global;
 
     /**
      * Initializes the command's key.
      *
      * @param theKey the command's key
      */
-    public Command(String theKey) {
+    public Command(String theKey, boolean isGlobal) {
         key = theKey;
+        global = isGlobal;
     }
 
     /**
@@ -60,4 +62,15 @@ public abstract class Command {
      * @param event the MessageReceivedEvent that triggered the command
      */
     public abstract void start(MessageReceivedEvent event);
+
+    /**
+     * Getter for whether a command is global or not. Global commands
+     * can be accessed from any channel on the server while non-global
+     * commands can only be accessed on specified channels in config.
+     *
+     * @return whether the command is global or not
+     */
+    public boolean isGlobal() {
+        return global;
+    }
 }

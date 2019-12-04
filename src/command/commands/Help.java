@@ -9,7 +9,7 @@ public class Help extends Command {
      * Initializes the command's key to "!help".
      */
     public Help() {
-        super("!help");
+        super("!help", true);
     }
 
     /**

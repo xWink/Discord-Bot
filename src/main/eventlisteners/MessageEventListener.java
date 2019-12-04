@@ -2,6 +2,7 @@ package main.eventlisteners;
 
 import command.Command;
 import command.CommandList;
+import main.Config;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 
@@ -20,7 +21,10 @@ public class MessageEventListener extends ListenerAdapter {
         if (!event.getAuthor().isBot() && messageContent.startsWith("!")) {
             for (Command command : CommandList.getCommands()) {
                 if (command.keyMatches(messageContent)) {
-                    command.start(event);
+                    if (event.getChannel().getId().equals(Config.getChannels()[0])
+                            || command.isGlobal()) {
+                        command.start(event);
+                    }
                 }
             }
         }

@@ -11,7 +11,7 @@ public class Market extends Command {
      * Initializes the command's key to "!market".
      */
     public Market() {
-        super("!market");
+        super("!market", false);
     }
 
     /**

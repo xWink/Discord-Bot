@@ -115,6 +115,14 @@ public final class Config {
         return guildId;
     }
 
+    /**
+     * Channels getter.
+     * @return the channels used for the bot's non-global commands
+     */
+    public static String[] getChannels() {
+        return channels;
+    }
+
 
     private static void parseLine(String contents) {
         if (contents.startsWith("TOKEN")) { // If the line is a token line

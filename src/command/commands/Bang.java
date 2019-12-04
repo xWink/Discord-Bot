@@ -20,7 +20,7 @@ public class Bang extends Command {
      * Initializes the command's key to "!bang".
      */
     Bang() {
-        super("!bang");
+        super("!bang", false);
         bc = new BangConnector();
         ec = new EconomyConnector();
         resetJammed();

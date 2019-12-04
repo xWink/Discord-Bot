@@ -14,7 +14,7 @@ public class MyBang extends Command {
      * Initializes the command's key to "!mybang".
      */
     public MyBang() {
-        super("!mybang");
+        super("!mybang", false);
         bc = new BangConnector();
     }
 

@@ -17,7 +17,7 @@ public class Buy extends Command {
      * Initializes the command's key to "!buy".
      */
     public Buy() {
-        super("!buy");
+        super("!buy", false);
         ec = new EconomyConnector();
     }
 

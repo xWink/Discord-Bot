@@ -22,6 +22,18 @@ public class Buy extends Command {
     }
 
     /**
+     * Compares a string to the command's key and checks if that
+     * string starts with the key.
+     *
+     * @param string the user's input being compared to the key
+     * @return returns true if the key matches and false otherwise
+     */
+    @Override
+    public boolean keyMatches(String string) {
+        return string.startsWith(getKey());
+    }
+
+    /**
      * Allows a user to buy listings from the marketplace based on the
      * argument given after the "!buy" key. The argument given is the
      * listing # in the market that the user wishes to purchase.
@@ -40,7 +52,7 @@ public class Buy extends Command {
         if (!verifyInput(strings, channel)) return;
 
         try {
-            Listing listing = mp.getListing(Integer.parseInt(strings[1]));
+            Listing listing = mp.getListing(Integer.parseInt(strings[1]) - 1);
 
             if (!ec.canAfford(userId, listing.getCost())) {
                 channel.sendMessage("You cannot afford this item.").queue();

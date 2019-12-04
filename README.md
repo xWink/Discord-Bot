@@ -1,4 +1,4 @@
-Version 1.11
+Version 1.11 -> 2.0
 # Purpose
 Manage Computer Science Discord elective roles and channels and entertain users with games
 
@@ -24,10 +24,9 @@ Manage Computer Science Discord elective roles and channels and entertain users 
 
 `!leave [role name]` - unassigns role from user and removes their application for that role from the database
 
-### Moderator+
-`!giverole [mentioned user] [role name]` - if the target is not a moderator, the role is assigned to the target  
+`!info [course ID]` - displays relevant information about a specified course at UoGuelph
 
-`!takerole [mentioned user] [role name]` - same as `!giverole`, but removes the role
+`!karma` - shows a user's karma (upvotes and downvotes)
 
 ### Owner only
 `!totalchatwipe` - clones current text channel and deletes the original (effectively wipes chat history)

@@ -7,16 +7,15 @@ import java.util.ArrayList;
 
 public final class Marketplace {
 
-    private static ArrayList<Listing> listings;
+    private static ArrayList<Listing> listings = new ArrayList<>();
 
-    public Marketplace() {
-        listings = new ArrayList<>();
-        setListings();
+    private Marketplace() {
+
     }
 
-    private void setListings() {
+    static {
+        System.out.println("start static");
         Role orange = Server.getGuild().getRolesByName("orange", true).get(0);
-        System.out.println(orange.getColor() + "\n" + orange.getName());
         Role blue = Server.getGuild().getRolesByName("blue", true).get(0);
         Role green = Server.getGuild().getRolesByName("green", true).get(0);
         Role purple = Server.getGuild().getRolesByName("purple", true).get(0);
@@ -35,8 +34,7 @@ public final class Marketplace {
         listings.add(new RoleListing(2500, 36500, green));
         listings.add(new RoleListing(2500, 36500, purple));
         listings.add(new RoleListing(2500, 36500, pink));
-
-        System.out.println(listings.get(0).toString());
+        System.out.println("done static");
     }
 
     /**
@@ -44,7 +42,7 @@ public final class Marketplace {
      *
      * @return an ArrayList with all listings in the marketplace
      */
-    public ArrayList<Listing> getListings() {
+    public static ArrayList<Listing> getListings() {
         return listings;
     }
 
@@ -54,7 +52,7 @@ public final class Marketplace {
      * @param i the index of the listing in the marketplace
      * @return the listing at the specified index in the marketplace
      */
-    public Listing getListing(int i) {
+    public static Listing getListing(int i) {
         return listings.get(i);
     }
 }

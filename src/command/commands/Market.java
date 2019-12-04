@@ -21,12 +21,14 @@ public class Market extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        String output = "**Current Listings:**\n";
-
-        for (Listing listing : new Marketplace().getListings()) {
-            output = output.concat(listing.toString() + "\n");
+        try {
+            String output = "**Current Listings:**\n";
+            for (Listing listing : Marketplace.getListings()) {
+                output = output.concat(listing.toString() + "\n");
+            }
+            event.getChannel().sendMessage(output).queue();
+        } catch (Exception e) {
+            printStackTraceAndSendMessage(event, e);
         }
-
-        event.getChannel().sendMessage(output).queue();
     }
 }

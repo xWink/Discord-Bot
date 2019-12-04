@@ -38,9 +38,9 @@ public class Buy extends Command {
 
         if (!verifyInput(strings, channel)) return;
 
-        Listing listing = new Marketplace().getListing(Integer.parseInt(strings[1]));
-
         try {
+            Listing listing = Marketplace.getListing(Integer.parseInt(strings[1]));
+
             if (!ec.canAfford(userId, listing.getCost())) {
                 channel.sendMessage("You cannot afford this item.").queue();
                 return;
@@ -85,7 +85,7 @@ public class Buy extends Command {
 
         try {
             int index = Integer.parseInt(strings[1]);
-            if (index > new Marketplace().getListings().size() || index < 1) {
+            if (index > Marketplace.getListings().size() || index < 1) {
                 channel.sendMessage("Error: listing # must be within market range").queue();
                 return false;
             }

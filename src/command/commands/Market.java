@@ -23,7 +23,7 @@ public class Market extends Command {
     public void start(MessageReceivedEvent event) {
         String output = "**Current Listings:**\n";
 
-        for (Listing listing : Marketplace.getListings()) {
+        for (Listing listing : new Marketplace().getListings()) {
             output = output.concat(listing.toString() + "\n");
         }
 

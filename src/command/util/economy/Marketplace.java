@@ -9,13 +9,12 @@ public final class Marketplace {
 
     private static ArrayList<Listing> listings;
 
-    private Marketplace() {
-
+    public Marketplace() {
+        listings = new ArrayList<>();
+        setListings();
     }
 
-    static {
-        listings = new ArrayList<>();
-
+    private void setListings() {
         Role orange = Server.getGuild().getRolesByName("orange", true).get(0);
         Role blue = Server.getGuild().getRolesByName("blue", true).get(0);
         Role green = Server.getGuild().getRolesByName("green", true).get(0);
@@ -42,7 +41,7 @@ public final class Marketplace {
      *
      * @return an ArrayList with all listings in the marketplace
      */
-    public static ArrayList<Listing> getListings() {
+    public ArrayList<Listing> getListings() {
         return listings;
     }
 
@@ -52,7 +51,7 @@ public final class Marketplace {
      * @param i the index of the listing in the marketplace
      * @return the listing at the specified index in the marketplace
      */
-    public static Listing getListing(int i) {
+    public Listing getListing(int i) {
         return listings.get(i);
     }
 }

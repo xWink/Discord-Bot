@@ -34,7 +34,7 @@ public class MyBang extends Command {
             attempts = rs.getInt("tries");
             deaths = rs.getInt("deaths");
             jams = rs.getInt("jams");
-            survivalRate = 100 - Math.round(rs.getDouble("death_rate") * 100); //TODO: CHECK IF THIS IS CORRECT
+            survivalRate = 100 - Math.round(rs.getDouble("deaths") / rs.getDouble("tries") * 100 * 10d) / 10d;
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         } finally {

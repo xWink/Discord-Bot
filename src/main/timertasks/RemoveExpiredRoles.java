@@ -31,11 +31,11 @@ public class RemoveExpiredRoles extends TimerTask {
             // For each user with expired roles
             while (rs.next()) {
                 // Get member and role
-                Member member = Server.getGuild().getMemberById(rs.getLong("user"));
-                Role role = Server.getGuild().getRolesByName(rs.getString("role_colour"), true).get(0);
+                Member member = Server.guild().getMemberById(rs.getLong("user"));
+                Role role = Server.guild().getRolesByName(rs.getString("role_colour"), true).get(0);
 
                 // Remove role from member
-                Server.getGuild().getController().removeSingleRoleFromMember(member, role).queue();
+                Server.guild().getController().removeSingleRoleFromMember(member, role).queue();
                 ec.resetUserRole(member.getUser().getIdLong());
             }
         } catch (Exception e) {

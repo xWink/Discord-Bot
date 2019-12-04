@@ -2,7 +2,6 @@ package command.commands;
 
 import command.Command;
 import database.connectors.EconomyConnector;
-import main.Server;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import command.util.economy.Listing;
@@ -55,7 +54,7 @@ public class Buy extends Command {
                 }
 
                 // Assign role
-                Server.getGuild().getController().addSingleRoleToMember(event.getMember(),
+                event.getGuild().getController().addSingleRoleToMember(event.getMember(),
                         ((RoleListing) listing).getRole()).queue();
                 // Remove money
                 ec.addOrRemoveMoney(userId, 0 - listing.getCost());

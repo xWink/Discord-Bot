@@ -1,25 +1,32 @@
 package command.util.economy;
 
-import main.Server;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Role;
 
 import java.util.ArrayList;
 
 public final class Marketplace {
 
-    private static ArrayList<Listing> listings = new ArrayList<>();
+    private static ArrayList<Listing> listings;
+    private static Guild guild;
 
-    private Marketplace() {
-
+    /**
+     * Initializes a new marketplace for a specific guild.
+     *
+     * @param theGuild the guild for which a marketplace is created
+     */
+    public Marketplace(Guild theGuild) {
+        listings = new ArrayList<>();
+        guild = theGuild;
+        setListings();
     }
 
-    static {
-        System.out.println("start static");
-        Role orange = Server.getGuild().getRolesByName("orange", true).get(0);
-        Role blue = Server.getGuild().getRolesByName("blue", true).get(0);
-        Role green = Server.getGuild().getRolesByName("green", true).get(0);
-        Role purple = Server.getGuild().getRolesByName("purple", true).get(0);
-        Role pink = Server.getGuild().getRolesByName("pink", true).get(0);
+    private void setListings() {
+        Role orange = guild.getRolesByName("orange", true).get(0);
+        Role blue = guild.getRolesByName("blue", true).get(0);
+        Role green = guild.getRolesByName("green", true).get(0);
+        Role purple = guild.getRolesByName("purple", true).get(0);
+        Role pink = guild.getRolesByName("pink", true).get(0);
 
         // Lasts 1 week
         listings.add(new RoleListing(75, 7, orange));
@@ -34,7 +41,6 @@ public final class Marketplace {
         listings.add(new RoleListing(2500, 36500, green));
         listings.add(new RoleListing(2500, 36500, purple));
         listings.add(new RoleListing(2500, 36500, pink));
-        System.out.println("done static");
     }
 
     /**

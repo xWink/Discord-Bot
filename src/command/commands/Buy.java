@@ -62,7 +62,7 @@ public class Buy extends Command {
             if (listing.getClass() == RoleListing.class) {
                 if (ec.userHasColour(userId)) {
                     channel.sendMessage("You already have a colour. "
-                            + "If you would like to replace it without refund, "
+                            + "If you would like to replace it **without** refund, "
                             + "please contact a moderator.").queue();
                     return;
                 }

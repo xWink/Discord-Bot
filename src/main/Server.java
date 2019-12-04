@@ -35,11 +35,7 @@ public final class Server {
         botsChannel = getApi().getTextChannelById("551828950871965696");
 //        botsChannel = getApi().getGuildById(Config.getGuildId())
 //                .getTextChannelsByName("bots", true).get(0);
-        guild = getApi().getGuildById(Config.getGuildId());
-        if (guild != null) System.out.println(guild.getName());
-        else System.out.println("null!");
-        System.out.println("2");
-        guild = getBotsChannel().getGuild();
+        guild = getApi().getGuildById("486633949154770944");
         if (guild != null) System.out.println(guild.getName());
         else System.out.println("null!");
     }

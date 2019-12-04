@@ -29,6 +29,8 @@ public class Ping extends Command {
 
         int ping = (int) event.getJDA().getPing();
         event.getChannel().sendMessage("Pong! " + ping + " ms").queue();
+        System.out.println(event.getGuild().getId());
+        System.out.println(event.getGuild().getIdLong());
 
         try {
             if (pc.isMax(authorId, ping)) {

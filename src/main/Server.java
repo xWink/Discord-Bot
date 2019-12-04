@@ -27,7 +27,8 @@ public final class Server {
             e.printStackTrace();
             System.exit(-1);
         }
-        System.out.println(api.getGuilds().size());
+        System.out.println(api.getSelfUser().getMutualGuilds().size());
+        System.out.println(api.getGuildCache().size());
 
         //general channel ID = 486633949154770946
         generalChannel = api.getTextChannelById("486633949154770946");
@@ -37,9 +38,9 @@ public final class Server {
         botsChannel = api.getTextChannelById("551828950871965696");
 //        botsChannel = getApi().getGuildById(Config.getGuildId())
 //                .getTextChannelsByName("bots", true).get(0);
-        guild = api.asBot().getShardManager().getGuildById("486633949154770944");
-        if (guild != null) System.out.println(guild.getName());
-        else System.out.println("null!");
+//        guild = api.asBot().getShardManager().getGuildById("486633949154770944");
+//        if (guild != null) System.out.println(guild.getName());
+//        else System.out.println("null!");
     }
 
 

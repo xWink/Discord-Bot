@@ -17,17 +17,6 @@ public class Karma extends Command {
     }
 
     /**
-     * Checks if string matches to key.
-     *
-     * @param string the user's input being compared to the key
-     * @return true if input equals key
-     */
-    @Override
-    public boolean keyMatches(final String string) {
-        return string.equalsIgnoreCase(getKey());
-    }
-
-    /**
      * Messages the user's upVotes, downVotes, and upVotes - downVotes
      * in the channel.
      *

@@ -17,17 +17,6 @@ public class Ping extends Command {
     }
 
     /**
-     * Checks if string matches to key.
-     *
-     * @param string the user's input being compared to the key
-     * @return true if input equals key
-     */
-    @Override
-    public boolean keyMatches(String string) {
-        return string.equalsIgnoreCase(getKey());
-    }
-
-    /**
      * Gets Discord's ping and outputs it for the user. Also
      * updates the user's row in the ping table if that ping is
      * their new max or min.

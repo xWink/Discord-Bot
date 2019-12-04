@@ -34,7 +34,7 @@ Updates to the database are made using SQL instructions.
 
 `!bet`, `!hit`, `!stand` - play blackjack against the computer
 
-`!market` and `!buy <item #>` - view and purchase roles/colours
+`!market` and `!buy <item #>` - view and purchase items listed on the market
 
 `!roles` - shows a list of available roles to join
 

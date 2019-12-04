@@ -29,7 +29,6 @@ public class Bang extends Command {
         resetReward();
     }
 
-
     private void resetKilled() {
         killed = false;
     }
@@ -46,7 +45,6 @@ public class Bang extends Command {
         reward = false;
     }
 
-
     /**
      * Attempts to kill a user. The user may survive if the gun jams.
      */
@@ -59,7 +57,6 @@ public class Bang extends Command {
         }
         resetChambers();
     }
-
 
     /**
      * Returns the string output of the result of the bang command.
@@ -74,19 +71,6 @@ public class Bang extends Command {
         else if (killed) return "bang! " + event.getAuthor().getName() + " died :skull:";
         else return "Click. " + event.getAuthor().getName() + " survived  <:poggies:564285288621539328>";
     }
-
-
-    /**
-     * Key matches if the string equals exactly (ignoring case) the key.
-     *
-     * @param string the user's input being compared to the key
-     * @return true if the key matches the string
-     */
-    @Override
-    public boolean keyMatches(String string) {
-        return super.keyMatches(string);
-    }
-
 
     /**
      * Plays Russian Roulette. The gun may jam on the last round.

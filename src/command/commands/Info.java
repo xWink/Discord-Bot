@@ -11,7 +11,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class Info extends Command {
 
     private BufferedReader reader;
-    private String code;
+    private String courseId;
 
     /**
      * Sets up the file reader for the tsv.
@@ -34,21 +34,21 @@ public class Info extends Command {
     /**
      * Searches the file for the course.
      *
-     * @param courseID course code
      * @return a String with all the course info
      */
-    private String searchCourse(String courseID) {
+    private String searchCourse() {
         String line, temp;
         try {
             while ((line = reader.readLine()) != null) {
                 temp = line.split("\t")[0];
-                if (temp.replace("*", "").toLowerCase().contains(courseID.replace("*", "").toLowerCase())) {
+                if (temp.replace("*", "").toLowerCase()
+                        .contains(courseId.replace("*", "").toLowerCase())) {
                     return line.replaceAll("\"", "");
                 }
             }
         } catch (IOException ignored) { }
 
-        return "Course not found";
+        return "Could not find " + courseId;
     }
 
     /**
@@ -93,8 +93,7 @@ public class Info extends Command {
      */
     @Override
     public boolean keyMatches(String string) {
-        code = string.split(" ")[1];
-        return string.equalsIgnoreCase(getKey());
+        return string.toLowerCase().matches("^" + getKey() + " .+$");
     }
 
     /**
@@ -104,9 +103,10 @@ public class Info extends Command {
      */
     @Override
     public void start(final MessageReceivedEvent event) {
+        courseId = event.getMessage().getContentRaw().split(" ")[1];
         try {
             reader = new BufferedReader(new FileReader("../res/courses.tsv"));
-            event.getChannel().sendMessage(printNice(searchCourse(code))).queue();
+            event.getChannel().sendMessage(printNice(searchCourse())).queue();
         } catch (FileNotFoundException e) {
             printStackTraceAndSendMessage(event, e);
         } finally {

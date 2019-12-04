@@ -13,17 +13,6 @@ public class Help extends Command {
     }
 
     /**
-     * Key matches if the string equals exactly (ignoring case) the key.
-     *
-     * @param string the user's input being compared to the key
-     * @return true if the key matches the string
-     */
-    @Override
-    public boolean keyMatches(String string) {
-        return super.keyMatches(string);
-    }
-
-    /**
      * Displays the help interface, which shows all the commands a regular
      * user has access to.
      *

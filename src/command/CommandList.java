@@ -8,6 +8,7 @@ import command.commands.Karma;
 import command.commands.Market;
 import command.commands.MyBang;
 import command.commands.Ping;
+import command.commands.Purge;
 import command.commands.Wallet;
 
 import java.util.ArrayList;
@@ -42,6 +43,9 @@ public final class CommandList {
      * Populates the commands list with every command.
      */
     private static void addAllCommands() { //TODO: Add Bang when it's done
+        // Admin commands
+        commands.add(new Purge());
+        // Everyone commands
         commands.add(new Ping());
         commands.add(new Help());
         commands.add(new Karma());

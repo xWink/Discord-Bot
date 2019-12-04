@@ -1,7 +1,11 @@
 package command.commands;
 
 import command.Command;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+
+import java.util.List;
 
 public class Purge extends Command {
 
@@ -21,7 +25,7 @@ public class Purge extends Command {
      */
     @Override
     public boolean keyMatches(String string) {
-        return string.startsWith(getKey());
+        return string.toLowerCase().startsWith(getKey());
     }
 
     /**
@@ -36,12 +40,12 @@ public class Purge extends Command {
         }
 
         try {
-            int numMessages = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
-            for (int i = 0; i < numMessages; i++) {
-                System.out.println(event.getTextChannel().getHistory().getRetrievedHistory().get(0).getContentRaw());
-            }
+            int numMessages = Integer.parseInt((event.getMessage().getContentRaw().split(" "))[1]);
+            MessageHistory history = new MessageHistory(event.getTextChannel());
+            List<Message> messages = history.retrievePast(numMessages).complete();
+            event.getTextChannel().deleteMessages(messages).queue();
         } catch (Exception e) {
-            printStackTraceAndSendMessage(event, e);
+            e.printStackTrace();
         }
     }
 }

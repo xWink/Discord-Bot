@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Purge extends Command {
@@ -29,7 +30,9 @@ public class Purge extends Command {
     }
 
     /**
-     * Deletes a given number of messages in a text channel.
+     * Deletes a given number of messages in a text channel (not including the purge command message).
+     * Or deletes all messages by a mentioned user up to a specified number of messages back in the channel
+     * history.
      *
      * @param event the MessageReceivedEvent that triggered the command
      */
@@ -39,12 +42,33 @@ public class Purge extends Command {
                 && !event.getMember().isOwner()) {
             return;
         }
-//TODO: add purge by user as well
+
+        String[] strings = event.getMessage().getContentRaw().split(" ");
+
         try {
-            int numMessages = Integer.parseInt((event.getMessage().getContentRaw().split(" "))[1]);
+            if (strings.length == 2) {
+                int numMessages = Integer.parseInt(strings[1]);
+                MessageHistory history = new MessageHistory(event.getTextChannel());
+                List<Message> messages = history.retrievePast(numMessages + 1).complete();
+                event.getTextChannel().deleteMessages(messages).queue();
+            } else if (strings.length == 3) {
+                int numMessages = Integer.parseInt(strings[2]);
+                MessageHistory history = new MessageHistory(event.getTextChannel());
+                ArrayList<Message> toDelete = new ArrayList<>();
+
+                history.retrievePast(numMessages + 1).queue(historyMessages -> {
+                    for (Message message : historyMessages) {
+                        if (message.getAuthor().getIdLong() == event.getMessage().getMentionedUsers().get(0).getIdLong()) {
+                            toDelete.add(message);
+                        }
+                    }
+                });
+                event.getTextChannel().deleteMessages(toDelete).queue();
+            }
+        } catch (Exception e) {
             MessageHistory history = new MessageHistory(event.getTextChannel());
-            List<Message> messages = history.retrievePast(numMessages).complete();
+            List<Message> messages = history.retrievePast(1).complete();
             event.getTextChannel().deleteMessages(messages).queue();
-        } catch (Exception ignored) { }
+        }
     }
 }

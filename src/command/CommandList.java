@@ -42,7 +42,7 @@ public final class CommandList {
     /**
      * Populates the commands list with every command.
      */
-    private static void addAllCommands() { //TODO: Add Bang when it's done
+    private static void addAllCommands() { // TODO: Add Bang when it's done
         // Admin commands
         commands.add(new Purge());
         // Everyone commands

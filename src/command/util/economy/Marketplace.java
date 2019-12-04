@@ -29,11 +29,11 @@ public final class Marketplace {
         Role pink = guild.getRolesByName("pink", true).get(0);
 
         // Lasts 1 week
-        listings.add(new RoleListing(75, 7, orange));
-        listings.add(new RoleListing(75, 7, blue));
-        listings.add(new RoleListing(75, 7, green));
-        listings.add(new RoleListing(75, 7, purple));
-        listings.add(new RoleListing(75, 7, pink));
+        listings.add(new RoleListing(35, 7, orange));
+        listings.add(new RoleListing(35, 7, blue));
+        listings.add(new RoleListing(35, 7, green));
+        listings.add(new RoleListing(35, 7, purple));
+        listings.add(new RoleListing(35, 7, pink));
 
         // Lasts 100 years
         listings.add(new RoleListing(2500, 99999, orange));

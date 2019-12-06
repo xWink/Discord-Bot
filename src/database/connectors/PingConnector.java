@@ -5,7 +5,7 @@ import database.Connector;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PingConnector extends Connector {
+public final class PingConnector extends Connector {
 
     /**
      * Initializes table to "ping".

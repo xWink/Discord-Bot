@@ -30,7 +30,7 @@ public class Buy extends Command {
      */
     @Override
     public boolean keyMatches(String string) {
-        return string.startsWith(getKey());
+        return string.toLowerCase().startsWith(getKey());
     }
 
     /**

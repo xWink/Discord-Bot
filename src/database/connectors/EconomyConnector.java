@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
-public class EconomyConnector extends Connector {
+public final class EconomyConnector extends Connector {
 
     /**
      * Initializes the table to "economy".
@@ -124,7 +124,7 @@ public class EconomyConnector extends Connector {
     }
 
     /**
-     * Searches the econommy table for a row with a matching user ID and returns
+     * Searches the economy table for a row with a matching user ID and returns
      * whether or not such a row was found.
      *
      * @param userId the id number of the Discord user being searched for

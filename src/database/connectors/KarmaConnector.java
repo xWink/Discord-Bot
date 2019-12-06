@@ -5,7 +5,7 @@ import database.Connector;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
-public class KarmaConnector extends Connector {
+public final class KarmaConnector extends Connector {
 
     /**
      * Initializes the table as "karma".

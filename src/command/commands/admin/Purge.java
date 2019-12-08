@@ -1,4 +1,4 @@
-package command.commands;
+package command.commands.admin;
 
 import command.Command;
 import net.dv8tion.jda.core.entities.Message;

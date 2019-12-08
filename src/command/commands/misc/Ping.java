@@ -1,4 +1,4 @@
-package command.commands;
+package command.commands.misc;
 
 import command.Command;
 import database.connectors.PingConnector;

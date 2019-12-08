@@ -1,4 +1,4 @@
-package command.commands;
+package command.commands.misc;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

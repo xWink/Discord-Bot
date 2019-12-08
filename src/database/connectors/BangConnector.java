@@ -9,7 +9,7 @@ import java.util.Date;
 public final class BangConnector extends Connector {
 
     /**
-     * Initializes the table as "bang!".
+     * Initializes the table as "bang".
      */
     public BangConnector() {
         super("bang");

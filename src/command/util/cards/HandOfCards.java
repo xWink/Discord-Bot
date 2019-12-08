@@ -1,6 +1,7 @@
 package command.util.cards;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HandOfCards {
 
@@ -11,6 +12,16 @@ public class HandOfCards {
      */
     public HandOfCards() {
         reset();
+    }
+
+    /**
+     * Initializes the hand with a list of specified cards.
+     *
+     * @param cards the cards the hand is initialized with
+     */
+    public HandOfCards(List<Card> cards) {
+        this();
+        add(cards);
     }
 
     /**
@@ -27,6 +38,15 @@ public class HandOfCards {
      */
     public void add(Card card) {
         hand.add(card);
+    }
+
+    /**
+     * Adds a list of specified cards to the hand.
+     *
+     * @param cards the cards being added
+     */
+    public void add(List<Card> cards) {
+        hand.addAll(cards);
     }
 
     /**
@@ -76,7 +96,8 @@ public class HandOfCards {
      * @return the string containing information on every card
      * in the hand
      */
-    public String showHandAsString() {
+    @Override
+    public String toString() {
         StringBuilder handString = new StringBuilder();
         for (Card card : hand) {
             handString.append(card.toEmote()).append(" ");

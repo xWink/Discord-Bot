@@ -1,4 +1,4 @@
-package command.commands;
+package command.commands.economy;
 
 import command.Command;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;

@@ -62,14 +62,13 @@ public final class BangConnector extends Connector {
      *
      * @param userId the user's ID number
      * @return a ResultSet containing the user's entire row in bang
-     * @throws SQLException may be thrown when making a prepared statement
      */
-    public ResultSet getUserRow(long userId) throws SQLException {
+    public ResultSet getUserRow(long userId) {
         if (!userExists(userId)) addUser(userId);
-        ResultSet rs = getConnection()
-                .prepareStatement("SELECT * FROM bang WHERE user = " + userId)
-                .executeQuery();
-        rs.next();
+        ResultSet rs = getUserRow(userId, getTable());
+        try {
+            rs.next();
+        } catch (SQLException ignored) { }
         return rs;
     }
 

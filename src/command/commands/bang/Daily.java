@@ -1,4 +1,4 @@
-package command.commands;
+package command.commands.bang;
 
 import command.Command;
 import database.connectors.BangConnector;

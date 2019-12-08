@@ -2,6 +2,7 @@ package command.util.cards;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class DeckOfCards {
 
@@ -85,9 +86,7 @@ public class DeckOfCards {
      * @return the first card in the deck
      */
     public Card pickTopCard() {
-        Card card = deck.get(0);
-        deck.remove(0);
-        return card;
+        return deck.remove(0);
     }
 
     /**
@@ -97,9 +96,7 @@ public class DeckOfCards {
      * @return the last card in the deck
      */
     public Card pickBottomCard() {
-        Card card = deck.get(deck.size() - 1);
-        deck.remove(deck.size() - 1);
-        return card;
+        return deck.remove(deck.size() - 1);
     }
 
     /**
@@ -110,9 +107,7 @@ public class DeckOfCards {
      */
     public Card pickRandomCard() {
         int index = (int) (Math.random() * deck.size());
-        Card card = deck.get(index);
-        deck.remove(index);
-        return card;
+        return deck.remove(index);
     }
 
     /**
@@ -124,6 +119,27 @@ public class DeckOfCards {
      */
     public Card showCard(int index) {
         return deck.get(index);
+    }
+
+    /**
+     * Removes one instance of the specified card
+     * from the deck and returns whether the removal succeeded.
+     *
+     * @param card the card being removed from the deck
+     * @return true if the card was removed, false if not.
+     */
+    public boolean remove(Card card) {
+        return deck.remove(card);
+    }
+
+    /**
+     * Removes one instance of each specified card in the list
+     * from the deck and returns whether the removal succeeded.
+     *
+     * @param cards the cards being removed from the deck
+     */
+    public void remove(List<Card> cards) {
+        cards.forEach(card -> deck.remove(card));
     }
 
     /**

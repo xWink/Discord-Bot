@@ -1,4 +1,4 @@
-package command.commands;
+package command.commands.economy;
 
 import command.Command;
 import database.connectors.EconomyConnector;

@@ -1,15 +1,15 @@
-package command.commands;
+package command.commands.blackjack;
 
 import command.Command;
-import command.util.cards.DeckOfCards;
-import database.connectors.BlackJackConnector;
+import command.util.game.BlackJackGame;
+import command.util.game.BlackJackList;
+import command.util.game.Player;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public class Bet extends Command {
 
-    private BlackJackConnector bjc;
     private EconomyConnector ec;
 
     /**
@@ -17,7 +17,6 @@ public class Bet extends Command {
      */
     public Bet() {
         super("!bet", false);
-        bjc = new BlackJackConnector();
         ec = new EconomyConnector();
     }
 
@@ -41,28 +40,38 @@ public class Bet extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
+        if (!verifyInput(event)) return;
         long userId = event.getAuthor().getIdLong();
         MessageChannel channel = event.getChannel();
-        if (!verifyInput(event)) return;
+        String output = "";
 
-        int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
-
-        // Verify that the user has enough money
         try {
+            int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
+
+            // Verify that the user has enough money
             if (!ec.canAfford(event.getAuthor().getIdLong(), betAmount)) {
                 channel.sendMessage("You do not have enough money to make that bet!\n"
                         + "Your wallet contains " + ec.getWealth(userId) + " GryphCoins").queue();
                 return;
             }
-        } catch (Exception e) {
-            printStackTraceAndSendMessage(event, e);
-            return;
-        }
 
-        // Move betted money from player's wallet to the game's bet pool and start the game
-        try {
-            ec.addOrRemoveMoney(userId, 0 - betAmount);
-            bjc.startGame(userId, betAmount, new DeckOfCards(1).pickRandomCard(), new DeckOfCards(1).pickRandomCard());
+            BlackJackGame game = new BlackJackGame(new Player(userId), betAmount);
+            game.start();
+            output += event.getAuthor().getName() + " received their first 2 cards: "
+                    + game.getPlayer().getHand().toString();
+
+            // Check if started with blackjack
+            if (game.getPlayer().getHand().getValue() == 21) {
+                int result = game.checkWinner();
+                output += "\nYou got 21!\nDealers hand: " + game.getDealer().getHand().toString() + "\n"
+                        + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*");
+                ec.addOrRemoveMoney(userId, result);
+                game.end();
+            } else {
+                BlackJackList.addGame(game);
+            }
+
+            channel.sendMessage(output).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
@@ -73,7 +82,7 @@ public class Bet extends Command {
         MessageChannel channel = event.getChannel();
 
         // Verify that the user is not already in a game
-        if (bjc.userExists(userId)) {
+        if (BlackJackList.getUserGame(userId) == null) {
             channel.sendMessage("You cannot bet while already in a game!").queue();
             return false;
         }

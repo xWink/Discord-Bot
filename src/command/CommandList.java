@@ -1,15 +1,15 @@
 package command;
 
-import command.commands.Buy;
-import command.commands.Daily;
+import command.commands.economy.Buy;
+import command.commands.bang.Daily;
 import command.commands.Help;
 import command.commands.Info;
 import command.commands.Karma;
-import command.commands.Market;
-import command.commands.MyBang;
+import command.commands.economy.Market;
+import command.commands.bang.MyBang;
 import command.commands.Ping;
 import command.commands.Purge;
-import command.commands.Wallet;
+import command.commands.economy.Wallet;
 
 import java.util.ArrayList;
 

@@ -64,8 +64,7 @@ public class Info extends Command {
      */
     private String printNice(String line) {
         if ((line.chars().filter(c -> c == '\t').count()) != 2) {
-            System.out.println("Course not found");
-            return "";
+            return line;
         }
         String out = "";
 

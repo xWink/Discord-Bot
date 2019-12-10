@@ -14,9 +14,9 @@ import command.commands.bang.MyBang;
 import command.commands.misc.Ping;
 import command.commands.admin.Purge;
 import command.commands.economy.Wallet;
+import command.commands.misc.Roles;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Container class for a list of all the commands
@@ -47,20 +47,23 @@ public final class CommandList {
     /**
      * Populates the commands list with every command.
      */
-    private static void addAllCommands() { // TODO: Add Bang when it's done
+    private static void addAllCommands() {
         // Admin commands
         commands.add(new Purge());
         // Everyone commands
-        commands.add(new Ping());
-        commands.add(new Help());
-        commands.add(new Karma());
-        commands.add(new Daily());
-        commands.add(new MyBang());
-        commands.add(new Wallet());
-        commands.add(new Info());
-        commands.add(new Market());
+        commands.add(new Bet());
         commands.add(new Buy());
-        // Blackjack
-        commands.addAll(Arrays.asList(new Bet(), new Hit(), new MyHand(), new Stand()));
+        commands.add(new Daily());
+        commands.add(new Help());
+        commands.add(new Hit());
+        commands.add(new Info());
+        commands.add(new Karma());
+        commands.add(new Market());
+        commands.add(new MyBang());
+        commands.add(new MyHand());
+        commands.add(new Ping());
+        commands.add(new Roles());
+        commands.add(new Stand());
+        commands.add(new Wallet());
     }
 }

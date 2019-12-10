@@ -73,7 +73,7 @@ public class Info extends Command {
         String restrict = line.split("\t")[1];
         String prereq = line.split("\t")[2];
 
-        out = out.concat(name + "\n");
+        out = out.concat("**" + name + "**\n```");
 
         if (restrict.equals("NONE")) {
             out += "Restriction(s): None\n";
@@ -87,6 +87,7 @@ public class Info extends Command {
             out += prereq;
         }
 
+        out += "```";
         return out;
     }
 

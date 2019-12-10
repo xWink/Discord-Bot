@@ -36,6 +36,7 @@ public class Hit extends Command {
             if (value >= 21) {
                 int reward = game.checkWinner();
                 output += value == 21 ? "You got 21!\n" : "You busted.\n";
+                output += "Dealers hand: " + game.getDealer().getHand().toString() + "\n";
                 output += (reward >= 0 ? "You earned " : "You lost ") + reward + " *gc*";
                 BlackJackList.removeGame(game);
             } else {

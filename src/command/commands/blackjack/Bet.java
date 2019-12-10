@@ -63,7 +63,8 @@ public class Bet extends Command {
             // Check if started with blackjack
             if (game.getPlayer().getHand().getValue() == 21) {
                 int result = game.checkWinner();
-                output += "\nYou got 21!\nDealers hand: " + game.getDealer().getHand().toString() + "\n"
+                output += "\n" + event.getAuthor().getName() + " got 21!\nDealers hand: "
+                        + game.getDealer().getHand().toString() + "\n"
                         + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*");
                 ec.addOrRemoveMoney(userId, result);
                 game.end();

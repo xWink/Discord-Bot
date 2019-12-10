@@ -76,9 +76,9 @@ public class Info extends Command {
         out = out.concat("**" + name + "**\n```");
 
         if (restrict.equals("NONE")) {
-            out += "Restriction(s): None\n";
+            out += "Restriction(s): None\n\n";
         } else {
-            out += (restrict + "\n");
+            out += (restrict + "\n\n");
         }
 
         if (prereq.equals("NONE")) {

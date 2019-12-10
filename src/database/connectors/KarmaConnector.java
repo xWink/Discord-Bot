@@ -4,7 +4,6 @@ import database.Connector;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public final class KarmaConnector extends Connector {
 
@@ -73,11 +72,7 @@ public final class KarmaConnector extends Connector {
      */
     public ResultSet getUserRow(long userId) {
         if (!userExists(userId)) addUser(userId);
-        ResultSet rs = getUserRow(userId, getTable());
-//        try {
-//            rs.next();
-//        } catch (SQLException ignored) { }
-        return rs;
+        return getUserRow(userId, getTable());
     }
 
 

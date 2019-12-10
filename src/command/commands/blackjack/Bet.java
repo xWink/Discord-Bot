@@ -82,7 +82,7 @@ public class Bet extends Command {
         MessageChannel channel = event.getChannel();
 
         // Verify that the user is not already in a game
-        if (BlackJackList.getUserGame(userId) == null) {
+        if (BlackJackList.getUserGame(userId) != null) {
             channel.sendMessage("You are already in a game\n"
                     + "To see your cards, say `!myhand`").queue();
             return false;

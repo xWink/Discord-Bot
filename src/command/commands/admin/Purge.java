@@ -46,19 +46,18 @@ public class Purge extends Command {
         String[] strings = event.getMessage().getContentRaw().split(" ");
 
         try {
+            int numMessages = Integer.parseInt(strings[1]);
             if (strings.length == 2) {
-                int numMessages = Integer.parseInt(strings[1]);
                 MessageHistory history = new MessageHistory(event.getTextChannel());
                 List<Message> messages = history.retrievePast(numMessages + 1).complete();
                 event.getTextChannel().deleteMessages(messages).queue();
             } else if (strings.length == 3) {
-                int numMessages = Integer.parseInt(strings[2]);
                 MessageHistory history = new MessageHistory(event.getTextChannel());
                 ArrayList<Message> toDelete = new ArrayList<>();
 
                 history.retrievePast(numMessages + 1).queue(historyMessages -> {
                     for (Message message : historyMessages) {
-                        if (message.getAuthor().getIdLong() == event.getMessage().getMentionedUsers().get(0).getIdLong()) {
+                        if (message.getAuthor().getIdLong() == Integer.parseInt(strings[2])) {
                             toDelete.add(message);
                         }
                     }

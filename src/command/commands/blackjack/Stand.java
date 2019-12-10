@@ -39,7 +39,7 @@ public class Stand extends Command {
         message = "Dealers hand:\n" + game.getDealer().getHand().toString() + "\n";
         if (reward > 0) message += "You win! Earnings: " + reward + " *gc*";
         else if (reward < 0) message += "You lose. Losses: " + (0 - reward) + " *gc*";
-        else message += "Tie game. You didn't win or lose any money";
+        else message += "Tie game, you didn't win or lose any money.";
         event.getChannel().sendMessage(message).queue();
         BlackJackList.removeGame(game);
 

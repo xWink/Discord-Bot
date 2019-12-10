@@ -33,13 +33,14 @@ public class Hit extends Command {
 
         try {
             int value = game.hit();
-            output += "Your hand is now " + game.getPlayer().getHand().toString();
+            output += "Your hand is now " + game.getPlayer().getHand().toString() + "\n";
             if (value >= 21) {
                 int reward = game.checkWinner();
                 output += value == 21 ? "You got 21!\n" : "You busted.\n";
                 output += "Dealers hand: " + game.getDealer().getHand().toString() + "\n";
                 if (game.getDealer().getHand().getValue() > 21) output += "Dealer busted!\n";
-                output += (reward >= 0 ? "You earned " : "You lost ") + reward + " *gc*";
+                if (value > 21 && game.getDealer().getHand().getValue() > 21) output += "Tie game, you didn't win or lose any money.";
+                else output += (reward >= 0 ? "You earned " : "You lost ") + reward + " *gc*";
                 BlackJackList.removeGame(game);
             }
             event.getChannel().sendMessage(output).queue();

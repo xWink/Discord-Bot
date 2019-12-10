@@ -1,6 +1,11 @@
+/*
+ * Made by Jeremy Thorne.
+ * GitHub: https://github.com/jeremyt123
+ */
 package command.commands.misc;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -105,7 +110,9 @@ public class Info extends Command {
     public void start(final MessageReceivedEvent event) {
         courseId = event.getMessage().getContentRaw().split(" ")[1];
         try {
-            reader = new BufferedReader(new FileReader("../res/courses.tsv"));
+            String tsv = new File("").getAbsolutePath();
+            tsv = tsv.replace("src\\command\\commands", "") + "res\\courses.tsv";
+            reader = new BufferedReader(new FileReader(tsv));
             event.getChannel().sendMessage(printNice(searchCourse())).queue();
         } catch (FileNotFoundException e) {
             printStackTraceAndSendMessage(event, e);

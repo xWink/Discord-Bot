@@ -5,7 +5,6 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Purge extends Command {
@@ -44,28 +43,13 @@ public class Purge extends Command {
         }
 
         String[] strings = event.getMessage().getContentRaw().split(" ");
+        MessageHistory history = new MessageHistory(event.getTextChannel());
 
         try {
             int numMessages = Integer.parseInt(strings[1]);
-            if (strings.length == 2) {
-                MessageHistory history = new MessageHistory(event.getTextChannel());
-                List<Message> messages = history.retrievePast(numMessages + 1).complete();
-                event.getTextChannel().deleteMessages(messages).queue();
-            } else if (strings.length == 3) {
-                MessageHistory history = new MessageHistory(event.getTextChannel());
-                ArrayList<Message> toDelete = new ArrayList<>();
-
-                history.retrievePast(numMessages + 1).queue(historyMessages -> {
-                    for (Message message : historyMessages) {
-                        if (message.getAuthor().getIdLong() == Integer.parseInt(strings[2])) {
-                            toDelete.add(message);
-                        }
-                    }
-                });
-                event.getTextChannel().deleteMessages(toDelete).queue();
-            }
+            List<Message> messages = history.retrievePast(numMessages + 1).complete();
+            event.getTextChannel().deleteMessages(messages).queue();
         } catch (Exception e) {
-            MessageHistory history = new MessageHistory(event.getTextChannel());
             List<Message> messages = history.retrievePast(1).complete();
             event.getTextChannel().deleteMessages(messages).queue();
         }

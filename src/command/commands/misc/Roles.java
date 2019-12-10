@@ -31,9 +31,7 @@ public class Roles extends Command {
             for (Channel channel : channelList) {
                 if (channel.getParent() == event.getGuild().getCategoriesByName("electives", true).get(0)) {
                     channelCount++;
-                    System.out.println(channel.getName());
-                    System.out.println(channel.toString());
-                    message = message.concat(channelCount + ". " + channel.toString().substring(channel.toString().indexOf(":") + 1, channel.toString().lastIndexOf("(")) + "\n");
+                    message = message.concat(channelCount + ". " + channel.getName() + "\n");
                 }
             }
 

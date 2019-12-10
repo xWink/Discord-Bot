@@ -24,15 +24,17 @@ public class Hit extends Command {
     public void start(MessageReceivedEvent event) {
         String output = "";
         BlackJackGame game = BlackJackList.getUserGame(event.getAuthor().getIdLong());
+
         if (game == null) {
-            event.getChannel().sendMessage("You haven't bet any GryphCoins yet!").queue();
+            event.getChannel().sendMessage("You haven't started a game yet!\n"
+                    + "To start a new one, say `!bet <amount>`").queue();
             return;
         }
 
         try {
             int value = game.hit();
             if (value >= 21) {
-                int reward = game.stand();
+                int reward = game.checkWinner();
                 output += value == 21 ? "You got 21!\n" : "You busted.\n";
                 output += (reward >= 0 ? "You earned " : "You lost ") + reward + " *gc*";
                 BlackJackList.removeGame(game);

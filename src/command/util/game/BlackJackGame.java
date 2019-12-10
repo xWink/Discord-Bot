@@ -60,20 +60,9 @@ public class BlackJackGame {
     /**
      * Makes the dealer hit until their hand value is over 17.
      */
-    private void dealerPlays() {
+    public void dealerPlays() {
         while (getDealer().getHand().getValue() < 17)
             getDealer().getHand().add(deck.pickTopCard());
-    }
-
-    /**
-     * Ends the game when the player stands.
-     *
-     * @return the amount of money the player won (negative if they lost money)
-     */
-    public int stand() {
-        int result = checkWinner();
-        end();
-        return result;
     }
 
     /**

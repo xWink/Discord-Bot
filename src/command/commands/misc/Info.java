@@ -111,7 +111,7 @@ public class Info extends Command {
         courseId = event.getMessage().getContentRaw().split(" ")[1];
         try {
             String tsv = new File("").getAbsolutePath();
-            tsv = tsv.replace("src\\command\\commands", "") + "res\\courses.tsv";
+            tsv = tsv.replace("build/src/command/commands", "") + "/res/courses.tsv";
             reader = new BufferedReader(new FileReader(tsv));
             event.getChannel().sendMessage(printNice(searchCourse())).queue();
         } catch (FileNotFoundException e) {

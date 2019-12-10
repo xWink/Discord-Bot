@@ -108,7 +108,14 @@ public class Info extends Command {
      */
     @Override
     public void start(final MessageReceivedEvent event) {
-        courseId = event.getMessage().getContentRaw().split(" ")[1];
+        String[] strings = event.getMessage().getContentRaw().split(" ");
+
+        if (strings.length < 2) {
+            event.getChannel().sendMessage("To search for course info, say `!info <course ID>`").queue();
+            return;
+        }
+
+        courseId = strings[1];
         try {
             String tsv = new File("").getAbsolutePath();
             tsv = tsv.replace("build/libs", "") + "res/courses.tsv";

@@ -1,14 +1,19 @@
 package command.util.cache;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
 
 public final class BangCache {
 
     private static Queue<BangUpdate> queue;
+    private static Date[] last20Updates;
+    private static boolean panic;
 
     static {
         queue = new LinkedList<>();
+        last20Updates = new Date[20];
+        panic = false;
     }
 
     private BangCache() {

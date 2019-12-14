@@ -68,12 +68,12 @@ public class Bang extends Command {
      * @return the string that describes the results of bang
      */
     private String getOutput(MessageReceivedEvent event) {
-        String poggers = "<:poggers:564285288621539328>";
-        String poggies = "<:poggies:564285288621539328>";
+        String poggers = ":poggers:";
+        String poggies = ":poggies:";
 
         if (jammed) return "The gun jammed... " + event.getAuthor().getName()
                 + " survived " + poggers + poggers + poggers;
-        else if (killed) return "bang! " + event.getAuthor().getName() + " died :skull:";
+        else if (killed) return "Bang! " + event.getAuthor().getName() + " died :skull:";
         else return "Click. " + event.getAuthor().getName() + " survived  " + poggies;
     }
 
@@ -102,11 +102,18 @@ public class Bang extends Command {
                     reward));
             //TODO: fix amount to account for records (just an "if record" to add to the reward amount)
             // Put records in memory so you don't need to query db each time someone bangs
-            if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
             String output = getOutput(event);
             output += "\nChambers left in the cylinder: ||  " + chambers + "  ||";
-            if (reward) output += "\n" + event.getAuthor().getName()
-                    + " received their daily reward of 5 GryphCoins!\n";
+            if (reward) {
+                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
+                output += "\n" + event.getAuthor().getName()
+                        + " received their daily reward of 5 GryphCoins!\n";
+            }
+            if (jammed) {
+                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
+                output += "\n" + event.getAuthor().getName()
+                        + " received a bonus 50 GryphCoins!";
+            }
             event.getChannel().sendMessage(output).queue();
             resetReward();
             resetKilled();

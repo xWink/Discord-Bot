@@ -1,6 +1,7 @@
 package command.commands.bang;
 
 import command.Command;
+import command.util.cache.BangCache;
 import database.connectors.BangConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
@@ -28,7 +29,7 @@ public class MyBang extends Command {
     public void start(MessageReceivedEvent event) {
         int attempts = 0, deaths = 0, jams = 0;
         double survivalRate = 0;
-
+        BangCache.updateAll();
         try {
             ResultSet rs = bc.getUserRow(event.getAuthor().getIdLong());
             attempts = rs.getInt("tries");

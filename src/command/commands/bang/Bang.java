@@ -1,10 +1,13 @@
 package command.commands.bang;
 
 import command.Command;
+import command.util.cache.BangCache;
+import command.util.cache.BangUpdate;
 import database.connectors.BangConnector;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+import java.util.Date;
 import java.util.Random;
 
 public class Bang extends Command {
@@ -66,10 +69,12 @@ public class Bang extends Command {
      */
     private String getOutput(MessageReceivedEvent event) {
         String poggers = "<:poggers:564285288621539328>";
+        String poggies = "<:poggies:564285288621539328>";
+
         if (jammed) return "The gun jammed... " + event.getAuthor().getName()
                 + " survived " + poggers + poggers + poggers;
         else if (killed) return "bang! " + event.getAuthor().getName() + " died :skull:";
-        else return "Click. " + event.getAuthor().getName() + " survived  <:poggies:564285288621539328>";
+        else return "Click. " + event.getAuthor().getName() + " survived  " + poggies;
     }
 
     /**
@@ -88,12 +93,20 @@ public class Bang extends Command {
         else chambers--;
         try {
             reward = bc.isEligibleForDaily(event.getAuthor().getIdLong());
-            bc.updateUserRow(event.getAuthor().getIdLong(), jammed, killed, reward);
+            BangCache.enqueue(new BangUpdate(
+                    event.getAuthor().getIdLong(),
+                    new Date().getTime(),
+                    1,
+                    killed ? 1 : 0,
+                    jammed ? 1 : 0,
+                    reward));
             //TODO: fix amount to account for records (just an "if record" to add to the reward amount)
             // Put records in memory so you don't need to query db each time someone bangs
             if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
             String output = getOutput(event);
             output += "Chambers left in the cylinder: ||  " + chambers + "  ||";
+            if (reward) output += "\n" + event.getAuthor().getName()
+                    + " received their daily reward of 5 GryphCoins!\n";
             event.getChannel().sendMessage(output).queue();
             resetReward();
             resetKilled();

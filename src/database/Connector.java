@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Abstraction of the connection between the bot and the database.
@@ -89,6 +90,15 @@ public abstract class Connector {
         }
     }
 
+    /**
+     * Allows the user to pass in a custom SQL string to use on the database.
+     *
+     * @param sql the SQL update string
+     * @throws SQLException may be thrown when creating a prepared statement
+     */
+    public void customUpdate(String sql) throws SQLException {
+        getConnection().prepareStatement(sql).executeUpdate();
+    }
 
     /**
      * Adds a new user to a specified ta a table based on their ID.

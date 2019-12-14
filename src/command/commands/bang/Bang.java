@@ -22,7 +22,7 @@ public class Bang extends Command {
     /**
      * Initializes the command's key to "!bang".
      */
-    Bang() {
+    public Bang() {
         super("!bang", false);
         bc = new BangConnector();
         ec = new EconomyConnector();

@@ -68,13 +68,23 @@ public class Bang extends Command {
      * @return the string that describes the results of bang
      */
     private String getOutput(MessageReceivedEvent event) {
+        String output = "";
         String poggers = "<:poggers:564285288621539328>"; // TODO: fix these so they are different emotes
         String poggies = "<:poggies:564285288621539328>";
 
-        if (jammed) return "The gun jammed... " + event.getAuthor().getName()
+        if (jammed) output += "The gun jammed... " + event.getAuthor().getName()
                 + " survived " + poggers + poggers + poggers;
-        else if (killed) return "Bang! " + event.getAuthor().getName() + " died :skull:";
-        else return "Click. " + event.getAuthor().getName() + " survived  " + poggies;
+        else if (killed) output += "Bang! " + event.getAuthor().getName() + " died :skull:";
+        else output += "Click. " + event.getAuthor().getName() + " survived  " + poggies;
+
+        output += "\nChambers left in the cylinder: ||  " + chambers + "  ||";
+
+        if (reward) output += "\n" + event.getAuthor().getName()
+                    + " received their daily reward of 5 GryphCoins!\n";
+        if (jammed) output += "\n" + event.getAuthor().getName()
+                    + " received a bonus 50 GryphCoins!";
+
+        return output;
     }
 
     /**
@@ -91,6 +101,7 @@ public class Bang extends Command {
         int pull = new Random().nextInt(chambers);
         if (pull == 0) tryToKill();
         else chambers--;
+
         try {
             reward = bc.isEligibleForDaily(event.getAuthor().getIdLong());
             BangCache.enqueue(new BangUpdate(
@@ -100,21 +111,14 @@ public class Bang extends Command {
                     killed ? 1 : 0,
                     jammed ? 1 : 0,
                     reward));
+
             //TODO: fix amount to account for records (just an "if record" to add to the reward amount)
             // Put records in memory so you don't need to query db each time someone bangs
-            String output = getOutput(event);
-            output += "\nChambers left in the cylinder: ||  " + chambers + "  ||";
-            if (reward) {
-                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
-                output += "\n" + event.getAuthor().getName()
-                        + " received their daily reward of 5 GryphCoins!\n";
-            }
-            if (jammed) {
-                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
-                output += "\n" + event.getAuthor().getName()
-                        + " received a bonus 50 GryphCoins!";
-            }
-            event.getChannel().sendMessage(output).queue();
+            if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
+            if (jammed) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
+
+            //event.getChannel().sendMessage(getOutput(event)).queue();
+            System.out.println("message");
             resetReward();
             resetKilled();
             resetJammed();

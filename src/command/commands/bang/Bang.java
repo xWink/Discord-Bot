@@ -68,7 +68,7 @@ public class Bang extends Command {
      * @return the string that describes the results of bang
      */
     private String getOutput(MessageReceivedEvent event) {
-        String poggers = "<:poggers:564285288621539328>";
+        String poggers = "<:poggers:564285288621539328>"; // TODO: fix these so they are different emotes
         String poggies = "<:poggies:564285288621539328>";
 
         if (jammed) return "The gun jammed... " + event.getAuthor().getName()

@@ -68,8 +68,8 @@ public class Bang extends Command {
      * @return the string that describes the results of bang
      */
     private String getOutput(MessageReceivedEvent event) {
-        String poggers = ":poggers:";
-        String poggies = ":poggies:";
+        String poggers = "<:poggers:564285288621539328>";
+        String poggies = "<:poggies:564285288621539328>";
 
         if (jammed) return "The gun jammed... " + event.getAuthor().getName()
                 + " survived " + poggers + poggers + poggers;

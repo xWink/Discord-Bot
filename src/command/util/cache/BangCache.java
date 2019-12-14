@@ -9,13 +9,15 @@ import java.util.Queue;
 public final class BangCache {
 
     private static Queue<BangUpdate> queue;
-    private static boolean panic;
     private static BangConnector bc;
+    private static boolean panic;
+    private static Queue<Long> last20;
 
     static {
         queue = new LinkedList<>();
         panic = false;
         bc = new BangConnector();
+        last20 = new LinkedList<>();
     }
 
     private BangCache() {
@@ -40,6 +42,9 @@ public final class BangCache {
         }
         queue.add(update);
 
+        last20.add(update.getLastPlayed());
+        if (last20.size() > 20) last20.remove();
+
         checkPanic();
         if (!panic) updateAll();
     }
@@ -47,12 +52,12 @@ public final class BangCache {
     private static void checkPanic() {
         long avgTime = 0;
         boolean oldPanic = panic;
-        for (BangUpdate update : queue) {
-            avgTime += update.getLastPlayed();
+        for (Long update : last20) {
+            avgTime += update;
         }
-        avgTime /= queue.size();
+        avgTime /= last20.size();
 
-        panic = avgTime > new Date().getTime() - 5000;
+        panic = avgTime > new Date().getTime() - 5000 && last20.size() >= 20;
 
         if (panic && !oldPanic) System.out.println("Panic mode: activated");
         else if (!panic && oldPanic) System.out.println("Panic mode: deactivated");

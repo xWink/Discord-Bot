@@ -104,7 +104,7 @@ public class Bang extends Command {
             // Put records in memory so you don't need to query db each time someone bangs
             if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
             String output = getOutput(event);
-            output += "Chambers left in the cylinder: ||  " + chambers + "  ||";
+            output += "\nChambers left in the cylinder: ||  " + chambers + "  ||";
             if (reward) output += "\n" + event.getAuthor().getName()
                     + " received their daily reward of 5 GryphCoins!\n";
             event.getChannel().sendMessage(output).queue();

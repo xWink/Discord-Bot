@@ -154,7 +154,7 @@ public class BangUpdate {
     public String toSQL() {
         return "UPDATE bang SET "
                 + "tries = tries + " + getAttempts()
-                + ", deaths = deaths + " + getAttempts()
+                + ", deaths = deaths + " + getDeaths()
                 + ", jams = jams + " + getJams()
                 + ", last_played = " + getLastPlayed()
                 + (isRewarded() ? ", last_daily = " + getLastPlayed() : "")

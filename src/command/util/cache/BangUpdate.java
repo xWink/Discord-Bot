@@ -1,5 +1,6 @@
 package command.util.cache;
 
+
 import java.util.Date;
 
 public class BangUpdate {

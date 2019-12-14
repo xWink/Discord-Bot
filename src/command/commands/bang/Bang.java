@@ -117,8 +117,7 @@ public class Bang extends Command {
             if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
             if (jammed) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
 
-            //event.getChannel().sendMessage(getOutput(event)).queue();
-            System.out.println("message " + (int) (Math.random() * 100));
+            event.getChannel().sendMessage(getOutput(event)).queue();
             resetReward();
             resetKilled();
             resetJammed();

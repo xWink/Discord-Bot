@@ -27,9 +27,6 @@ public final class Server {
             e.printStackTrace();
             System.exit(-1);
         }
-
-        generalChannel = guild.getTextChannelById("486633949154770946");
-        botsChannel = guild.getTextChannelById("551828950871965696");
     }
 
 

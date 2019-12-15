@@ -119,12 +119,12 @@ public class Bang extends Command {
             if (jammed) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
 
             // If not panicking anymore print all results at once
-            if (oldPanic && !BangCache.isPanicking()) {
-                event.getChannel().sendMessage(BangCache.getQueueResults()).queue();
+            if (!BangCache.isPanicking()) {
+                if (oldPanic) event.getChannel().sendMessage(BangCache.getQueueResults()).queue();
+                else event.getChannel().sendMessage(getOutput(event)).queue();
                 BangCache.updateAll();
-            } else {
-                event.getChannel().sendMessage(getOutput(event)).queue();
             }
+
             resetReward();
             resetKilled();
             resetJammed();

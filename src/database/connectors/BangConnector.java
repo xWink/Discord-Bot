@@ -39,7 +39,7 @@ public final class BangConnector extends Connector {
     }
 
     /**
-     * Sets the new daily reward time for a specified user.
+     * Sets the new last daily reward time for a specified user.
      *
      * @param userId the user's ID number
      * @param lastPlayedTime the time in ms since epoch that is the new user's daily
@@ -47,7 +47,7 @@ public final class BangConnector extends Connector {
      */
     public void setDaily(long userId, long lastPlayedTime) throws SQLException {
         if (!userExists(userId)) addUser(userId);
-        getConnection().prepareStatement("UPDATE bang SET daily = " + lastPlayedTime
+        getConnection().prepareStatement("UPDATE bang SET last_daily = " + lastPlayedTime
                 + " WHERE user = " + userId).executeUpdate();
     }
 

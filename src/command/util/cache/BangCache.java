@@ -43,11 +43,13 @@ public final class BangCache {
             }
         }
         queue.add(update);
-
+        System.out.println("added");
         if (last20.size() > 19) last20.remove(0);
+        System.out.println("checked size");
         last20.add(update.getLastPlayed());
-
+        System.out.println("about to check panic");
         checkPanic();
+        System.out.println("checked panic");
     }
 
     private static void checkPanic() {
@@ -60,7 +62,7 @@ public final class BangCache {
 
         if (panic) System.out.println(avgTime + " " + last20.size());
 
-        panic = avgTime > new Date().getTime() - 8000 && last20.size() >= 10;
+        panic = avgTime > new Date().getTime() - 8000 && last20.size() >= 20;
 
         if (panic && !oldPanic) System.out.println("Panic mode: activated");
         else if (!panic && oldPanic) System.out.println("Panic mode: deactivated");

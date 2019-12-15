@@ -1,6 +1,7 @@
 package main.eventlisteners;
 
 import main.Server;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.DisconnectEvent;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
@@ -10,9 +11,10 @@ public class ConnectionEventListener extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent event) {
         System.out.println("READY!");
-        System.out.println(Server.getApi().getGuildCache().size());
-        System.out.println(Server.getApi().getGuilds().size());
-        System.out.println(Server.getApi().getSelfUser().getMutualGuilds().size());
+        for (Guild guild : Server.getApi().getGuilds())
+            System.out.println(guild.getName());
+        for (Guild guild : Server.getApi().getSelfUser().getMutualGuilds())
+            System.out.println(guild.getName());
     }
     /**
      * Prints "attempting to reconnect" when disconnecting.

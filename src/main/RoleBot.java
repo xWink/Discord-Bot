@@ -24,6 +24,10 @@ public class RoleBot {
 
             Timer timer = new Timer();
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
+            System.out.println(Server.getApi().asBot().getShardManager().getGuilds().size());
+            System.out.println(Server.getApi().getGuildCache().size());
+            System.out.println(Server.getApi().getGuilds().size());
+            System.out.println(Server.getApi().getSelfUser().getMutualGuilds().size());
         } catch (Exception e) {
             e.printStackTrace();
         }

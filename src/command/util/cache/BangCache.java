@@ -3,6 +3,7 @@ package command.util.cache;
 import database.connectors.BangConnector;
 import main.Server;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -12,13 +13,13 @@ public final class BangCache {
     private static Queue<BangUpdate> queue;
     private static BangConnector bc;
     private static boolean panic;
-    private static Queue<Long> last20;
+    private static ArrayList<Long> last20;
 
     static {
         queue = new LinkedList<>();
         panic = false;
         bc = new BangConnector();
-        last20 = new LinkedList<>();
+        last20 = new ArrayList<>();
     }
 
     private BangCache() {
@@ -43,8 +44,8 @@ public final class BangCache {
         }
         queue.add(update);
 
+        if (last20.size() > 19) last20.remove(0);
         last20.add(update.getLastPlayed());
-        if (last20.size() > 20) last20.remove();
 
         checkPanic();
     }
@@ -100,7 +101,7 @@ public final class BangCache {
     public static String getQueueResults() {
         String output = "**Combined Data:**\n";
         for (BangUpdate update : queue) {
-            output = output.concat("**" + Server.getGuild().getMemberById(update.getId()).getNickname() + ":**\n"
+            output = output.concat("**" + Server.getGuild().getMemberById(update.getId()).getEffectiveName() + ":**\n"
                     + "Attempts: " + update.getAttempts() + "\n"
                     + "Deaths : " + update.getDeaths() + "\n"
                     + "Jams: " + update.getJams() + "\n\n");

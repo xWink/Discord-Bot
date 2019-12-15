@@ -28,17 +28,8 @@ public final class Server {
             System.exit(-1);
         }
 
-        //THESE DO NOT WORK
-
-        //general channel ID = 486633949154770946
-        generalChannel = api.getTextChannelById("486633949154770946");
-//        generalChannel = getApi().getGuildById(Config.getGuildId())
-//                .getTextChannelsByName("general", true).get(0);
-        //bots channel ID = 551828950871965696
-        botsChannel = api.getTextChannelById("551828950871965696");
-//        botsChannel = getApi().getGuildById(Config.getGuildId())
-//                .getTextChannelsByName("bots", true).get(0);
-        guild = api.getGuildById("486633949154770944");
+        generalChannel = guild.getTextChannelById("486633949154770946");
+        botsChannel = guild.getTextChannelById("551828950871965696");
     }
 
 
@@ -58,6 +49,24 @@ public final class Server {
      */
     public static TextChannel getBotsChannel() {
         return botsChannel;
+    }
+
+    /**
+     * Guild getter.
+     *
+     * @return the guild the bot is connected to (BComp)
+     */
+    public static Guild getGuild() {
+        return guild;
+    }
+
+    /**
+     * Guild setter.
+     *
+     * @param theGuild the guild the bot connects to (BComp)
+     */
+    public static void setGuild(Guild theGuild) {
+        guild = theGuild;
     }
 
     /**

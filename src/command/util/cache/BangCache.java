@@ -1,6 +1,7 @@
 package command.util.cache;
 
 import database.connectors.BangConnector;
+import main.Server;
 
 import java.util.Date;
 import java.util.LinkedList;
@@ -46,7 +47,6 @@ public final class BangCache {
         if (last20.size() > 20) last20.remove();
 
         checkPanic();
-        if (!panic) updateAll();
     }
 
     private static void checkPanic() {
@@ -79,5 +79,30 @@ public final class BangCache {
 
     private static BangUpdate dequeue() {
         return queue.remove();
+    }
+
+    /**
+     * Checks if the cache is in panic mode.
+     *
+     * @return true if in panic mode
+     */
+    public static boolean isPanicking() {
+        return panic;
+    }
+
+    /**
+     * Gets a string of all the results of every BangUpdate in the cache.
+     *
+     * @return a string containing all of the results in the cache
+     */
+    public static String getQueueResults() {
+        String output = "**Combined Data:**\n";
+        for (BangUpdate update : queue) {
+            output = output.concat("**" + Server.getGuild().getMemberById(update.getId()).getNickname() + ":**\n"
+                    + "Attempts: " + update.getAttempts() + "\n"
+                    + "Deaths : " + update.getDeaths() + "\n"
+                    + "Jams: " + update.getJams() + "\n\n");
+        }
+        return output;
     }
 }

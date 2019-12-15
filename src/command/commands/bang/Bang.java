@@ -103,6 +103,7 @@ public class Bang extends Command {
         else chambers--;
 
         try {
+            boolean oldPanic = BangCache.isPanicking();
             reward = bc.isEligibleForDaily(event.getAuthor().getIdLong());
             BangCache.enqueue(new BangUpdate(
                     event.getAuthor().getIdLong(),
@@ -117,7 +118,13 @@ public class Bang extends Command {
             if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
             if (jammed) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
 
-            event.getChannel().sendMessage(getOutput(event)).queue();
+            // If not panicking anymore print all results at once
+            if (oldPanic && !BangCache.isPanicking()) {
+                event.getChannel().sendMessage(BangCache.getQueueResults()).queue();
+                BangCache.updateAll();
+            } else {
+                event.getChannel().sendMessage(getOutput(event)).queue();
+            }
             resetReward();
             resetKilled();
             resetJammed();

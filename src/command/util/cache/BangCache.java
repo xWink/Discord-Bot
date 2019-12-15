@@ -57,7 +57,7 @@ public final class BangCache {
         }
         avgTime /= last20.size();
 
-        panic = avgTime > new Date().getTime() - 5000 && last20.size() >= 20;
+        panic = avgTime > new Date().getTime() - 8000 && last20.size() >= 10;
 
         if (panic && !oldPanic) System.out.println("Panic mode: activated");
         else if (!panic && oldPanic) System.out.println("Panic mode: deactivated");

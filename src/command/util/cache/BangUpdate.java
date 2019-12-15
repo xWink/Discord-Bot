@@ -158,7 +158,7 @@ public class BangUpdate {
                 + ", deaths = deaths + " + getDeaths()
                 + ", jams = jams + " + getJams()
                 + ", last_played = " + getLastPlayed()
-                + (isRewarded() ? ", last_daily = " + getLastPlayed() : "")
+                + (isRewarded() ? ", last_daily = " + (getLastPlayed() + 86400000) : "")
                 + " WHERE user = " + getId();
     }
 }

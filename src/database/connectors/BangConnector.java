@@ -38,24 +38,18 @@ public final class BangConnector extends Connector {
                 .getLong("last_daily") >= 86400000;
     }
 
-//    /**
-//     * Updates a user's row in the table based on the results of a bang.
-//     *
-//     * @param userId the user's ID number
-//     * @param jammed whether the gun jammed
-//     * @param killed whether the user was killed (gun went bang)
-//     * @param reward whether the user received their daily reward
-//     * @throws SQLException may be thrown when making a prepared statement
-//     */
-//    public void updateUserRow(long userId, boolean jammed, boolean killed, boolean reward) throws SQLException {
-//        if (!userExists(userId)) addUser(userId);
-//        getConnection().prepareStatement("UPDATE bang SET tries = tries + 1,"
-//                + " last_played = " + new Date().getTime()
-//                + (jammed ? ", jams = jams + 1" : "")
-//                + (killed ? ", deaths = deaths + 1" : "")
-//                + (reward ? ", last_daily = last_played" : "")
-//                + " WHERE user = " + userId).executeUpdate();
-//    }
+    /**
+     * Sets the new daily reward time for a specified user.
+     *
+     * @param userId the user's ID number
+     * @param lastPlayedTime the time in ms since epoch that is the new user's daily
+     * @throws SQLException may be thrown when making a prepared statement
+     */
+    public void setDaily(long userId, long lastPlayedTime) throws SQLException {
+        if (!userExists(userId)) addUser(userId);
+        getConnection().prepareStatement("UPDATE bang SET daily = " + lastPlayedTime
+                + " WHERE user = " + userId).executeUpdate();
+    }
 
     /**
      * Returns a user's row in the table.

@@ -115,7 +115,9 @@ public class Bang extends Command {
 
             //TODO: fix amount to account for records (just an "if record" to add to the reward amount)
             // Put records in memory so you don't need to query db each time someone bangs
-            if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
+            if (reward) {
+                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
+            }
             if (jammed) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
 
             // If not panicking anymore print all results at once

@@ -1,6 +1,7 @@
-package command.commands.misc;
+package command.commands.roles;
 
 import command.Command;
+import database.connectors.RolesConnector;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.Role;
@@ -14,11 +15,14 @@ import java.util.List;
 
 public class Join extends Command {
 
+    private RolesConnector rs;
+
     /**
      * Initializes the command's key to "!join".
      */
     public Join() {
         super("!join", false);
+        rs = new RolesConnector();
     }
 
     /**
@@ -30,9 +34,11 @@ public class Join extends Command {
     public void start(MessageReceivedEvent event) {
         String message = event.getMessage().getContentRaw();
         String[] strings = message.split(" ");
+        long userId = event.getAuthor().getIdLong();
+        MessageChannel channel = event.getChannel();
 
         if (strings.length < 2) {
-            event.getChannel().sendMessage("Command: !join <courseID>\n`Example: !join mcs2100`").queue();
+            channel.sendMessage("Command: !join <courseID>\n`Example: !join mcs2100`").queue();
             return;
         }
 
@@ -43,11 +49,26 @@ public class Join extends Command {
         }
 
         if (!courseExists(courseId)) {
-            event.getChannel().sendMessage("There is no course with that ID").queue();
+            channel.sendMessage("There is no course with that ID").queue();
             return;
         }
 
-        //TODO: Need connector for the database stuff
+        try { // TODO: check if that role already exists first
+            if (rs.userAppliedForRole(courseId, userId)) {
+                channel.sendMessage("You already applied for that role").queue();
+                return;
+            }
+
+            if (rs.getNumApplications(courseId) < 3) {
+                rs.applyForRole(courseId, userId);
+                channel.sendMessage("Added your application to " + courseId + "!").queue();
+                return;
+            }
+
+            // Add role to user
+        } catch (Exception e) {
+            printStackTraceAndSendMessage(event, e);
+        }
     }
 
     private void attemptRoleAssignment(MessageReceivedEvent event, String roleName) {

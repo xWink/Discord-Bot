@@ -91,11 +91,7 @@ public final class BlackJackConnector extends Connector {
      * @return a ResultSet containing the user's entire row in blackjack
      */
     public ResultSet getUserRow(long userId) {
-        ResultSet rs = getUserRow(userId, getTable());
-//        try {
-//            rs.next();
-//        } catch (SQLException ignored) { }
-        return rs;
+        return getUserRow(userId, getTable());
     }
 
     /**

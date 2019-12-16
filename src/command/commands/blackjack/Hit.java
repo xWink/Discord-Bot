@@ -3,16 +3,20 @@ package command.commands.blackjack;
 import command.Command;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
+import database.connectors.EconomyConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 
 public class Hit extends Command {
+
+    private EconomyConnector ec;
 
     /**
      * Initializes the command's key to "!hit".
      */
     public Hit() {
         super("!hit", false);
+        ec = new EconomyConnector();
     }
 
     /**
@@ -33,14 +37,15 @@ public class Hit extends Command {
 
         try {
             int value = game.hit();
-            output += "Your hand is now " + game.getPlayer().getHand().toString() + "\n";
+            output += event.getAuthor().getName() + "'s hand is now " + game.getPlayer().getHand().toString() + "\n";
             if (value >= 21) {
                 int reward = game.checkWinner();
                 output += value == 21 ? "You got 21!\n" : "You busted.\n";
                 output += "Dealers hand: " + game.getDealer().getHand().toString() + "\n";
                 if (game.getDealer().getHand().getValue() > 21) output += "Dealer busted!\n";
                 if (value > 21 && game.getDealer().getHand().getValue() > 21) output += "Tie game, you didn't win or lose any money.";
-                else output += (reward >= 0 ? "You earned " : "You lost ") + reward + " *gc*";
+                else output += (reward >= 0 ? "You earned " + reward : "You lost " + (0 - reward)) + " *gc*";
+                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), reward);
                 BlackJackList.removeGame(game);
             }
             event.getChannel().sendMessage(output).queue();

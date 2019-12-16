@@ -118,7 +118,7 @@ public class RolesConnector extends Connector {
                 return i - 1;
             }
         }
-        return 4;
+        throw new SQLException("Acquired too many columns");
     }
 
     /**

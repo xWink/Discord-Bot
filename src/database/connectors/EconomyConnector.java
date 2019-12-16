@@ -41,7 +41,7 @@ public final class EconomyConnector extends Connector {
      */
     public boolean canAfford(long userId, int cost) throws SQLException {
         if (!userExists(userId)) addUser(userId);
-        return getUserRow(userId).getInt("wallet") - cost > 0;
+        return getUserRow(userId).getInt("wallet") - cost >= 0;
     }
 
     /**

@@ -1,4 +1,4 @@
-package command.commands.misc;
+package command.commands.roles;
 
 import command.Command;
 import net.dv8tion.jda.core.entities.Channel;

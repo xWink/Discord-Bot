@@ -15,7 +15,7 @@ import command.commands.bang.MyBang;
 import command.commands.misc.Ping;
 import command.commands.admin.Purge;
 import command.commands.economy.Wallet;
-import command.commands.misc.Roles;
+import command.commands.roles.Roles;
 
 import java.util.ArrayList;
 

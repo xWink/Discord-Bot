@@ -63,11 +63,8 @@ public class Join extends Command {
         }
 
         courseId = message.substring(message.indexOf(strings[1]));
-        System.out.println(courseId);
         if (!event.getGuild().getRolesByName(courseId, true).isEmpty()) {
-            System.out.println("attempting assignment");
             attemptRoleAssignment();
-            System.out.println("attempted");
             return;
         }
 
@@ -77,7 +74,6 @@ public class Join extends Command {
         }
 
         applyForRole();
-        System.out.println("applied");
     }
 
     /**

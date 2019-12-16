@@ -46,8 +46,7 @@ public class RolesConnector extends Connector {
     private boolean roleExists(String roleName) throws SQLException {
         if (role == null || !role.equals(roleName)) setRole(roleName);
         boolean exists = false;
-        if (rs.next()) exists = true;
-        rs.beforeFirst();
+        if (rs.first()) exists = true;
         return exists;
     }
 

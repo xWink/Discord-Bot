@@ -77,7 +77,6 @@ public class BlackJackGame {
         int dealerValue = getDealer().getHand().getValue();
 
         if (dealerValue == playerValue || (playerValue > 21 && dealerValue > 21)) return 0; // Tie
-        if (playerValue == 21) return betAmount * 2; // Blackjack
         if (playerValue > 21) return 0 - betAmount; // Player busted
         if (dealerValue > 21) return betAmount; // Dealer busted
         return playerValue > dealerValue ? betAmount : 0 - betAmount; // Higher value wins

@@ -110,11 +110,9 @@ public class RolesConnector extends Connector {
      * @see command.commands.roles.Leave
      */
     public void removeApplication(String roleName, long userId) throws SQLException {
-        if (!applicationExists(roleName) || userAppliedForRole(roleName, userId)) return;
+        if (!applicationExists(roleName) || !userAppliedForRole(roleName, userId)) return;
         for (int i = 1; i < 4; i++) {
-            System.out.println(rs.getFloat("user" + i));
             if (rs.getFloat("user" + i) == userId) {
-                System.out.println("here");
                 getConnection().prepareStatement("UPDATE roles SET user" + i + " = null "
                         + "WHERE name = '" + roleName + "'").executeUpdate();
 

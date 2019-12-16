@@ -80,7 +80,7 @@ public class Leave extends Command {
         Category electives = guild.getJDA().getCategoryById("556266020625711130");
 
         // If role is in the Electives category
-        if (channels.isEmpty() || electives.getTextChannels().contains(channels.get(0))) {
+        if (!channels.isEmpty() && electives.getTextChannels().contains(channels.get(0))) {
             guild.getController().removeSingleRoleFromMember(theEvent.getMember(),
                     guild.getRolesByName(courseId, true).get(0)).queue();
             return true;

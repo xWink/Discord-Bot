@@ -4,6 +4,7 @@ import database.Connector;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class RolesConnector extends Connector {
 
@@ -119,6 +120,25 @@ public class RolesConnector extends Connector {
             }
         }
         throw new SQLException("Acquired too many columns");
+    }
+
+    /**
+     * Returns an ArrayList of the user ID numbers of every
+     * applicant for a specified role.
+     *
+     * @param roleName the name of the role
+     * @return an ArrayList of the user ID numbers of every
+     * applicant for that role
+     * @throws SQLException may be thrown when checking if the role exists
+     * or when querying a ResultSet
+     */
+    public ArrayList<Long> getApplicantIds(String roleName) throws SQLException {
+        ArrayList<Long> applicants = new ArrayList<>();
+        if (!roleExists(roleName)) return applicants;
+        for (int i = 1; i < 4; i++) {
+            applicants.add(rs.getLong("user" + i));
+        }
+        return applicants;
     }
 
     /**

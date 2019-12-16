@@ -79,6 +79,7 @@ public class RolesConnector extends Connector {
      * @throws SQLException may be thrown when checking if the role exists or querying a ResultSet
      */
     public boolean userAppliedForRole(String roleName, long userId) throws SQLException {
+        role = roleName;
         if (!roleExists(roleName)) return false;
         return rs.getFloat("user1") == userId
                 || rs.getFloat("user2") == userId

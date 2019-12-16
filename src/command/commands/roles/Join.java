@@ -164,8 +164,9 @@ public class Join extends Command {
 
         textChannel.getPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).getManager().deny(Permission.MESSAGE_READ).queue();
 
-        // Do not let people with this role do @everyone
+        // Do not let people with this role do @everyone or change nicknames
         textChannel.getPermissionOverride(role).getManager().deny(Permission.MESSAGE_MENTION_EVERYONE).queue();
+        textChannel.getPermissionOverride(role).getManager().deny(Permission.NICKNAME_CHANGE).queue();
     }
 
     /**

@@ -45,14 +45,17 @@ public class Join extends Command {
         MessageChannel channel = event.getChannel();
         theEvent = event;
 
-        if (strings.length < 2) {
+        if (strings.length != 2) {
             channel.sendMessage("Command: !join <courseID>\n`Example: !join mcs2100`").queue();
             return;
         }
 
         courseId = message.substring(message.indexOf(strings[1]));
+        System.out.println(courseId);
         if (!event.getGuild().getRolesByName(courseId, true).isEmpty()) {
+            System.out.println("attempting assignment");
             attemptRoleAssignment();
+            System.out.println("attempted");
             return;
         }
 
@@ -62,6 +65,7 @@ public class Join extends Command {
         }
 
         applyForRole();
+        System.out.println("applied");
     }
 
     /**

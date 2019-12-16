@@ -149,9 +149,7 @@ public class RolesConnector extends Connector {
         rs = getConnection().prepareStatement("SELECT * FROM " + getTable()
                 + " WHERE name = '" + roleName + "'").executeQuery();
         role = roleName;
-        System.out.println(rs.getFetchSize());
-        System.out.println(roleName);
-        System.out.println(rs.first());
+        rs.first();
     }
 
     /**

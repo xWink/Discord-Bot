@@ -43,29 +43,31 @@ public final class BangCache {
             }
         }
         queue.add(update);
-        System.out.println("added");
         if (last20.size() > 19) last20.remove(0);
-        System.out.println("checked size");
         last20.add(update.getLastPlayed());
-        System.out.println("about to check panic");
         checkPanic();
-        System.out.println("checked panic");
     }
 
     private static void checkPanic() {
-        long avgTime = 0;
-        boolean oldPanic = panic;
-        for (Long update : last20) {
-            avgTime += update;
+        try {
+            long avgTime = last20.stream().reduce(0L, Long::sum) / last20.size();
+            System.out.println("Stream time: " + avgTime); // TODO: see if this works the same as below
+
+            long avgTime2 = 0;
+            boolean oldPanic = panic;
+            for (Long update : last20) {
+                avgTime2 += update;
+            }
+            avgTime2 /= last20.size();
+            System.out.println("Normal time: " + avgTime2);
+
+            panic = avgTime2 > new Date().getTime() - 8000 && last20.size() >= 20;
+
+            if (panic && !oldPanic) System.out.println("Panic mode: activated");
+            else if (!panic && oldPanic) System.out.println("Panic mode: deactivated");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        avgTime /= last20.size();
-
-        if (panic) System.out.println(avgTime + " " + last20.size());
-
-        panic = avgTime > new Date().getTime() - 8000 && last20.size() >= 20;
-
-        if (panic && !oldPanic) System.out.println("Panic mode: activated");
-        else if (!panic && oldPanic) System.out.println("Panic mode: deactivated");
     }
 
     /**
@@ -102,11 +104,16 @@ public final class BangCache {
      */
     public static String getQueueResults() {
         String output = "**Combined Data:**\n";
-        for (BangUpdate update : queue) {
-            output = output.concat("**" + Server.getGuild().getMemberById(update.getId()).getEffectiveName() + ":**\n"
-                    + "Attempts: " + update.getAttempts() + "\n"
-                    + "Deaths : " + update.getDeaths() + "\n"
-                    + "Jams: " + update.getJams() + "\n\n");
+        try {
+            for (BangUpdate update : queue) {
+                output = output.concat("**" + Server.getGuild().getMemberById(update.getId()).getEffectiveName() + ":**\n"
+                        + "Attempts: " + update.getAttempts() + "\n"
+                        + "Deaths : " + update.getDeaths() + "\n"
+                        + "Jams: " + update.getJams() + "\n\n");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            output += "Lost data. Please contact a moderator!";
         }
         return output;
     }

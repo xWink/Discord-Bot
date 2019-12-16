@@ -16,6 +16,7 @@ import command.commands.misc.Ping;
 import command.commands.admin.Purge;
 import command.commands.economy.Wallet;
 import command.commands.roles.Join;
+import command.commands.roles.Leave;
 import command.commands.roles.Roles;
 
 import java.util.ArrayList;
@@ -62,6 +63,7 @@ public final class CommandList {
         commands.add(new Info());
         commands.add(new Join());
         commands.add(new Karma());
+        commands.add(new Leave());
         commands.add(new Market());
         commands.add(new MyBang());
         commands.add(new MyHand());

@@ -47,9 +47,8 @@ public class RolesConnector extends Connector {
      * @throws SQLException may be thrown when making a prepared statement
      */
     private boolean applicationExists(String roleName) throws SQLException {
-        if (role == null || !role.equals(roleName)) setRole(roleName);
-        rs.beforeFirst();
-        return rs.next();
+        setRole(roleName);
+        return rs.first();
     }
 
     /**

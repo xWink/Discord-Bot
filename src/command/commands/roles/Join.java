@@ -33,6 +33,18 @@ public class Join extends Command {
     }
 
     /**
+     * Compares a string to the command's key and checks if that
+     * string starts with the key.
+     *
+     * @param string the user's input being compared to the key
+     * @return returns true if the key matches and false otherwise
+     */
+    @Override
+    public boolean keyMatches(String string) {
+        return string.toLowerCase().startsWith(getKey());
+    }
+
+    /**
      * @see Leave
      * Allows user to join a role.
      *

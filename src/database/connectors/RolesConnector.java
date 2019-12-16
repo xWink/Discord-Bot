@@ -28,7 +28,6 @@ public class RolesConnector extends Connector {
      * or handling ResultSets
      */
     public void applyForRole(String roleName, long userId) throws SQLException {
-        role = roleName;
         if (roleExists(roleName))
             addExistingRoleApplication(roleName, userId);
         else
@@ -45,7 +44,7 @@ public class RolesConnector extends Connector {
      * @throws SQLException may be thrown when making a prepared statement
      */
     private boolean roleExists(String roleName) throws SQLException {
-        if (!role.equals(roleName)) setRole(roleName);
+        if (role == null || !role.equals(roleName)) setRole(roleName);
         boolean exists = false;
         if (rs.next()) exists = true;
         rs.beforeFirst();
@@ -79,7 +78,6 @@ public class RolesConnector extends Connector {
      * @throws SQLException may be thrown when checking if the role exists or querying a ResultSet
      */
     public boolean userAppliedForRole(String roleName, long userId) throws SQLException {
-        role = roleName;
         if (!roleExists(roleName)) return false;
         return rs.getFloat("user1") == userId
                 || rs.getFloat("user2") == userId

@@ -28,7 +28,7 @@ public class RolesConnector extends Connector {
      * or handling ResultSets
      */
     public void applyForRole(String roleName, long userId) throws SQLException {
-        if (roleExists(roleName))
+        if (applicationExists(roleName))
             addExistingRoleApplication(roleName, userId);
         else
             addNewRoleApplication(roleName, userId);
@@ -43,11 +43,9 @@ public class RolesConnector extends Connector {
      * @return true if the role is found in a table
      * @throws SQLException may be thrown when making a prepared statement
      */
-    private boolean roleExists(String roleName) throws SQLException {
+    private boolean applicationExists(String roleName) throws SQLException {
         if (role == null || !role.equals(roleName)) setRole(roleName);
-        boolean exists = false;
-        if (rs.first()) exists = true;
-        return exists;
+        return rs.first();
     }
 
     /**
@@ -61,7 +59,7 @@ public class RolesConnector extends Connector {
      * or when checking if the role exists
      */
     private void addNewRoleApplication(String roleName, long userId) throws SQLException {
-        if (!roleExists(roleName)) {
+        if (!applicationExists(roleName)) {
             getConnection().prepareStatement("INSERT INTO roles VALUES ('"
                     + roleName + "', " + userId
                     + ", null, null)").executeUpdate();
@@ -77,7 +75,7 @@ public class RolesConnector extends Connector {
      * @throws SQLException may be thrown when checking if the role exists or querying a ResultSet
      */
     public boolean userAppliedForRole(String roleName, long userId) throws SQLException {
-        if (!roleExists(roleName)) return false;
+        if (!applicationExists(roleName)) return false;
         return rs.getFloat("user1") == userId
                 || rs.getFloat("user2") == userId
                 || rs.getFloat("user3") == userId;
@@ -93,7 +91,7 @@ public class RolesConnector extends Connector {
      * or making a prepared statement
      */
     private void addExistingRoleApplication(String roleName, long userId) throws SQLException {
-        if (!roleExists(roleName)) return;
+        if (!applicationExists(roleName)) return;
         if (userAppliedForRole(roleName, userId)) return;
 
         int numApplicants = getNumApplications(roleName);
@@ -113,7 +111,7 @@ public class RolesConnector extends Connector {
      * or when querying a ResultSet
      */
     public int getNumApplications(String roleName) throws SQLException {
-        if (!roleExists(roleName)) return 0;
+        if (!applicationExists(roleName)) return 0;
         for (int i = 1; i <= 3; i++) {
             if (rs.getLong("user" + i) == 0) {
                 return i - 1;
@@ -134,7 +132,7 @@ public class RolesConnector extends Connector {
      */
     public ArrayList<Long> getApplicantIds(String roleName) throws SQLException {
         ArrayList<Long> applicants = new ArrayList<>();
-        if (!roleExists(roleName)) return applicants;
+        if (!applicationExists(roleName)) return applicants;
         for (int i = 1; i < 4; i++) {
             applicants.add(rs.getLong("user" + i));
         }
@@ -148,9 +146,12 @@ public class RolesConnector extends Connector {
      * @throws SQLException may be thrown when making a prepared statement
      */
     private void setRole(String roleName) throws SQLException {
-        rs = getConnection().prepareStatement("SELECT * FROM roles "
-                + "WHERE name = '" + roleName + "'").executeQuery();
+        rs = getConnection().prepareStatement("SELECT * FROM " + getTable()
+                + " WHERE name = '" + roleName + "'").executeQuery();
         role = roleName;
+        System.out.println(rs.getFetchSize());
+        System.out.println(roleName);
+        System.out.println(rs.first());
     }
 
     /**

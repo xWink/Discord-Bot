@@ -28,10 +28,13 @@ public class RolesConnector extends Connector {
      * or handling ResultSets
      */
     public void applyForRole(String roleName, long userId) throws SQLException {
-        if (applicationExists(roleName))
+        if (applicationExists(roleName)) {
+            System.out.println("exists");
             addExistingRoleApplication(roleName, userId);
-        else
+        } else {
+            System.out.println("doesnt exist");
             addNewRoleApplication(roleName, userId);
+        }
     }
 
     /**

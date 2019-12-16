@@ -27,6 +27,7 @@ public class Stand extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         BlackJackGame game = BlackJackList.getUserGame(event.getAuthor().getIdLong());
+        String author = event.getAuthor().getName();
         String message;
 
         if (game == null) {
@@ -37,9 +38,9 @@ public class Stand extends Command {
 
         int reward = game.checkWinner();
         message = "Dealers hand:\n" + game.getDealer().getHand().toString() + "\n";
-        if (reward > 0) message += "You win! Earnings: " + reward + " *gc*";
-        else if (reward < 0) message += "You lose. Losses: " + (0 - reward) + " *gc*";
-        else message += "Tie game, you didn't win or lose any money.";
+        if (reward > 0) message += author + " wins! Earnings: " + reward + " *gc*";
+        else if (reward < 0) message += author + " lost. Losses: " + (0 - reward) + " *gc*";
+        else message += "Tie game, " + author + " didn't win or lose any money.";
         event.getChannel().sendMessage(message).queue();
         BlackJackList.removeGame(game);
 

@@ -118,7 +118,7 @@ public class RolesConnector extends Connector {
 
                 for (int j = i + 1; j < 4; j++) {
                     getConnection().prepareStatement("UPDATE roles SET user" + (j - 1) + " = user" + j
-                            + "WHERE name = '" + roleName + "'").executeUpdate();
+                            + " WHERE name = '" + roleName + "'").executeUpdate();
                 }
 
                 setRole(roleName);

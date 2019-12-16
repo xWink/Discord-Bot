@@ -32,42 +32,31 @@ public final class BangCache {
      * @param update the object containing data about an update to the database
      */
     public static void enqueue(BangUpdate update) {
+        boolean found = false;
         for (BangUpdate element : queue) {
             if (element.getId() == update.getId()) {
                 element.addAttempts(update.getAttempts());
                 element.addDeaths(update.getDeaths());
                 element.addJams(update.getJams());
-                element.setLastPlayed(new Date().getTime());
+                element.setLastPlayed(update.getLastPlayed());
                 if (update.isRewarded()) element.setReward(true);
-                return;
+                found = true;
             }
         }
-        queue.add(update);
+        if (!found) queue.add(update);
         if (last20.size() > 19) last20.remove(0);
         last20.add(update.getLastPlayed());
         checkPanic();
     }
 
     private static void checkPanic() {
-        try {
-            long avgTime = last20.stream().reduce(0L, Long::sum) / last20.size();
-            System.out.println("Stream time: " + avgTime); // TODO: see if this works the same as below
+        boolean oldPanic = panic;
+        long avgTime = last20.stream().reduce(0L, Long::sum) / last20.size();
 
-            long avgTime2 = 0;
-            boolean oldPanic = panic;
-            for (Long update : last20) {
-                avgTime2 += update;
-            }
-            avgTime2 /= last20.size();
-            System.out.println("Normal time: " + avgTime2);
+        panic = avgTime > new Date().getTime() - 8000 && last20.size() >= 20;
 
-            panic = avgTime2 > new Date().getTime() - 8000 && last20.size() >= 20;
-
-            if (panic && !oldPanic) System.out.println("Panic mode: activated");
-            else if (!panic && oldPanic) System.out.println("Panic mode: deactivated");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        if (panic && !oldPanic) System.out.println("Panic mode: activated");
+        else if (!panic && oldPanic) System.out.println("Panic mode: deactivated");
     }
 
     /**
@@ -104,16 +93,11 @@ public final class BangCache {
      */
     public static String getQueueResults() {
         String output = "**Combined Data:**\n";
-        try {
-            for (BangUpdate update : queue) {
-                output = output.concat("**" + Server.getGuild().getMemberById(update.getId()).getEffectiveName() + ":**\n"
-                        + "Attempts: " + update.getAttempts() + "\n"
-                        + "Deaths : " + update.getDeaths() + "\n"
-                        + "Jams: " + update.getJams() + "\n\n");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            output += "Lost data. Please contact a moderator!";
+        for (BangUpdate update : queue) {
+            output = output.concat("**" + Server.getGuild().getMemberById(update.getId()).getEffectiveName() + ":**\n"
+                    + "Attempts: " + update.getAttempts() + "\n"
+                    + "Deaths : " + update.getDeaths() + "\n"
+                    + "Jams: " + update.getJams() + "\n\n");
         }
         return output;
     }

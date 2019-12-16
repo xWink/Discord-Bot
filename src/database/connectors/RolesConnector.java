@@ -91,14 +91,44 @@ public class RolesConnector extends Connector {
      * or making a prepared statement
      */
     private void addExistingRoleApplication(String roleName, long userId) throws SQLException {
-        if (!applicationExists(roleName)) return;
-        if (userAppliedForRole(roleName, userId)) return;
+        if (!applicationExists(roleName) || userAppliedForRole(roleName, userId)) return;
 
         int numApplicants = getNumApplications(roleName);
         if (numApplicants > 0 && numApplicants < 3) {
             getConnection().prepareStatement("UPDATE roles"
                     + " SET user" + (numApplicants + 1) + " = " + userId
                     + " WHERE name = '" + roleName + "'").executeUpdate();
+        }
+    }
+
+    /**
+     * Removes a user's application for a role from the database.
+     *
+     * @param roleName the name of the role
+     * @param userId the user's ID number
+     * @throws SQLException may be thrown when handling ResultSets
+     * @see command.commands.roles.Leave
+     */
+    public void removeApplication(String roleName, long userId) throws SQLException {
+        if (!applicationExists(roleName) || userAppliedForRole(roleName, userId)) return;
+        for (int i = 1; i < 4; i++) {
+            if (rs.getFloat("user" + i) == userId) {
+                getConnection().prepareStatement("UPDATE roles SET user" + i + " = null "
+                        + "WHERE name = '" + roleName + "'").executeUpdate();
+
+                for (int j = i + 1; j < 4; j++) {
+                    getConnection().prepareStatement("UPDATE roles SET user" + (j - 1) + " = user" + j
+                            + "WHERE name = '" + roleName + "'").executeUpdate();
+                }
+
+                setRole(roleName);
+                if (rs.getFloat("user1") == 0) {
+                    getConnection().prepareStatement("DELETE FROM roles "
+                            + "WHERE name = '" + roleName + "'").executeUpdate();
+                }
+
+                break;
+            }
         }
     }
 

@@ -9,6 +9,7 @@ import java.util.Date;
 public final class BangConnector extends Connector {
 
     /**
+     * @see Connector
      * Initializes the table as "bang".
      */
     public BangConnector() {

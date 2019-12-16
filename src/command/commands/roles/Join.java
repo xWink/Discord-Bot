@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class Join extends Command {
     private String courseId;
 
     /**
+     * @see Command
      * Initializes the command's key to "!join".
      */
     public Join() {
@@ -31,6 +33,7 @@ public class Join extends Command {
     }
 
     /**
+     * @see Leave
      * Allows user to join a role.
      *
      * @param event the MessageReceivedEvent that triggered the command
@@ -39,7 +42,6 @@ public class Join extends Command {
     public void start(MessageReceivedEvent event) {
         String message = event.getMessage().getContentRaw();
         String[] strings = message.split(" ");
-        long userId = event.getAuthor().getIdLong();
         MessageChannel channel = event.getChannel();
         theEvent = event;
 
@@ -59,34 +61,7 @@ public class Join extends Command {
             return;
         }
 
-        try {
-            if (rs.userAppliedForRole(courseId, userId)) {
-                channel.sendMessage("You already applied for that role").queue();
-                return;
-            }
-
-            if (rs.getNumApplications(courseId) < 3) {
-                rs.applyForRole(courseId, userId);
-                channel.sendMessage("Added your application to " + courseId + "!").queue();
-                return;
-            }
-
-            // Create role/channel and apply them to applicants
-            createRole();
-            ArrayList<Long> applicants = rs.getApplicantIds(courseId);
-            List<Role> roles = event.getGuild().getRolesByName(courseId, true);
-
-            for (int i = 0; i < 4; i++) {
-                event.getGuild().getController()
-                        .addRolesToMember(event.getGuild().getMemberById(applicants.get(i)), roles).queue();
-            }
-            event.getGuild().getController().addRolesToMember(event.getMember()).queue();
-
-            channel.sendMessage("The channel you applied for was created! "
-                    + "Only members of the channel can see it.").queue();
-        } catch (Exception e) {
-            printStackTraceAndSendMessage(event, e);
-        }
+        applyForRole();
     }
 
     /**
@@ -96,19 +71,47 @@ public class Join extends Command {
         Guild guild = theEvent.getGuild();
         MessageChannel channel = theEvent.getChannel();
         List<Role> roles = guild.getRolesByName(courseId, true);
+        List<TextChannel> channels = guild.getTextChannelsByName(courseId, true);
+        List<TextChannel> electiveChannels = guild.getJDA().getCategoryById("556266020625711130").getTextChannels();
 
-        if (guild.getMember(theEvent.getAuthor()).getRoles().contains(roles.get(0))) {
+        if (guild.getMember(theEvent.getAuthor()).getRoles().contains(roles.get(0)))
             channel.sendMessage("You already have this role!").complete();
 
-        } else if (guild.getTextChannelsByName(courseId, true).isEmpty()
-                || !guild.getJDA().getCategoryById("556266020625711130").getTextChannels()
-                .contains(guild.getTextChannelsByName(courseId, true).get(0))) {
+        else if (channels.isEmpty() || !electiveChannels.contains(channels.get(0)))
             channel.sendMessage("I cannot set you to that role").complete();
 
-        } else {
+        else {
             guild.getController().addRolesToMember(theEvent.getMember(), roles).queue();
             channel.sendMessage("Role " + courseId + " added to "
                     + theEvent.getMember().getAsMention()).complete();
+        }
+    }
+
+    /**
+     * Tries to apply for a role that doesn't yet exist.
+     */
+    private void applyForRole() {
+        MessageChannel channel = theEvent.getChannel();
+        try {
+            if (rs.userAppliedForRole(courseId, theEvent.getAuthor().getIdLong())) {
+                channel.sendMessage("You already applied for that role").queue();
+                return;
+            }
+
+            if (rs.getNumApplications(courseId) < 3) {
+                rs.applyForRole(courseId, theEvent.getAuthor().getIdLong());
+                channel.sendMessage("Added your application to " + courseId + "!").queue();
+                return;
+            }
+
+            // Create role/channel and apply them to applicants
+            createRole();
+            giveRoleToApplicants();
+
+            channel.sendMessage("The channel you applied for was created! "
+                    + "Only members of the channel can see it.").queue();
+        } catch (Exception e) {
+            printStackTraceAndSendMessage(theEvent, e);
         }
     }
 
@@ -163,5 +166,21 @@ public class Join extends Command {
 
         // Do not let people with this role do @everyone
         textChannel.getPermissionOverride(role).getManager().deny(Permission.MESSAGE_MENTION_EVERYONE).queue();
+    }
+
+    /**
+     * Gives a newly created role to all people who applied for it.
+     *
+     * @throws SQLException may be thrown when interacting with the database
+     */
+    private void giveRoleToApplicants() throws SQLException {
+        ArrayList<Long> applicants = rs.getApplicantIds(courseId);
+        List<Role> roles = theEvent.getGuild().getRolesByName(courseId, true);
+
+        for (int i = 0; i < 4; i++) {
+            theEvent.getGuild().getController()
+                    .addRolesToMember(theEvent.getGuild().getMemberById(applicants.get(i)), roles).queue();
+        }
+        theEvent.getGuild().getController().addRolesToMember(theEvent.getMember()).queue();
     }
 }

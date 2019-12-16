@@ -8,6 +8,7 @@ import java.sql.SQLException;
 public final class PingConnector extends Connector {
 
     /**
+     * @see Connector
      * Initializes table to "ping".
      */
     public PingConnector() {

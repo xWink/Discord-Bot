@@ -13,6 +13,7 @@ import java.sql.SQLException;
 public final class BlackJackConnector extends Connector {
 
     /**
+     * @see Connector
      * Initializes the table to "blackjack".
      */
     public BlackJackConnector() {

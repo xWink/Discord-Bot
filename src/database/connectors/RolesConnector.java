@@ -12,6 +12,7 @@ public class RolesConnector extends Connector {
     private ResultSet rs;
 
     /**
+     * @see Connector
      * Initializes table to "roles".
      */
     public RolesConnector() {

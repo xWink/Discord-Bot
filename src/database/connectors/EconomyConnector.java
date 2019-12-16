@@ -10,6 +10,7 @@ import java.util.Date;
 public final class EconomyConnector extends Connector {
 
     /**
+     * @see Connector
      * Initializes the table to "economy".
      */
     public EconomyConnector() {

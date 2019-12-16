@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 public class Leave extends Command {
 
     /**
+     * @see Command
      * Initializes the command's key to "!leave".
      */
     public Leave() {
@@ -13,6 +14,7 @@ public class Leave extends Command {
     }
 
     /**
+     * @see Join
      * Allows user to leave a role.
      *
      * @param event the MessageReceivedEvent that triggered the command

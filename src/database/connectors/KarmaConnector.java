@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 public final class KarmaConnector extends Connector {
 
     /**
+     * @see Connector
      * Initializes the table as "karma".
      */
     public KarmaConnector() {

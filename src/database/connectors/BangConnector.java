@@ -1,9 +1,13 @@
 package database.connectors;
 
+import command.util.highscores.BangAttemptsHighScore;
+import command.util.highscores.BangPlayer;
+import command.util.highscores.Player;
 import database.Connector;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 
 public final class BangConnector extends Connector {
@@ -77,6 +81,31 @@ public final class BangConnector extends Connector {
                 .executeQuery();
         rs.next();
         return rs.getLong("last_daily") + 86460000;
+    }
+
+    /**
+     * Gets a list of the Bang players with the most attempts in order of
+     * greatest to least.
+     *
+     * @return list of top 10 bang attempts players
+     * @throws SQLException may be thrown when interacting with database
+     * @see BangAttemptsHighScore
+     */
+    public ArrayList<Player> getMostAttemptsPlayers() throws SQLException {
+        ResultSet resultSet = getConnection().prepareStatement("SELECT user, tries FROM bang "
+                + "WHERE " + new Date().getTime() + " - last_played < 604800000 "
+                + "GROUP BY user, tries "
+                + "ORDER BY tries").executeQuery();
+
+        ArrayList<Player> players = new ArrayList<>();
+        if (resultSet.last()) {
+            do {
+                players.add(new BangPlayer(resultSet.getLong("user"),
+                        resultSet.getInt("tries"), resultSet.getInt("deaths"),
+                        resultSet.getInt("jams")));
+            } while (resultSet.previous());
+        }
+        return players;
     }
 
     /**

@@ -4,12 +4,19 @@ plugins {
     id "com.github.johnrengelman.shadow" version '4.0.4'
 }
 
-mainClassName = 'DiscordBot.RoleBot'
-group 'com.DiscordBot'
-version '1'
+mainClassName = 'main.RoleBot'
+version '2'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
 
 repositories {
     mavenCentral()

@@ -1,6 +1,5 @@
 package database.connectors;
 
-import command.util.highscores.BangAttemptsHighScore;
 import command.util.highscores.BangPlayer;
 import command.util.highscores.Player;
 import database.Connector;
@@ -89,15 +88,14 @@ public final class BangConnector extends Connector {
      *
      * @return list of top 10 bang attempts players
      * @throws SQLException may be thrown when interacting with database
-     * @see BangAttemptsHighScore
      */
-    public ArrayList<Player> getMostAttemptsPlayers() throws SQLException {
+    public ArrayList<BangPlayer> getMostAttemptsPlayers() throws SQLException {
         ResultSet resultSet = getConnection().prepareStatement("SELECT user, tries FROM bang "
                 + "WHERE " + new Date().getTime() + " - last_played < 604800000 "
                 + "GROUP BY user, tries "
                 + "ORDER BY tries").executeQuery();
 
-        ArrayList<Player> players = new ArrayList<>();
+        ArrayList<BangPlayer> players = new ArrayList<>();
         if (resultSet.last()) {
             do {
                 players.add(new BangPlayer(resultSet.getLong("user"),

@@ -1,26 +1,16 @@
 package command.util.highscores;
 
-import java.util.ArrayList;
+
+import main.Server;
 
 public abstract class HighScore {
 
-    private String type;
-    private ArrayList<Player> players;
+    protected Guild guild; // todo: import
 
-    HighScore(String highScoreType) {
-        type = highScoreType;
-        players = new ArrayList<>();
+    HighScore() {
+        guild = Server.getGuild();
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public ArrayList<Player> getPlayers() {
-        return players;
-    }
-
-    protected void setPlayers(ArrayList<Player> thePlayers) {
-        players = thePlayers;
-    }
+    @Override
+    public abstract String toString();
 }

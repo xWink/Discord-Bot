@@ -52,7 +52,7 @@ public class Join extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        String message = event.getMessage().getContentRaw();
+        String message = event.getMessage().getContentRaw().toLowerCase();
         String[] strings = message.split(" ");
         MessageChannel channel = event.getChannel();
         theEvent = event;

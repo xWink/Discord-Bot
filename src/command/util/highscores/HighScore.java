@@ -2,6 +2,7 @@ package command.util.highscores;
 
 
 import main.Server;
+import net.dv8tion.jda.core.entities.Guild;
 
 public abstract class HighScore {
 

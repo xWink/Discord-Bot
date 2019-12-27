@@ -41,7 +41,7 @@ public class BangHighScore extends HighScore {
             if (player.getTries() == mostAttempts.get(0).getTries()) {
                 if (!player.equals(mostAttempts.get(0)))
                     string.append(", ");
-                string.append(guild.getPlayerById(player.getId()).getName);
+                string.append(guild.getMemberById(player.getId()).getEffectiveName());
             }
         }
     }

@@ -6,11 +6,13 @@ import net.dv8tion.jda.core.entities.Guild;
 
 public abstract class HighScore {
 
-    protected Guild guild; // todo: import
+    protected Guild guild;
 
-    HighScore() {
+    protected HighScore() {
         guild = Server.getGuild();
     }
+
+    public abstract void update();
 
     @Override
     public abstract String toString();

@@ -1,5 +1,6 @@
-package command.util.highscores;
+package command.util.highscores.bang;
 
+import command.util.highscores.HighScore;
 import database.connectors.BangConnector;
 
 import java.util.ArrayList;
@@ -14,6 +15,10 @@ public class BangHighScore extends HighScore {
 
     public BangHighScore() {
         bc = new BangConnector();
+        update();
+    }
+
+    public void update() {
         updateMostAttempts();
     }
 
@@ -22,6 +27,7 @@ public class BangHighScore extends HighScore {
         try {
             mostAttempts = bc.getMostAttemptsPlayers();
             mostAttempts.subList(10, mostAttempts.size()).clear();
+            //todo: update roles
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -35,10 +41,10 @@ public class BangHighScore extends HighScore {
     }
 
     private void appendMostAttempts(StringBuilder string) {
-        string.append("Most attempts: ").append(mostAttempts.get(0).getTries()).append(" by ");
+        string.append("Most attempts: ").append(mostAttempts.get(0).getAttempts()).append(" by ");
 
         for (BangPlayer player : mostAttempts) {
-            if (player.getTries() == mostAttempts.get(0).getTries()) {
+            if (player.getAttempts() == mostAttempts.get(0).getAttempts()) {
                 if (!player.equals(mostAttempts.get(0)))
                     string.append(", ");
                 string.append(guild.getMemberById(player.getId()).getEffectiveName());

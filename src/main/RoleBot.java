@@ -5,6 +5,7 @@ import main.eventlisteners.JoinLeaveEventListener;
 import main.eventlisteners.MessageEventListener;
 import main.eventlisteners.ReactionEventListener;
 import main.timertasks.RemoveExpiredRoles;
+import main.timertasks.UpdateHighScores;
 
 import java.util.Timer;
 
@@ -24,23 +25,10 @@ public class RoleBot {
 
             Timer timer = new Timer();
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
+            timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    private void updateBangScores() {
-        /*Check bang high scores every hour
-        Timer timer1 = new Timer();
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                UpdateRoles.updateBangRoles();
-                UpdateRoles.removeExpiredColours();
-            }
-        };
-        timer1.schedule(task,1000*60*60,1000*60*60);
-        */
     }
 
     private void updateWagers() {

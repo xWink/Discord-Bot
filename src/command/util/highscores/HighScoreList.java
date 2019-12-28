@@ -12,9 +12,12 @@ public class HighScoreList {
 
     static {
         highScores = new ArrayList<>();
-        highScores.add(new BangHighScore());
+        highScores.add(BangHighScore.getBangHighScore());
     }
 
+    /**
+     * Updates all high scores in the list.
+     */
     public static void update() {
         for (HighScore highScore : highScores) {
             highScore.update();

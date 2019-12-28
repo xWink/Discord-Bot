@@ -1,6 +1,7 @@
 package command;
 
 import command.commands.bang.Bang;
+import command.commands.bang.BangScore;
 import command.commands.blackjack.Bet;
 import command.commands.blackjack.Hit;
 import command.commands.blackjack.MyHand;
@@ -53,8 +54,10 @@ public final class CommandList {
     private static void addAllCommands() {
         // Admin commands
         commands.add(new Purge());
+
         // Everyone commands
         commands.add(new Bang());
+        commands.add(new BangScore());
         commands.add(new Bet());
         commands.add(new Buy());
         commands.add(new Daily());

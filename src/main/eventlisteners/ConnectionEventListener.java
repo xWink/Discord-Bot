@@ -16,6 +16,7 @@ public class ConnectionEventListener extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent event) {
         Server.setGuild(event.getJDA().getGuildById(486633949154770944L));
+        Server.setGeneralChannel(Server.getGuild().getTextChannelById(486633949154770946L));
         System.out.println("Ready!");
     }
 

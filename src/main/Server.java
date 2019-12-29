@@ -67,6 +67,15 @@ public final class Server {
     }
 
     /**
+     * General Channel setter.
+     *
+     * @param channel the general channel for the BComp Discord server
+     */
+    public static void setGeneralChannel(TextChannel channel) {
+        generalChannel = channel;
+    }
+
+    /**
      * generaChannel getter.
      *
      * @return the TextChannel named general in the server.

@@ -1,16 +1,16 @@
 package command.commands.admin;
 
-import command.Command;
+import command.AdminCommand;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageHistory;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
-public class Purge extends Command {
+public class Purge extends AdminCommand {
 
     /**
-     * Initializes the command's key to "!purge".
+     * Initializes the command's key to "!purge" and is global.
      */
     public Purge() {
         super("!purge", true);
@@ -36,9 +36,8 @@ public class Purge extends Command {
      * @param event the MessageReceivedEvent that triggered the command
      */
     @Override
-    public void start(MessageReceivedEvent event) {
-        if (!event.getMember().getRoles().contains(event.getGuild().getRoleById("486635066928136194"))
-                && !event.getMember().isOwner()) {
+    protected void runCommand(MessageReceivedEvent event) {
+        if (!isAdmin(event.getMember())) {
             return;
         }
 

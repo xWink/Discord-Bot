@@ -16,6 +16,7 @@ public abstract class Command {
      * Initializes the command's key.
      *
      * @param theKey the command's key
+     * @param isGlobal whether the command can be used globally
      */
     public Command(String theKey, boolean isGlobal) {
         key = theKey;

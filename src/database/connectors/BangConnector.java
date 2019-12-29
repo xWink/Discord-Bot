@@ -116,7 +116,7 @@ public final class BangConnector extends Connector {
         try {
             getConnection().prepareStatement("INSERT INTO bang "
                     + "(user, tries, deaths, jams, last_played) "
-                    + "VALUES (" + userId + ", 0, 0, 0, 0").executeUpdate();
+                    + "VALUES (" + userId + ", 0, 0, 0, 0)").executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }

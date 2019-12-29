@@ -1,6 +1,5 @@
 package command;
 
-import command.commands.admin.Restart;
 import command.commands.bang.Bang;
 import command.commands.bang.BangScore;
 import command.commands.bang.BangScores;
@@ -57,7 +56,6 @@ public final class CommandList {
     private static void addAllCommands() {
         // Admin commands
         commands.add(new Purge());
-        commands.add(new Restart());
 
         // Everyone commands
         commands.add(new Bang());

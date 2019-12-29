@@ -29,10 +29,10 @@ public class Flip extends Command {
 
         if (isHeads) {
             output += "Heads!";
-            imgPath = imgPath.replace("build/libs", "") + "res/loonie_heads.png";
+            imgPath = imgPath.replace("build/libs", "res/loonie_heads.png");
         } else {
             output += "Tails!!";
-            imgPath = imgPath.replace("build/libs", "") + "res/loonie_tails.png";
+            imgPath = imgPath.replace("build/libs", "res/loonie_tails.png");
         }
 
         event.getChannel().sendMessage(output).addFile(new File(imgPath)).queue();

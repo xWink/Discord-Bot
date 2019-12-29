@@ -30,7 +30,7 @@ Updates to the database are made using SQL instructions.
 
 `!mybang` and `!daily` - Shows player's bang scores and when their daily reward resets.
 
-`!bangscore` or `!bangscores` - Shows high scores for attempts, deaths, survival rate, and death rate.
+`!bangscores` - Shows high scores for attempts, deaths, survival rate, and death rate.
 
 `!bet`, `!hit`, `!stand` - Play blackjack against the computer.
 
@@ -46,4 +46,4 @@ Updates to the database are made using SQL instructions.
 
 `!info [course ID]` - displays relevant information about a specified course at UoGuelph
 
-`!karma` - shows a user's karma (upvotes and downvotes)
+`!flip` - Flips a coin, displaying the result

@@ -2,24 +2,25 @@ package command;
 
 import command.commands.bang.Bang;
 import command.commands.bang.BangScore;
+import command.commands.bang.BangScores;
+import command.commands.bang.MyBang;
 import command.commands.blackjack.Bet;
 import command.commands.blackjack.Hit;
 import command.commands.blackjack.MyHand;
 import command.commands.blackjack.Stand;
 import command.commands.economy.Buy;
-import command.commands.bang.Daily;
 import command.commands.Help;
 import command.commands.misc.Flip;
 import command.commands.misc.Info;
 import command.commands.misc.Karma;
 import command.commands.economy.Market;
-import command.commands.bang.MyBang;
 import command.commands.misc.Ping;
 import command.commands.admin.Purge;
 import command.commands.economy.Wallet;
 import command.commands.roles.Join;
 import command.commands.roles.Leave;
 import command.commands.roles.Roles;
+import command.commands.bang.Daily;
 
 import java.util.ArrayList;
 
@@ -59,6 +60,7 @@ public final class CommandList {
         // Everyone commands
         commands.add(new Bang());
         commands.add(new BangScore());
+        commands.add(new BangScores());
         commands.add(new Bet());
         commands.add(new Buy());
         commands.add(new Daily());

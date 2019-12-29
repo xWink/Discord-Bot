@@ -31,7 +31,7 @@ public class Flip extends Command {
             output += "Heads!";
             imgPath = imgPath.replace("build/libs", "res/loonie_heads.png");
         } else {
-            output += "Tails!!";
+            output += "Tails!";
             imgPath = imgPath.replace("build/libs", "res/loonie_tails.png");
         }
 

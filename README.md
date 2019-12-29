@@ -22,28 +22,31 @@ Updates to the database are made using SQL instructions.
 
 # Commands
 ### Anyone
-`!help` - Displays other commands that can be used.
-
-`!ping` - Returns "pong!" and your latency in ms. Keeps track of user's best/worst scores.
 
 `!bang` - Play Russian roulette.
-
-`!mybang` and `!daily` - Shows player's bang scores and when their daily reward resets.
 
 `!bangscores` - Shows high scores for attempts, deaths, survival rate, and death rate.
 
 `!bet`, `!hit`, `!stand` - Play blackjack against the computer.
 
-`!market` and `!buy <item #>` - view and purchase items listed on the market
+`!daily` - Shows when player's daily reward resets.
 
-`!roles` - Shows a list of available roles to join.
+`!flip` - Flips a coin, displaying the result.
+
+`!info [course ID]` - Shows relevant information about a specified course at UoGuelph.
 
 `!join [role name]` - If the role already exists, it is assigned to the user. Otherwise, the user's id and requested role are stored in a database. If enough users apply for the same role, the role and a private text channel are created and all applicants are assigned to it.
 
+`!help` - Displays other commands that can be used.
+
+`!karma` - Shows user's upvotes, downvotes, and total karma
+
 `!leave [role name]` - Unassigns the role from user and removes their application for that role from the database.
 
-`!karma` - displays user's upvotes, downvotes, and total karma
+`!market` and `!buy <item #>` - View and purchase items listed on the market
 
-`!info [course ID]` - displays relevant information about a specified course at UoGuelph
+`!mybang` - Shows player's bang scores.
 
-`!flip` - Flips a coin, displaying the result
+`!ping` - Returns "pong!" and your latency in ms. Keeps track of user's best/worst scores.
+
+`!roles` - Shows a list of available roles to join.

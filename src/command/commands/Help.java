@@ -20,14 +20,19 @@ public class Help extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        event.getChannel().sendMessage(
-                "`!join` & `!leave` - Join or leave a channel for your electives\n\n"
-                        + "`!roles` - See available groups\n\n"
-                        + "`!bang` - Play Russian Roulette\n\n"
-                        + "`!bangscores` & `!mybang` - See bang high scores or personal stats\n\n"
-                        + "`!bet`, `!hit`, `!hand`, & `!stand` - Play blackjack\n\n"
-                        + "`!wallet` - Show how many GryphCoins you have\n\n"
-                        + "`!market` & `!buy <item #>` - Use the GryphCoin market\n\n"
-                        + "`!karma` - Show how many upvotes and downvotes you have").queue();
+        event.getChannel().sendMessage("`!bang` - Play Russian roulette.\n\n"
+                + "`!bangscores` - Shows high scores for bang.\n\n"
+                + "`!bet`, `!hit`, `!stand` - Play blackjack against the computer.\n\n"
+                + "`!daily` - Shows when your daily reward resets.\n\n"
+                + "`!flip` - Flips a coin, displaying the result."
+                + "`!info [course ID]` - Shows info on a course at UoGuelph.\n\n"
+                + "`!join [role name]` - Apply to join or create a private elective channel.\n\n"
+                + "`!karma` - Shows your upvotes, downvotes, and total karma.\n\n"
+                + "`!leave [role name]` - Leave or unapply for a private elective channel.\n\n"
+                + "`!market` and `!buy <item #>` - View and purchase items listed on the market.\n\n"
+                + "`!mybang` - Shows your bang scores.\n\n"
+                + "`!ping` - Shows your latency.\n\n"
+                + "`!roles` - Shows a list of available roles to join.\n\n"
+        ).queue();
     }
 }

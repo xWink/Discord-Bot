@@ -21,7 +21,7 @@ public class Restart extends AdminCommand {
      */
     @Override
     protected void runCommand(MessageReceivedEvent event) {
-        Server.getApi().shutdown();
+        Server.getApi().shutdownNow();
         RoleBot.main(new String[0]);
     }
 }

@@ -1,6 +1,5 @@
-package command.util.highscores.bang;
+package command.util.highscores;
 
-import command.util.highscores.HighScore;
 import database.connectors.BangConnector;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
@@ -8,7 +7,7 @@ import net.dv8tion.jda.core.entities.Role;
 import java.util.ArrayList;
 
 
-public class BangHighScore extends HighScore {
+public final class BangHighScore extends HighScore {
 
     private static BangHighScore bangHighScore;
 
@@ -78,7 +77,7 @@ public class BangHighScore extends HighScore {
      */
     @Override
     public String toString() {
-        StringBuilder string = new StringBuilder("**Bang high scores**:\n");
+        StringBuilder string = new StringBuilder("**Bang High Scores**:\n");
         appendMostAttempts(string);
         return string.toString();
     }

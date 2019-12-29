@@ -1,6 +1,6 @@
 package database.connectors;
 
-import command.util.highscores.bang.BangPlayer;
+import command.util.highscores.BangPlayer;
 import database.Connector;
 
 import java.sql.ResultSet;

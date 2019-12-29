@@ -1,10 +1,8 @@
 package command.util.highscores;
 
-import command.util.highscores.bang.BangHighScore;
-
 import java.util.ArrayList;
 
-public class HighScoreList {
+public final class HighScoreList {
 
     private static ArrayList<HighScore> highScores;
 

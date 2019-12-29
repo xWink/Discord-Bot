@@ -37,6 +37,7 @@ public final class BangConnector extends Connector {
      * @throws SQLException may be thrown when accessing the long "last_daily" from a ResultSet
      */
     public boolean isEligibleForDaily(long userId) throws SQLException {
+        if (!userExists(userId)) addUser(userId);
         return new Date().getTime() - getUserRow(userId, getTable())
                 .getLong("last_daily") >= 86400000;
     }

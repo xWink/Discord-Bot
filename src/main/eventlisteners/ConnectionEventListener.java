@@ -15,9 +15,8 @@ public class ConnectionEventListener extends ListenerAdapter {
      */
     @Override
     public void onReady(ReadyEvent event) {
-        //Server.setGuild(Server.getApi().getGuilds().get(1));
+        Server.setGuild(event.getJDA().getGuildById(486633949154770944L));
         System.out.println("Ready!");
-        System.out.println(event.getJDA().getGuildById(486633949154770944L).toString());
     }
 
     /**

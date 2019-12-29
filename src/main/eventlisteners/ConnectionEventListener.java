@@ -18,6 +18,7 @@ public class ConnectionEventListener extends ListenerAdapter {
         Server.setGuild(Server.getApi().getGuilds().get(1));
         System.out.println("Ready!");
     }
+
     /**
      * Prints "attempting to reconnect" when disconnecting.
      * It is unknown why this causes the bot to reconnect

@@ -26,6 +26,8 @@ public class RoleBot {
             Timer timer = new Timer();
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
             timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);
+
+            Server.getApi().awaitReady();
         } catch (Exception e) {
             e.printStackTrace();
         }

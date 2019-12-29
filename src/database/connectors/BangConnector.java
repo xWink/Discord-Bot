@@ -90,7 +90,7 @@ public final class BangConnector extends Connector {
      * @throws SQLException may be thrown when interacting with database
      */
     public ArrayList<BangPlayer> getMostAttemptsPlayers() throws SQLException {
-        ResultSet resultSet = getConnection().prepareStatement("SELECT user, tries FROM bang "
+        ResultSet resultSet = getConnection().prepareStatement("SELECT * FROM bang "
                 + "WHERE " + new Date().getTime() + " - last_played < 604800000 "
                 + "GROUP BY user, tries "
                 + "ORDER BY tries").executeQuery();

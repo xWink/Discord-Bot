@@ -9,6 +9,7 @@ import command.commands.blackjack.Stand;
 import command.commands.economy.Buy;
 import command.commands.bang.Daily;
 import command.commands.Help;
+import command.commands.misc.Flip;
 import command.commands.misc.Info;
 import command.commands.misc.Karma;
 import command.commands.economy.Market;
@@ -61,6 +62,7 @@ public final class CommandList {
         commands.add(new Bet());
         commands.add(new Buy());
         commands.add(new Daily());
+        commands.add(new Flip());
         commands.add(new Help());
         commands.add(new Hit());
         commands.add(new Info());

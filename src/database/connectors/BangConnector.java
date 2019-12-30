@@ -116,6 +116,7 @@ public final class BangConnector extends Connector {
     public ArrayList<BangPlayer> getLuckiestPlayers() throws SQLException {
         ResultSet resultSet = getConnection().prepareStatement("SELECT * FROM bang "
                 + "WHERE " + new Date().getTime() + " - last_played < 604800000 "
+                + "AND tries >= 20 "
                 + "GROUP BY user, tries "
                 + "ORDER BY death_rate").executeQuery();
 

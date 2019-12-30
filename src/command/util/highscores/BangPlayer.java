@@ -58,6 +58,6 @@ public class BangPlayer extends Player {
      * @return Percentage survival rate in Bang
      */
     public double getSurvivalRate() {
-        return 100 - (Math.round((double) deaths / (double) attempts) * 10d);
+        return 100 - (Math.round((double) deaths / (double) attempts * 100d));
     }
 }

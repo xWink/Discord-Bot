@@ -80,7 +80,10 @@ public final class BangHighScore extends HighScore {
         luckiest = new ArrayList<>();
         try {
             luckiest = bc.getLuckiestPlayers();
-            luckiest.subList(10, luckiest.size()).clear();
+
+            if (luckiest.size() > 10)
+                luckiest.subList(10, luckiest.size()).clear();
+
             Role luckiestRole = getGuild().getRoleById("573398281108062208");
 
             for (BangPlayer player : luckiest) {
@@ -137,10 +140,10 @@ public final class BangHighScore extends HighScore {
      * top bang survival rate players
      */
     private String getLuckiestString() {
-        String string = "Most attempts: " + mostAttempts.get(0).getAttempts() + " by ";
+        String string = "Highest survival rate: " + luckiest.get(0).getSurvivalRate() + " by ";
 
         for (BangPlayer player : luckiest) {
-            if (player.getAttempts() == luckiest.get(0).getSurvivalRate()) {
+            if (player.getSurvivalRate() == luckiest.get(0).getSurvivalRate()) {
                 if (!player.equals(luckiest.get(0)))
                     string = string.concat(", ");
                 string = string.concat(getGuild().getMemberById(player.getId()).getEffectiveName());

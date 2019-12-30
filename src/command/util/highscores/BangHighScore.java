@@ -71,6 +71,31 @@ public final class BangHighScore extends HighScore {
     }
 
     /**
+     * Updates the list of top 10 luckiest players, then updates roles
+     * of members in the server so only those tied for first place have
+     * the specified role.
+     */
+    private void updateLuckiest() {
+        luckiest = new ArrayList<>();
+        try {
+            luckiest = bc.getLuckiestPlayers();
+            luckiest.subList(10, luckiest.size()).clear();
+            Role luckiestRole = getGuild().getRoleById("573398281108062208");
+
+            for (BangPlayer player : luckiest) {
+                Member member = getGuild().getMemberById(player.getId());
+                if (player.getAttempts() == luckiest.get(0).getSurvivalRate()) {
+                    getGuild().getController().addRolesToMember(member, luckiestRole).queue();
+                } else {
+                    getGuild().getController().removeRolesFromMember(member, luckiestRole).queue();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Returns a neatly formatted string containing data on all the high scores for bang.
      *
      * @return the neatly formatted string containing data on all the high scores for bang
@@ -79,6 +104,7 @@ public final class BangHighScore extends HighScore {
     public String toString() {
         StringBuilder string = new StringBuilder("**Bang High Scores**:\n");
         appendMostAttempts(string);
+        appendLuckiest(string);
         return string.toString();
     }
 
@@ -94,6 +120,24 @@ public final class BangHighScore extends HighScore {
         for (BangPlayer player : mostAttempts) {
             if (player.getAttempts() == mostAttempts.get(0).getAttempts()) {
                 if (!player.equals(mostAttempts.get(0)))
+                    string.append(", ");
+                string.append(getGuild().getMemberById(player.getId()).getEffectiveName());
+            }
+        }
+    }
+
+    /**
+     * Appends a neatly formatted string based on the players with highest bang
+     * survival rates to a StringBuilder.
+     *
+     * @param string the StringBuilder which will have information appended to it
+     */
+    private void appendLuckiest(StringBuilder string) {
+        string.append("Highest survival rate: ").append(luckiest.get(0).getSurvivalRate()).append(" by ");
+
+        for (BangPlayer player : luckiest) {
+            if (player.getAttempts() == luckiest.get(0).getSurvivalRate()) {
+                if (!player.equals(luckiest.get(0)))
                     string.append(", ");
                 string.append(getGuild().getMemberById(player.getId()).getEffectiveName());
             }

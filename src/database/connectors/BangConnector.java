@@ -107,6 +107,30 @@ public final class BangConnector extends Connector {
     }
 
     /**
+     * Gets a list of the Bang players with the highest survival rates
+     * in order of greatest to least.
+     *
+     * @return list of top 10 bang survival rate players
+     * @throws SQLException may be thrown when interacting with database
+     */
+    public ArrayList<BangPlayer> getLuckiestPlayers() throws SQLException {
+        ResultSet resultSet = getConnection().prepareStatement("SELECT * FROM bang "
+                + "WHERE " + new Date().getTime() + " - last_played < 604800000 "
+                + "GROUP BY user, tries "
+                + "ORDER BY death_rate").executeQuery();
+
+        ArrayList<BangPlayer> players = new ArrayList<>();
+        if (resultSet.first()) {
+            do {
+                players.add(new BangPlayer(resultSet.getLong("user"),
+                        resultSet.getInt("tries"), resultSet.getInt("deaths"),
+                        resultSet.getInt("jams")));
+            } while (resultSet.next());
+        }
+        return players;
+    }
+
+    /**
      * Adds a new user to the bang table based on their ID.
      *
      * @param userId the ID number of the new user being added

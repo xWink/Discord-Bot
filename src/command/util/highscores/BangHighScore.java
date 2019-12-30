@@ -43,6 +43,7 @@ public final class BangHighScore extends HighScore {
      */
     public void update() {
         updateMostAttempts();
+        updateLuckiest();
     }
 
     /**

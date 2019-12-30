@@ -22,7 +22,7 @@ Updates to the database are made using SQL instructions.
 
 # Commands
 ### Moderators
-`!purge [# messages]` - deletes a given number of messages.
+`!purge [# messages]` - Deletes a given number of messages.
 
 ### Anyone
 

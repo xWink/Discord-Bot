@@ -103,45 +103,50 @@ public final class BangHighScore extends HighScore {
      */
     @Override
     public String toString() {
-        StringBuilder string = new StringBuilder("**Bang High Scores**:\n");
-        appendMostAttempts(string);
-        appendLuckiest(string);
-        return string.toString();
+        return "**Bang High Scores**:\n"
+                + getMostAttemptsString() + "\n"
+                + getLuckiestString() + "\n";
     }
 
     /**
-     * Appends a neatly formatted string based on the players with the most bang attempts
-     * to a StringBuilder.
+     * Returns a string containing data based on the
+     * players with the most bang attempts.
      *
-     * @param string the StringBuilder which will have information appended to it
+     * @return a neatly formatted string containing the
+     * top bang attempts players
      */
-    private void appendMostAttempts(StringBuilder string) {
-        string.append("Most attempts: ").append(mostAttempts.get(0).getAttempts()).append(" by ");
+    private String getMostAttemptsString() {
+        String string = "Most attempts: " + mostAttempts.get(0).getAttempts() + " by ";
 
         for (BangPlayer player : mostAttempts) {
             if (player.getAttempts() == mostAttempts.get(0).getAttempts()) {
                 if (!player.equals(mostAttempts.get(0)))
-                    string.append(", ");
-                string.append(getGuild().getMemberById(player.getId()).getEffectiveName());
+                    string = string.concat(", ");
+                string = string.concat(getGuild().getMemberById(player.getId()).getEffectiveName());
             }
         }
+
+        return string;
     }
 
     /**
-     * Appends a neatly formatted string based on the players with highest bang
-     * survival rates to a StringBuilder.
+     * Returns a string containing data based on the
+     * players with the highest survival rates in bang.
      *
-     * @param string the StringBuilder which will have information appended to it
+     * @return a neatly formatted string containing the
+     * top bang survival rate players
      */
-    private void appendLuckiest(StringBuilder string) {
-        string.append("Highest survival rate: ").append(luckiest.get(0).getSurvivalRate()).append(" by ");
+    private String getLuckiestString() {
+        String string = "Most attempts: " + mostAttempts.get(0).getAttempts() + " by ";
 
         for (BangPlayer player : luckiest) {
             if (player.getAttempts() == luckiest.get(0).getSurvivalRate()) {
                 if (!player.equals(luckiest.get(0)))
-                    string.append(", ");
-                string.append(getGuild().getMemberById(player.getId()).getEffectiveName());
+                    string = string.concat(", ");
+                string = string.concat(getGuild().getMemberById(player.getId()).getEffectiveName());
             }
         }
+
+        return string;
     }
 }

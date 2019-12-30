@@ -21,6 +21,9 @@ the bot is all stored on a MariaDB server hosted on Google Cloud Platform.
 Updates to the database are made using SQL instructions.
 
 # Commands
+### Moderators
+`!purge [# messages]` - deletes a given number of messages.
+
 ### Anyone
 
 `!bang` - Play Russian roulette.

@@ -142,7 +142,8 @@ public final class BangHighScore extends HighScore {
         return "**Bang High Scores**:\n"
                 + getMostAttemptsString() + "\n"
                 + getLuckiestString() + "\n"
-                + getUnluckiestString();
+                + getUnluckiestString()
+                + getTotalsString();
     }
 
     /**
@@ -205,6 +206,15 @@ public final class BangHighScore extends HighScore {
             }
         }
 
+        return string;
+    }
+
+    private String getTotalsString() {
+        String string = "";
+        try {
+            string = "Total attempts: " + bc.getTotalAttempts()
+                    + "\nTotal deaths: " + bc.getTotalDeaths();
+        } catch (Exception ignored) { }
         return string;
     }
 }

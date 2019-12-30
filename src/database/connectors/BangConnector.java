@@ -132,6 +132,34 @@ public final class BangConnector extends Connector {
     }
 
     /**
+     * Returns the total number of times people played Bang.
+     *
+     * @return number of bang attempts
+     * @throws SQLException may be thrown when interacting with database
+     */
+    public int getTotalAttempts() throws SQLException {
+        int attempts = 0;
+        ResultSet rs = getConnection().prepareStatement("SELECT * FROM bang").executeQuery();
+        while (rs.next())
+            attempts += rs.getInt("tries");
+        return attempts;
+    }
+
+    /**
+     * Returns the total number of times people died in Bang.
+     *
+     * @return number of bang deaths
+     * @throws SQLException may be thrown when interacting with database
+     */
+    public int getTotalDeaths() throws SQLException {
+        int deaths = 0;
+        ResultSet rs = getConnection().prepareStatement("SELECT * FROM bang").executeQuery();
+        while (rs.next())
+            deaths += rs.getInt("deaths");
+        return deaths;
+    }
+
+    /**
      * Adds a new user to the bang table based on their ID.
      *
      * @param userId the ID number of the new user being added

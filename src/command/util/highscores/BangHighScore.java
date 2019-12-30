@@ -5,6 +5,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public final class BangHighScore extends HighScore {
@@ -44,6 +45,7 @@ public final class BangHighScore extends HighScore {
     public void update() {
         updateMostAttempts();
         updateLuckiest();
+        updateUnluckiest();
     }
 
     /**
@@ -55,16 +57,18 @@ public final class BangHighScore extends HighScore {
         mostAttempts = new ArrayList<>();
         try {
             mostAttempts = bc.getMostAttemptsPlayers();
-            mostAttempts.subList(10, mostAttempts.size()).clear();
+
+            if (mostAttempts.size() > 10)
+                mostAttempts.subList(10, mostAttempts.size()).clear();
+
             Role mostAttemptsRole = getGuild().getRoleById("573398286044626945");
 
             for (BangPlayer player : mostAttempts) {
                 Member member = getGuild().getMemberById(player.getId());
-                if (player.getAttempts() == mostAttempts.get(0).getAttempts()) {
+                if (player.getAttempts() == mostAttempts.get(0).getAttempts())
                     getGuild().getController().addRolesToMember(member, mostAttemptsRole).queue();
-                } else {
+                else
                     getGuild().getController().removeRolesFromMember(member, mostAttemptsRole).queue();
-                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,6 +104,35 @@ public final class BangHighScore extends HighScore {
     }
 
     /**
+     * Updates the list of top 10 unluckiest players, then updates roles
+     * of members in the server so only those tied for first place have
+     * the specified role.
+     */
+    private void updateUnluckiest() {
+        unluckiest = new ArrayList<>();
+        try {
+            unluckiest = bc.getLuckiestPlayers();
+            Collections.reverse(unluckiest);
+
+            if (unluckiest.size() > 10)
+                unluckiest.subList(10, unluckiest.size()).clear();
+
+            Role unluckiestRole = getGuild().getRoleById("573398274598502410");
+
+            for (BangPlayer player : unluckiest) {
+                Member member = getGuild().getMemberById(player.getId());
+                if (player.getAttempts() == unluckiest.get(0).getSurvivalRate()) {
+                    getGuild().getController().addRolesToMember(member, unluckiestRole).queue();
+                } else {
+                    getGuild().getController().removeRolesFromMember(member, unluckiestRole).queue();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Returns a neatly formatted string containing data on all the high scores for bang.
      *
      * @return the neatly formatted string containing data on all the high scores for bang
@@ -108,7 +141,8 @@ public final class BangHighScore extends HighScore {
     public String toString() {
         return "**Bang High Scores**:\n"
                 + getMostAttemptsString() + "\n"
-                + getLuckiestString() + "\n";
+                + getLuckiestString() + "\n"
+                + getUnluckiestString();
     }
 
     /**
@@ -140,11 +174,32 @@ public final class BangHighScore extends HighScore {
      * top bang survival rate players
      */
     private String getLuckiestString() {
-        String string = "Highest survival rate: " + luckiest.get(0).getSurvivalRate() + " by ";
+        String string = "Highest survival rate: " + luckiest.get(0).getSurvivalRate() + "% by ";
 
         for (BangPlayer player : luckiest) {
             if (player.getSurvivalRate() == luckiest.get(0).getSurvivalRate()) {
                 if (!player.equals(luckiest.get(0)))
+                    string = string.concat(", ");
+                string = string.concat(getGuild().getMemberById(player.getId()).getEffectiveName());
+            }
+        }
+
+        return string;
+    }
+
+    /**
+     * Returns a string containing data based on the
+     * players with the highest survival rates in bang.
+     *
+     * @return a neatly formatted string containing the
+     * top bang survival rate players
+     */
+    private String getUnluckiestString() {
+        String string = "Lowest survival rate: " + unluckiest.get(0).getSurvivalRate() + "% by ";
+
+        for (BangPlayer player : unluckiest) {
+            if (player.getSurvivalRate() == unluckiest.get(0).getSurvivalRate()) {
+                if (!player.equals(unluckiest.get(0)))
                     string = string.concat(", ");
                 string = string.concat(getGuild().getMemberById(player.getId()).getEffectiveName());
             }

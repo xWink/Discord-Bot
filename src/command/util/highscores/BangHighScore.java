@@ -142,7 +142,7 @@ public final class BangHighScore extends HighScore {
         return "**Bang High Scores**:\n"
                 + getMostAttemptsString() + "\n"
                 + getLuckiestString() + "\n"
-                + getUnluckiestString()
+                + getUnluckiestString() + "\n\n"
                 + getTotalsString();
     }
 

@@ -73,9 +73,9 @@ public class Bang extends Command {
         String poggies = "<:poggies:564285288621539328>";
 
         if (jammed) output += "The gun jammed... " + event.getAuthor().getName()
-                + " survived " + poggers + poggers + poggers;
+                + " survived " + ":poggers: " + ":poggers: " + ":poggers:";
         else if (killed) output += "Bang! " + event.getAuthor().getName() + " died :skull:";
-        else output += "Click. " + event.getAuthor().getName() + " survived  " + poggies;
+        else output += "Click. " + event.getAuthor().getName() + " survived  " + ":poggies:";
 
         output += "\nChambers left in the cylinder: ||  " + chambers + "  ||";
 
@@ -109,8 +109,6 @@ public class Bang extends Command {
                     new Date().getTime(), 1,
                     killed ? 1 : 0, jammed ? 1 : 0, reward));
 
-            //TODO: fix amount to account for records (just an "if record" to add to the reward amount)
-            // Put records in memory so you don't need to query db each time someone bangs
             if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
             if (jammed) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
 

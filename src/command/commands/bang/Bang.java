@@ -69,13 +69,13 @@ public class Bang extends Command {
      */
     private String getOutput(MessageReceivedEvent event) {
         String output = "";
-        String poggers = "<:poggers:564285288621539328>"; // TODO: fix these so they are different emotes
-        String poggies = "<:poggies:564285288621539328>";
+        String poggers = "<:poggers:661364653313490967>";
+        String poggies = "<:poggies:661364653313490967>";
 
         if (jammed) output += "The gun jammed... " + event.getAuthor().getName()
-                + " survived " + ":poggers: " + ":poggers: " + ":poggers:";
+                + " survived " + poggers + poggers + poggers;
         else if (killed) output += "Bang! " + event.getAuthor().getName() + " died :skull:";
-        else output += "Click. " + event.getAuthor().getName() + " survived  " + ":poggies:";
+        else output += "Click. " + event.getAuthor().getName() + " survived  " + poggies;
 
         output += "\nChambers left in the cylinder: ||  " + chambers + "  ||";
 

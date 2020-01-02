@@ -53,7 +53,9 @@ public class Info extends Command {
             }
         } catch (IOException ignored) { }
 
-        return "Could not find " + courseId.replace("<", "\\<");
+        return "Could not find " + (courseId.matches("<.+>")
+                ? courseId.replace("<", "").replace(">", "")
+                : courseId);
     }
 
     /**

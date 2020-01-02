@@ -53,7 +53,7 @@ public class Info extends Command {
             }
         } catch (IOException ignored) { }
 
-        return "Could not find " + courseId;
+        return "Could not find " + courseId.replace("<", "\\<");
     }
 
     /**

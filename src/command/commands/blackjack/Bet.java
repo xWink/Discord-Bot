@@ -66,7 +66,7 @@ public class Bet extends Command {
                 output += "\n" + event.getAuthor().getName() + " got 21!\nDealers hand: "
                         + game.getDealer().getHand().toString() + "\n"
                         + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*");
-                ec.addOrRemoveMoney(userId, result);
+                if (result > 0) ec.addOrRemoveMoney(userId, result);
                 game.end();
             } else {
                 BlackJackList.addGame(game);

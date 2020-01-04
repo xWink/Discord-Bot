@@ -42,7 +42,7 @@ public class Info extends Command {
      * @return a String with all the course info
      */
     private String searchCourse() {
-        String line, temp;
+        String line = reader.readLine(), temp;
         try {
             while ((line = reader.readLine()) != null) {
                 temp = line.split("\t")[0];

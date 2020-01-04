@@ -42,8 +42,9 @@ public class Info extends Command {
      * @return a String with all the course info
      */
     private String searchCourse() {
-        String line = reader.readLine(), temp;
+        String line, temp;
         try {
+            line = reader.readLine();
             while ((line = reader.readLine()) != null) {
                 temp = line.split("\t")[0];
                 if (temp.replace("*", "").toLowerCase()

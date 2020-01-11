@@ -3,6 +3,7 @@ package main;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -23,6 +24,7 @@ public final class Server {
     static {
         try {
             api = new JDABuilder(AccountType.BOT).setToken(Config.getToken()).build();
+            api.getPresence().setGame(Game.playing("!help"));
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);

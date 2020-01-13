@@ -58,7 +58,8 @@ public class Bet extends Command {
             BlackJackGame game = new BlackJackGame(new Player(userId), betAmount);
             game.start();
             output += event.getAuthor().getName() + " received their first 2 cards: "
-                    + game.getPlayer().getHand().toString();
+                    + game.getPlayer().getHand().toString()
+                    + "\nDealer's first card: " + game.getDealer().getHand().getHand().get(0).toEmote();
 
             // Check if started with blackjack
             if (game.getPlayer().getHand().getValue() == 21) {

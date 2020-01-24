@@ -54,9 +54,7 @@ public class Info extends Command {
             }
         } catch (IOException ignored) { }
 
-        return "Could not find " + (courseId.matches("<.+>")
-                ? courseId.replace("<", "").replace(">", "")
-                : courseId);
+        return "Could not find a course with that ID";
     }
 
     /**

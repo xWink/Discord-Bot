@@ -38,11 +38,9 @@ public final class PingConnector extends Connector {
      */
     public boolean isMax(long userId, int ping) throws SQLException {
         if (!userExists(userId)) {
-            System.out.println("User didn't exist");
             addUser(userId);
         }
         ResultSet rs = getUserRow(userId, getTable());
-        if (rs.first()) System.out.println("First is valid");
         return ping > rs.getInt("max");
     }
 
@@ -120,7 +118,7 @@ public final class PingConnector extends Connector {
     public void addUser(long userId) {
         try {
             getConnection().prepareStatement("INSERT INTO " + getTable()
-                    + " (user, max, min) VALUES (" + userId + ", 0, 0)");
+                    + " (user, max, min) VALUES (" + userId + ", 0, 0)").executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }

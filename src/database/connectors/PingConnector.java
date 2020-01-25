@@ -115,7 +115,7 @@ public final class PingConnector extends Connector {
     @Override
     public void addUser(long userId) {
         try {
-            getConnection().prepareStatement("INSERT INTO " + getTable() + " VALUES('" + userId + "', 0, 0)");
+            getConnection().prepareStatement("INSERT INTO " + getTable() + " (user, max, min) VALUES (" + userId + ", 0, 0)");
         } catch (Exception e) {
             e.printStackTrace();
         }

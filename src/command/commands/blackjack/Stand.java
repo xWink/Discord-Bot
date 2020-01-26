@@ -1,10 +1,13 @@
 package command.commands.blackjack;
 
 import command.Command;
+import command.util.cards.PhotoCombine;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+
+import java.io.File;
 
 public class Stand extends Command {
 
@@ -28,7 +31,7 @@ public class Stand extends Command {
     public void start(MessageReceivedEvent event) {
         BlackJackGame game = BlackJackList.getUserGame(event.getAuthor().getIdLong());
         String author = event.getAuthor().getName();
-        String message;
+        String message = "";
 
         if (game == null) {
             event.getChannel().sendMessage("You haven't started a game yet!\n"
@@ -37,9 +40,13 @@ public class Stand extends Command {
         }
 
         int reward = game.checkWinner();
-        message = "Dealers hand:\n" + game.getDealer().getHand().toString() + "\n";
+
+        PhotoCombine.genPhoto(game.getDealer().getHand().getHand());
+        event.getChannel().sendMessage("Dealers hand:")
+                .addFile(new File(System.getProperty("user.dir") + "\\res\\cards\\out.png")).queue();
+
         if (reward > 0) message += author + " wins! Earnings: " + reward + " *gc*";
-        else if (reward < 0) message += author + " lost. Losses: " + (0 - reward) + " *gc*";
+        else if (reward < 0) message += author + " lost. Losses: " + (-reward) + " *gc*";
         else message += "Tie game, " + author + " didn't win or lose any money.";
         event.getChannel().sendMessage(message).queue();
         BlackJackList.removeGame(game);

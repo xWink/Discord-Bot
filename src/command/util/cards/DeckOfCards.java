@@ -28,6 +28,14 @@ public class DeckOfCards {
     }
 
     /**
+     * Initializes the deck of cards
+     * with a single deck.
+     */
+    public DeckOfCards() {
+        this(1);
+    }
+
+    /**
      * Adds a specified number of whole decks
      * onto the deck. Each deck contains the
      * standard 52 cards of a playing card deck.

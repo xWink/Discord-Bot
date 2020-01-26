@@ -1,12 +1,15 @@
 package command.commands.blackjack;
 
 import command.Command;
+import command.util.cards.PhotoCombine;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import command.util.game.Player;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+
+import java.io.File;
 
 public class Bet extends Command {
 
@@ -43,7 +46,7 @@ public class Bet extends Command {
         if (!verifyInput(event)) return;
         long userId = event.getAuthor().getIdLong();
         MessageChannel channel = event.getChannel();
-        String output = "";
+        String filePath = System.getProperty("user.dir") + "\\res\\cards\\out.png";
 
         try {
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
@@ -57,23 +60,26 @@ public class Bet extends Command {
 
             BlackJackGame game = new BlackJackGame(new Player(userId), betAmount);
             game.start();
-            output += event.getAuthor().getName() + " received their first 2 cards: "
-                    + game.getPlayer().getHand().toString()
-                    + "\nDealer's first card: " + game.getDealer().getHand().getHand().get(0).toEmote();
+
+            PhotoCombine.genPhoto(game.getPlayer().getHand().getHand());
+            channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
+                    + game.getPlayer().getHand().toString() + "\nDealer's first card: ")
+                    .addFile(new File(filePath)).queue();
 
             // Check if started with blackjack
             if (game.getPlayer().getHand().getValue() == 21) {
                 int result = game.checkWinner();
-                output += "\n" + event.getAuthor().getName() + " got 21!\nDealers hand: "
-                        + game.getDealer().getHand().toString() + "\n"
-                        + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*");
+                PhotoCombine.genPhoto(game.getDealer().getHand().getHand());
+
+                channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
+                        + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"
+                        + "Dealers hand: ")).addFile(new File(filePath)).queue();
+
                 if (result > 0) ec.addOrRemoveMoney(userId, result);
                 game.end();
             } else {
                 BlackJackList.addGame(game);
             }
-
-            channel.sendMessage(output).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

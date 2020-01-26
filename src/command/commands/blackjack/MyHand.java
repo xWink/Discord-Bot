@@ -1,9 +1,12 @@
 package command.commands.blackjack;
 
 import command.Command;
+import command.util.cards.PhotoCombine;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+
+import java.io.File;
 
 public class MyHand extends Command {
 
@@ -28,8 +31,9 @@ public class MyHand extends Command {
                     + "To start a new one, say `!bet <amount>`").queue();
             return;
         }
+        PhotoCombine.genPhoto(game.getPlayer().getHand().getHand());
 
-        event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:\n"
-                + game.getPlayer().getHand().toString()).queue();
+        event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:")
+                .addFile(new File(System.getProperty("user.dir") + "\\res\\cards\\out.png")).queue();
     }
 }

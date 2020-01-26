@@ -71,4 +71,15 @@ public class Card {
     public String toDbFormat() {
         return rank.getSymbol() + " " + suit.getInitial();
     }
+
+    /**
+     * Getter for the string that represents the filename of a card sprite
+     * used to convert card data to 2D images.
+     *
+     * @return a string which represents the filename of the card without
+     * an extension or path
+     */
+    public String toFileFormat() {
+        return (rank.getSymbol() + suit.getInitial()).toUpperCase();
+    }
 }

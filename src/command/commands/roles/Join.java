@@ -137,16 +137,14 @@ public class Join extends Command {
         tsv = tsv.replace("build/libs", "") + "res/courses.tsv";
         try {
             BufferedReader reader = new BufferedReader(new FileReader(tsv));
-            String line, temp;
+            String line, temp, tempId;
             reader.readLine();
             while ((line = reader.readLine()) != null) {
-                temp = line.split("\t")[0];
-                if (temp.replace("*", "")
-                        .toLowerCase()
-                        .contains(courseId
-                                .replaceAll("\\*", "")
-                                .replaceAll(" ", "")
-                                .toLowerCase())) {
+                temp = line.split("\t")[0].replace("*", "").toLowerCase();
+                tempId = courseId.replaceAll("\\*", "")
+                        .replaceAll(" ", "").toLowerCase();
+
+                if (temp.equals(tempId)) {
                     return true;
                 }
             }

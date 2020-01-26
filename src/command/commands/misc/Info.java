@@ -44,11 +44,15 @@ public class Info extends Command {
     private String searchCourse() {
         String line, temp;
         try {
-            line = reader.readLine();
+            reader.readLine();
             while ((line = reader.readLine()) != null) {
                 temp = line.split("\t")[0];
-                if (temp.replace("*", "").toLowerCase()
-                        .contains(courseId.replace("*", "").toLowerCase())) {
+                if (temp.replace("*", "")
+                        .toLowerCase()
+                        .contains(courseId
+                                .replaceAll("\\*", "")
+                                .replaceAll(" ", "")
+                                .toLowerCase())) {
                     return line.replaceAll("\"", "");
                 }
             }

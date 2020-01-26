@@ -135,12 +135,18 @@ public class Join extends Command {
     private boolean courseExists() {
         String tsv = new File("").getAbsolutePath();
         tsv = tsv.replace("build/libs", "") + "res/courses.tsv";
-        try (BufferedReader reader = new BufferedReader(new FileReader(tsv))) {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(tsv));
             String line, temp;
+            reader.readLine();
             while ((line = reader.readLine()) != null) {
                 temp = line.split("\t")[0];
-                if (temp.replace("*", "").toLowerCase()
-                        .contains(courseId.replace("*", "").toLowerCase())) {
+                if (temp.replace("*", "")
+                        .toLowerCase()
+                        .contains(courseId
+                                .replaceAll("\\*", "")
+                                .replaceAll(" ", "")
+                                .toLowerCase())) {
                     return true;
                 }
             }

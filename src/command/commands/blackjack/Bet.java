@@ -9,7 +9,8 @@ import database.connectors.EconomyConnector;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 public class Bet extends Command {
 
@@ -46,9 +47,9 @@ public class Bet extends Command {
         if (!verifyInput(event)) return;
         long userId = event.getAuthor().getIdLong();
         MessageChannel channel = event.getChannel();
-        File image = new File("../../res/cards/out.png");
 
         try {
+            InputStream image = new FileInputStream("../../res/cards/out.png");
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
 
             // Verify that the user has enough money
@@ -63,7 +64,7 @@ public class Bet extends Command {
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
                 channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: ")
-                        .addFile(image).queue();
+                        .addFile(image, "out.png").queue();
             } else {
                 channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
                         + game.getPlayer().getHand().toString()).queue();
@@ -76,7 +77,7 @@ public class Bet extends Command {
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
                             + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"
-                            + "Dealers hand: ")).addFile(image).queue();
+                            + "Dealers hand: ")).addFile(image, "out.png").queue();
                 } else {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
                             + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"

@@ -25,6 +25,7 @@ public class Help extends Command {
                 + "`!bet`, `!hit`, `!stand` - Play blackjack against the computer.\n\n"
                 + "`!daily` - Shows when your daily reward resets.\n\n"
                 + "`!flip` - Flips a coin, displaying the result."
+                + "`!id [Discord ID]` - Shows a user's display name based on Discord ID.\n\n"
                 + "`!info [course ID]` - Shows info on a course at UoGuelph.\n\n"
                 + "`!join [role name]` - Apply to join or create a private elective channel.\n\n"
                 + "`!karma` - Shows your upvotes, downvotes, and total karma.\n\n"
@@ -33,7 +34,6 @@ public class Help extends Command {
                 + "`!mybang` - Shows your bang scores.\n\n"
                 + "`!ping` - Shows your latency.\n\n"
                 + "`!roles` - Shows a list of available roles to join.\n\n"
-                + "`!id [Discord ID]` - Shows a user's display name based on Discord ID.\n\n"
         ).queue();
     }
 }

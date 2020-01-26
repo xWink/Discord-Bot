@@ -42,17 +42,15 @@ public class Info extends Command {
      * @return a String with all the course info
      */
     private String searchCourse() {
-        String line, temp;
+        String line, temp, tempId;
         try {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
-                temp = line.split("\t")[0];
-                if (temp.replace("*", "")
-                        .toLowerCase()
-                        .contains(courseId
-                                .replaceAll("\\*", "")
-                                .replaceAll(" ", "")
-                                .toLowerCase())) {
+                temp = line.split("\t")[0].replace("*", "").toLowerCase();
+                tempId = courseId.replaceAll("\\*", "")
+                        .replaceAll(" ", "").toLowerCase();
+
+                if (temp.equals(tempId)) {
                     return line.replaceAll("\"", "");
                 }
             }

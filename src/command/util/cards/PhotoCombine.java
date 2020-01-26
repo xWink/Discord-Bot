@@ -20,18 +20,17 @@ public final class PhotoCombine {
      */
     public static boolean genPhoto(ArrayList<Card> cards) {
         try {
-            System.out.println(System.getProperty("user.dir") + "\\res\\cards\\" + cards.get(0).toFileFormat() + ".png");
-            BufferedImage cardPallet = ImageIO.read(new File(System.getProperty("user.dir")
-                    + "\\res\\cards\\" + cards.get(0).toFileFormat() + ".png"));
+            BufferedImage cardPallet = ImageIO.read(new File("../../res/cards/"
+                    + cards.get(0).toFileFormat() + ".png"));
 
             for (int i = 1; i < cards.size(); i++) {
-                BufferedImage tmpCard = ImageIO.read(new File(System.getProperty("user.dir")
-                        + "\\res\\cards\\" + cards.get(i).toFileFormat() + ".png"));
+                BufferedImage tmpCard = ImageIO.read(new File("../../res/cards/"
+                        + cards.get(i).toFileFormat() + ".png"));
                 cardPallet = cards.size() > 4 ? joinBIBig(cardPallet, tmpCard) : joinBISmall(cardPallet, tmpCard);
             }
 
             cardPallet = crop(cardPallet);
-            ImageIO.write(cardPallet, "png", new File("res\\out.png"));
+            ImageIO.write(cardPallet, "png", new File("res/out.png"));
             return true;
 
         } catch (Exception e) {

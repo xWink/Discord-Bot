@@ -46,7 +46,7 @@ public class Bet extends Command {
         if (!verifyInput(event)) return;
         long userId = event.getAuthor().getIdLong();
         MessageChannel channel = event.getChannel();
-        String filePath = System.getProperty("user.dir") + "\\res\\cards\\out.png";
+        String filePath = "../../res/cards/out.png";
 
         try {
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);

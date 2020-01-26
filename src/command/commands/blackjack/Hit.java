@@ -31,7 +31,7 @@ public class Hit extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         BlackJackGame game = BlackJackList.getUserGame(event.getAuthor().getIdLong());
-        String filePath = System.getProperty("user.dir") + "\\res\\cards\\out.png";
+        String filePath = "../../res/cards/out.png";
 
         if (game == null) {
             event.getChannel().sendMessage("You haven't started a game yet!\n"
@@ -47,7 +47,7 @@ public class Hit extends Command {
                 event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now:")
                         .addFile(new File(filePath)).queue();
             } else {
-                event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now:"
+                event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now: "
                         + game.getPlayer().getHand().toString()).queue();
             }
 
@@ -66,8 +66,11 @@ public class Hit extends Command {
                 ec.addOrRemoveMoney(event.getAuthor().getIdLong(), reward);
 
                 output += "Dealers hand:";
-                PhotoCombine.genPhoto(game.getDealer().getHand().getHand());
-                event.getChannel().sendMessage(output).addFile(new File(filePath)).queue();
+                if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
+                    event.getChannel().sendMessage(output).addFile(new File(filePath)).queue();
+                } else {
+                    event.getChannel().sendMessage(output + game.getDealer().getHand().toString()).queue();
+                }
 
                 BlackJackList.removeGame(game);
             }

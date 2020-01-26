@@ -140,7 +140,7 @@ public class Join extends Command {
             String line, temp, tempId;
             reader.readLine();
             while ((line = reader.readLine()) != null) {
-                temp = line.split("\t")[0].replace("*", "").toLowerCase();
+                temp = line.split("\t")[0].split(" ")[0].replace("*", "").toLowerCase();
                 tempId = courseId.replaceAll("\\*", "").toLowerCase();
 
                 if (temp.equals(tempId)) {

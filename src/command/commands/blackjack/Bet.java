@@ -51,9 +51,9 @@ public class Bet extends Command {
 
         try {
             File file = new File(".");
-            String path = file.getAbsolutePath().replace("build/libs/", "");
+            String path = file.getAbsolutePath().replace("build/libs/.", "");
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
-            InputStream stream = new FileInputStream(path + "out.png");
+            InputStream stream = new FileInputStream(path + "res/out.png");
 
             // Verify that the user has enough money
             if (!ec.canAfford(event.getAuthor().getIdLong(), betAmount)) {

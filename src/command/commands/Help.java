@@ -24,7 +24,7 @@ public class Help extends Command {
                 + "`!bangscores` - Shows high scores for bang.\n\n"
                 + "`!bet`, `!hit`, `!stand` - Play blackjack against the computer.\n\n"
                 + "`!daily` - Shows when your daily reward resets.\n\n"
-                + "`!flip` - Flips a coin, displaying the result."
+                + "`!flip` - Flips a coin, displaying the result.\n\n"
                 + "`!id [Discord ID]` - Shows a user's display name based on Discord ID.\n\n"
                 + "`!info [course ID]` - Shows info on a course at UoGuelph.\n\n"
                 + "`!join [role name]` - Apply to join or create a private elective channel.\n\n"

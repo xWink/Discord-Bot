@@ -31,7 +31,7 @@ public class Hit extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         BlackJackGame game = BlackJackList.getUserGame(event.getAuthor().getIdLong());
-        String filePath = "../../res/cards/out.png";
+        String filePath = "../../res/cards/";
 
         if (game == null) {
             event.getChannel().sendMessage("You haven't started a game yet!\n"
@@ -45,7 +45,7 @@ public class Hit extends Command {
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
                 event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now:")
-                        .addFile(new File(filePath)).queue();
+                        .addFile(new File(filePath), "out.png").queue();
             } else {
                 event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now: "
                         + game.getPlayer().getHand().toString()).queue();
@@ -67,7 +67,7 @@ public class Hit extends Command {
 
                 output += "Dealers hand:";
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
-                    event.getChannel().sendMessage(output).addFile(new File(filePath)).queue();
+                    event.getChannel().sendMessage(output).addFile(new File(filePath), "out.png").queue();
                 } else {
                     event.getChannel().sendMessage(output + game.getDealer().getHand().toString()).queue();
                 }

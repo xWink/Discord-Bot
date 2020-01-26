@@ -34,7 +34,7 @@ public class MyHand extends Command {
 
         if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
             event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:")
-                    .addFile(new File("../../res/cards/out.png")).queue();
+                    .addFile(new File("../../res/cards/"), "out.png").queue();
         } else {
             event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:"
                     + game.getPlayer().getHand().toString()).queue();

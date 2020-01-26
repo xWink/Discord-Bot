@@ -43,7 +43,7 @@ public class Stand extends Command {
 
         if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
             event.getChannel().sendMessage("Dealers hand:")
-                    .addFile(new File("../../res/cards/out.png")).queue();
+                    .addFile(new File("../../res/cards/"), "out.png").queue();
         } else {
             event.getChannel().sendMessage("Dealers hand: " + game.getDealer().getHand().toString()).queue();
         }

@@ -141,8 +141,7 @@ public class Join extends Command {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 temp = line.split("\t")[0].replace("*", "").toLowerCase();
-                tempId = courseId.replaceAll("\\*", "")
-                        .replaceAll(" ", "").toLowerCase();
+                tempId = courseId.replaceAll("\\*", "").toLowerCase();
 
                 if (temp.equals(tempId)) {
                     return true;

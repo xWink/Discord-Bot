@@ -47,9 +47,8 @@ public class Info extends Command {
             reader.readLine();
             while ((line = reader.readLine()) != null) {
                 temp = line.split("\t")[0].replace("*", "").toLowerCase();
-                tempId = courseId.replaceAll("\\*", "")
-                        .replaceAll(" ", "").toLowerCase();
-
+                tempId = courseId.replaceAll("\\*", "").toLowerCase();
+                System.out.println("TempID: " + tempId + "\nTemp: " + temp);
                 if (temp.equals(tempId)) {
                     return line.replaceAll("\"", "");
                 }

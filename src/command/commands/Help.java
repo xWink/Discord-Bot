@@ -33,6 +33,7 @@ public class Help extends Command {
                 + "`!mybang` - Shows your bang scores.\n\n"
                 + "`!ping` - Shows your latency.\n\n"
                 + "`!roles` - Shows a list of available roles to join.\n\n"
+                + "`!id [Discord ID]` - Shows a user's display name based on Discord ID.\n\n"
         ).queue();
     }
 }

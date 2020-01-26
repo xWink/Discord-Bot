@@ -30,7 +30,7 @@ public final class PhotoCombine {
             }
 
             cardPallet = crop(cardPallet);
-            ImageIO.write(cardPallet, "png", new File("res/out.png"));
+            ImageIO.write(cardPallet, "png", new File("../../res/out.png"));
             return true;
 
         } catch (Exception e) {

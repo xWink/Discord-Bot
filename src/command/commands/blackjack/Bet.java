@@ -11,7 +11,6 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 
 public class Bet extends Command {
 
@@ -52,7 +51,6 @@ public class Bet extends Command {
         try {
             File file = new File(".");
             String path = file.getAbsolutePath().replace("build/libs/.", "");
-            InputStream stream = new FileInputStream(path + "res/out.png");
 
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
 
@@ -68,7 +66,7 @@ public class Bet extends Command {
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
                 channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: ")
-                        .addFile(stream, "out.png").queue();
+                        .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
             } else {
                 channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
                         + game.getPlayer().getHand().toString()).queue();
@@ -80,8 +78,8 @@ public class Bet extends Command {
 
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
-                            + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"
-                            + "Dealers hand: ")).addFile(stream, "out.png").queue();
+                            + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\nDealers hand: "))
+                            .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
                 } else {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
                             + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"

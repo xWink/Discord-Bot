@@ -8,7 +8,6 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 
 public class MyHand extends Command {
 
@@ -37,11 +36,10 @@ public class MyHand extends Command {
         try {
             File file = new File(".");
             String path = file.getAbsolutePath().replace("build/libs/.", "");
-            InputStream stream = new FileInputStream(path + "res/out.png");
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
                 event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:")
-                        .addFile(stream, "out.png").queue();
+                        .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
             } else {
                 event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:"
                         + game.getPlayer().getHand().toString()).queue();

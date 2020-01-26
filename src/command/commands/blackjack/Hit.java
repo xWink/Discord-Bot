@@ -10,8 +10,6 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
-
 
 public class Hit extends Command {
 
@@ -43,14 +41,13 @@ public class Hit extends Command {
         try {
             File file = new File(".");
             String path = file.getAbsolutePath().replace("build/libs/.", "");
-            InputStream stream = new FileInputStream(path + "res/out.png");
 
             String output = "";
             int value = game.hit();
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
                 event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now:")
-                        .addFile(stream, "out.png").queue();
+                        .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
             } else {
                 event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now: "
                         + game.getPlayer().getHand().toString()).queue();
@@ -72,7 +69,8 @@ public class Hit extends Command {
 
                 output += "Dealers hand:";
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
-                    event.getChannel().sendMessage(output).addFile(stream, "out.png").queue();
+                    event.getChannel().sendMessage(output)
+                            .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
                 } else {
                     event.getChannel().sendMessage(output + game.getDealer().getHand().toString()).queue();
                 }

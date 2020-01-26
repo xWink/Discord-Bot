@@ -20,6 +20,7 @@ public final class PhotoCombine {
      */
     public static boolean genPhoto(ArrayList<Card> cards) {
         try {
+            System.out.println(System.getProperty("user.dir") + "\\res\\cards\\" + cards.get(0).toFileFormat() + ".png");
             BufferedImage cardPallet = ImageIO.read(new File(System.getProperty("user.dir")
                     + "\\res\\cards\\" + cards.get(0).toFileFormat() + ".png"));
 

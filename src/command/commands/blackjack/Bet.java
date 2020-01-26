@@ -61,19 +61,27 @@ public class Bet extends Command {
             BlackJackGame game = new BlackJackGame(new Player(userId), betAmount);
             game.start();
 
-            PhotoCombine.genPhoto(game.getPlayer().getHand().getHand());
-            channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
-                    + game.getPlayer().getHand().toString() + "\nDealer's first card: ")
-                    .addFile(new File(filePath)).queue();
+            if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
+                channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: ")
+                        .addFile(new File(filePath)).queue();
+            } else {
+                channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
+                        + game.getPlayer().getHand().toString()).queue();
+            }
 
             // Check if started with blackjack
             if (game.getPlayer().getHand().getValue() == 21) {
                 int result = game.checkWinner();
-                PhotoCombine.genPhoto(game.getDealer().getHand().getHand());
 
-                channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
-                        + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"
-                        + "Dealers hand: ")).addFile(new File(filePath)).queue();
+                if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
+                    channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
+                            + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"
+                            + "Dealers hand: ")).addFile(new File(filePath)).queue();
+                } else {
+                    channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
+                            + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"
+                            + "Dealers hand: " + game.getDealer().getHand().toString())).queue();
+                }
 
                 if (result > 0) ec.addOrRemoveMoney(userId, result);
                 game.end();

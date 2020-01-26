@@ -42,9 +42,14 @@ public class Hit extends Command {
         try {
             String output = "";
             int value = game.hit();
-            PhotoCombine.genPhoto(game.getPlayer().getHand().getHand());
-            event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now:")
-                    .addFile(new File(filePath)).queue();
+
+            if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
+                event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now:")
+                        .addFile(new File(filePath)).queue();
+            } else {
+                event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now:"
+                        + game.getPlayer().getHand().toString()).queue();
+            }
 
             if (value >= 21) {
                 int reward = game.checkWinner();

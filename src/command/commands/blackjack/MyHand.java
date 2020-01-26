@@ -31,9 +31,13 @@ public class MyHand extends Command {
                     + "To start a new one, say `!bet <amount>`").queue();
             return;
         }
-        PhotoCombine.genPhoto(game.getPlayer().getHand().getHand());
 
-        event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:")
-                .addFile(new File(System.getProperty("user.dir") + "\\res\\cards\\out.png")).queue();
+        if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
+            event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:")
+                    .addFile(new File(System.getProperty("user.dir") + "\\res\\cards\\out.png")).queue();
+        } else {
+            event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:"
+                    + game.getPlayer().getHand().toString()).queue();
+        }
     }
 }

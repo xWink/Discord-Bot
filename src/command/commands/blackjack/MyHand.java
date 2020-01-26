@@ -38,7 +38,8 @@ public class MyHand extends Command {
             String path = file.getAbsolutePath().replace("build/libs/.", "");
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
-                event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:")
+                event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is: "
+                        + game.getPlayer().getHand().toString())
                         .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
             } else {
                 event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:"

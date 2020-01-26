@@ -65,7 +65,8 @@ public class Bet extends Command {
             game.start();
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
-                channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: ")
+                channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
+                        + game.getPlayer().getHand().toString())
                         .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
             } else {
                 channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
@@ -78,7 +79,8 @@ public class Bet extends Command {
 
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
-                            + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\nDealers hand: "))
+                            + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\nDealers hand: ")
+                            + game.getDealer().getHand().toString())
                             .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
                 } else {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"

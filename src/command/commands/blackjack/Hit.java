@@ -67,7 +67,7 @@ public class Hit extends Command {
 
                 ec.addOrRemoveMoney(event.getAuthor().getIdLong(), reward);
 
-                output += "Dealers hand:";
+                output += "\nDealers hand:";
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
                     event.getChannel().sendMessage(output)
                             .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();

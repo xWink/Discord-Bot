@@ -8,6 +8,8 @@ import database.connectors.EconomyConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 
 public class Stand extends Command {
 
@@ -41,11 +43,18 @@ public class Stand extends Command {
 
         int reward = game.checkWinner();
 
-        if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
-            event.getChannel().sendMessage("Dealers hand:")
-                    .addFile(new File("../../res/cards/"), "out.png").queue();
-        } else {
-            event.getChannel().sendMessage("Dealers hand: " + game.getDealer().getHand().toString()).queue();
+        try {
+            File file = new File(".");
+            String path = file.getAbsolutePath().replace("build/libs/.", "");
+            InputStream stream = new FileInputStream(path + "res/out.png");
+
+            if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
+                event.getChannel().sendMessage("Dealers hand:").addFile(stream, "out.png").queue();
+            } else {
+                event.getChannel().sendMessage("Dealers hand: " + game.getDealer().getHand().toString()).queue();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         if (reward > 0) message += author + " wins! Earnings: " + reward + " *gc*";

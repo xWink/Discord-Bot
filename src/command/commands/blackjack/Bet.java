@@ -46,7 +46,7 @@ public class Bet extends Command {
         if (!verifyInput(event)) return;
         long userId = event.getAuthor().getIdLong();
         MessageChannel channel = event.getChannel();
-        String filePath = "../../res/cards/";
+        File image = new File("../../res/cards/out.png");
 
         try {
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
@@ -63,7 +63,7 @@ public class Bet extends Command {
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
                 channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: ")
-                        .addFile(new File(filePath), "out.png").queue();
+                        .addFile(image).queue();
             } else {
                 channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
                         + game.getPlayer().getHand().toString()).queue();
@@ -76,7 +76,7 @@ public class Bet extends Command {
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
                             + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"
-                            + "Dealers hand: ")).addFile(new File(filePath), "out.png").queue();
+                            + "Dealers hand: ")).addFile(image).queue();
                 } else {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
                             + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"

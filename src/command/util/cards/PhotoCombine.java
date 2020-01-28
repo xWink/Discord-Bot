@@ -3,7 +3,7 @@ package command.util.cards;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -18,7 +18,7 @@ public final class PhotoCombine {
      * @param cards the ArrayList of cards which will be represented in the image
      * @return true if successful, false if something went wrong
      */
-    public static boolean genPhoto(ArrayList<Card> cards) {
+    public static boolean genPhoto(List<Card> cards) {
         try {
             BufferedImage cardPallet = ImageIO.read(new File("../../res/cards/"
                     + cards.get(0).toFileFormat() + ".png"));

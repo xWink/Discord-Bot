@@ -4,10 +4,17 @@ import main.eventlisteners.ConnectionEventListener;
 import main.eventlisteners.JoinLeaveEventListener;
 import main.eventlisteners.MessageEventListener;
 import main.eventlisteners.ReactionEventListener;
+import main.timertasks.DiscussionPurge;
 import main.timertasks.RemoveExpiredRoles;
 import main.timertasks.UpdateHighScores;
 
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class RoleBot {
 
@@ -22,16 +29,44 @@ public class RoleBot {
             Server.getApi().addEventListener(new ReactionEventListener());
             Server.getApi().addEventListener(new ConnectionEventListener());
             Server.getApi().addEventListener(new JoinLeaveEventListener());
-
             Timer timer = new Timer();
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
             timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);
-            //timer.schedule(new DiscussionPurge(), 1000 * 60 * 60 * 24 * 7, 1000 * 60 * 60 * 24 * 7);
-
+            startPurgeScheduler();
             Server.getApi().awaitReady();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Initializes the scheduler for the weekly Discussion purge (Monday at 11AM).
+     */
+    private static void startPurgeScheduler() {
+        Calendar with = Calendar.getInstance();
+        Map<Integer, Integer> dayToDelay = new HashMap<>();
+        dayToDelay.put(Calendar.FRIDAY, 2);
+        dayToDelay.put(Calendar.SATURDAY, 1);
+        dayToDelay.put(Calendar.SUNDAY, 0);
+        dayToDelay.put(Calendar.MONDAY, 6);
+        dayToDelay.put(Calendar.TUESDAY, 5);
+        dayToDelay.put(Calendar.WEDNESDAY, 4);
+        dayToDelay.put(Calendar.THURSDAY, 3);
+
+        int dayOfWeek = with.get(Calendar.DAY_OF_WEEK);
+        int hour = with.get(Calendar.HOUR_OF_DAY);
+        int delayInDays = dayToDelay.get(dayOfWeek);
+        int delayInHours;
+
+        if (delayInDays == 6 && hour < 11) {
+            delayInHours = 11 - hour;
+        } else {
+            delayInHours = delayInDays * 24  + ((24 - hour) + 11);
+        }
+
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(new DiscussionPurge(), delayInHours,
+                179, TimeUnit.HOURS);
     }
 
     private void updateWagers() {

@@ -1,4 +1,4 @@
-Version 2.0
+Version 2.1
 # Purpose
 This is a Discord bot intended to provide entertainment to users of the
 University of Guelph Bachelor of Computer Science Discord server.

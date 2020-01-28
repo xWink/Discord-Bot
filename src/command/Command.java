@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
  */
 public abstract class Command {
 
-    private static String key;
+    private String key;
     private boolean global;
 
     /**
@@ -28,7 +28,7 @@ public abstract class Command {
      *
      * @return the class's key
      */
-    public static String getKey() {
+    public String getKey() {
         return key;
     }
 

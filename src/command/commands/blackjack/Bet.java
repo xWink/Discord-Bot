@@ -68,9 +68,14 @@ public class Bet extends Command {
                 channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
                         + game.getPlayer().getHand().toString())
                         .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
+
+                PhotoCombine.genPhoto(game.getDealer().getHand().getHand().subList(0, 0));
+                channel.sendMessage("Dealer's first card: " + game.getDealer().getHand().toString())
+                        .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
             } else {
                 channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
-                        + game.getPlayer().getHand().toString()).queue();
+                        + game.getPlayer().getHand().toString() + "\n"
+                        + "Dealer's first card: " + game.getDealer().getHand().toString()).queue();
             }
 
             // Check if started with blackjack

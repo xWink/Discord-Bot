@@ -63,7 +63,7 @@ public class HandOfCards {
      *
      * @return the ArrayList of cards that is the hand
      */
-    public ArrayList<Card> getHand() {
+    public List<Card> getAsList() {
         return hand;
     }
 

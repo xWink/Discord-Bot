@@ -45,7 +45,7 @@ public class Hit extends Command {
             String output = "";
             int value = game.hit();
 
-            if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
+            if (PhotoCombine.genPhoto(game.getPlayer().getHand().getAsList())) {
                 event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now: "
                         + game.getPlayer().getHand().toString())
                         .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
@@ -69,7 +69,7 @@ public class Hit extends Command {
                 ec.addOrRemoveMoney(event.getAuthor().getIdLong(), reward);
 
                 output += "\nDealers hand: " + game.getDealer().getHand().toString();
-                if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
+                if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
                     event.getChannel().sendMessage(output)
                             .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
                 } else {

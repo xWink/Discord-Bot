@@ -46,7 +46,7 @@ public class Stand extends Command {
             File file = new File(".");
             String path = file.getAbsolutePath().replace("build/libs/.", "");
 
-            if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
+            if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
                 event.getChannel().sendMessage("Dealers hand: " + game.getDealer().getHand().toString())
                         .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
             } else {

@@ -38,8 +38,8 @@ public class BlackJackGame {
      * Starts the game by handing the player and dealer 2 cards each.
      */
     public void start() {
-        getPlayer().getHand().getHand().clear();
-        getDealer().getHand().getHand().clear();
+        getPlayer().getHand().getAsList().clear();
+        getDealer().getHand().getAsList().clear();
 
         getPlayer().getHand().add(deck.pickTopCard());
         getDealer().getHand().add(deck.pickTopCard());

@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Collections;
 
 public class Bet extends Command {
 
@@ -64,25 +65,25 @@ public class Bet extends Command {
             BlackJackGame game = new BlackJackGame(new Player(userId), betAmount);
             game.start();
 
-            if (PhotoCombine.genPhoto(game.getPlayer().getHand().getHand())) {
+            if (PhotoCombine.genPhoto(game.getPlayer().getHand().getAsList())) {
                 channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
                         + game.getPlayer().getHand().toString())
                         .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
 
-                PhotoCombine.genPhoto(game.getDealer().getHand().getHand().subList(0, 0));
-                channel.sendMessage("Dealer's first card: " + game.getDealer().getHand().toString())
+                PhotoCombine.genPhoto(Collections.singletonList(game.getDealer().getHand().getAsList().get(0)));
+                channel.sendMessage("Dealer's first card: " + game.getDealer().getHand().getAsList().get(0).toEmote())
                         .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
             } else {
                 channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
                         + game.getPlayer().getHand().toString() + "\n"
-                        + "Dealer's first card: " + game.getDealer().getHand().toString()).queue();
+                        + "Dealer's first card: " + game.getDealer().getHand().getAsList().get(0).toEmote()).queue();
             }
 
             // Check if started with blackjack
             if (game.getPlayer().getHand().getValue() == 21) {
                 int result = game.checkWinner();
 
-                if (PhotoCombine.genPhoto(game.getDealer().getHand().getHand())) {
+                if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
                             + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\nDealers hand: ")
                             + game.getDealer().getHand().toString())

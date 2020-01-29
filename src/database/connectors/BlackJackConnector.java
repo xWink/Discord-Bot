@@ -10,6 +10,7 @@ import database.Connector;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Deprecated
 public final class BlackJackConnector extends Connector {
 
     /**

@@ -10,10 +10,18 @@ import java.sql.SQLException;
 /**
  * Abstraction of the connection between the bot and the database.
  * Contains Connection instance variable that is utilized by subclasses.
+ * Contains String with name of the table it connects to.
  */
 public abstract class Connector {
 
+    /**
+     * Connection to the database.
+     */
     private static Connection connection;
+
+    /**
+     * Name of the table the connector accesses.
+     */
     private String table;
 
 

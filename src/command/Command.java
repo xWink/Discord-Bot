@@ -5,11 +5,21 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 /**
  * Abstraction of a command for the bot.
  * Every command has a key, which is the
- * input a user must provide to activate the command.
+ * input a user must provide to activate the command,
+ * and a boolean which determines the scope of the command.
  */
 public abstract class Command {
 
+    /**
+     * The string a message must contain in order to match with
+     * this command.
+     */
     private String key;
+
+    /**
+     * Whether the command can be used globally within the server
+     * or just within the specified bots channel.
+     */
     private boolean global;
 
     /**

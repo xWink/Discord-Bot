@@ -168,8 +168,8 @@ public final class BangConnector extends Connector {
     public void addUser(long userId) {
         try {
             getConnection().prepareStatement("INSERT INTO bang "
-                    + "(user, tries, deaths, jams, last_played) "
-                    + "VALUES (" + userId + ", 0, 0, 0, 0)").executeUpdate();
+                    + "(user, tries, deaths, jams, last_played, streak) "
+                    + "VALUES (" + userId + ", 0, 0, 0, 0, 0)").executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }

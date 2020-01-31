@@ -27,7 +27,7 @@ public class MyBang extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        int attempts = 0, deaths = 0, jams = 0;
+        int attempts = 0, deaths = 0, jams = 0, streak = 0;
         double survivalRate = 0;
         BangCache.updateAll();
         try {
@@ -36,6 +36,7 @@ public class MyBang extends Command {
             deaths = rs.getInt("deaths");
             jams = rs.getInt("jams");
             survivalRate = 100 - Math.round(rs.getDouble("deaths") / rs.getDouble("tries") * 100 * 10d) / 10d;
+            streak = rs.getInt("streak");
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         } finally {
@@ -43,7 +44,8 @@ public class MyBang extends Command {
                     + "\nAttempts: " + attempts
                     + "\nDeaths: " + deaths
                     + "\nJams: " + jams
-                    + "\nSurvival rate: " + survivalRate + "%").queue();
+                    + "\nSurvival rate: " + survivalRate + "%"
+                    + "\nStreak: " + streak).queue();
         }
     }
 }

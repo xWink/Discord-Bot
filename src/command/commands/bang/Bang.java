@@ -106,9 +106,10 @@ public class Bang extends Command {
             LocalDate lastPlayedDate = Instant.ofEpochMilli(lastPlayed).atZone(ZoneId.systemDefault()).toLocalDate();
 
             reward = bc.isEligibleForDaily(event.getAuthor().getIdLong());
-            streak = new Date().getTime() - lastPlayed < 86400000
+            streak = (new Date().getTime() - lastPlayed < 86400000
                     && LocalDate.now().minusDays(1).getDayOfYear() == lastPlayedDate.getDayOfYear()
-                    && LocalDate.now().minusDays(1).getYear() == lastPlayedDate.getYear();
+                    && LocalDate.now().minusDays(1).getYear() == lastPlayedDate.getYear())
+                    || bc.getUserRow(event.getAuthor().getIdLong()).getInt("streak") == 0;
 
             BangCache.enqueue(new BangUpdate(event.getAuthor().getIdLong(),
                     new Date().getTime(), 1,

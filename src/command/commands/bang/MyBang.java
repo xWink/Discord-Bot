@@ -45,7 +45,7 @@ public class MyBang extends Command {
                     + "\nDeaths: " + deaths
                     + "\nJams: " + jams
                     + "\nSurvival rate: " + survivalRate + "%"
-                    + "\nStreak: " + streak).queue();
+                    + "\nStreak: " + streak + " :fire:").queue();
         }
     }
 }

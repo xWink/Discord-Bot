@@ -160,6 +160,17 @@ public final class BangConnector extends Connector {
     }
 
     /**
+     * Resets the streak to 0 for all players who have a last_played that is more than
+     * 24 hours since the current time.
+     *
+     * @throws SQLException may be thrown when interacting with database
+     */
+    public void pruneStreaks() throws SQLException {
+        ResultSet rs = getConnection().prepareStatement("UPDATE bang SET streak = 0 "
+                + "WHERE last_played - " + new Date().getTime() + " > 86460000").executeQuery();
+    }
+
+    /**
      * Adds a new user to the bang table based on their ID.
      *
      * @param userId the ID number of the new user being added

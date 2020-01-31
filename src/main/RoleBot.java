@@ -5,6 +5,7 @@ import main.eventlisteners.JoinLeaveEventListener;
 import main.eventlisteners.MessageEventListener;
 import main.eventlisteners.ReactionEventListener;
 import main.timertasks.DiscussionPurge;
+import main.timertasks.PruneBangStreaks;
 import main.timertasks.RemoveExpiredRoles;
 import main.timertasks.UpdateHighScores;
 
@@ -32,6 +33,7 @@ public class RoleBot {
             Timer timer = new Timer();
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
             timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);
+            timer.schedule(new PruneBangStreaks(), 1000 * 60 * 60 * 2, 1000 * 60 * 60 * 2);
             startPurgeScheduler();
             Server.getApi().awaitReady();
         } catch (Exception e) {

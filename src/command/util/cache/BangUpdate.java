@@ -11,6 +11,7 @@ public class BangUpdate {
     private int deaths;
     private int jams;
     private boolean rewarded;
+    private boolean streak;
 
     /**
      * Creates a new BangUpdate object, which contains the data
@@ -21,7 +22,7 @@ public class BangUpdate {
      * @param userId the ID number of the user whose bang row is being updated
      */
     public BangUpdate(long userId) {
-        this(userId, new Date().getTime(), 0, 0, 0, false);
+        this(userId, new Date().getTime(), 0, 0, 0, false, false);
     }
 
     /**
@@ -36,13 +37,14 @@ public class BangUpdate {
      * @param numJams the number of jams to add in the update
      * @param getsReward whether the user gets a daily reward in the update
      */
-    public BangUpdate(long userId, long lastTimePlayed, int numAttempts, int numDeaths, int numJams, boolean getsReward) {
+    public BangUpdate(long userId, long lastTimePlayed, int numAttempts, int numDeaths, int numJams, boolean getsReward, boolean raiseStreak) {
         id = userId;
         lastPlayed = lastTimePlayed;
         attempts = numAttempts;
         deaths = numDeaths;
         jams = numJams;
         rewarded = getsReward;
+        streak = raiseStreak;
     }
 
     /**
@@ -92,6 +94,15 @@ public class BangUpdate {
     }
 
     /**
+     * Sets whether a streak will be incremented by the bang play
+     *
+     * @param raiseStreak whether to increase the user's streak score from the bang update
+     */
+    public void setStreak(boolean raiseStreak) {
+        streak = raiseStreak;
+    }
+
+    /**
      * Attempts getter.
      *
      * @return number of attempts in the update
@@ -138,6 +149,15 @@ public class BangUpdate {
     }
 
     /**
+     * Rewarded getter.
+     *
+     * @return whether a user's streak is incremented by this update
+     */
+    public boolean isStreakIncreased() {
+        return streak;
+    }
+
+    /**
      * Id getter.
      *
      * @return the ID number of the user whose bang row is being updated
@@ -159,6 +179,7 @@ public class BangUpdate {
                 + ", jams = jams + " + getJams()
                 + ", last_played = " + getLastPlayed()
                 + (isRewarded() ? ", last_daily = " + getLastPlayed() : "")
+                + (isStreakIncreased() ? ", streak = streak + 1" : "")
                 + " WHERE user = " + getId();
     }
 }

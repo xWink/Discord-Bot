@@ -40,6 +40,7 @@ public final class BangCache {
                 element.addJams(update.getJams());
                 element.setLastPlayed(update.getLastPlayed());
                 if (update.isRewarded()) element.setReward(true);
+                if (update.isStreakIncreased()) element.setStreak(true);
                 found = true;
             }
         }

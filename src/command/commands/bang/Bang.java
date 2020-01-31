@@ -7,6 +7,11 @@ import database.connectors.BangConnector;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.TemporalAmount;
+import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.Random;
 
@@ -18,6 +23,7 @@ public class Bang extends Command {
     private static boolean jammed;
     private static boolean killed;
     private static boolean reward;
+    private static boolean streak;
 
     /**
      * Initializes the command's key to "!bang".
@@ -26,26 +32,18 @@ public class Bang extends Command {
         super("!bang", false);
         bc = new BangConnector();
         ec = new EconomyConnector();
-        resetJammed();
-        resetKilled();
+        resetBools();
         resetChambers();
-        resetReward();
     }
 
-    private void resetKilled() {
+    private void resetBools() {
         killed = false;
-    }
-
-    private void resetJammed() {
         jammed = false;
+        reward = false;
     }
 
     private void resetChambers() {
         chambers = 6;
-    }
-
-    private void resetReward() {
-        reward = false;
     }
 
     /**
@@ -104,23 +102,31 @@ public class Bang extends Command {
 
         try {
             boolean oldPanic = BangCache.isPanicking();
+            long lastPlayed = bc.getUserRow(event.getAuthor().getIdLong()).getLong("last_played");
+            LocalDate lastPlayedDate = Instant.ofEpochMilli(lastPlayed).atZone(ZoneId.systemDefault()).toLocalDate();
+
             reward = bc.isEligibleForDaily(event.getAuthor().getIdLong());
+            streak = new Date().getTime() - lastPlayed < 86400000
+                    && LocalDate.now().getDayOfYear() == lastPlayedDate.getDayOfYear()
+                    && LocalDate.now().getYear() == lastPlayedDate.getYear();
+
             BangCache.enqueue(new BangUpdate(event.getAuthor().getIdLong(),
                     new Date().getTime(), 1,
-                    killed ? 1 : 0, jammed ? 1 : 0, reward));
+                    killed ? 1 : 0, jammed ? 1 : 0, reward, streak));
 
             if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
             if (jammed) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
 
             if (!BangCache.isPanicking()) {
-                if (oldPanic) event.getChannel().sendMessage(BangCache.getQueueResults()).queue();
-                else event.getChannel().sendMessage(getOutput(event)).queue();
+                if (oldPanic) {
+                    event.getChannel().sendMessage(BangCache.getQueueResults()).queue();
+                } else {
+                    event.getChannel().sendMessage(getOutput(event)).queue();
+                }
                 BangCache.updateAll();
             }
 
-            resetReward();
-            resetKilled();
-            resetJammed();
+            resetBools();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

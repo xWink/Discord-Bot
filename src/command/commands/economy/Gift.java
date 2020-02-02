@@ -33,9 +33,14 @@ public class Gift extends Command {
             long targetId = event.getMessage().getMentionedMembers().get(0).getUser().getIdLong();
             int amount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[2]);
 
-            ec.addOrRemoveMoney(targetId, amount);
-            ec.addOrRemoveMoney(event.getAuthor().getIdLong(), -amount);
-            event.getChannel().sendMessage("Successfully sent gift!").queue();
+
+            if (ec.canAfford(event.getAuthor().getIdLong(), amount)) {
+                ec.addOrRemoveMoney(targetId, amount);
+                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), -amount);
+                event.getChannel().sendMessage("Successfully sent gift!").queue();
+            } else {
+                event.getChannel().sendMessage("You cannot afford to send that gift").queue();
+            }
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

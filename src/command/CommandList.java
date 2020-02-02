@@ -10,6 +10,7 @@ import command.commands.blackjack.MyHand;
 import command.commands.blackjack.Stand;
 import command.commands.economy.Buy;
 import command.commands.Help;
+import command.commands.economy.Gift;
 import command.commands.economy.Market;
 import command.commands.admin.Purge;
 import command.commands.economy.Wallet;
@@ -80,5 +81,6 @@ public final class CommandList {
         commands.add(new Roles());
         commands.add(new Stand());
         commands.add(new Wallet());
+        commands.add(new Gift());
     }
 }

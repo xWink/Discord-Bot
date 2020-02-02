@@ -25,7 +25,7 @@ public class Gift extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         if (!inputIsValid(event.getMessage())) {
-            event.getChannel().sendMessage("To gift someone *gc* say `!gift <\\@user> <amount>`").queue();
+            event.getChannel().sendMessage("To gift someone *gc* say `!gift <@user> <amount>`").queue();
             return;
         }
 
@@ -35,6 +35,7 @@ public class Gift extends Command {
 
             ec.addOrRemoveMoney(targetId, amount);
             ec.addOrRemoveMoney(event.getAuthor().getIdLong(), -amount);
+            event.getChannel().sendMessage("Successfully sent gift!").queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
@@ -49,6 +50,11 @@ public class Gift extends Command {
         if (split.length > 3)
             return false;
 
-        return split[2].matches("[1-9][0-9]*");
+        try {
+            Integer.parseInt(split[2]);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

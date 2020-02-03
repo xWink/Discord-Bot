@@ -36,6 +36,8 @@ Updates to the database are made using SQL instructions.
 
 `!flip` - Flips a coin, displaying the result.
 
+`!gift [@user] [# gc]` - Gifts a specified number of GryphCoins to a target user
+
 `!info [course ID]` - Shows relevant information about a specified course at UoGuelph.
 
 `!join [role name]` - If the role already exists, it is assigned to the user. Otherwise, the user's id and requested role are stored in a database. If enough users apply for the same role, the role and a private text channel are created and all applicants are assigned to it.

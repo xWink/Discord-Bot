@@ -50,14 +50,16 @@ public class Gift extends Command {
         if (message.getMentionedMembers().size() != 1)
             return false;
 
+        if (message.getMentionedMembers().get(0).getUser().getIdLong() == message.getAuthor().getIdLong())
+            return false;
+
         String[] split = message.getContentRaw().split(" ");
 
         if (split.length > 3)
             return false;
 
         try {
-            Integer.parseInt(split[2]);
-            return true;
+            return Integer.parseInt(split[2]) > 0;
         } catch (Exception e) {
             return false;
         }

@@ -55,7 +55,7 @@ public class Gift extends Command {
 
         String[] split = message.getContentRaw().split(" ");
 
-        if (split.length > 3)
+        if (split.length != 3)
             return false;
 
         try {

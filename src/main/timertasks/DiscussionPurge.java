@@ -23,7 +23,6 @@ public class DiscussionPurge implements Runnable {
                     break;
                 }
                 messages = new MessageHistory(discussionChannel).retrievePast(99).complete();
-                discussionChannel.sendMessage("Number of messages: " + messages.size()).queue();
                 if (messages.size() > 22)
                     discussionChannel.deleteMessages(messages.subList(20, messages.size())).queue();
             } while (messages.size() > 22);

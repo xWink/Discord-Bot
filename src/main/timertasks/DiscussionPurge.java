@@ -15,7 +15,7 @@ public class DiscussionPurge implements Runnable {
     @Override
     public void run() {
         List<Message> messages;
-        TextChannel discussionChannel = Server.getGuild().getTextChannelById(652635445179711496L);
+        TextChannel discussionChannel = Server.getGuild().getTextChannelById(670857670214942730L);
         MessageHistory history = new MessageHistory(discussionChannel);
 
         try {

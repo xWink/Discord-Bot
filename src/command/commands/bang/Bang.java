@@ -10,8 +10,6 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.temporal.TemporalAmount;
-import java.time.temporal.TemporalUnit;
 import java.util.Date;
 import java.util.Random;
 
@@ -27,9 +25,11 @@ public class Bang extends Command {
 
     /**
      * Initializes the command's key to "!bang".
+     * This command is "global" in the sense that it can be detected anywhere
+     * HOWEVER it is only usable in the #bot-spam channel.
      */
     public Bang() {
-        super("!bang", false);
+        super("!bang", true);
         bc = new BangConnector();
         ec = new EconomyConnector();
         resetBools();
@@ -96,6 +96,9 @@ public class Bang extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
+        if (event.getChannel().getIdLong() != 674369527731060749L)
+                return;
+
         int pull = new Random().nextInt(chambers);
         if (pull == 0) tryToKill();
         else chambers--;
@@ -111,9 +114,13 @@ public class Bang extends Command {
                     && now.minusDays(1).getYear() == lastPlayedDate.getYear())
                     || bc.getUserRow(event.getAuthor().getIdLong()).getInt("streak") == 0;
 
-            BangCache.enqueue(new BangUpdate(event.getAuthor().getIdLong(),
+            BangCache.enqueue(new BangUpdate(
+                    event.getAuthor().getIdLong(),
                     new Date().getTime(), 1,
-                    killed ? 1 : 0, jammed ? 1 : 0, reward, streak));
+                    killed ? 1 : 0,
+                    jammed ? 1 : 0,
+                    reward,
+                    streak));
 
             if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
             if (jammed) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);

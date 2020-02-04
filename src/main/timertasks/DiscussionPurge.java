@@ -20,7 +20,7 @@ public class DiscussionPurge implements Runnable {
         try {
             List<Message> messages = history.retrievePast(history.size()).complete();
             if (messages.size() > 50) {
-                discussionChannel.deleteMessages(messages.subList(50, messages.size())).queue();
+                discussionChannel.deleteMessages(messages.subList(50, messages.size())).complete();
             }
         } catch (Exception e) {
             e.printStackTrace();

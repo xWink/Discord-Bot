@@ -4,11 +4,11 @@ import command.AdminCommand;
 import main.timertasks.DiscussionPurge;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-public class PurgeDiscussion extends AdminCommand {
+public class Cleanup extends AdminCommand {
     /**
      * Initializes the command's key to "!cleanup"
      */
-    protected PurgeDiscussion() {
+    public Cleanup() {
         super("!cleanup", true);
     }
 

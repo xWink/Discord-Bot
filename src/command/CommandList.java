@@ -1,5 +1,6 @@
 package command;
 
+import command.commands.admin.Cleanup;
 import command.commands.bang.Bang;
 import command.commands.bang.BangScore;
 import command.commands.bang.BangScores;
@@ -58,6 +59,7 @@ public final class CommandList {
     private static void addAllCommands() {
         // Admin commands
         commands.add(new Purge());
+        commands.add(new Cleanup());
 
         // Everyone commands
         commands.add(new Bang());

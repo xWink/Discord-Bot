@@ -14,14 +14,13 @@ public class DiscussionPurge implements Runnable {
      */
     @Override
     public void run() {
-        List<Message> messages;
-        TextChannel discussionChannel = Server.getGuild().getTextChannelById(670857670214942730L);
-        MessageHistory history = new MessageHistory(discussionChannel);
-
         try {
+            List<Message> messages;
             do {
-                messages = history.retrievePast(100).complete();
-                discussionChannel.deleteMessages(messages.subList(20, messages.size())).queue();
+                TextChannel discussionChannel = Server.getGuild().getTextChannelById(670857670214942730L);
+                messages = new MessageHistory(discussionChannel).retrievePast(100).complete();
+                if (messages.size() > 20)
+                    discussionChannel.deleteMessages(messages.subList(20, messages.size())).queue();
             } while (messages.size() > 20);
         } catch (Exception e) {
             e.printStackTrace();

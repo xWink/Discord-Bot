@@ -166,8 +166,8 @@ public final class BangConnector extends Connector {
      * @throws SQLException may be thrown when interacting with database
      */
     public void pruneStreaks() throws SQLException {
-        ResultSet rs = getConnection().prepareStatement("UPDATE bang SET streak = 0 WHERE "
-                + new Date().getTime() + " - last_played > 86460000").executeQuery();
+        getConnection().prepareStatement("UPDATE bang SET streak = 0 WHERE "
+                + new Date().getTime() + " - last_played > 86460000").executeUpdate();
     }
 
     /**

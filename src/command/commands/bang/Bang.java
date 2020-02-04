@@ -104,11 +104,11 @@ public class Bang extends Command {
             boolean oldPanic = BangCache.isPanicking();
             long lastPlayed = bc.getUserRow(event.getAuthor().getIdLong()).getLong("last_played");
             LocalDate lastPlayedDate = Instant.ofEpochMilli(lastPlayed).atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDate now = Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
 
             reward = bc.isEligibleForDaily(event.getAuthor().getIdLong());
-            streak = (new Date().getTime() - lastPlayed < 86400000
-                    && LocalDate.now().minusDays(1).getDayOfYear() == lastPlayedDate.getDayOfYear()
-                    && LocalDate.now().minusDays(1).getYear() == lastPlayedDate.getYear())
+            streak = (now.minusDays(1).getDayOfYear() == lastPlayedDate.getDayOfYear()
+                    && now.minusDays(1).getYear() == lastPlayedDate.getYear())
                     || bc.getUserRow(event.getAuthor().getIdLong()).getInt("streak") == 0;
 
             BangCache.enqueue(new BangUpdate(event.getAuthor().getIdLong(),

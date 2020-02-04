@@ -18,8 +18,14 @@ public class DiscussionPurge implements Runnable {
             List<Message> messages;
             do {
                 TextChannel discussionChannel = Server.getGuild().getTextChannelById(670857670214942730L);
-                messages = new MessageHistory(discussionChannel).retrievePast(100).complete();
+                if (discussionChannel == null) {
+                    System.out.println("Null!!");
+                    break;
+                }
+                messages = new MessageHistory(discussionChannel).retrievePast(99).complete();
+                discussionChannel.sendMessage("Number of messages: " + messages.size()).queue();
                 if (messages.size() > 20)
+                    System.out.println("purging");
                     discussionChannel.deleteMessages(messages.subList(20, messages.size())).queue();
             } while (messages.size() > 20);
         } catch (Exception e) {

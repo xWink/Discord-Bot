@@ -23,9 +23,7 @@ public final class BangCache {
         last20 = new ArrayList<>();
     }
 
-    private BangCache() {
-
-    }
+    private BangCache() { }
 
     /**
      * Adds data from a BangUpdate object to the queue.

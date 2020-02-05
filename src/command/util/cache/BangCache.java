@@ -10,6 +10,7 @@ import java.util.Queue;
 
 public final class BangCache {
 
+    private static final long THRESHOLD = 10000;
     private static Queue<BangUpdate> queue;
     private static BangConnector bc;
     private static boolean panic;
@@ -54,7 +55,7 @@ public final class BangCache {
         boolean oldPanic = panic;
         long avgTime = last20.stream().reduce(0L, Long::sum) / last20.size();
 
-        panic = avgTime > new Date().getTime() - 8000 && last20.size() >= 20;
+        panic = avgTime > new Date().getTime() - THRESHOLD && last20.size() >= 20;
 
         if (panic && !oldPanic) System.out.println("Panic mode: activated");
         else if (!panic && oldPanic) System.out.println("Panic mode: deactivated");

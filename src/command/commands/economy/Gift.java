@@ -1,6 +1,7 @@
 package command.commands.economy;
 
 import command.Command;
+import command.util.game.BlackJackList;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -33,8 +34,11 @@ public class Gift extends Command {
             long targetId = event.getMessage().getMentionedMembers().get(0).getUser().getIdLong();
             int amount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[2]);
 
-
             if (ec.canAfford(event.getAuthor().getIdLong(), amount)) {
+                if (BlackJackList.getUserGame(event.getAuthor().getIdLong()) != null) {
+                    event.getChannel().sendMessage("You cannot gift while in a game of blackjack").queue();
+                    return;
+                }
                 ec.addOrRemoveMoney(targetId, amount);
                 ec.addOrRemoveMoney(event.getAuthor().getIdLong(), -amount);
                 event.getChannel().sendMessage("Successfully sent gift!").queue();

@@ -3,6 +3,7 @@ package command.commands.bang;
 import command.Command;
 import command.util.cache.BangCache;
 import database.connectors.BangConnector;
+import main.Server;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.sql.ResultSet;
@@ -15,7 +16,7 @@ public class MyBang extends Command {
      * Initializes the command's key to "!mybang".
      */
     public MyBang() {
-        super("!mybang", false);
+        super("!mybang", true);
         bc = new BangConnector();
     }
 
@@ -27,6 +28,11 @@ public class MyBang extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
+        if (event.getChannel().getIdLong() != 674369527731060749L
+                || event.getChannel().getIdLong() != Server.getBotsChannel().getIdLong()) {
+            return;
+        }
+
         int attempts = 0, deaths = 0, jams = 0, streak = 0;
         double survivalRate = 0;
         BangCache.updateAll();

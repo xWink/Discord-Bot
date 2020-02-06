@@ -2,6 +2,7 @@ package command.commands.bang;
 
 import command.Command;
 import database.connectors.BangConnector;
+import main.Server;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;
@@ -17,7 +18,7 @@ public class Daily extends Command {
      * Initializes the command's key to "!daily".
      */
     public Daily() {
-        super("!daily", false);
+        super("!daily", true);
         bc = new BangConnector();
     }
 
@@ -28,7 +29,11 @@ public class Daily extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        SimpleDateFormat df = new SimpleDateFormat("h:mm a"); // Set format of date/time
+        if (event.getChannel().getIdLong() != 674369527731060749L
+                || event.getChannel().getIdLong() != Server.getBotsChannel().getIdLong()) {
+            return;
+        }
+            SimpleDateFormat df = new SimpleDateFormat("h:mm a"); // Set format of date/time
         TimeZone zone = TimeZone.getTimeZone("America/New_York"); // Get timezone
         df.setTimeZone(zone); // Apply timezone to format
         try {

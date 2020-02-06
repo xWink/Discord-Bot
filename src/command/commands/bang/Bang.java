@@ -5,6 +5,7 @@ import command.util.cache.BangCache;
 import command.util.cache.BangUpdate;
 import database.connectors.BangConnector;
 import database.connectors.EconomyConnector;
+import main.Server;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.time.Instant;
@@ -96,8 +97,12 @@ public class Bang extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != 674369527731060749L)
-                return;
+        if (event.getChannel().getIdLong() != 674369527731060749L) {
+            if (event.getChannel().getIdLong() == Server.getBotsChannel().getIdLong()) {
+                event.getChannel().sendMessage("This command is only available in <#674369527731060749>").queue();
+            }
+            return;
+        }
 
         int pull = new Random().nextInt(chambers);
         if (pull == 0) tryToKill();

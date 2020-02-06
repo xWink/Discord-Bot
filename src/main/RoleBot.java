@@ -35,7 +35,7 @@ public class RoleBot {
             timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);
             timer.schedule(new PruneBangStreaks(), 1000 * 60 * 60 * 2, 1000 * 60 * 60 * 2);
             startPurgeScheduler();
-            Server.getApi().awaitReady();
+            Server.getApi().awaitReady().awaitReady();
         } catch (Exception e) {
             e.printStackTrace();
         }

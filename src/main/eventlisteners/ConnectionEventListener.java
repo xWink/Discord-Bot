@@ -17,6 +17,7 @@ public class ConnectionEventListener extends ListenerAdapter {
     public void onReady(ReadyEvent event) {
         Server.setGuild(event.getJDA().getGuildById(486633949154770944L));
         Server.setGeneralChannel(Server.getGuild().getTextChannelById(486633949154770946L));
+        Server.setBotsChannel(Server.getGuild().getTextChannelById(551828950871965696L));
         System.out.println("Ready!");
     }
 

@@ -78,6 +78,15 @@ public final class Server {
     }
 
     /**
+     * Bots Channel setter.
+     *
+     * @param channel the bots channel for the BComp Discord server
+     */
+    public static void setBotsChannel(TextChannel channel) {
+        botsChannel = channel;
+    }
+
+    /**
      * generaChannel getter.
      *
      * @return the TextChannel named general in the server.

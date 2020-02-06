@@ -98,7 +98,7 @@ public class Bang extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         if (event.getChannel().getIdLong() != 674369527731060749L) {
-            if (event.getChannel().getIdLong() == 551828950871965696L) {
+            if (event.getChannel().getIdLong() == Server.getBotsChannel().getIdLong()) {
                 event.getChannel().sendMessage("This command is only available in <#674369527731060749>").queue();
             }
             return;

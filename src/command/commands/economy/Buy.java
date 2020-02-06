@@ -71,7 +71,7 @@ public class Buy extends Command {
                 event.getGuild().getController().addSingleRoleToMember(event.getMember(),
                         ((RoleListing) listing).getRole()).queue();
                 // Remove money
-                ec.addOrRemoveMoney(userId, 0 - listing.getCost());
+                ec.addOrRemoveMoney(userId, -listing.getCost());
                 // Set role and expiry in database
                 ec.setRole(userId, (RoleListing) listing);
                 channel.sendMessage("Enjoy your new colour! :)").queue();

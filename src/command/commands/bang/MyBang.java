@@ -29,7 +29,7 @@ public class MyBang extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         if (event.getChannel().getIdLong() != 674369527731060749L
-                || event.getChannel().getIdLong() != Server.getBotsChannel().getIdLong()) {
+                || event.getChannel().getIdLong() != 551828950871965696L) {
             return;
         }
 

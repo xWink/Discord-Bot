@@ -9,7 +9,7 @@ public abstract class Listing {
     /**
      * The amount of time the item lasts after purchase.
      */
-    private int duration;
+    private long duration;
 
     /**
      * Listing constructor. Every listing has a cost and duration
@@ -37,7 +37,7 @@ public abstract class Listing {
      *
      * @return the item's duration after purchase
      */
-    public int getDuration() {
+    public long getDuration() {
         return duration;
     }
 

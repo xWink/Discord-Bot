@@ -84,7 +84,7 @@ public final class EconomyConnector extends Connector {
         if (!userExists(userId)) addUser(userId);
         Date date = new Date();
         getConnection().prepareStatement("UPDATE economy "
-                + "SET role_expiry = " + (date.getTime() + (long) (listing.getDuration() * 86400000))
+                + "SET role_expiry = " + (date.getTime() + listing.getDuration() * 86400000)
                 + ", role_colour = '" + listing.getRole().getName()
                 + "' WHERE user = " + userId).executeUpdate();
     }

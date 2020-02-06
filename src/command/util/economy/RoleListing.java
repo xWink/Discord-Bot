@@ -30,8 +30,8 @@ public class RoleListing extends Listing {
      */
     @Override
     public String toString() {
-        return role.getName() + " (" + getDuration() + " days) - "
-                + (getCost() < 99999 ? getCost() : "permanent") + " *gc*";
+        return role.getName() + " (" + (getDuration() < 99999 ? getDuration() + " days) - " : "permanent) - ")
+                + getCost() + " *gc*";
     }
 
     /**

@@ -27,15 +27,14 @@ public class RoleBot {
     public static void main(String[] args) {
         try {
             Server.getApi().addEventListener(new MessageEventListener());
-            Server.getApi().addEventListener(new ReactionEventListener());
+            /*Server.getApi().addEventListener(new ReactionEventListener());
             Server.getApi().addEventListener(new ConnectionEventListener());
             Server.getApi().addEventListener(new JoinLeaveEventListener());
             Timer timer = new Timer();
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
             timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);
             timer.schedule(new PruneBangStreaks(), 1000 * 60 * 60 * 2, 1000 * 60 * 60 * 2);
-            startPurgeScheduler();
-            Server.getApi().awaitReady();
+            startPurgeScheduler();*/
         } catch (Exception e) {
             e.printStackTrace();
         }

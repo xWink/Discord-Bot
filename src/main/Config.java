@@ -167,6 +167,10 @@ public final class Config {
             logMessage("If you would like the bot to work on all channels, use `CHANNEL=all`");
             System.exit(0);
         }
+        if ((dbAddr == null) || (dbAddr.isEmpty())) {
+            logMessage("Error: Ending execution due to missing DB_ADDR in '.rolebotconfig' file. Make sure that the file has a DB_ADDR field before running again");
+            System.exit(0);
+        }
         if ((dbUser == null) || (dbUser.isEmpty())) {
             logMessage("Error: Ending execution due to missing DB_USER in '.rolebotconfig' file. Make sure that the file has a DB_USER field before running again");
             System.exit(0);

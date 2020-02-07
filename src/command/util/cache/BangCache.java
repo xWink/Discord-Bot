@@ -2,11 +2,9 @@ package command.util.cache;
 
 import database.connectors.BangConnector;
 import main.Server;
+import net.dv8tion.jda.api.entities.Guild;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
 public final class BangCache {
 
@@ -93,12 +91,15 @@ public final class BangCache {
      */
     public static String getQueueResults() {
         String output = "**Combined Data:**\n";
-        for (BangUpdate update : queue) {
-            output = output.concat("**" + Server.getApi().getGuildById(Server.getGuild()).getMemberById(update.getId())
-                    .getEffectiveName() + ":**\n"
-                    + "Attempts: " + update.getAttempts() + "\n"
-                    + "Deaths : " + update.getDeaths() + "\n"
-                    + "Jams: " + update.getJams() + "\n\n");
+        Guild guild = Server.getApi().getGuildById(Server.getGuild());
+        if (guild != null) {
+            for (BangUpdate update : queue) {
+                output = output.concat("**" + Objects.requireNonNull(guild.getMemberById(update.getId()))
+                        .getEffectiveName() + ":**\n"
+                        + "Attempts: " + update.getAttempts() + "\n"
+                        + "Deaths : " + update.getDeaths() + "\n"
+                        + "Jams: " + update.getJams() + "\n\n");
+            }
         }
         return output;
     }

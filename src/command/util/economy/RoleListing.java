@@ -1,6 +1,6 @@
 package command.util.economy;
 
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.api.entities.Role;
 
 public class RoleListing extends Listing {
 

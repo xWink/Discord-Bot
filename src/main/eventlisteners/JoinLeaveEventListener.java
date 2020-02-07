@@ -1,8 +1,9 @@
 package main.eventlisteners;
 
 import main.Server;
-import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class JoinLeaveEventListener extends ListenerAdapter {
 
@@ -18,9 +19,14 @@ public class JoinLeaveEventListener extends ListenerAdapter {
             return;
         }
 
-        event.getGuild().getTextChannelById(Server.getGeneralChannel()).sendMessage("Welcome " + event.getUser().getAsMention()
-                + "! Feel free to ask any questions in here, we are always looking to help each other out!\n\n"
-                + "If you want to play with our bot, made in-house, go to " + event.getGuild().getTextChannelById(Server.getBotsChannel()).getAsMention()
-                + " and say `!help` :smiley:").queue();
+        TextChannel channel = event.getGuild().getTextChannelById(Server.getGeneralChannel());
+        TextChannel botChannel = event.getGuild().getTextChannelById(Server.getBotsChannel());
+
+        if (channel != null && botChannel != null) {
+            channel.sendMessage("Welcome " + event.getUser().getAsMention()
+                    + "! Feel free to ask any questions in here, we are always looking to help each other out!\n\n"
+                    + "If you want to play with our bot, made in-house, go to " + botChannel.getAsMention()
+                    + " and say `!help` :smiley:").queue();
+        }
     }
 }

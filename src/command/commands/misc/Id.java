@@ -1,9 +1,9 @@
 package command.commands.misc;
 
 import command.Command;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Id extends Command {
 
@@ -45,6 +45,7 @@ public class Id extends Command {
 
         try {
             Member member = event.getGuild().getMemberById(Long.parseLong(content[1]));
+            if (member == null) throw new NullPointerException();
             channel.sendMessage("Found user: " + member.getEffectiveName()).queue();
         } catch (Exception e) {
             channel.sendMessage("Could not find a user with that ID").queue();

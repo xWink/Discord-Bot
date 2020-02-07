@@ -3,7 +3,7 @@ package command.commands.bang;
 import command.Command;
 import command.util.highscores.BangHighScore;
 import main.Server;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class BangScore extends Command {
 

@@ -1,7 +1,7 @@
 package command.commands.economy;
 
 import command.Command;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import command.util.economy.Listing;
 import command.util.economy.Marketplace;
 

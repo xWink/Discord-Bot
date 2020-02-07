@@ -1,7 +1,7 @@
 package command;
 
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public abstract class AdminCommand extends Command {
 
@@ -34,7 +34,7 @@ public abstract class AdminCommand extends Command {
      */
     @Override
     public final void start(MessageReceivedEvent event) {
-        if (isAdmin(event.getMember()))
+        if (event.getMember() != null && isAdmin(event.getMember()))
             runCommand(event);
     }
 

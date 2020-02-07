@@ -2,7 +2,7 @@ package command.commands.economy;
 
 import command.Command;
 import database.connectors.EconomyConnector;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Wallet extends Command {
 

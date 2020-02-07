@@ -2,7 +2,7 @@ package command.commands.misc;
 
 import command.Command;
 import database.connectors.PingConnector;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Ping extends Command {
 
@@ -27,7 +27,7 @@ public class Ping extends Command {
     public void start(MessageReceivedEvent event) {
         long authorId = event.getAuthor().getIdLong();
 
-        int ping = (int) event.getJDA().getPing();
+        int ping = (int) event.getJDA().getGatewayPing();
         event.getChannel().sendMessage("Pong! " + ping + " ms").queue();
 
         try {

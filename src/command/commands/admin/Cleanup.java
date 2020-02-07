@@ -2,7 +2,7 @@ package command.commands.admin;
 
 import command.AdminCommand;
 import main.timertasks.DiscussionPurge;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Cleanup extends AdminCommand {
     /**

@@ -2,7 +2,7 @@ package command.commands.misc;
 
 import command.Command;
 import database.connectors.KarmaConnector;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Karma extends Command {
 

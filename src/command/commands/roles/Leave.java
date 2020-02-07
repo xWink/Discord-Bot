@@ -2,14 +2,11 @@ package command.commands.roles;
 
 import command.Command;
 import database.connectors.RolesConnector;
-import net.dv8tion.jda.core.entities.Category;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Leave extends Command {
 
@@ -59,10 +56,10 @@ public class Leave extends Command {
         courseId = message.substring(message.indexOf(strings[1]));
         List<Role> guildRoles = event.getGuild().getRolesByName(courseId, true);
 
-        if (!guildRoles.isEmpty() && event.getMember().getRoles().contains(guildRoles.get(0))) {
+        if (!guildRoles.isEmpty() && Objects.requireNonNull(event.getMember()).getRoles().contains(guildRoles.get(0))) {
             if (leaveRole())
                 channel.sendMessage("Removed " + courseId
-                        + " from " + theEvent.getMember().getAsMention()).queue();
+                        + " from " + Objects.requireNonNull(theEvent.getMember()).getAsMention()).queue();
             else
                 channel.sendMessage("I cannot remove you from this role!").queue();
         } else {
@@ -80,8 +77,8 @@ public class Leave extends Command {
         Category electives = guild.getJDA().getCategoryById("556266020625711130");
 
         // If role is in the Electives category
-        if (!channels.isEmpty() && electives.getTextChannels().contains(channels.get(0))) {
-            guild.getController().removeSingleRoleFromMember(theEvent.getMember(),
+        if (!channels.isEmpty() && electives != null && electives.getTextChannels().contains(channels.get(0))) {
+            guild.removeRoleFromMember(Objects.requireNonNull(theEvent.getMember()),
                     guild.getRolesByName(courseId, true).get(0)).queue();
             return true;
         }

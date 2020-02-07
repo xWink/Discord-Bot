@@ -6,8 +6,8 @@ import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import command.util.game.Player;
 import database.connectors.EconomyConnector;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;

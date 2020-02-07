@@ -2,11 +2,13 @@ package command.commands.economy;
 
 import command.Command;
 import database.connectors.EconomyConnector;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import command.util.economy.Listing;
 import command.util.economy.Marketplace;
 import command.util.economy.RoleListing;
+
+import java.util.Objects;
 
 public class Buy extends Command {
 
@@ -68,8 +70,7 @@ public class Buy extends Command {
                 }
 
                 // Assign role
-                event.getGuild().getController().addSingleRoleToMember(event.getMember(),
-                        ((RoleListing) listing).getRole()).queue();
+                event.getGuild().addRoleToMember(Objects.requireNonNull(event.getMember()), ((RoleListing) listing).getRole()).queue();
                 // Remove money
                 ec.addOrRemoveMoney(userId, -listing.getCost());
                 // Set role and expiry in database

@@ -1,8 +1,8 @@
 package command.commands.roles;
 
 import command.Command;
-import net.dv8tion.jda.core.entities.Channel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
@@ -23,12 +23,12 @@ public class Roles extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         try {
-            List<Channel> channelList = event.getGuild().getChannels();
+            List<GuildChannel> channelList = event.getGuild().getChannels();
             int channelCount = 0;
             String message = "**Available elective roles**\n";
 
             // Find any channel in Electives category
-            for (Channel channel : channelList) {
+            for (GuildChannel channel : channelList) {
                 if (channel.getParent() == event.getGuild().getCategoriesByName("electives", true).get(0)) {
                     channelCount++;
                     message = message.concat(channelCount + ". " + channel.getName() + "\n");

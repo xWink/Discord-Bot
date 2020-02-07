@@ -16,19 +16,24 @@ public final class Server {
     private static TextChannel generalChannel;
     private static TextChannel botsChannel;
     private static Guild guild;
+    private static Server server;
 
     private Server() {
-
-    }
-
-    static {
         try {
             api = new JDABuilder(AccountType.BOT).setToken(Config.getToken()).build();
+            System.out.println(Config.getToken());
             api.getPresence().setGame(Game.playing("!help"));
+            server = this;
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
+    }
+
+    public static Server getServer() {
+        if (server == null)
+            server = new Server();
+        return server;
     }
 
 
@@ -37,7 +42,7 @@ public final class Server {
      *
      * @return JDA's API
      */
-    public static JDA getApi() {
+    public JDA getApi() {
         return api;
     }
 
@@ -46,7 +51,7 @@ public final class Server {
      *
      * @return the TextChannel where the bot is meant to be played with in.
      */
-    public static TextChannel getBotsChannel() {
+    public TextChannel getBotsChannel() {
         return botsChannel;
     }
 
@@ -55,7 +60,7 @@ public final class Server {
      *
      * @return the guild the bot is connected to (BComp)
      */
-    public static Guild getGuild() {
+    public Guild getGuild() {
         return guild;
     }
 

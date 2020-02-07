@@ -9,7 +9,7 @@ public abstract class HighScore {
     private Guild guild;
 
     protected HighScore() {
-        guild = Server.getGuild();
+        guild = Server.getServer().getGuild();
     }
 
     /**

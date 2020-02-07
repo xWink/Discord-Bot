@@ -20,7 +20,7 @@ public class JoinLeaveEventListener extends ListenerAdapter {
 
         Server.getGeneralChannel().sendMessage("Welcome " + event.getUser().getAsMention()
                 + "! Feel free to ask any questions in here, we are always looking to help each other out!\n\n"
-                + "If you want to play with our bot, made in-house, go to " + Server.getBotsChannel().getAsMention()
+                + "If you want to play with our bot, made in-house, go to " + Server.getServer().getBotsChannel().getAsMention()
                 + " and say `!help` :smiley:").queue();
     }
 }

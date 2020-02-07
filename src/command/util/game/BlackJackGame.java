@@ -61,6 +61,8 @@ public class BlackJackGame {
      * Makes the dealer hit until their hand value is over 17.
      */
     public void dealerPlays() {
+        if (getPlayer().getHand().getValue() == 21 && getPlayer().getHand().getAsList().size() == 2)
+            return;
         while (getDealer().getHand().getValue() < 17)
             getDealer().getHand().add(deck.pickTopCard());
     }

@@ -13,36 +13,32 @@ import net.dv8tion.jda.core.entities.TextChannel;
 public final class Server {
 
     private static JDA api;
-    private static TextChannel generalChannel;
-    private static TextChannel botsChannel;
-    private static Guild guild;
-    private static Server server;
+    private static long generalChannel;
+    private static long botsChannel;
+    private static long guild;
 
-    private Server() {
+    private Server() { }
+
+    static {
         try {
             api = new JDABuilder(AccountType.BOT).setToken(Config.getToken()).build();
-            System.out.println(Config.getToken());
             api.getPresence().setGame(Game.playing("!help"));
-            server = this;
+            guild = Long.parseLong(Config.getGuildId());
+            System.out.println(guild);
+            generalChannel = 486633949154770946L;
+            botsChannel = 551828950871965696L;
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }
     }
 
-    public static Server getServer() {
-        if (server == null)
-            server = new Server();
-        return server;
-    }
-
-
     /**
      * Returns the JDA object which was built from the bot's token.
      *
      * @return JDA's API
      */
-    public JDA getApi() {
+    public static JDA getApi() {
         return api;
     }
 
@@ -51,7 +47,7 @@ public final class Server {
      *
      * @return the TextChannel where the bot is meant to be played with in.
      */
-    public TextChannel getBotsChannel() {
+    public static long getBotsChannel() {
         return botsChannel;
     }
 
@@ -60,35 +56,35 @@ public final class Server {
      *
      * @return the guild the bot is connected to (BComp)
      */
-    public Guild getGuild() {
+    public static long getGuild() {
         return guild;
     }
 
     /**
      * Guild setter.
      *
-     * @param theGuild the guild the bot connects to (BComp)
+     * @param theGuildId the ID of the guild the bot connects to (BComp)
      */
-    public static void setGuild(Guild theGuild) {
-        guild = theGuild;
+    public static void setGuild(long theGuildId) {
+        guild = theGuildId;
     }
 
     /**
      * General Channel setter.
      *
-     * @param channel the general channel for the BComp Discord server
+     * @param channelId the general channel ID for the BComp Discord server
      */
-    public static void setGeneralChannel(TextChannel channel) {
-        generalChannel = channel;
+    public static void setGeneralChannel(long channelId) {
+        generalChannel = channelId;
     }
 
     /**
      * Bots Channel setter.
      *
-     * @param channel the bots channel for the BComp Discord server
+     * @param channelId the bots channel ID for the BComp Discord server
      */
-    public static void setBotsChannel(TextChannel channel) {
-        botsChannel = channel;
+    public static void setBotsChannel(long channelId) {
+        botsChannel = channelId;
     }
 
     /**
@@ -96,16 +92,7 @@ public final class Server {
      *
      * @return the TextChannel named general in the server.
      */
-    public static TextChannel getGeneralChannel() {
+    public static long getGeneralChannel() {
         return generalChannel;
-    }
-
-    /**
-     * guild getter.
-     *
-     * @return the Discord server (guild) the bot is running on
-     */
-    public static Guild guild() {
-        return guild;
     }
 }

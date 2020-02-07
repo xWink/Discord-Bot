@@ -2,6 +2,7 @@ package main.timertasks;
 
 import database.connectors.EconomyConnector;
 import main.Server;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.Role;
 
@@ -31,11 +32,12 @@ public class RemoveExpiredRoles extends TimerTask {
             // For each user with expired roles
             while (rs.next()) {
                 // Get member and role
-                Member member = Server.guild().getMemberById(rs.getLong("user"));
-                Role role = Server.guild().getRolesByName(rs.getString("role_colour"), true).get(0);
+                Guild guild = Server.getApi().getGuildById(Server.getGuild());
+                Member member = guild.getMemberById(rs.getLong("user"));
+                Role role = guild.getRolesByName(rs.getString("role_colour"), true).get(0);
 
                 // Remove role from member
-                Server.guild().getController().removeSingleRoleFromMember(member, role).queue();
+                guild.getController().removeSingleRoleFromMember(member, role).queue();
                 ec.resetUserRole(member.getUser().getIdLong());
             }
         } catch (Exception e) {

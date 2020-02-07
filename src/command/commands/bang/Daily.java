@@ -30,7 +30,7 @@ public class Daily extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         if (event.getChannel().getIdLong() != 674369527731060749L
-                && event.getChannel().getIdLong() != Server.getServer().getBotsChannel().getIdLong()) {
+                && event.getChannel().getIdLong() != Server.getBotsChannel()) {
             return;
         }
             SimpleDateFormat df = new SimpleDateFormat("h:mm a"); // Set format of date/time

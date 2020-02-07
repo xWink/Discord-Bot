@@ -18,7 +18,7 @@ public class DiscussionPurge implements Runnable {
             List<Message> messages;
             int size = 0;
             do {
-                TextChannel discussionChannel = Server.getServer().getGuild().getTextChannelById(670857670214942730L);
+                TextChannel discussionChannel = Server.getApi().getGuildById(Server.getGuild()).getTextChannelById(670857670214942730L);
                 if (discussionChannel == null) {
                     System.out.println("NULL Discussion Channel!!!");
                     break;

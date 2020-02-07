@@ -94,7 +94,8 @@ public final class BangCache {
     public static String getQueueResults() {
         String output = "**Combined Data:**\n";
         for (BangUpdate update : queue) {
-            output = output.concat("**" + Server.getServer().getGuild().getMemberById(update.getId()).getEffectiveName() + ":**\n"
+            output = output.concat("**" + Server.getApi().getGuildById(Server.getGuild()).getMemberById(update.getId())
+                    .getEffectiveName() + ":**\n"
                     + "Attempts: " + update.getAttempts() + "\n"
                     + "Deaths : " + update.getDeaths() + "\n"
                     + "Jams: " + update.getJams() + "\n\n");

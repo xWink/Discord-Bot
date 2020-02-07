@@ -17,14 +17,13 @@ public final class Server {
     private static long botsChannel;
     private static long guild;
 
-    private Server() { }
+    private Server() {}
 
     static {
         try {
             api = new JDABuilder(AccountType.BOT).setToken(Config.getToken()).build();
             api.getPresence().setGame(Game.playing("!help"));
             guild = Long.parseLong(Config.getGuildId());
-            System.out.println(guild);
             generalChannel = 486633949154770946L;
             botsChannel = 551828950871965696L;
         } catch (Exception e) {

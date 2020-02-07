@@ -8,6 +8,8 @@ import main.timertasks.DiscussionPurge;
 import main.timertasks.PruneBangStreaks;
 import main.timertasks.RemoveExpiredRoles;
 import main.timertasks.UpdateHighScores;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -17,7 +19,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+
 public class RoleBot {
+
+    private static final Logger logger = LogManager.getLogger(RoleBot.class);
 
     /**
      * Acquires settings from config file, activates bot based on token in file,
@@ -26,6 +31,7 @@ public class RoleBot {
      */
     public static void main(String[] args) {
         try {
+            logger.debug("Entering application.");
             Server.getApi().addEventListener(
                     new MessageEventListener(),
                     new ReactionEventListener(),

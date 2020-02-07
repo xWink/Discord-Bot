@@ -62,7 +62,10 @@ public class BlackJackGame {
      */
     public void dealerPlays() {
         while (getDealer().getHand().getValue() < 17)
-            getDealer().getHand().add(deck.pickTopCard());
+            if ((getPlayer().getHand().getValue() == 21 && getPlayer().getHand().getAsList().size() == 2) && getDealer().getHand().getAsList().size() < 2)
+                getDealer().getHand().add(deck.pickTopCard());
+            else
+                break;
     }
 
     /**

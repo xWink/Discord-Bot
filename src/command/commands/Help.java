@@ -21,7 +21,7 @@ public class Help extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        EmbedBuilder eb = new EmberBuilder();
+        EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.YELLOW);
         eb.setTitle("Bot Commands:");
 

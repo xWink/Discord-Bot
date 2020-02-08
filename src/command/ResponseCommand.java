@@ -31,6 +31,7 @@ public abstract class ResponseCommand extends Command {
         Timer timer;
 
         public ResponseHandler(long channelId, long authorId, JDA jda) {
+            jda.addEventListener(this);
             this.channelId = channelId;
             this.authorId = authorId;
             this.jda = jda;

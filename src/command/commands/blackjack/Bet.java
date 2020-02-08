@@ -90,7 +90,7 @@ public class Bet extends Command {
                             .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
                 } else {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
-                            + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"
+                            + (result > 0 ? "You won " + result + "*gc*!\n" : "It's a draw, you earned 0 *gc*\n"
                             + "Dealers hand: " + game.getDealer().getHand().toString())).queue();
                 }
 

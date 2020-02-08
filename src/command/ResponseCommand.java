@@ -28,13 +28,15 @@ public abstract class ResponseCommand extends Command {
         private final long channelId, authorId;
         private JDA jda;
         private ExpireTask expireTask;
-        Timer timer;
+        private Timer timer;
+        private ResponseHandler handler;
 
         public ResponseHandler(long channelId, long authorId, JDA jda) {
-            jda.addEventListener(this);
+            handler = this;
             this.channelId = channelId;
             this.authorId = authorId;
             this.jda = jda;
+            jda.addEventListener(handler);
             expireTask = new ExpireTask();
             timer = new Timer();
             timer.schedule(expireTask, 1000 * 60 * 5);
@@ -54,7 +56,7 @@ public abstract class ResponseCommand extends Command {
         private class ExpireTask extends TimerTask {
             @Override
             public void run() {
-                jda.removeEventListener(this);
+                jda.removeEventListener(handler);
             }
         }
     }

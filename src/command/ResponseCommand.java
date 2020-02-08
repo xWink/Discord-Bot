@@ -19,19 +19,24 @@ public abstract class ResponseCommand extends Command {
         super(theKey, isGlobal);
     }
 
+    /**
+     * Handles response from user who initiated command in same channel by calling respond method.
+     * The respond method is implemented in the child classes and will vary based on its purpose.
+     * ResponseHandler object lasts 5 minutes.
+     */
     protected class ResponseHandler extends ListenerAdapter {
         private final long channelId, authorId;
+        private JDA jda;
+        private ExpireTask expireTask;
+        Timer timer;
 
         public ResponseHandler(long channelId, long authorId, JDA jda) {
             this.channelId = channelId;
             this.authorId = authorId;
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    jda.removeEventListener(this);
-                }
-            }, 1000 * 60 * 5);
+            this.jda = jda;
+            expireTask = new ExpireTask();
+            timer = new Timer();
+            timer.schedule(expireTask, 1000 * 60 * 5);
         }
 
         @Override
@@ -39,7 +44,23 @@ public abstract class ResponseCommand extends Command {
             if (event.getAuthor().getIdLong() == authorId && event.getChannel().getIdLong() == channelId)
                 respond(event);
         }
+
+        public void expire() {
+            expireTask.run();
+            timer.cancel();
+        }
+
+        private class ExpireTask extends TimerTask {
+            @Override
+            public void run() {
+                jda.removeEventListener(this);
+            }
+        }
     }
 
+    /**
+     * How a ResponseCommand object handles a response from the user
+     * @param event a MessageReceivedEvent that triggered the response
+     */
     public abstract void respond(MessageReceivedEvent event);
 }

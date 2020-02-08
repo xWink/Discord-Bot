@@ -43,6 +43,9 @@ public class Leave extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
+        if (event.getMember() == null)
+            return;
+
         String message = event.getMessage().getContentRaw();
         String[] strings = message.split(" ");
         MessageChannel channel = event.getChannel();
@@ -56,10 +59,10 @@ public class Leave extends Command {
         courseId = message.substring(message.indexOf(strings[1]));
         List<Role> guildRoles = event.getGuild().getRolesByName(courseId, true);
 
-        if (!guildRoles.isEmpty() && Objects.requireNonNull(event.getMember()).getRoles().contains(guildRoles.get(0))) {
+        if (!guildRoles.isEmpty() && event.getMember().getRoles().contains(guildRoles.get(0))) {
             if (leaveRole())
                 channel.sendMessage("Removed " + courseId
-                        + " from " + Objects.requireNonNull(theEvent.getMember()).getAsMention()).queue();
+                        + " from " + event.getMember().getAsMention()).queue();
             else
                 channel.sendMessage("I cannot remove you from this role!").queue();
         } else {

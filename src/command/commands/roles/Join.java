@@ -3,10 +3,7 @@ package command.commands.roles;
 import command.Command;
 import database.connectors.RolesConnector;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.BufferedReader;
@@ -53,6 +50,9 @@ public class Join extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
+        if (event.getMember() == null)
+            return;
+
         String message = event.getMessage().getContentRaw().toLowerCase();
         String[] strings = message.split(" ");
         MessageChannel channel = event.getChannel();
@@ -82,10 +82,15 @@ public class Join extends Command {
      */
     private void attemptRoleAssignment() {
         Guild guild = theEvent.getGuild();
+        Category category = guild.getCategoryById("556266020625711130");
+
+        if (category == null)
+            return;
+
         MessageChannel channel = theEvent.getChannel();
         Role role = guild.getRolesByName(courseId, true).get(0);
         List<TextChannel> channels = guild.getTextChannelsByName(courseId, true);
-        List<TextChannel> electiveChannels = Objects.requireNonNull(guild.getJDA().getCategoryById("556266020625711130")).getTextChannels();
+        List<TextChannel> electiveChannels = category.getTextChannels();
 
         if (Objects.requireNonNull(guild.getMember(theEvent.getAuthor())).getRoles().contains(role))
             channel.sendMessage("You already have this role!").complete();

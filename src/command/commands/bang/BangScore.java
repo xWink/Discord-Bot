@@ -15,6 +15,16 @@ public class BangScore extends Command {
     }
 
     /**
+     * Matches with either "!bangscore" or "!bangscores"
+     * @param string the user's input being compared to the key
+     * @return true if key matches "!bangscore" or "!bangscores"
+     */
+    @Override
+    public boolean keyMatches(String string) {
+        return string.toLowerCase().matches("^" + getKey() + "s?$");
+    }
+
+    /**
      * Prints the high scores for bang.
      *
      * @param event the MessageReceivedEvent that triggered the command

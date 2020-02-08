@@ -3,6 +3,7 @@ package command.util.cache;
 import database.connectors.BangConnector;
 import main.Server;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 
 import java.util.*;
 
@@ -94,11 +95,13 @@ public final class BangCache {
         Guild guild = Server.getApi().getGuildById(Server.getGuild());
         if (guild != null) {
             for (BangUpdate update : queue) {
-                output = output.concat("**" + Objects.requireNonNull(guild.getMemberById(update.getId()))
-                        .getEffectiveName() + ":**\n"
-                        + "Attempts: " + update.getAttempts() + "\n"
-                        + "Deaths : " + update.getDeaths() + "\n"
-                        + "Jams: " + update.getJams() + "\n\n");
+                Member member = guild.getMemberById(update.getId());
+                if (member != null) {
+                    output = output.concat("**" + member.getEffectiveName() + ":**\n"
+                            + "Attempts: " + update.getAttempts() + "\n"
+                            + "Deaths : " + update.getDeaths() + "\n"
+                            + "Jams: " + update.getJams() + "\n\n");
+                }
             }
         }
         return output;

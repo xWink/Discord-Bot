@@ -85,13 +85,13 @@ public class Bet extends Command {
 
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
-                            + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\nDealers hand: ")
-                            + game.getDealer().getHand().toString())
+                            + (result > 0 ? "You won " + result + "*gc*!\n" : "It's a draw, you earned 0 *gc*\n")
+                            + "Dealers hand: " + game.getDealer().getHand().toString())
                             .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
                 } else {
                     channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
-                            + (result > 0 ? "You won " + result + "*gc*!" : "It's a draw, you earned 0 *gc*\n"
-                            + "Dealers hand: " + game.getDealer().getHand().toString())).queue();
+                            + (result > 0 ? "You won " + result + "*gc*!\n" : "It's a draw, you earned 0 *gc*\n")
+                            + "Dealers hand: " + game.getDealer().getHand().toString()).queue();
                 }
 
                 if (result > 0) ec.addOrRemoveMoney(userId, result);

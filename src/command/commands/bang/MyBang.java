@@ -45,12 +45,19 @@ public class MyBang extends Command {
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         } finally {
-            event.getChannel().sendMessage("**" + event.getAuthor().getName() + "'s scores**"
-                    + "\nAttempts: " + attempts
-                    + "\nDeaths: " + deaths
-                    + "\nJams: " + jams
-                    + "\nSurvival rate: " + survivalRate + "%"
-                    + "\nStreak: " + streak + (streak > 0 ? " :fire:" : "")).queue();
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setColor(Color.YELLOW);
+            eb.setTitle(event.getAuthor().getName() + "'s Scores");
+
+            eb.addField("Attempts",         attempts, true);
+            eb.addField("Deaths",           deaths, true);
+            eb.addField("Jams",             jams, true);
+            eb.addField("Survival Rate",    survivalRate + "%", false);
+            eb.addField("Streak",           streak + (streak > 0 ? " :fire:" : ""), true);
+
+            eb.setThumbnail(event.getAuthor().getAvatarUrl());
+
+            event.getChannel().sendMessage(eb.build()).queue();
         }
     }
 }

@@ -36,7 +36,7 @@ public class RemoveRole extends ResponseCommand {
             }
 
             try {
-                colorName = ec.getUserRow(event.getAuthor().getIdLong()).getString("role_color");
+                colorName = ec.getUserRow(event.getAuthor().getIdLong()).getString("role_colour");
             } catch (Exception e) {
                 printStackTraceAndSendMessage(event, e);
                 return;

@@ -34,6 +34,7 @@ public class RemoveRole extends ResponseCommand {
 
             if (roles.isEmpty()) {
                 event.getChannel().sendMessage("Could not find such a role").queue();
+                handler.expire();
                 return;
             }
 
@@ -49,6 +50,7 @@ public class RemoveRole extends ResponseCommand {
                     ec.resetUserRole(event.getAuthor().getIdLong());
                     event.getGuild().removeRoleFromMember(event.getAuthor().getId(), roles.get(0)).queue();
                     event.getChannel().sendMessage("Role removed!").queue();
+                    handler.expire();
                 } catch (Exception e) {
                     printStackTraceAndSendMessage(event, e);
                 }
@@ -56,12 +58,13 @@ public class RemoveRole extends ResponseCommand {
 
             else {
                 event.getChannel().sendMessage("I cannot remove this role").queue();
+                handler.expire();
             }
         }
 
         else if (event.getMessage().getContentRaw().toLowerCase().equals("no")) {
-            handler.expire();
             event.getChannel().sendMessage("Cancelled role removal").queue();
+            handler.expire();
         }
     }
 

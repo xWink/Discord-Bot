@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 public class RemoveRole extends ResponseCommand {
 
     private String roleName;
+    private ResponseHandler handler;
 
     /**
      * Initializes the command's key to "!removerole".
@@ -33,6 +34,8 @@ public class RemoveRole extends ResponseCommand {
                 event.getGuild().removeRoleFromMember(event.getAuthor().getId(), role).queue();
                 event.getChannel().sendMessage("You no longer have this role").queue();
             }
+        } else if (event.getMessage().getContentRaw().toLowerCase().equals("no")) {
+            handler.expire();
         }
     }
 
@@ -42,6 +45,6 @@ public class RemoveRole extends ResponseCommand {
             return;
 
         roleName = event.getMessage().getContentRaw().split(" ")[1];
-        new ResponseHandler(event.getChannel().getIdLong(), event.getAuthor().getIdLong());
+        handler = new ResponseHandler(event.getChannel().getIdLong(), event.getAuthor().getIdLong(), event.getJDA());
     }
 }

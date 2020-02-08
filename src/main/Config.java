@@ -10,6 +10,7 @@ public final class Config {
     private static ArrayList<String> rawChannels;
     private static String token;
     private static String[] channels;
+    private static String dbAddr;
     private static String dbUser;
     private static String dbPass;
     private static String guildId;
@@ -92,6 +93,14 @@ public final class Config {
     }
 
     /**
+     * Database address getter.
+     * @return The address to connect to the database.
+     */
+    public static String getDbAddr() {
+        return dbAddr;
+    }
+
+    /**
      * Database username getter.
      * @return the database's username for login
      */
@@ -131,6 +140,9 @@ public final class Config {
         } else if (contents.startsWith("CHANNEL")) { // If the line is a channel line, add to rawChannels ArrayList
             rawChannels.add(parseArg(contents));
             logMessage("Got channel [" + parseArg(contents) + "]");
+        } else if (contents.startsWith("DB_ADDR")) {
+            dbAddr = parseArg(contents);
+            logMessage("Got database address");
         } else if (contents.startsWith("DB_USER")) { // If the line is a database username
             dbUser = parseArg(contents);
             logMessage("Got database username");
@@ -153,6 +165,10 @@ public final class Config {
         if ((channels[0] == null) || (channels[0].isEmpty())) {
             logMessage("Error: Ending execution due to missing CHANNEL in '.rolebotconfig' file. Make sure that the file has at least one CHANNEL field before running again");
             logMessage("If you would like the bot to work on all channels, use `CHANNEL=all`");
+            System.exit(0);
+        }
+        if ((dbAddr == null) || (dbAddr.isEmpty())) {
+            logMessage("Error: Ending execution due to missing DB_ADDR in '.rolebotconfig' file. Make sure that the file has a DB_ADDR field before running again");
             System.exit(0);
         }
         if ((dbUser == null) || (dbUser.isEmpty())) {

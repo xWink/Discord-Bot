@@ -3,6 +3,7 @@ package command.commands.bang;
 import command.Command;
 import command.util.cache.BangCache;
 import database.connectors.BangConnector;
+import main.Server;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.ResultSet;
@@ -27,8 +28,8 @@ public class MyBang extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != 674369527731060749L
-                && event.getChannel().getIdLong() != 551828950871965696L) {
+        if (event.getChannel().getIdLong() != Server.getSpamChannel()
+                && event.getChannel().getIdLong() != Server.getBotsChannel()) {
             return;
         }
 

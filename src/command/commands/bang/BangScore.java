@@ -31,7 +31,7 @@ public class BangScore extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != 674369527731060749L
+        if (event.getChannel().getIdLong() != Server.getSpamChannel()
                 && event.getChannel().getIdLong() != Server.getBotsChannel()) {
             return;
         }

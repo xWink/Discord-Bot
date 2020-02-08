@@ -1,7 +1,11 @@
 package command;
 
+import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public abstract class ResponseCommand extends Command {
 
@@ -18,9 +22,16 @@ public abstract class ResponseCommand extends Command {
     protected class ResponseHandler extends ListenerAdapter {
         private final long channelId, authorId;
 
-        public ResponseHandler(long channelId, long authorId) {
+        public ResponseHandler(long channelId, long authorId, JDA jda) {
             this.channelId = channelId;
             this.authorId = authorId;
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    jda.removeEventListener(this);
+                }
+            }, 1000 * 60 * 5);
         }
 
         @Override

@@ -5,6 +5,8 @@ import database.connectors.EconomyConnector;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.util.List;
+
 public class RemoveRole extends ResponseCommand {
 
     private String roleName;
@@ -28,9 +30,9 @@ public class RemoveRole extends ResponseCommand {
     public void respond(MessageReceivedEvent event) {
         if (event.getMessage().getContentRaw().toLowerCase().equals("yes")) {
             String colorName;
-            Role role = event.getGuild().getRolesByName(roleName, true).get(0);
+            List<Role> roles = event.getGuild().getRolesByName(roleName, true);
 
-            if (role == null) {
+            if (roles.isEmpty()) {
                 event.getChannel().sendMessage("Could not find such a role").queue();
                 return;
             }
@@ -42,10 +44,10 @@ public class RemoveRole extends ResponseCommand {
                 return;
             }
 
-            if (colorName != null && colorName.equals(roleName)) {
+            if (colorName != null && colorName.toLowerCase().equals(roleName)) {
                 try {
                     ec.resetUserRole(event.getAuthor().getIdLong());
-                    event.getGuild().removeRoleFromMember(event.getAuthor().getId(), role).queue();
+                    event.getGuild().removeRoleFromMember(event.getAuthor().getId(), roles.get(0)).queue();
                     event.getChannel().sendMessage("Role removed!").queue();
                 } catch (Exception e) {
                     printStackTraceAndSendMessage(event, e);
@@ -71,7 +73,7 @@ public class RemoveRole extends ResponseCommand {
         event.getChannel().sendMessage("Are you sure you want to remove this role? "
                 + "(Say `yes` to confirm or `no` to cancel)").queue();
 
-        roleName = event.getMessage().getContentRaw().split(" ")[1];
+        roleName = event.getMessage().getContentRaw().split(" ")[1].toLowerCase();
         handler = new ResponseHandler(event.getChannel().getIdLong(), event.getAuthor().getIdLong(), event.getJDA());
     }
 }

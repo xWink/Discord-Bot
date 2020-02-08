@@ -4,6 +4,7 @@ import command.Command;
 import command.util.highscores.BangHighScore;
 import main.Server;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 public class BangScore extends Command {
 
@@ -25,6 +26,6 @@ public class BangScore extends Command {
                 && event.getChannel().getIdLong() != Server.getBotsChannel()) {
             return;
         }
-        event.getChannel().sendMessage(BangHighScore.getBangHighScore().toString()).queue();
+        event.getChannel().sendMessage(BangHighScore.getBangHighScore().toEmbed().build()).queue();
     }
 }

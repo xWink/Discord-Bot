@@ -3,6 +3,7 @@ package command.commands.bang;
 import command.Command;
 import command.util.highscores.BangHighScore;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.EmbedBuilder;
 
 public class BangScores extends Command {
 
@@ -20,6 +21,6 @@ public class BangScores extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        event.getChannel().sendMessage(BangHighScore.getBangHighScore().toString()).queue();
+        event.getChannel().sendMessage(BangHighScore.getBangHighScore().toEmbed().build()).queue();
     }
 }

@@ -46,6 +46,9 @@ public class Buy extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
+        if (event.getMember() == null)
+            return;
+
         mp = new Marketplace(event.getGuild());
         String[] strings = event.getMessage().getContentRaw().split(" ");
         MessageChannel channel = event.getChannel();
@@ -70,7 +73,7 @@ public class Buy extends Command {
                 }
 
                 // Assign role
-                event.getGuild().addRoleToMember(Objects.requireNonNull(event.getMember()), ((RoleListing) listing).getRole()).queue();
+                event.getGuild().addRoleToMember(event.getMember(), ((RoleListing) listing).getRole()).queue();
                 // Remove money
                 ec.addOrRemoveMoney(userId, -listing.getCost());
                 // Set role and expiry in database

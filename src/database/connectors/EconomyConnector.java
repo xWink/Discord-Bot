@@ -96,7 +96,7 @@ public final class EconomyConnector extends Connector {
      * @param userId the ID number of the user
      * @return the ResultSet of the query
      */
-    private ResultSet getUserRow(long userId) {
+    public ResultSet getUserRow(long userId) {
         if (!userExists(userId)) addUser(userId);
         return getUserRow(userId, getTable());
     }

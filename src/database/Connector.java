@@ -28,7 +28,7 @@ public abstract class Connector {
     protected Connector(String tableName) {
         try {
             Class.forName("org.mariadb.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://localhost/discord_bot",
+            connection = DriverManager.getConnection("jdbc:mysql://" + Config.getDbAddr() + "/discord_bot",
                     Config.getDbUser(),
                     Config.getDbPass());
             this.table = tableName;

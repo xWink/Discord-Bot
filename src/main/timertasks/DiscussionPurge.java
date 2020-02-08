@@ -1,9 +1,10 @@
 package main.timertasks;
 
 import main.Server;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageHistory;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.List;
 
@@ -18,7 +19,10 @@ public class DiscussionPurge implements Runnable {
             List<Message> messages;
             int size = 0;
             do {
-                TextChannel discussionChannel = Server.getApi().getGuildById(Server.getGuild()).getTextChannelById(670857670214942730L);
+                Guild guild = Server.getApi().getGuildById(Server.getGuild());
+                if (guild == null)
+                    return;
+                TextChannel discussionChannel = guild.getTextChannelById(670857670214942730L);
                 if (discussionChannel == null) {
                     System.out.println("NULL Discussion Channel!!!");
                     break;

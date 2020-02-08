@@ -1,9 +1,9 @@
 package command.commands.admin;
 
 import command.AdminCommand;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageHistory;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageHistory;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
@@ -37,7 +37,7 @@ public class Purge extends AdminCommand {
      */
     @Override
     protected void runCommand(MessageReceivedEvent event) {
-        if (!isAdmin(event.getMember())) {
+        if (event.getMember() != null && !isAdmin(event.getMember())) {
             return;
         }
 

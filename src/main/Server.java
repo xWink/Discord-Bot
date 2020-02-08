@@ -1,11 +1,9 @@
 package main;
 
-import net.dv8tion.jda.core.AccountType;
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.JDABuilder;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.api.AccountType;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.Activity;
 
 /**
  * Contains critical details about the server based on information in the config file.
@@ -22,7 +20,7 @@ public final class Server {
     static {
         try {
             api = new JDABuilder(AccountType.BOT).setToken(Config.getToken()).build();
-            api.getPresence().setGame(Game.playing("!help"));
+            api.getPresence().setActivity(Activity.playing("!help"));
             guild = Long.parseLong(Config.getGuildId());
             generalChannel = 486633949154770946L;
             botsChannel = 551828950871965696L;

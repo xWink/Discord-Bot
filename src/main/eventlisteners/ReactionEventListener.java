@@ -1,10 +1,11 @@
 package main.eventlisteners;
 
 import database.connectors.KarmaConnector;
-import net.dv8tion.jda.core.events.message.react.GenericMessageReactionEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
-import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
-import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
+import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
 
 public class ReactionEventListener extends ListenerAdapter {
 
@@ -26,7 +27,7 @@ public class ReactionEventListener extends ListenerAdapter {
      * @return the ID number of the message author
      */
     private long getMessageAuthId(GenericMessageReactionEvent event) {
-        return event.getTextChannel().getMessageById(event.getMessageId())
+        return event.getTextChannel().retrieveMessageById(event.getMessageId())
                 .complete().getAuthor().getIdLong();
     }
 
@@ -38,9 +39,9 @@ public class ReactionEventListener extends ListenerAdapter {
      * @param event the MessageReactionAdd event on a user's message
      */
     @Override
-    public void onMessageReactionAdd(MessageReactionAddEvent event) {
+    public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
         long messageAuthId = getMessageAuthId(event);
-        if (event.getUser().getIdLong() != messageAuthId) {
+        if (event.getUser() != null && event.getUser().getIdLong() != messageAuthId) {
             // If new user, add them to table
             if (!kc.userExists(messageAuthId)) {
                 kc.addUser(messageAuthId);
@@ -64,9 +65,9 @@ public class ReactionEventListener extends ListenerAdapter {
      * @param event the MessageReactionRemove event on a user's message
      */
     @Override
-    public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
+    public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
         long messageAuthId = getMessageAuthId(event);
-        if (event.getUser().getIdLong() != messageAuthId) {
+        if (event.getUser() != null && event.getUser().getIdLong() != messageAuthId) {
             if (!kc.userExists(messageAuthId)) {
                 kc.addUser(messageAuthId);
             }

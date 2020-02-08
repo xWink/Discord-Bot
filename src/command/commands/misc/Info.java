@@ -11,7 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import command.Command;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Info extends Command {
 

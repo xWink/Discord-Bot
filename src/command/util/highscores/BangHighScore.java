@@ -1,8 +1,8 @@
 package command.util.highscores;
 
 import database.connectors.BangConnector;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Role;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,13 +62,17 @@ public final class BangHighScore extends HighScore {
                 mostAttempts.subList(10, mostAttempts.size()).clear();
 
             Role mostAttemptsRole = getGuild().getRoleById("573398286044626945");
-
-            for (BangPlayer player : mostAttempts) {
-                Member member = getGuild().getMemberById(player.getId());
-                if (player.getAttempts() == mostAttempts.get(0).getAttempts())
-                    getGuild().getController().addRolesToMember(member, mostAttemptsRole).queue();
-                else
-                    getGuild().getController().removeRolesFromMember(member, mostAttemptsRole).queue();
+            if (mostAttemptsRole != null) {
+                for (BangPlayer player : mostAttempts) {
+                    Member member = getGuild().getMemberById(player.getId());
+                    if (member != null) {
+                        if (player.getAttempts() == mostAttempts.get(0).getAttempts()) {
+                            getGuild().addRoleToMember(member, mostAttemptsRole).queue();
+                        } else {
+                            getGuild().removeRoleFromMember(member, mostAttemptsRole).queue();
+                        }
+                    }
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,13 +93,16 @@ public final class BangHighScore extends HighScore {
                 luckiest.subList(10, luckiest.size()).clear();
 
             Role luckiestRole = getGuild().getRoleById("573398281108062208");
-
-            for (BangPlayer player : luckiest) {
-                Member member = getGuild().getMemberById(player.getId());
-                if (player.getAttempts() == luckiest.get(0).getSurvivalRate()) {
-                    getGuild().getController().addRolesToMember(member, luckiestRole).queue();
-                } else {
-                    getGuild().getController().removeRolesFromMember(member, luckiestRole).queue();
+            if (luckiestRole != null) {
+                for (BangPlayer player : luckiest) {
+                    Member member = getGuild().getMemberById(player.getId());
+                    if (member != null) {
+                        if (player.getAttempts() == luckiest.get(0).getSurvivalRate()) {
+                            getGuild().addRoleToMember(member, luckiestRole).queue();
+                        } else {
+                            getGuild().removeRoleFromMember(member, luckiestRole).queue();
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
@@ -118,13 +125,16 @@ public final class BangHighScore extends HighScore {
                 unluckiest.subList(10, unluckiest.size()).clear();
 
             Role unluckiestRole = getGuild().getRoleById("573398274598502410");
-
-            for (BangPlayer player : unluckiest) {
-                Member member = getGuild().getMemberById(player.getId());
-                if (player.getAttempts() == unluckiest.get(0).getSurvivalRate()) {
-                    getGuild().getController().addRolesToMember(member, unluckiestRole).queue();
-                } else {
-                    getGuild().getController().removeRolesFromMember(member, unluckiestRole).queue();
+            if (unluckiestRole != null) {
+                for (BangPlayer player : unluckiest) {
+                    Member member = getGuild().getMemberById(player.getId());
+                    if (member != null) {
+                        if (player.getAttempts() == unluckiest.get(0).getSurvivalRate()) {
+                            getGuild().addRoleToMember(member, unluckiestRole).queue();
+                        } else {
+                            getGuild().removeRoleFromMember(member, unluckiestRole).queue();
+                        }
+                    }
                 }
             }
         } catch (Exception e) {
@@ -160,7 +170,9 @@ public final class BangHighScore extends HighScore {
             if (player.getAttempts() == mostAttempts.get(0).getAttempts()) {
                 if (!player.equals(mostAttempts.get(0)))
                     string = string.concat(", ");
-                string = string.concat(getGuild().getMemberById(player.getId()).getEffectiveName());
+                Member member = getGuild().getMemberById(player.getId());
+                if (member != null)
+                    string = string.concat(member.getEffectiveName());
             }
         }
 
@@ -181,7 +193,9 @@ public final class BangHighScore extends HighScore {
             if (player.getSurvivalRate() == luckiest.get(0).getSurvivalRate()) {
                 if (!player.equals(luckiest.get(0)))
                     string = string.concat(", ");
-                string = string.concat(getGuild().getMemberById(player.getId()).getEffectiveName());
+                Member member = getGuild().getMemberById(player.getId());
+                if (member != null)
+                    string = string.concat(member.getEffectiveName());
             }
         }
 
@@ -202,7 +216,9 @@ public final class BangHighScore extends HighScore {
             if (player.getSurvivalRate() == unluckiest.get(0).getSurvivalRate()) {
                 if (!player.equals(unluckiest.get(0)))
                     string = string.concat(", ");
-                string = string.concat(getGuild().getMemberById(player.getId()).getEffectiveName());
+                Member member = getGuild().getMemberById(player.getId());
+                if (member != null)
+                    string = string.concat(member.getEffectiveName());
             }
         }
 

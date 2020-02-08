@@ -3,8 +3,8 @@ package command.commands.economy;
 import command.Command;
 import command.util.game.BlackJackList;
 import database.connectors.EconomyConnector;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Gift extends Command {
 

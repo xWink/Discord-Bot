@@ -3,9 +3,11 @@ package command.commands.bang;
 import command.Command;
 import command.util.cache.BangCache;
 import database.connectors.BangConnector;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.ResultSet;
+import java.awt.Color;
 
 public class MyBang extends Command {
 

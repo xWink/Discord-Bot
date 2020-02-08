@@ -12,7 +12,7 @@ public class Wallet extends Command {
      * Initializes the command's key to "!wallet".
      */
     public Wallet() {
-        super("!wallet", false);
+        super("!wallet", true);
         ec = new EconomyConnector();
     }
 

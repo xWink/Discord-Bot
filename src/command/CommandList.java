@@ -65,7 +65,6 @@ public final class CommandList {
         // Everyone commands
         commands.add(new Bang());
         commands.add(new BangScore());
-        commands.add(new BangScores());
         commands.add(new Bet());
         commands.add(new Buy());
         commands.add(new Daily());

@@ -1,4 +1,7 @@
 # Files to Ignore
-build/
 .gradle/
 .idea/
+build/
+checkstyle/
+gradle/
+out/

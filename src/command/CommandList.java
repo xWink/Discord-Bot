@@ -3,7 +3,6 @@ package command;
 import command.commands.admin.Cleanup;
 import command.commands.bang.Bang;
 import command.commands.bang.BangScore;
-import command.commands.bang.BangScores;
 import command.commands.bang.MyBang;
 import command.commands.blackjack.Bet;
 import command.commands.blackjack.Hit;
@@ -22,6 +21,7 @@ import command.commands.misc.Karma;
 import command.commands.misc.Ping;
 import command.commands.roles.Join;
 import command.commands.roles.Leave;
+import command.commands.roles.RemoveRole;
 import command.commands.roles.Roles;
 import command.commands.bang.Daily;
 
@@ -64,7 +64,6 @@ public final class CommandList {
         // Everyone commands
         commands.add(new Bang());
         commands.add(new BangScore());
-        commands.add(new BangScores());
         commands.add(new Bet());
         commands.add(new Buy());
         commands.add(new Daily());
@@ -84,5 +83,6 @@ public final class CommandList {
         commands.add(new Stand());
         commands.add(new Wallet());
         commands.add(new Gift());
+        commands.add(new RemoveRole());
     }
 }

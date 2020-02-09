@@ -3,11 +3,10 @@ package command.commands.bang;
 import command.Command;
 import command.util.cache.BangCache;
 import database.connectors.BangConnector;
-import net.dv8tion.jda.api.EmbedBuilder;
+import main.Server;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.ResultSet;
-import java.awt.Color;
 
 public class MyBang extends Command {
 
@@ -29,8 +28,8 @@ public class MyBang extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != 674369527731060749L
-                && event.getChannel().getIdLong() != 551828950871965696L) {
+        if (event.getChannel().getIdLong() != Server.getSpamChannel()
+                && event.getChannel().getIdLong() != Server.getBotsChannel()) {
             return;
         }
 
@@ -47,19 +46,12 @@ public class MyBang extends Command {
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         } finally {
-            EmbedBuilder eb = new EmbedBuilder();
-            eb.setColor(Color.YELLOW);
-            eb.setTitle(event.getAuthor().getName() + "'s Scores");
-
-            eb.addField("Attempts",         attempts, true);
-            eb.addField("Deaths",           deaths, true);
-            eb.addField("Jams",             jams, true);
-            eb.addField("Survival Rate",    survivalRate + "%", false);
-            eb.addField("Streak",           streak + (streak > 0 ? " :fire:" : ""), true);
-
-            eb.setThumbnail(event.getAuthor().getAvatarUrl());
-
-            event.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessage("**" + event.getAuthor().getName() + "'s scores**"
+                    + "\nAttempts: " + attempts
+                    + "\nDeaths: " + deaths
+                    + "\nJams: " + jams
+                    + "\nSurvival rate: " + survivalRate + "%"
+                    + "\nStreak: " + streak + (streak > 0 ? " :fire:" : "")).queue();
         }
     }
 }

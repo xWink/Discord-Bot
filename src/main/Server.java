@@ -13,6 +13,7 @@ public final class Server {
     private static JDA api;
     private static long generalChannel;
     private static long botsChannel;
+    private static long spamChannel;
     private static long guild;
 
     private Server() {}
@@ -24,6 +25,7 @@ public final class Server {
             guild = Long.parseLong(Config.getGuildId());
             generalChannel = 486633949154770946L;
             botsChannel = 551828950871965696L;
+            spamChannel = 674369527731060749L;
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
@@ -42,10 +44,19 @@ public final class Server {
     /**
      * botsChannel getter.
      *
-     * @return the TextChannel where the bot is meant to be played with in.
+     * @return the TextChannel where the bot is meant to be played with.
      */
     public static long getBotsChannel() {
         return botsChannel;
+    }
+
+    /**
+     * spamChannel getter.
+     *
+     * @return the TextChannel where the bot bang-related commands are to be used.
+     */
+    public static long getSpamChannel() {
+        return spamChannel;
     }
 
     /**

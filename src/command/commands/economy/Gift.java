@@ -4,7 +4,10 @@ import command.Command;
 import command.util.game.BlackJackList;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+
+import java.awt.Color;
 
 public class Gift extends Command {
 
@@ -41,13 +44,24 @@ public class Gift extends Command {
                 }
                 ec.addOrRemoveMoney(targetId, amount);
                 ec.addOrRemoveMoney(event.getAuthor().getIdLong(), -amount);
-                event.getChannel().sendMessage("Successfully sent gift!").queue();
+                event.getChannel().sendMessage(getGiftEmbed(event.getAuthor(), amount, event.getMessage().getMentionedMembers().get(0).getUser()).build());
             } else {
                 event.getChannel().sendMessage("You cannot afford to send that gift").queue();
             }
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
+    }
+
+    private EmbedBuilder getGiftEmbed(User sending, User receiving, int amt) {
+        EmbedBuilder eb = new EmbedBuilder();
+
+        eb.setColor(Color.YELLOW);
+        eb.setAuthor("Gift Successfully Sent!", sending.getAvatarUrl(), sending.getAvatarUrl());
+        eb.addTitle("Sent " + amt + " to " + receiving.getName() + "!");
+        eb.setThumbnail(receiving.getAvatarUrl());
+
+        return eb;
     }
 
     private boolean inputIsValid(Message message) {

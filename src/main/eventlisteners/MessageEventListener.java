@@ -33,6 +33,7 @@ public class MessageEventListener extends ListenerAdapter {
                     if (command.keyMatches(messageContent)
                             && (event.getChannel().getId().equals(Config.getChannels()[0]) || command.isGlobal())) {
                         command.start(event);
+                        return;
                     }
                 }
             }

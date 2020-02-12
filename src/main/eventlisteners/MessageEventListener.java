@@ -2,11 +2,20 @@ package main.eventlisteners;
 
 import command.Command;
 import command.CommandList;
+import command.util.message.MessageData;
+import database.connectors.MessagesConnector;
 import main.Config;
+import main.Server;
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 public class MessageEventListener extends ListenerAdapter {
+
+    MessagesConnector mc = new MessagesConnector();
 
     /**
      * Upon receiving a message, the bot checks if the message meets the
@@ -26,6 +35,22 @@ public class MessageEventListener extends ListenerAdapter {
                     }
                 }
             }
+        }
+
+        try {
+            mc.storeMessage(event.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onMessageDelete(@NotNull MessageDeleteEvent event) {
+        try {
+            MessageData data = mc.getMessageDataById(event.getMessageIdLong());
+            Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L)).sendMessage(data.toString()).queue();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

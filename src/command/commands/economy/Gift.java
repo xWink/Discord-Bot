@@ -36,7 +36,7 @@ public class Gift extends Command {
 
         try {
             long targetId = event.getMessage().getMentionedUsers().get(0).getIdLong();
-            int amount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[2]);
+            int amount = Integer.parseInt(event.getMessage().getContentRaw().split("\\s+")[2]);
 
             if (ec.canAfford(event.getAuthor().getIdLong(), amount)) {
                 if (BlackJackList.getUserGame(event.getAuthor().getIdLong()) != null) {

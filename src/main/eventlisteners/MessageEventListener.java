@@ -48,7 +48,8 @@ public class MessageEventListener extends ListenerAdapter {
     public void onMessageDelete(@NotNull MessageDeleteEvent event) {
         try {
             MessageData data = mc.getMessageDataById(event.getMessageIdLong());
-            Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L)).sendMessage(data.toString()).queue();
+            if (data != null)
+                Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L)).sendMessage(data.toString()).queue();
         } catch (Exception e) {
             e.printStackTrace();
         }

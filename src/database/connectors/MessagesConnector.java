@@ -29,11 +29,14 @@ public class MessagesConnector extends Connector {
         ResultSet rs = getConnection().prepareStatement("SELECT * FROM " + getTable()
                 + " WHERE message_id = " + messageId).executeQuery();
 
-        return new MessageData(
-                rs.getLong("message_id"),
-                rs.getLong("author_id"),
-                rs.getLong("time_sent"),
-                rs.getString("content"));
+        if (rs.first())
+            return new MessageData(
+                    rs.getLong("message_id"),
+                    rs.getLong("author_id"),
+                    rs.getLong("time_sent"),
+                    rs.getString("content"));
+
+        return null;
     }
 
     @Override

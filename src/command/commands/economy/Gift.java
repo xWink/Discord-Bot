@@ -69,16 +69,20 @@ public class Gift extends Command {
     }
 
     private boolean inputIsValid(Message message) {
-        if (message.getMentionedMembers().size() != 1)
+        if (message.getMentionedMembers().size() != 1) {
             return false;
+        }
 
-        if (message.getMentionedMembers().get(0).getUser().getIdLong() == message.getAuthor().getIdLong())
+        if (message.getMentionedMembers().get(0).getUser().getIdLong() == message.getAuthor().getIdLong()) {
+            message.getChannel().sendMessage("You cannot gift yourself!").queue();
             return false;
+        }
 
-        String[] split = message.getContentRaw().split(" ");
+        String[] split = message.getContentRaw().split(" +");
 
-        if (split.length != 3)
+        if (split.length != 3) {
             return false;
+        }
 
         try {
             return Integer.parseInt(split[2]) > 0;

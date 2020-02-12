@@ -45,20 +45,27 @@ public class Stand extends Command {
         try {
             File file = new File(".");
             String path = file.getAbsolutePath().replace("build/libs/.", "");
+            String output = "Dealers hand: " + game.getDealer().getHand().toString();
 
             if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
-                event.getChannel().sendMessage("Dealers hand: " + game.getDealer().getHand().toString())
-                        .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
+                event.getChannel().sendMessage(output)
+                        .addFile(new FileInputStream(path + "res/out.png"), "out.png")
+                        .queue();
             } else {
-                event.getChannel().sendMessage("Dealers hand: " + game.getDealer().getHand().toString()).queue();
+                event.getChannel().sendMessage(output).queue();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        if (reward > 0) message += author + " wins! Earnings: " + reward + " *gc*";
-        else if (reward < 0) message += author + " lost. Losses: " + (-reward) + " *gc*";
-        else message += "Tie game, " + author + " didn't win or lose any money.";
+        if (reward > 0) {
+            message += author + " wins! Earnings: " + reward + " *gc*";
+        } else if (reward < 0) {
+            message += author + " lost. Losses: " + (-reward) + " *gc*";
+        } else {
+            message += "Tie game, " + author + " didn't win or lose any money.";
+        }
+
         event.getChannel().sendMessage(message).queue();
         BlackJackList.removeGame(game);
 

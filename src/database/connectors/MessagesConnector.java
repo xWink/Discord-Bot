@@ -22,7 +22,7 @@ public class MessagesConnector extends Connector {
                 + "VALUES (" + message.getId() + ", "
                 + message.getAuthor().getId() + ", "
                 + message.getChannel().getId() + ", "
-                + (message.getTimeCreated().toInstant().getEpochSecond() * 1000)
+                + (message.getTimeCreated().toInstant().getEpochSecond() * 1000 - 1.8e7) // Subtract 5 hours
                 + ", '" + message.getContentRaw() + "')").executeUpdate();
     }
 

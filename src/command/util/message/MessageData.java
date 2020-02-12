@@ -2,8 +2,13 @@ package command.util.message;
 
 import main.Server;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
+import java.util.TimeZone;
 
 public class MessageData {
 
@@ -55,11 +60,10 @@ public class MessageData {
         this.content = content;
     }
 
-    @Override
-    public String toString() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(getTimeSent());
+    public String toFormattedString() {
+        Date date = new Date(getTimeSent());
+        DateFormat format = new SimpleDateFormat("dd MMM yyyy HH:mm:ss");
         String authName = Objects.requireNonNull(Server.getApi().getUserById(getAuthorId())).getName();
-        return String.format("[%s] %s - %s", calendar.toString(), authName, getContent());
+        return String.format("[%s] %s - %s", format.format(date), authName, getContent());
     }
 }

@@ -27,10 +27,11 @@ public class MessageEventListener extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         String messageContent = event.getMessage().getContentRaw();
-        if (!event.getAuthor().isBot() && messageContent.startsWith("!")) {
-            for (Command command : CommandList.getCommands()) {
-                if (command.keyMatches(messageContent)) {
-                    if (event.getChannel().getId().equals(Config.getChannels()[0]) || command.isGlobal()) {
+        if (!event.getAuthor().isBot()) {
+            if (messageContent.startsWith("!")) {
+                for (Command command : CommandList.getCommands()) {
+                    if (command.keyMatches(messageContent)
+                            && (event.getChannel().getId().equals(Config.getChannels()[0]) || command.isGlobal())) {
                         command.start(event);
                     }
                 }
@@ -49,7 +50,8 @@ public class MessageEventListener extends ListenerAdapter {
         try {
             MessageData data = mc.getMessageDataById(event.getMessageIdLong());
             if (data != null)
-                Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L)).sendMessage(data.toString()).queue();
+                Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L))
+                        .sendMessage(data.toFormattedString()).queue();
         } catch (Exception e) {
             e.printStackTrace();
         }

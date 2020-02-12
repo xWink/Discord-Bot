@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class BangScore extends Command {
 
+     /**
+     * Initializes the command's key to "!bangscore".
+     */
     public BangScore() {
         super("!bangscore", true);
     }

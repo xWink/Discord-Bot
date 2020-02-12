@@ -72,6 +72,6 @@ public class MessageData {
         DateFormat format = new SimpleDateFormat("MMM dd yyyy, HH:mm:ss");
         String channel = Objects.requireNonNull(Server.getApi().getTextChannelById(getChannelId())).getName();
         String author = Objects.requireNonNull(Server.getApi().getUserById(getAuthorId())).getName();
-        return String.format("[%s] <%s> %s: \"%s\"", format.format(date), channel, author, getContent());
+        return String.format("[%s] <#%s> %s: \"%s\"", format.format(date), channel, author, getContent());
     }
 }

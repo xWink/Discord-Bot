@@ -22,7 +22,7 @@ public class MessagesConnector extends Connector {
                 + "VALUES (" + message.getId() + ", "
                 + message.getAuthor().getId() + ", "
                 + (message.getTimeCreated().toInstant().getEpochSecond() * 1000)
-                + ", '" + message.getContentRaw() + "'").executeUpdate();
+                + ", '" + message.getContentRaw() + "')").executeUpdate();
     }
 
     public MessageData getMessageDataById(long messageId) throws SQLException {

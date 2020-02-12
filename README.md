@@ -1,4 +1,4 @@
-Version 2.1
+Version 2.2
 # Purpose
 This is a Discord bot intended to provide entertainment to users of the
 University of Guelph Bachelor of Computer Science Discord server.
@@ -53,5 +53,7 @@ Updates to the database are made using SQL instructions.
 `!mybang` - Shows player's bang scores.
 
 `!ping` - Returns "pong!" and your latency in ms. Keeps track of user's best/worst scores.
+
+`!removerole [role name]` - Gets secondary confirmation from user, then removes the role from the user if possible
 
 `!roles` - Shows a list of available roles to join.

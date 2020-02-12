@@ -36,12 +36,12 @@ public class MessageEventListener extends ListenerAdapter {
                     }
                 }
             }
-        }
 
-        try {
-            mc.storeMessage(event.getMessage());
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                mc.storeMessage(event.getMessage());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

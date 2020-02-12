@@ -18,9 +18,10 @@ public class MessagesConnector extends Connector {
 
     public void storeMessage(Message message) throws SQLException {
         getConnection().prepareStatement("INSERT INTO " + getTable()
-                + "(message_id, author_id, time_sent, content)"
+                + "(message_id, author_id, channel_id, time_sent, content)"
                 + "VALUES (" + message.getId() + ", "
                 + message.getAuthor().getId() + ", "
+                + message.getChannel().getId() + ", "
                 + (message.getTimeCreated().toInstant().getEpochSecond() * 1000)
                 + ", '" + message.getContentRaw() + "')").executeUpdate();
     }
@@ -33,6 +34,7 @@ public class MessagesConnector extends Connector {
             return new MessageData(
                     rs.getLong("message_id"),
                     rs.getLong("author_id"),
+                    rs.getLong("channel_id"),
                     rs.getLong("time_sent"),
                     rs.getString("content"));
 

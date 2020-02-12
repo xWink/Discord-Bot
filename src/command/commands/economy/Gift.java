@@ -78,7 +78,7 @@ public class Gift extends Command {
             return false;
         }
 
-        String[] split = message.getContentRaw().split(" +");
+        String[] split = message.getContentRaw().split("\\s+");
 
         if (split.length != 3) {
             return false;

@@ -40,6 +40,7 @@ public class Help extends Command {
         eb.addField("View and purchase items listed on the market.",                "!market + !buy [item #]", false);
         eb.addField("Shows your bang scores.",                                      "!mybang", false);
         eb.addField("Shows your latency.",                                          "!ping", false);
+        eb.addField("Remove your current colour role",                              "!removerole [role name]", false);
         eb.addField("Shows a list of available roles to join.",                     "!roles", false);
 
         event.getChannel().sendMessage(eb.build()).queue();

@@ -4,32 +4,46 @@ import database.connectors.BangConnector;
 import main.Server;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
 
 import java.util.*;
 
 public final class BangCache {
 
-    private static final long THRESHOLD = 10000;
+    private static BangCache bangCache;
+
+    private static final long THRESHOLD = 8000;
+
+    private Timer timer;
+    private PanicTimer panicTimer;
     private static Queue<BangUpdate> queue;
     private static BangConnector bc;
     private static boolean panic;
     private static ArrayList<Long> last20;
+    private static TextChannel channel;
 
-    static {
+    private BangCache() {
+        timer = new Timer();
+        panicTimer = new PanicTimer();
         queue = new LinkedList<>();
         panic = false;
         bc = new BangConnector();
         last20 = new ArrayList<>();
+        channel = Server.getApi().getTextChannelById(674369527731060749L);
     }
 
-    private BangCache() { }
+    public static BangCache getInstance() {
+        if (bangCache == null)
+            bangCache = new BangCache();
+        return bangCache;
+    }
 
     /**
      * Adds data from a BangUpdate object to the queue.
      *
      * @param update the object containing data about an update to the database
      */
-    public static void enqueue(BangUpdate update) {
+    public void enqueue(BangUpdate update) {
         boolean found = false;
         for (BangUpdate element : queue) {
             if (element.getId() == update.getId()) {
@@ -48,21 +62,30 @@ public final class BangCache {
         checkPanic();
     }
 
-    private static void checkPanic() {
+    private void checkPanic() {
         boolean oldPanic = panic;
         long avgTime = last20.stream().reduce(0L, Long::sum) / last20.size();
 
         panic = avgTime > new Date().getTime() - THRESHOLD && last20.size() >= 20;
 
-        if (panic && !oldPanic) System.out.println("Panic mode: activated");
-        else if (!panic && oldPanic) System.out.println("Panic mode: deactivated");
+        if (oldPanic) {
+            timer.cancel();
+            timer = new Timer();
+            timer.schedule(panicTimer, 1000 * 10);
+        } else if (panic) {
+            timer.schedule(panicTimer, 1000 * 10);
+        }
+    }
+
+    public boolean isPanicking() {
+        return panic;
     }
 
     /**
      * Dequeue every element in the cache and send the the SQL update of that element
      * to the database.
      */
-    public static void updateAll() {
+    public void updateAll() {
         try {
             while (!queue.isEmpty()) {
                 bc.customUpdate(dequeue().toSQL());
@@ -72,25 +95,14 @@ public final class BangCache {
         }
     }
 
-    private static BangUpdate dequeue() {
+    private BangUpdate dequeue() {
         return queue.remove();
     }
 
     /**
-     * Checks if the cache is in panic mode.
-     *
-     * @return true if in panic mode
+     * Prints a string of all the results of every BangUpdate in the cache to the bot channel.
      */
-    public static boolean isPanicking() {
-        return panic;
-    }
-
-    /**
-     * Gets a string of all the results of every BangUpdate in the cache.
-     *
-     * @return a string containing all of the results in the cache
-     */
-    public static String getQueueResults() {
+    public void printResults() {
         String output = "**Combined Data:**\n";
         Guild guild = Server.getApi().getGuildById(Server.getGuild());
         if (guild != null) {
@@ -104,6 +116,14 @@ public final class BangCache {
                 }
             }
         }
-        return output;
+
+        channel.sendMessage(output).queue();
+    }
+
+    private class PanicTimer extends TimerTask {
+        @Override
+        public void run() {
+            printResults();
+        }
     }
 }

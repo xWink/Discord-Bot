@@ -4,6 +4,7 @@ import command.util.message.MessageData;
 import database.Connector;
 import net.dv8tion.jda.api.entities.Message;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -17,13 +18,16 @@ public class MessagesConnector extends Connector {
     }
 
     public void storeMessage(Message message) throws SQLException {
-        getConnection().prepareStatement("INSERT INTO " + getTable()
+        String myStatement = "INSERT INTO " + getTable()
                 + "(message_id, author_id, channel_id, time_sent, content)"
                 + "VALUES (" + message.getId() + ", "
                 + message.getAuthor().getId() + ", "
                 + message.getChannel().getId() + ", "
-                + (message.getTimeCreated().toInstant().getEpochSecond() * 1000 - 1.8e7) // Subtract 5 hours
-                + ", '" + message.getContentRaw() + "')").executeUpdate();
+                + (message.getTimeCreated().toInstant().getEpochSecond() * 1000 - 1.8e7)
+                + ", ?)";
+        PreparedStatement statement= getConnection().prepareStatement(myStatement);
+        statement.setString(1, message.getContentRaw());
+        statement.executeUpdate();
     }
 
     public MessageData getMessageDataById(long messageId) throws SQLException {

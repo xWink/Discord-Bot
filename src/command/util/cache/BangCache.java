@@ -24,7 +24,6 @@ public final class BangCache {
 
     private BangCache() {
         timer = new Timer();
-        panicTimer = new PanicTimer();
         queue = new LinkedList<>();
         panic = false;
         bc = new BangConnector();
@@ -70,7 +69,7 @@ public final class BangCache {
 
         if (oldPanic) {
             timer.cancel();
-            timer = new Timer();
+            panicTimer = new PanicTimer();
             timer.schedule(panicTimer, 1000 * 10);
         } else if (panic) {
             timer.schedule(panicTimer, 1000 * 10);
@@ -124,6 +123,8 @@ public final class BangCache {
         @Override
         public void run() {
             printResults();
+            timer.cancel();
+            panicTimer = new PanicTimer();
         }
     }
 }

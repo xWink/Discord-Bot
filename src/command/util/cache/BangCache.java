@@ -30,6 +30,11 @@ public final class BangCache {
         channel = Server.getApi().getTextChannelById(674369527731060749L);
     }
 
+    /**
+     * Singleton instance getter.
+     *
+     * @return the only existing instance of BangCache
+     */
     public static BangCache getInstance() {
         if (bangCache == null)
             bangCache = new BangCache();
@@ -60,23 +65,37 @@ public final class BangCache {
         checkPanic();
     }
 
+    /**
+     * Checks if panic mode should be activated and whether to extend the
+     * timer (still in panic mode), start a new timer (entering panic mode),
+     * or push the current update to the database (not in panic mode).
+     */
     private void checkPanic() {
-        boolean oldPanic = panic;
         long avgTime = last20.stream().reduce(0L, Long::sum) / last20.size();
         panic = avgTime > new Date().getTime() - THRESHOLD && last20.size() >= 20;
 
-        if (oldPanic) {
+        if (timer != null) {
             timer.cancel();
-            timer = new Timer();
-            timer.schedule(new PanicTimer(), 1000 * 10);
+            initTimer();
         } else if (panic) {
-            timer = new Timer();
-            timer.schedule(new PanicTimer(), 1000 * 10);
+            initTimer();
         } else {
             updateAll();
         }
     }
 
+    /**
+     * Initializes the timer and schedules panic mode to end in 15 seconds.
+     */
+    private void initTimer() {
+        timer = new Timer();
+        timer.schedule(new PanicTimer(), 1000 * 15);
+    }
+
+    /**
+     * Returns whether the cache is in panic mode or not.
+     * @return true if in panic mode
+     */
     public boolean isPanicking() {
         return panic;
     }
@@ -95,6 +114,10 @@ public final class BangCache {
         }
     }
 
+    /**
+     * Removes the BangUpdate at the front of the queue and returns that update.
+     * @return the update removed from the front of the queue
+     */
     private BangUpdate dequeue() {
         return queue.remove();
     }
@@ -120,10 +143,16 @@ public final class BangCache {
         channel.sendMessage(output).queue();
     }
 
+    /**
+     * TimerTask class with run method that cancels the current timer and
+     * sets it to null before printing the update results to Discord and
+     * updating the database.
+     */
     private class PanicTimer extends TimerTask {
         @Override
         public void run() {
             timer.cancel();
+            timer = null;
             printResults();
             updateAll();
         }

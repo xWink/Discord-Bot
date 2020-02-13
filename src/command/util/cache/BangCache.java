@@ -23,7 +23,6 @@ public final class BangCache {
     private static TextChannel channel;
 
     private BangCache() {
-        timer = new Timer();
         queue = new LinkedList<>();
         panic = false;
         bc = new BangConnector();
@@ -69,9 +68,12 @@ public final class BangCache {
 
         if (oldPanic) {
             timer.cancel();
+            timer = new Timer();
             panicTimer = new PanicTimer();
             timer.schedule(panicTimer, 1000 * 10);
         } else if (panic) {
+            timer = new Timer();
+            panicTimer = new PanicTimer();
             timer.schedule(panicTimer, 1000 * 10);
         }
     }
@@ -124,7 +126,6 @@ public final class BangCache {
         public void run() {
             printResults();
             timer.cancel();
-            panicTimer = new PanicTimer();
         }
     }
 }

@@ -72,7 +72,10 @@ public final class BangCache {
      */
     private void checkPanic() {
         long avgTime = last20.stream().reduce(0L, Long::sum) / last20.size();
-        panic = avgTime > new Date().getTime() - THRESHOLD && last20.size() >= 20;
+
+        if (avgTime > new Date().getTime() - THRESHOLD && last20.size() >= 20) {
+            panic = true;
+        }
 
         if (timer != null) {
             timer.cancel();
@@ -155,6 +158,7 @@ public final class BangCache {
             timer = null;
             printResults();
             updateAll();
+            panic = false;
         }
     }
 }

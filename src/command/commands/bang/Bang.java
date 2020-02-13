@@ -133,7 +133,6 @@ public class Bang extends Command {
 
             if (!cache.isPanicking()) {
                 event.getChannel().sendMessage(getOutput(event)).queue();
-                cache.updateAll();
             }
 
             resetBools();

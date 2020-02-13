@@ -5,6 +5,7 @@ import main.Server;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.*;
 
@@ -12,10 +13,9 @@ public final class BangCache {
 
     private static BangCache bangCache;
 
-    private static final long THRESHOLD = 8000;
+    private static final long THRESHOLD = 12000;
 
     private Timer timer;
-    private PanicTimer panicTimer;
     private static Queue<BangUpdate> queue;
     private static BangConnector bc;
     private static boolean panic;
@@ -69,12 +69,12 @@ public final class BangCache {
         if (oldPanic) {
             timer.cancel();
             timer = new Timer();
-            panicTimer = new PanicTimer();
-            timer.schedule(panicTimer, 1000 * 10);
+            timer.schedule(new PanicTimer(), 1000 * 10);
         } else if (panic) {
             timer = new Timer();
-            panicTimer = new PanicTimer();
-            timer.schedule(panicTimer, 1000 * 10);
+            timer.schedule(new PanicTimer(), 1000 * 10);
+        } else {
+            updateAll();
         }
     }
 
@@ -105,27 +105,25 @@ public final class BangCache {
      */
     public void printResults() {
         String output = "**Combined Data:**\n";
-        Guild guild = Server.getApi().getGuildById(Server.getGuild());
-        if (guild != null) {
-            for (BangUpdate update : queue) {
-                Member member = guild.getMemberById(update.getId());
-                if (member != null) {
-                    output = output.concat("**" + member.getEffectiveName() + ":**\n"
-                            + "Attempts: " + update.getAttempts() + "\n"
-                            + "Deaths : " + update.getDeaths() + "\n"
-                            + "Jams: " + update.getJams() + "\n\n");
-                }
+        for (BangUpdate update : queue) {
+            User user = Server.getApi().getUserById(update.getId());
+            if (user != null) {
+                output = output.concat("**" + user.getName() + ":**\n"
+                        + "Attempts: " + update.getAttempts() + "\n"
+                        + "Deaths : " + update.getDeaths() + "\n"
+                        + "Jams: " + update.getJams() + "\n"
+                        + (update.isRewarded() ? "Daily received!\n\n" : ""));
             }
         }
-
         channel.sendMessage(output).queue();
     }
 
     private class PanicTimer extends TimerTask {
         @Override
         public void run() {
-            printResults();
             timer.cancel();
+            updateAll();
+            printResults();
         }
     }
 }

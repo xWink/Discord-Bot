@@ -103,6 +103,9 @@ public final class BangCache {
      * Prints a string of all the results of every BangUpdate in the cache to the bot channel.
      */
     public void printResults() {
+        if (queue.size() == 0)
+            return;
+
         String output = "**Combined Data:**\n";
         for (BangUpdate update : queue) {
             User user = Server.getApi().getUserById(update.getId());

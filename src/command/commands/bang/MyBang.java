@@ -35,7 +35,8 @@ public class MyBang extends Command {
 
         int attempts = 0, deaths = 0, jams = 0, streak = 0;
         double survivalRate = 0;
-        BangCache.updateAll();
+        BangCache cache = BangCache.getInstance();
+        cache.updateAll();
         try {
             ResultSet rs = bc.getUserRow(event.getAuthor().getIdLong());
             attempts = rs.getInt("tries");

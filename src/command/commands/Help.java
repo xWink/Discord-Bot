@@ -49,7 +49,7 @@ public class Help extends Command {
         eb.addField("Shows info on a course at UoGuelph.",                          "!info [course ID]", false);
         eb.addField("Apply to join or create a private elective channel.",          "!join [role name]", false);
         eb.addField("Shows your upvotes, downvotes, and total karma.",              "!karma", false);
-        eb.addField("View and purchase items listed on the market.",                "!market + !buy [item #]", false);
+        eb.addField("View or purchase items listed on the market.",                 "!market !buy [item #]", false);
         eb.addField("Shows your bang scores.",                                      "!mybang", false);
         eb.addField("Shows your latency.",                                          "!ping", false);
         eb.addField("Remove your current colour role",                              "!removerole [role name]", false);

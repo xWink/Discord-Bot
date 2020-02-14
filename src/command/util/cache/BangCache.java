@@ -92,7 +92,7 @@ public final class BangCache {
      */
     private void initTimer() {
         timer = new Timer();
-        timer.schedule(new PanicTimer(), 1000 * 15);
+        timer.schedule(new PanicTimer(), 1000 * 10);
     }
 
     /**

@@ -3,6 +3,7 @@ package command.commands;
 import command.Command;
 import main.Server;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.Color;
@@ -25,7 +26,13 @@ public class Help extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         if (event.getChannel().getIdLong() != Server.getBotsChannel() && event.getChannel().getIdLong() != Server.getSpamChannel()) {
-            event.getChannel().sendMessage("Say `!help` in #bots or #bot-spam to see available commands!").queue();
+            TextChannel bots = Server.getApi().getTextChannelById(Server.getBotsChannel());
+            TextChannel spam = Server.getApi().getTextChannelById(Server.getSpamChannel());
+            if (bots != null && spam != null) {
+                event.getChannel().sendMessage("Say `!help` in "
+                        + bots.getAsMention() + " or " + spam.getAsMention()
+                        + " to see available commands!").queue();
+            }
             return;
         }
         EmbedBuilder eb = new EmbedBuilder();

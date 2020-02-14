@@ -1,6 +1,7 @@
 package command.commands;
 
 import command.Command;
+import main.Server;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -23,6 +24,10 @@ public class Help extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
+        if (event.getChannel().getIdLong() != Server.getBotsChannel() && event.getChannel().getIdLong() != Server.getSpamChannel()) {
+            event.getChannel().sendMessage("Say `!help` in #bots or #bot-spam to see available commands!").queue();
+            return;
+        }
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.YELLOW);
         eb.setTitle("Bot Commands:");

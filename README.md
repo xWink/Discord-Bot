@@ -7,7 +7,7 @@ University of Guelph Bachelor of Computer Science Discord server.
 
 ### Play Russian Roulette
 
-![](https://giphy.com/gifs/f9FypkpxXD4SUr3pPr.gif)
+![Russian Roulette Demo](demo/bot_bang.gif)
 
 <a href="https://giphy.com/gifs/f9FypkpxXD4SUr3pPr">via GIPHY</a>
 

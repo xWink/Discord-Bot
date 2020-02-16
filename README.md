@@ -12,19 +12,19 @@ University of Guelph Bachelor of Computer Science Discord server.
 <a href="https://giphy.com/gifs/f9FypkpxXD4SUr3pPr">via GIPHY</a>
 
 ### Earn money in black jack
-<a href="https://giphy.com/gifs/JRtDpC4cdI6t0jdH0C">via GIPHY</a>
+![Black Jack Demo](demo/bot_bj.gif)
 
 ### Track your scores
-<a href="//imgur.com/a/yFt2jOc"></a>
+![Score Tracking Demo](demo/bot_mybang.PNG)
 
 ### Share the love
-<blockquote class="imgur-embed-pub" lang="en" data-id="a/UT7Q2wG"><a href="//imgur.com/a/UT7Q2wG"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+![Gifting Demo](demo/bot_gift.PNG)
 
 ### Spend money on profile customization
-<iframe src="https://giphy.com/embed/jp87aFDI5tf4AulPYf" width="393" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/jp87aFDI5tf4AulPYf">via GIPHY</a></p>
+![Market and Shopping Demo](demo/bot_market.gif)
 
 ### Instantly create and join private channels
-<iframe src="https://giphy.com/embed/QB4HJ6o8lI3dLMyx8q" width="480" height="430" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/QB4HJ6o8lI3dLMyx8q">via GIPHY</a></p>
+![Score Tracking Demo](demo/bot_roles.gif)
 
 ### And much much more
-<blockquote class="imgur-embed-pub" lang="en" data-id="a/uVzYbWM"><a href="//imgur.com/a/uVzYbWM"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+![Help Demo](demo/bot_help.PNG)

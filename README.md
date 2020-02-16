@@ -6,16 +6,13 @@ University of Guelph Bachelor of Computer Science Discord server.
 # Features
 
 ### Play Russian Roulette
-
 ![Russian Roulette Demo](demo/bot_bang.gif)
-
-<a href="https://giphy.com/gifs/f9FypkpxXD4SUr3pPr">via GIPHY</a>
 
 ### Earn money in black jack
 ![Black Jack Demo](demo/bot_bj.gif)
 
 ### Track your scores
-![Score Tracking Demo](demo/bot_mybang.PNG)
+![Score Tracking Demo](demo/bot_mybang.png)
 
 ### Share the love
 ![Gifting Demo](demo/bot_gift.PNG)

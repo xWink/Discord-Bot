@@ -6,13 +6,13 @@ University of Guelph Bachelor of Computer Science Discord server.
 # Features
 
 ### Play Russian Roulette
-<iframe src="https://giphy.com/embed/f9FypkpxXD4SUr3pPr" width="480" height="316" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/f9FypkpxXD4SUr3pPr">via GIPHY</a></p>
+<a href="https://giphy.com/gifs/f9FypkpxXD4SUr3pPr">via GIPHY</a>
 
 ### Earn money in black jack
-<iframe src="https://giphy.com/embed/JRtDpC4cdI6t0jdH0C" width="475" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/JRtDpC4cdI6t0jdH0C">via GIPHY</a></p>
+<a href="https://giphy.com/gifs/JRtDpC4cdI6t0jdH0C">via GIPHY</a>
 
 ### Track your scores
-<blockquote class="imgur-embed-pub" lang="en" data-id="a/yFt2jOc"><a href="//imgur.com/a/yFt2jOc"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+<a href="//imgur.com/a/yFt2jOc"></a>
 
 ### Share the love
 <blockquote class="imgur-embed-pub" lang="en" data-id="a/UT7Q2wG"><a href="//imgur.com/a/UT7Q2wG"></a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>

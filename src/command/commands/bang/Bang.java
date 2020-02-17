@@ -110,7 +110,7 @@ public class Bang extends Command {
         else chambers--;
 
         try {
-            boolean oldPanic = BangCache.isPanicking();
+            BangCache cache = BangCache.getInstance();
             long lastPlayed = bc.getUserRow(event.getAuthor().getIdLong()).getLong("last_played");
             LocalDate lastPlayedDate = Instant.ofEpochMilli(lastPlayed).atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate now = Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
@@ -120,7 +120,7 @@ public class Bang extends Command {
                     && now.minusDays(1).getYear() == lastPlayedDate.getYear())
                     || bc.getUserRow(event.getAuthor().getIdLong()).getInt("streak") == 0;
 
-            BangCache.enqueue(new BangUpdate(
+            cache.enqueue(new BangUpdate(
                     event.getAuthor().getIdLong(),
                     new Date().getTime(), 1,
                     killed ? 1 : 0,
@@ -131,13 +131,8 @@ public class Bang extends Command {
             if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
             if (jammed) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
 
-            if (!BangCache.isPanicking()) {
-                if (oldPanic) {
-                    event.getChannel().sendMessage(BangCache.getQueueResults()).queue();
-                } else {
-                    event.getChannel().sendMessage(getOutput(event)).queue();
-                }
-                BangCache.updateAll();
+            if (!cache.isPanicking()) {
+                event.getChannel().sendMessage(getOutput(event)).queue();
             }
 
             resetBools();

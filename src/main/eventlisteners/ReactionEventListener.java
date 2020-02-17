@@ -40,21 +40,23 @@ public class ReactionEventListener extends ListenerAdapter {
      */
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-        long messageAuthId = getMessageAuthId(event);
-        if (event.getUser() != null && event.getUser().getIdLong() != messageAuthId) {
-            // If new user, add them to table
-            if (!kc.userExists(messageAuthId)) {
-                kc.addUser(messageAuthId);
+        try {
+            long messageAuthId = getMessageAuthId(event);
+            if (event.getUser() != null && event.getUser().getIdLong() != messageAuthId) {
+                // If new user, add them to table
+                if (!kc.userExists(messageAuthId)) {
+                    kc.addUser(messageAuthId);
+                }
+                // If upVote, add upVotes
+                if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
+                    kc.updateUpVotes(messageAuthId, 1);
+                }
+                // If downVote, add downVotes
+                if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
+                    kc.updateDownVotes(messageAuthId, 1);
+                }
             }
-            // If upVote, add upVotes
-            if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
-                kc.updateUpVotes(messageAuthId, 1);
-            }
-            // If downVote, add downVotes
-            if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
-                kc.updateDownVotes(messageAuthId, 1);
-            }
-        }
+        } catch (Exception ignored) {}
     }
 
 
@@ -66,19 +68,21 @@ public class ReactionEventListener extends ListenerAdapter {
      */
     @Override
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
-        long messageAuthId = getMessageAuthId(event);
-        if (event.getUser() != null && event.getUser().getIdLong() != messageAuthId) {
-            if (!kc.userExists(messageAuthId)) {
-                kc.addUser(messageAuthId);
+        try {
+            long messageAuthId = getMessageAuthId(event);
+            if (event.getUser() != null && event.getUser().getIdLong() != messageAuthId) {
+                if (!kc.userExists(messageAuthId)) {
+                    kc.addUser(messageAuthId);
+                }
+                // If upVote removed, remove upVote
+                if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
+                    kc.updateUpVotes(messageAuthId, -1);
+                }
+                // If downVote removed, remove downVote
+                if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
+                    kc.updateDownVotes(messageAuthId, -1);
+                }
             }
-            // If upVote removed, remove upVote
-            if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
-                kc.updateUpVotes(messageAuthId, -1);
-            }
-            // If downVote removed, remove downVote
-            if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
-                kc.updateDownVotes(messageAuthId, -1);
-            }
-        }
+        } catch (Exception ignored) {}
     }
 }

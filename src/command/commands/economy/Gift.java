@@ -36,7 +36,7 @@ public class Gift extends Command {
 
         try {
             long targetId = event.getMessage().getMentionedUsers().get(0).getIdLong();
-            int amount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[2]);
+            int amount = Integer.parseInt(event.getMessage().getContentRaw().split("\\s+")[2]);
 
             if (ec.canAfford(event.getAuthor().getIdLong(), amount)) {
                 if (BlackJackList.getUserGame(event.getAuthor().getIdLong()) != null) {
@@ -62,23 +62,27 @@ public class Gift extends Command {
 
         eb.setColor(Color.YELLOW);
         eb.setAuthor("Gift Successfully Sent!", sending.getAvatarUrl(), sending.getAvatarUrl());
-        eb.setTitle("Sent " + amt + " to " + receiving.getName() + "!");
+        eb.setTitle("Sent " + amt + " gc to " + receiving.getName() + "!");
         eb.setThumbnail(receiving.getAvatarUrl());
 
         return eb;
     }
 
     private boolean inputIsValid(Message message) {
-        if (message.getMentionedMembers().size() != 1)
+        if (message.getMentionedMembers().size() != 1) {
             return false;
+        }
 
-        if (message.getMentionedMembers().get(0).getUser().getIdLong() == message.getAuthor().getIdLong())
+        if (message.getMentionedMembers().get(0).getUser().getIdLong() == message.getAuthor().getIdLong()) {
+            message.getChannel().sendMessage("You cannot gift yourself!").queue();
             return false;
+        }
 
-        String[] split = message.getContentRaw().split(" ");
+        String[] split = message.getContentRaw().split("\\s+");
 
-        if (split.length != 3)
+        if (split.length != 3) {
             return false;
+        }
 
         try {
             return Integer.parseInt(split[2]) > 0;

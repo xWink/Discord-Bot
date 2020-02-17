@@ -1,7 +1,9 @@
 package command.commands;
 
 import command.Command;
+import main.Server;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.Color;
@@ -23,6 +25,13 @@ public class Help extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
+        if (event.getChannel().getIdLong() != Server.getBotsChannel() && event.getChannel().getIdLong() != Server.getSpamChannel()) {
+            TextChannel bots = Server.getApi().getTextChannelById(Server.getBotsChannel());
+            if (bots != null) {
+                event.getChannel().sendMessage("Say `!help` in " + bots.getAsMention() + " to see available commands!").queue();
+            }
+            return;
+        }
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Color.YELLOW);
         eb.setTitle("Bot Commands:");
@@ -37,9 +46,10 @@ public class Help extends Command {
         eb.addField("Shows info on a course at UoGuelph.",                          "!info [course ID]", false);
         eb.addField("Apply to join or create a private elective channel.",          "!join [role name]", false);
         eb.addField("Shows your upvotes, downvotes, and total karma.",              "!karma", false);
-        eb.addField("View and purchase items listed on the market.",                "!market + !buy [item #]", false);
+        eb.addField("View or purchase items listed on the market.",                 "!market !buy [item #]", false);
         eb.addField("Shows your bang scores.",                                      "!mybang", false);
         eb.addField("Shows your latency.",                                          "!ping", false);
+        eb.addField("Remove your current colour role",                              "!removerole [role name]", false);
         eb.addField("Shows a list of available roles to join.",                     "!roles", false);
 
         event.getChannel().sendMessage(eb.build()).queue();

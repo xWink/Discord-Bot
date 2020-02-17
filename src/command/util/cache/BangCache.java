@@ -4,32 +4,49 @@ import database.connectors.BangConnector;
 import main.Server;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.*;
 
 public final class BangCache {
 
-    private static final long THRESHOLD = 10000;
+    private static BangCache bangCache;
+
+    private static final long THRESHOLD = 12000;
+
+    private Timer timer;
     private static Queue<BangUpdate> queue;
     private static BangConnector bc;
     private static boolean panic;
     private static ArrayList<Long> last20;
+    private static TextChannel channel;
 
-    static {
+    private BangCache() {
         queue = new LinkedList<>();
         panic = false;
         bc = new BangConnector();
         last20 = new ArrayList<>();
+        channel = Server.getApi().getTextChannelById(674369527731060749L);
     }
 
-    private BangCache() { }
+    /**
+     * Singleton instance getter.
+     *
+     * @return the only existing instance of BangCache
+     */
+    public static BangCache getInstance() {
+        if (bangCache == null)
+            bangCache = new BangCache();
+        return bangCache;
+    }
 
     /**
      * Adds data from a BangUpdate object to the queue.
      *
      * @param update the object containing data about an update to the database
      */
-    public static void enqueue(BangUpdate update) {
+    public void enqueue(BangUpdate update) {
         boolean found = false;
         for (BangUpdate element : queue) {
             if (element.getId() == update.getId()) {
@@ -48,21 +65,49 @@ public final class BangCache {
         checkPanic();
     }
 
-    private static void checkPanic() {
-        boolean oldPanic = panic;
+    /**
+     * Checks if panic mode should be activated and whether to extend the
+     * timer (still in panic mode), start a new timer (entering panic mode),
+     * or push the current update to the database (not in panic mode).
+     */
+    private void checkPanic() {
         long avgTime = last20.stream().reduce(0L, Long::sum) / last20.size();
 
-        panic = avgTime > new Date().getTime() - THRESHOLD && last20.size() >= 20;
+        if (avgTime > new Date().getTime() - THRESHOLD && last20.size() >= 20) {
+            panic = true;
+        }
 
-        if (panic && !oldPanic) System.out.println("Panic mode: activated");
-        else if (!panic && oldPanic) System.out.println("Panic mode: deactivated");
+        if (timer != null) {
+            timer.cancel();
+            initTimer();
+        } else if (panic) {
+            initTimer();
+        } else {
+            updateAll();
+        }
+    }
+
+    /**
+     * Initializes the timer and schedules panic mode to end in 15 seconds.
+     */
+    private void initTimer() {
+        timer = new Timer();
+        timer.schedule(new PanicTimer(), 1000 * 10);
+    }
+
+    /**
+     * Returns whether the cache is in panic mode or not.
+     * @return true if in panic mode
+     */
+    public boolean isPanicking() {
+        return panic;
     }
 
     /**
      * Dequeue every element in the cache and send the the SQL update of that element
      * to the database.
      */
-    public static void updateAll() {
+    public void updateAll() {
         try {
             while (!queue.isEmpty()) {
                 bc.customUpdate(dequeue().toSQL());
@@ -72,38 +117,48 @@ public final class BangCache {
         }
     }
 
-    private static BangUpdate dequeue() {
+    /**
+     * Removes the BangUpdate at the front of the queue and returns that update.
+     * @return the update removed from the front of the queue
+     */
+    private BangUpdate dequeue() {
         return queue.remove();
     }
 
     /**
-     * Checks if the cache is in panic mode.
-     *
-     * @return true if in panic mode
+     * Prints a string of all the results of every BangUpdate in the cache to the bot channel.
      */
-    public static boolean isPanicking() {
-        return panic;
+    public void printResults() {
+        if (queue.size() == 0)
+            return;
+
+        String output = "**Combined Data:**\n";
+        for (BangUpdate update : queue) {
+            User user = Server.getApi().getUserById(update.getId());
+            if (user != null) {
+                output = output.concat("**" + user.getName() + ":**\n"
+                        + "Attempts: " + update.getAttempts() + "\n"
+                        + "Deaths : " + update.getDeaths() + "\n"
+                        + "Jams: " + update.getJams() + "\n"
+                        + (update.isRewarded() ? "Daily received!\n\n" : ""));
+            }
+        }
+        channel.sendMessage(output).queue();
     }
 
     /**
-     * Gets a string of all the results of every BangUpdate in the cache.
-     *
-     * @return a string containing all of the results in the cache
+     * TimerTask class with run method that cancels the current timer and
+     * sets it to null before printing the update results to Discord and
+     * updating the database.
      */
-    public static String getQueueResults() {
-        String output = "**Combined Data:**\n";
-        Guild guild = Server.getApi().getGuildById(Server.getGuild());
-        if (guild != null) {
-            for (BangUpdate update : queue) {
-                Member member = guild.getMemberById(update.getId());
-                if (member != null) {
-                    output = output.concat("**" + member.getEffectiveName() + ":**\n"
-                            + "Attempts: " + update.getAttempts() + "\n"
-                            + "Deaths : " + update.getDeaths() + "\n"
-                            + "Jams: " + update.getJams() + "\n\n");
-                }
-            }
+    private class PanicTimer extends TimerTask {
+        @Override
+        public void run() {
+            timer.cancel();
+            timer = null;
+            printResults();
+            updateAll();
+            panic = false;
         }
-        return output;
     }
 }

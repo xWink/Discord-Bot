@@ -47,6 +47,7 @@ public class Bet extends Command {
     public void start(MessageReceivedEvent event) {
         if (!verifyInput(event)) return;
         long userId = event.getAuthor().getIdLong();
+        String name = event.getAuthor().getName();
         MessageChannel channel = event.getChannel();
 
         try {
@@ -66,7 +67,7 @@ public class Bet extends Command {
             game.start();
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getAsList())) {
-                channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
+                channel.sendMessage(name + " received their first 2 cards: "
                         + game.getPlayer().getHand().toString())
                         .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
 
@@ -74,24 +75,28 @@ public class Bet extends Command {
                 channel.sendMessage("Dealer's first card: " + game.getDealer().getHand().getAsList().get(0).toEmote())
                         .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
             } else {
-                channel.sendMessage(event.getAuthor().getName() + " received their first 2 cards: "
-                        + game.getPlayer().getHand().toString() + "\n"
-                        + "Dealer's first card: " + game.getDealer().getHand().getAsList().get(0).toEmote()).queue();
+                channel.sendMessage(name + " received their first 2 cards: " + game.getPlayer().getHand().toString()
+                        + "\nDealer's first card: " + game.getDealer().getHand().getAsList().get(0).toEmote()).queue();
             }
 
             // Check if started with blackjack
             if (game.getPlayer().getHand().getValue() == 21) {
                 int result = game.checkWinner();
+                String output;
+
+                if (result > 0) {
+                    output = name + " got 21!\nYou won " + result + "*gc*!\n";
+                } else {
+                    output = name + " got 21!\nIt's a draw, you earned 0 *gc*\n";
+                }
+                output += "Dealers hand: " + game.getDealer().getHand().toString();
 
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
-                    channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
-                            + (result > 0 ? "You won " + result + "*gc*!\n" : "It's a draw, you earned 0 *gc*\n")
-                            + "Dealers hand: " + game.getDealer().getHand().toString())
-                            .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
+                    channel.sendMessage(output)
+                            .addFile(new FileInputStream(path + "res/out.png"), "out.png")
+                            .queue();
                 } else {
-                    channel.sendMessage(event.getAuthor().getName() + " got 21!\n"
-                            + (result > 0 ? "You won " + result + "*gc*!\n" : "It's a draw, you earned 0 *gc*\n")
-                            + "Dealers hand: " + game.getDealer().getHand().toString()).queue();
+                    channel.sendMessage(output).queue();
                 }
 
                 if (result > 0) ec.addOrRemoveMoney(userId, result);

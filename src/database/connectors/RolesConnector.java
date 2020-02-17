@@ -2,13 +2,13 @@ package database.connectors;
 
 import database.Connector;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class RolesConnector extends Connector {
 
-    private String role;
     private ResultSet rs;
 
     /**
@@ -61,9 +61,11 @@ public class RolesConnector extends Connector {
      */
     private void addNewRoleApplication(String roleName, long userId) throws SQLException {
         if (!applicationExists(roleName)) {
-            getConnection().prepareStatement("INSERT INTO roles VALUES ('"
+            PreparedStatement ps = getConnection().prepareStatement("INSERT INTO roles VALUES ('"
                     + roleName + "', " + userId
-                    + ", null, null)").executeUpdate();
+                    + ", null, null)");
+            ps.setString(1, roleName);
+            ps.executeUpdate();
         }
     }
 
@@ -96,9 +98,11 @@ public class RolesConnector extends Connector {
 
         int numApplicants = getNumApplications(roleName);
         if (numApplicants > 0 && numApplicants < 3) {
-            getConnection().prepareStatement("UPDATE roles"
+            PreparedStatement ps = getConnection().prepareStatement("UPDATE roles"
                     + " SET user" + (numApplicants + 1) + " = " + userId
-                    + " WHERE name = '" + roleName + "'").executeUpdate();
+                    + " WHERE name = '" + roleName + "'");
+            ps.setString(1, roleName);
+            ps.executeUpdate();
         }
     }
 
@@ -114,18 +118,24 @@ public class RolesConnector extends Connector {
         if (!applicationExists(roleName) || !userAppliedForRole(roleName, userId)) return;
         for (int i = 1; i < 4; i++) {
             if (rs.getFloat("user" + i) == userId) {
-                getConnection().prepareStatement("UPDATE roles SET user" + i + " = null "
-                        + "WHERE name = '" + roleName + "'").executeUpdate();
+                PreparedStatement ps = getConnection().prepareStatement("UPDATE roles SET user" + i + " = null "
+                        + "WHERE name = ?");
+                ps.setString(1, roleName);
+                ps.executeUpdate();
 
                 for (int j = i + 1; j < 4; j++) {
-                    getConnection().prepareStatement("UPDATE roles SET user" + (j - 1) + " = user" + j
-                            + " WHERE name = '" + roleName + "'").executeUpdate();
+                    ps = getConnection().prepareStatement("UPDATE roles SET user" + (j - 1) + " = user" + j
+                            + " WHERE name = ?");
+                    ps.setString(1, roleName);
+                    ps.executeUpdate();
                 }
 
                 setRole(roleName);
                 if (rs.getFloat("user1") == 0) {
-                    getConnection().prepareStatement("DELETE FROM roles "
-                            + "WHERE name = '" + roleName + "'").executeUpdate();
+                    ps = getConnection().prepareStatement("DELETE FROM roles "
+                            + "WHERE name = '" + roleName + "'");
+                    ps.setString(1, roleName);
+                    ps.executeUpdate();
                 }
 
                 break;
@@ -177,9 +187,10 @@ public class RolesConnector extends Connector {
      * @throws SQLException may be thrown when making a prepared statement
      */
     private void setRole(String roleName) throws SQLException {
-        rs = getConnection().prepareStatement("SELECT * FROM " + getTable()
-                + " WHERE name = '" + roleName + "'").executeQuery();
-        role = roleName;
+        PreparedStatement ps = getConnection().prepareStatement("SELECT * FROM " + getTable()
+                + " WHERE name = ?");
+        ps.setString(1, roleName);
+        rs = ps.executeQuery();
         rs.first();
     }
 

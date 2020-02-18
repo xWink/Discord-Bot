@@ -1,13 +1,12 @@
 package command.commands.bang;
 
 import command.Command;
-import command.util.cache.BangCache;
 import database.connectors.BangConnector;
 import main.Server;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.awt.*;
+import java.awt.Color;
 import java.sql.ResultSet;
 
 public class MyBang extends Command {
@@ -34,7 +33,6 @@ public class MyBang extends Command {
                 && event.getChannel().getIdLong() != Server.getBotsChannel()) {
             return;
         }
-
         int attempts = 0, deaths = 0, jams = 0, streak = 0;
         double survivalRate = 0;
         try {
@@ -47,6 +45,12 @@ public class MyBang extends Command {
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         } finally {
+            event.getChannel().sendMessage("**" + event.getAuthor().getName() + "'s scores**"
+                    + "\nAttempts: " + attempts
+                    + "\nDeaths: " + deaths
+                    + "\nJams: " + jams
+                    + "\nSurvival rate: " + survivalRate + "%"
+                    + "\nStreak: " + streak + (streak > 0 ? " :fire:" : "")).queue();
             EmbedBuilder eb = new EmbedBuilder();
             eb.setColor(Color.YELLOW);
             eb.setTitle(event.getAuthor().getName() + "'s Scores");

@@ -10,7 +10,9 @@ import java.awt.Color;
 import java.sql.ResultSet;
 
 public class MyBang extends Command {
+
     private BangConnector bc;
+
     /**
      * Initializes the command's key to "!mybang".
      */
@@ -18,6 +20,7 @@ public class MyBang extends Command {
         super("!mybang", true);
         bc = new BangConnector();
     }
+
     /**
      * Prints the user's number of attempts, deaths, jams and total survival rate
      * in bang.

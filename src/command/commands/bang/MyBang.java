@@ -49,7 +49,7 @@ public class MyBang extends Command {
             if (event.getMember() != null) {
                 eb.setColor(event.getMember().getColor());
             } else {
-                eb.setColor(Color.YELLOW);
+                eb.setColor(Color.LIGHT_GRAY);
             }
             eb.setTitle(event.getAuthor().getName() + "'s Scores");
 

@@ -46,7 +46,11 @@ public class MyBang extends Command {
             printStackTraceAndSendMessage(event, e);
         } finally {
             EmbedBuilder eb = new EmbedBuilder();
-            eb.setColor(Color.YELLOW);
+            if (event.getMember() != null) {
+                eb.setColor(event.getMember().getColor());
+            } else {
+                eb.setColor(Color.YELLOW);
+            }
             eb.setTitle(event.getAuthor().getName() + "'s Scores");
 
             eb.addField("Attempts", Integer.toString(attempts), true);

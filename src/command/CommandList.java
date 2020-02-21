@@ -84,5 +84,6 @@ public final class CommandList {
         commands.add(new Wallet());
         commands.add(new Gift());
         commands.add(new RemoveRole());
+        commands.add(new Lotto());
     }
 }

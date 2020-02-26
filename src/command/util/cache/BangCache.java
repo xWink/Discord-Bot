@@ -27,7 +27,7 @@ public final class BangCache {
         panic = false;
         bc = new BangConnector();
         last20 = new ArrayList<>();
-        channel = Server.getApi().getTextChannelById(674369527731060749L);
+        channel = Server.getApi().getTextChannelById(Server.getSpamChannel());
     }
 
     /**

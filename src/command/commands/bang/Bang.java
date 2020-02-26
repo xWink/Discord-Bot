@@ -68,7 +68,7 @@ public class Bang extends Command {
      * @param event the event that triggered the command
      * @return the string that describes the results of bang
      */
-    private String getOutput(MessageReceivedEvent event) {
+    private String getOutput(MessageReceivedEvent event) throws SQLException {
         String output = "";
         String poggers = "<:poggers:554666728878112774>";
         String poggies = "<:poggies:564285288621539328>";
@@ -80,11 +80,12 @@ public class Bang extends Command {
 
         output += "\nChambers left in the cylinder: ||  " + chambers + "  ||";
 
-        if (reward) output += "\n" + event.getAuthor().getName()
-                    + " received their daily reward of 5 GryphCoins!\n";
-        if (jammed) output += "\n" + event.getAuthor().getName()
-                    + " received a bonus 50 GryphCoins!";
-
+        if (reward)
+            output += "\n" + event.getAuthor().getName() + " received their daily reward of 5 GryphCoins!\n";
+        if (jammed)
+            output += "\n" + event.getAuthor().getName() + " received a bonus 50 GryphCoins!";
+        if (streak && (bc.getCurrentStreak(userId) + 1) % 10 == 0)
+            output += "\n" + event.getAuthor().getName() + " received an extra 50 GryphCoins for their streak bonus!";
         return output;
     }
 

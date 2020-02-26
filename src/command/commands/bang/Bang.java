@@ -120,6 +120,9 @@ public class Bang extends Command {
                     && now.minusDays(1).getYear() == lastPlayedDate.getYear())
                     || bc.getUserRow(event.getAuthor().getIdLong()).getInt("streak") == 0;
 
+            if (streak && (bc.getCurrentStreak(event.getAuthor().getIdLong()) + 1) % 10 == 0)
+                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
+
             cache.enqueue(new BangUpdate(
                     event.getAuthor().getIdLong(),
                     new Date().getTime(), 1,

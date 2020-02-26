@@ -14,17 +14,19 @@ public class MessageData {
     private long channelId;
     private long timeSent;
     private String content;
+    private String imageBase64;
 
     public MessageData() {
-        this(0, 0, 0, 0, "");
+        this(0, 0, 0, 0, "", "");
     }
 
-    public MessageData(long messageId, long authorId, long channelId, long timeSent, String content) {
+    public MessageData(long messageId, long authorId, long channelId, long timeSent, String content, String imageBase64) {
         this.messageId = messageId;
         this.authorId = authorId;
         this.channelId = channelId;
         this.timeSent = timeSent;
         this.content = content;
+        this.imageBase64 = imageBase64;
     }
 
     public long getAuthorId() {
@@ -47,6 +49,10 @@ public class MessageData {
         return content;
     }
 
+    public String getImageBase64() {
+        return imageBase64;
+    }
+
     public void setMessageId(long messageId) {
         this.messageId = messageId;
     }
@@ -65,6 +71,10 @@ public class MessageData {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void setImageBase64(String imageBase64) {
+        this.imageBase64 = imageBase64;
     }
 
     public String toFormattedString() {

@@ -8,6 +8,7 @@ import database.connectors.EconomyConnector;
 import main.Server;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -23,6 +24,7 @@ public class Bang extends Command {
     private static boolean killed;
     private static boolean reward;
     private static boolean streak;
+    private long userId;
 
     /**
      * Initializes the command's key to "!bang".
@@ -105,34 +107,31 @@ public class Bang extends Command {
             return;
         }
 
+        userId = event.getAuthor().getIdLong();
         int pull = new Random().nextInt(chambers);
         if (pull == 0) tryToKill();
         else chambers--;
 
         try {
             BangCache cache = BangCache.getInstance();
-            long lastPlayed = bc.getUserRow(event.getAuthor().getIdLong()).getLong("last_played");
+            long lastPlayed = bc.getUserRow(userId).getLong("last_played");
             LocalDate lastPlayedDate = Instant.ofEpochMilli(lastPlayed).atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate now = Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
 
-            reward = bc.isEligibleForDaily(event.getAuthor().getIdLong());
+            reward = bc.isEligibleForDaily(userId);
             streak = (now.minusDays(1).getDayOfYear() == lastPlayedDate.getDayOfYear()
                     && now.minusDays(1).getYear() == lastPlayedDate.getYear())
-                    || bc.getUserRow(event.getAuthor().getIdLong()).getInt("streak") == 0;
+                    || bc.getUserRow(userId).getInt("streak") == 0;
 
-            if (streak && (bc.getCurrentStreak(event.getAuthor().getIdLong()) + 1) % 10 == 0)
-                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
+            giveRewards();
 
             cache.enqueue(new BangUpdate(
-                    event.getAuthor().getIdLong(),
+                    userId,
                     new Date().getTime(), 1,
                     killed ? 1 : 0,
                     jammed ? 1 : 0,
                     reward,
                     streak));
-
-            if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
-            if (jammed) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
 
             if (!cache.isPanicking()) {
                 event.getChannel().sendMessage(getOutput(event)).queue();
@@ -142,5 +141,22 @@ public class Bang extends Command {
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
+    }
+
+    /**
+     * Gives the user their rewards based on current streak,
+     * whether they received their daily, and whether they jammed.
+     *
+     * @throws SQLException may be thrown when accessing database
+     */
+    private void giveRewards() throws SQLException {
+        if (streak && (bc.getCurrentStreak(userId) + 1) % 10 == 0)
+            ec.addOrRemoveMoney(userId, 50);
+
+        if (reward)
+            ec.addOrRemoveMoney(userId, 5);
+
+        if (jammed)
+            ec.addOrRemoveMoney(userId, 50);
     }
 }

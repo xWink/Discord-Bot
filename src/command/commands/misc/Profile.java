@@ -36,28 +36,28 @@ public class Profile extends Command {
     public void start(MessageReceivedEvent event) {
         this.event = event;
         eb = new EmbedBuilder();
-        setBangProfile();
+        createProfile();
         event.getChannel().sendMessage(eb.build()).queue();
     }
 
-    private void setBangProfile() {
+    private void createProfile() {
         try {
             setBangData();
             setKarmaData();
             setWalletData();
+            buildEB();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
-        } finally {
-            if (event.getMember() != null) {
-                eb.setColor(event.getMember().getColor());
-            } else {
-                eb.setColor(Color.LIGHT_GRAY);
-            }
-            buildEB();
         }
     }
 
     private void buildEB() {
+        if (event.getMember() != null) {
+            eb.setColor(event.getMember().getColor());
+        } else {
+            eb.setColor(Color.LIGHT_GRAY);
+        }
+
         eb.setTitle(event.getAuthor().getName() + "'s Profile");
         eb.setThumbnail(event.getAuthor().getAvatarUrl());
 

@@ -61,7 +61,7 @@ public class Profile extends Command {
         eb.setTitle(event.getAuthor().getName() + "'s Profile");
         eb.setThumbnail(event.getAuthor().getAvatarUrl());
 
-        eb.addField("Attempts", "" + attempts, true);
+        eb.addField("Bangs", "" + attempts, true);
         eb.addField("Deaths", "" + deaths, true);
         eb.addField("Jams", "" + jams, true);
         eb.addField("Survival Rate", survivalRate + "%", true);

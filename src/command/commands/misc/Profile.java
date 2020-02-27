@@ -30,12 +30,12 @@ public class Profile extends Command {
         bc = new BangConnector();
         ec = new EconomyConnector();
         kc = new KarmaConnector();
-        eb = new EmbedBuilder();
     }
 
     @Override
     public void start(MessageReceivedEvent event) {
         this.event = event;
+        eb = new EmbedBuilder();
         setBangProfile();
         event.getChannel().sendMessage(eb.build()).queue();
     }

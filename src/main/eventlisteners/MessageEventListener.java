@@ -50,7 +50,6 @@ public class MessageEventListener extends ListenerAdapter {
             }
 
             try {
-                addKarmaReactions(event.getMessage());
                 mc.storeMessage(event.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -87,15 +86,6 @@ public class MessageEventListener extends ListenerAdapter {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private void addKarmaReactions(Message message) {
-        Emote up = Server.getApi().getEmoteById(682811587635052553L);
-        Emote down = Server.getApi().getEmoteById(682811587635052553L);
-        if (up != null && down != null) {
-            message.addReaction(up).queue();
-            message.addReaction(down).queue();
         }
     }
 

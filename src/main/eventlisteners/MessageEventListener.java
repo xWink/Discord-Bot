@@ -47,11 +47,10 @@ public class MessageEventListener extends ListenerAdapter {
                         return;
                     }
                 }
-
-                addKarmaReactions(event.getMessage());
             }
 
             try {
+                addKarmaReactions(event.getMessage());
                 mc.storeMessage(event.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();

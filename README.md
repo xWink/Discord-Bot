@@ -23,7 +23,7 @@ University of Guelph Bachelor of Computer Science Discord server.
 ### Instantly create and join private channels
 ![Roles Demo](demo/bot_roles.gif)
 
-### Message Logging
+### Log Messages and File Uploads
 ![Message Logging Demo](demo/bot_logging.PNG)
 
 ### And much much more

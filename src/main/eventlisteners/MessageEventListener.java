@@ -6,6 +6,8 @@ import command.util.message.MessageData;
 import database.connectors.MessagesConnector;
 import main.Config;
 import main.Server;
+import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -45,6 +47,8 @@ public class MessageEventListener extends ListenerAdapter {
                         return;
                     }
                 }
+
+                addKarmaReactions(event.getMessage());
             }
 
             try {
@@ -84,6 +88,15 @@ public class MessageEventListener extends ListenerAdapter {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void addKarmaReactions(Message message) {
+        Emote up = Server.getApi().getEmoteById(682811587635052553L);
+        Emote down = Server.getApi().getEmoteById(682811587635052553L);
+        if (up != null && down != null) {
+            message.addReaction(up).queue();
+            message.addReaction(down).queue();
         }
     }
 

@@ -70,7 +70,7 @@ public class ReactionEventListener extends ListenerAdapter {
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
         try {
             long messageAuthId = getMessageAuthId(event);
-            if (event.getUser() != null && event.getUser().getIdLong() != messageAuthId) {
+            if (event.getUser() != null && event.getUser().getIdLong() != messageAuthId && !event.getUser().isBot()) {
                 if (!kc.userExists(messageAuthId)) {
                     kc.addUser(messageAuthId);
                 }

@@ -12,7 +12,7 @@ University of Guelph Bachelor of Computer Science Discord server.
 ![Black Jack Demo](demo/bot_bj.gif)
 
 ### Track your scores
-![Score Tracking Demo](demo/bot_mybang.png)
+![Score Tracking Demo](demo/bot_profile.png)
 
 ### Share the love
 ![Gifting Demo](demo/bot_gift.PNG)

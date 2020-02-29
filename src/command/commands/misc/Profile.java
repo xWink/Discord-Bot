@@ -7,7 +7,7 @@ import database.connectors.KarmaConnector;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.awt.*;
+import java.awt.Color;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

@@ -53,7 +53,7 @@ public class MessagesConnector extends Connector {
                 + (message.getTimeCreated().toInstant().getEpochSecond() * 1000 - 1.8e7)
                 + ", ?, '" + imageString + "')";
         System.out.println(myStatement);
-        PreparedStatement statement= getConnection().prepareStatement(myStatement);
+        PreparedStatement statement = getConnection().prepareStatement(myStatement);
         statement.setString(1, message.getContentRaw());
         statement.executeUpdate();
     }

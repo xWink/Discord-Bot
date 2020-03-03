@@ -51,10 +51,11 @@ public class MessagesConnector extends Connector {
                 + message.getAuthor().getId() + ", "
                 + message.getChannel().getId() + ", "
                 + (message.getTimeCreated().toInstant().getEpochSecond() * 1000 - 1.8e7)
-                + ", ?, '" + imageString + "')";
+                + ", ?, ?)";
         System.out.println(myStatement);
         PreparedStatement statement = getConnection().prepareStatement(myStatement);
         statement.setString(1, message.getContentRaw());
+        statement.setString(2, imageString);
         statement.executeUpdate();
     }
 

@@ -50,6 +50,8 @@ public class Purge extends AdminCommand {
             if (numMessages < 100) {
                 history.retrievePast(numMessages + 1)
                         .queue(messages -> event.getChannel().purgeMessages(messages));
+            } else {
+                history.retrievePast(1).queue(messages -> event.getChannel().purgeMessages(messages));
             }
         } catch (Exception e) {
             history.retrievePast(1).queue(messages -> event.getChannel().purgeMessages(messages));

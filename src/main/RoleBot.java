@@ -43,7 +43,7 @@ public class RoleBot {
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
             timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);
             timer.schedule(new PruneBangStreaks(), 1000 * 60 * 60 * 2, 1000 * 60 * 60 * 2);
-            startPurgeScheduler();
+            //startPurgeScheduler();
         } catch (Exception e) {
             e.printStackTrace();
         }

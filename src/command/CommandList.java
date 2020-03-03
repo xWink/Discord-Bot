@@ -53,7 +53,7 @@ public final class CommandList {
     private static void addAllCommands() {
         // Admin commands
         commands.add(new Purge());
-        commands.add(new Cleanup());
+        //commands.add(new Cleanup());
 
         // Everyone commands
         commands.add(new Bang());

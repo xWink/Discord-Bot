@@ -35,7 +35,7 @@ public class RoleBot {
         try {
             logger.debug("Entering application.");
             Server.getApi().addEventListener(
-                    new MessageEventListener(),
+                    MessageEventListener.getMessageEventListener(),
                     new ReactionEventListener(),
                     new ConnectionEventListener(),
                     new JoinLeaveEventListener());

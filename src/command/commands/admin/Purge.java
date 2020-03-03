@@ -1,6 +1,8 @@
 package command.commands.admin;
 
 import command.AdminCommand;
+import main.Server;
+import main.eventlisteners.MessageEventListener;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -44,6 +46,7 @@ public class Purge extends AdminCommand {
         String[] strings = event.getMessage().getContentRaw().split(" ");
         MessageHistory history = new MessageHistory(event.getTextChannel());
 
+        Server.getApi().removeEventListener(MessageEventListener.getMessageEventListener());
         try {
             int numMessages = Integer.parseInt(strings[1]);
             List<Message> messages = history.retrievePast(numMessages + 1).complete();
@@ -51,6 +54,8 @@ public class Purge extends AdminCommand {
         } catch (Exception e) {
             List<Message> messages = history.retrievePast(1).complete();
             event.getTextChannel().deleteMessages(messages).queue();
+        } finally {
+            Server.getApi().addEventListener(MessageEventListener.getMessageEventListener());
         }
     }
 }

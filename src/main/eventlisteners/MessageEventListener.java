@@ -23,7 +23,17 @@ import java.util.Objects;
 
 public class MessageEventListener extends ListenerAdapter {
 
-    MessagesConnector mc = new MessagesConnector();
+    private static MessageEventListener messageEventListener;
+    private MessagesConnector mc = new MessagesConnector();
+
+    private MessageEventListener() {}
+
+    public static MessageEventListener getMessageEventListener() {
+        if (messageEventListener == null) {
+            messageEventListener = new MessageEventListener();
+        }
+        return messageEventListener;
+    }
 
     /**
      * Upon receiving a message, the bot checks if the message meets the

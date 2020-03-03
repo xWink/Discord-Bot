@@ -45,8 +45,6 @@ public class Purge extends AdminCommand {
         String[] strings = event.getMessage().getContentRaw().split(" ");
         MessageHistory history = new MessageHistory(event.getTextChannel());
 
-        Server.getApi().removeEventListener(MessageEventListener.getMessageEventListener());
-
         try {
             int numMessages = Integer.parseInt(strings[1]);
             if (numMessages < 100) {
@@ -56,7 +54,5 @@ public class Purge extends AdminCommand {
         } catch (Exception e) {
             history.retrievePast(1).queue(messages -> event.getChannel().purgeMessages(messages));
         }
-
-        Server.getApi().addEventListener(MessageEventListener.getMessageEventListener());
     }
 }

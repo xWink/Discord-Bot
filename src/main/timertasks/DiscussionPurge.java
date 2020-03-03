@@ -1,41 +1,35 @@
 package main.timertasks;
 
 import main.Server;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageHistory;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class DiscussionPurge implements Runnable {
 
     /**
-     * Purges all messages in the Discussion channel.
+     * Purges all messages in the Discussion channel up to the last 50.
      */
-    @Override
-    public void run() {
-        try {
-            List<Message> messages;
-            int size = 0;
-            do {
-                Guild guild = Server.getApi().getGuildById(Server.getGuild());
-                if (guild == null)
-                    return;
-                TextChannel discussionChannel = guild.getTextChannelById(670857670214942730L);
-                if (discussionChannel == null) {
-                    System.out.println("NULL Discussion Channel!!!");
-                    break;
-                }
-                messages = new MessageHistory(discussionChannel).retrievePast(99).complete();
-                if (messages.size() == size)
-                    break;
-                size = messages.size();
-                if (messages.size() > 22)
-                    discussionChannel.deleteMessages(messages.subList(20, messages.size())).queue();
-            } while (messages.size() > 22);
-        } catch (Exception e) {
-            e.printStackTrace();
+    @Override public void run() {
+        Guild guild = Server.getApi().getGuildById(Server.getGuild());
+        if (guild == null) {
+            return;
         }
+
+        MessageChannel channel = guild.getTextChannelById(670857670214942730L);
+        if (channel == null) {
+            return;
+        }
+
+        final int numMessages = 50;
+        MessageHistory history = channel.getHistory();
+
+        history.retrievePast(history.size()).queue(messages -> {
+            while (messages.size() > numMessages) {
+                channel.purgeMessages(messages.subList(numMessages, Math.min(messages.size(), numMessages + 100)));
+            }
+        });
     }
 }

@@ -20,7 +20,11 @@ public final class Server {
 
     static {
         try {
-            api = new JDABuilder(AccountType.BOT).setToken(Config.getToken()).build();
+            api = new JDABuilder(AccountType.BOT)
+                    .setToken(Config.getToken())
+                    .setBulkDeleteSplittingEnabled(false)
+                    .build();
+
             api.getPresence().setActivity(Activity.playing("!help"));
             guild = Long.parseLong(Config.getGuildId());
             generalChannel = 486633949154770946L;

@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Purge extends AdminCommand {
 
@@ -31,9 +32,7 @@ public class Purge extends AdminCommand {
     }
 
     /**
-     * Deletes a given number of messages in a text channel (not including the purge command message).
-     * Or deletes all messages by a mentioned user up to a specified number of messages back in the channel
-     * history.
+     * Deletes a given number of messages in a text channel (not including the purge command message) up to 99.
      *
      * @param event the MessageReceivedEvent that triggered the command
      */
@@ -47,15 +46,17 @@ public class Purge extends AdminCommand {
         MessageHistory history = new MessageHistory(event.getTextChannel());
 
         Server.getApi().removeEventListener(MessageEventListener.getMessageEventListener());
+
         try {
             int numMessages = Integer.parseInt(strings[1]);
-            List<Message> messages = history.retrievePast(numMessages + 1).complete();
-            event.getTextChannel().deleteMessages(messages).queue();
+            if (numMessages < 100) {
+                history.retrievePast(numMessages + 1)
+                        .queue(messages -> event.getChannel().purgeMessages(messages));
+            }
         } catch (Exception e) {
-            List<Message> messages = history.retrievePast(1).complete();
-            event.getTextChannel().deleteMessages(messages).queue();
-        } finally {
-            Server.getApi().addEventListener(MessageEventListener.getMessageEventListener());
+            history.retrievePast(1).queue(messages -> event.getChannel().purgeMessages(messages));
         }
+
+        Server.getApi().addEventListener(MessageEventListener.getMessageEventListener());
     }
 }

@@ -26,10 +26,9 @@ public class DiscussionPurge implements Runnable {
         final int numMessages = 50;
         MessageHistory history = channel.getHistory();
 
-        history.retrievePast(history.size()).queue(messages -> {
-            while (messages.size() > numMessages) {
-                channel.purgeMessages(messages.subList(numMessages, Math.min(messages.size(), numMessages + 100)));
-            }
-        });
+        while (history.size() > numMessages) {
+            history.retrievePast(Math.min(100, history.size())).queue(messages ->
+                    channel.purgeMessages(messages.subList(numMessages, Math.min(messages.size(), 100))));
+        }
     }
 }

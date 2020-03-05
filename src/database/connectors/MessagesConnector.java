@@ -98,7 +98,7 @@ public class MessagesConnector extends Connector {
             return new LinkedList<>();
         }
 
-        String searchString = "WHERE message_id = " + messageIds.get(0);
+        String searchString = " WHERE message_id = " + messageIds.get(0);
         for (int i = 1; i < messageIds.size(); i++) {
             searchString = searchString.concat(" OR message_id = " + messageIds.get(i));
         }

@@ -24,7 +24,7 @@ public class Restart extends AdminCommand {
 
             /* Build command: java -jar application.jar */
             final ArrayList<String> command = new ArrayList<>();
-            command.add("java -jar /home/botadmin/DiscordBot/build/libs/DiscordBot-2-all.jar");
+            command.add("java -jar DiscordBot-2-all.jar");
 
             final ProcessBuilder builder = new ProcessBuilder(command);
             builder.start();

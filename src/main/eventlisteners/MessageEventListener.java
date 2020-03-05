@@ -119,10 +119,10 @@ public class MessageEventListener extends ListenerAdapter {
 
         for (MessageData bulkDatum : bulkData) {
             String dataString = bulkDatum.toFormattedString();
-            if (out.get(out.size() - 1).length() + dataString.length() >= 2000) { // Avoid Discord 2000 character limit
+            if (out.get(out.size() - 1).length() + dataString.length() >= 1999) { // Avoid Discord 2000 character limit
                 out.add(new StringBuilder());
             }
-            out.get(out.size() - 1).append(dataString); // Build output strings
+            out.get(out.size() - 1).append(dataString).append("\n"); // Build output strings
         }
 
         for (StringBuilder sb : out) {

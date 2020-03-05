@@ -54,7 +54,8 @@ public final class CommandList {
     private static void addAllCommands() {
         // Admin commands
         commands.add(new Purge());
-        commands.add(new Restart());
+        //commands.add(new Restart());
+
         // Everyone commands
         commands.add(new Bang());
         commands.add(new BangScore());

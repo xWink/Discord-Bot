@@ -9,6 +9,7 @@ import main.Server;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -19,6 +20,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Base64;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 public class MessageEventListener extends ListenerAdapter {
@@ -96,6 +99,33 @@ public class MessageEventListener extends ListenerAdapter {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onMessageBulkDelete(@NotNull MessageBulkDeleteEvent event) {
+        List<MessageData> bulkData;
+        List<StringBuilder> out = new LinkedList<>();
+        out.add(new StringBuilder());
+
+        try {
+            bulkData = mc.getBulkMessageDataByIds(event.getMessageIds());
+        } catch (Exception e) {
+            TextChannel channel = Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L));
+            channel.sendMessage("FAILED TO ACQUIRE MESSAGES FROM PURGE").queue();
+            return;
+        }
+
+        for (MessageData bulkDatum : bulkData) {
+            String dataString = bulkDatum.toFormattedString();
+            if (out.get(out.size() - 1).length() + dataString.length() >= 2000) { // Avoid Discord 2000 character limit
+                out.add(new StringBuilder());
+            }
+            out.get(out.size() - 1).append(dataString); // Build output strings
+        }
+
+        for (StringBuilder sb : out) {
+            Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L)).sendMessage(sb).queue();
         }
     }
 

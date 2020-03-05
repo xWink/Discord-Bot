@@ -12,6 +12,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Base64;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MessagesConnector extends Connector {
 
@@ -71,7 +73,7 @@ public class MessagesConnector extends Connector {
         ResultSet rs = getConnection().prepareStatement("SELECT * FROM " + getTable()
                 + " WHERE message_id = " + messageId).executeQuery();
 
-        if (rs.first())
+        if (rs.first()) {
             return new MessageData(
                     rs.getLong("message_id"),
                     rs.getLong("author_id"),
@@ -79,8 +81,43 @@ public class MessagesConnector extends Connector {
                     rs.getLong("time_sent"),
                     rs.getString("content"),
                     rs.getString("image_base64"));
+        }
 
         return null;
+    }
+
+    /**
+     * Searches the database for a message with a matching message ID.
+     *
+     * @param messageIds the ID numbers of the messages being searched for
+     * @return a list of MessageData objects containing all of the relevant data of the messages
+     * @throws SQLException may be thrown when accessing the database
+     */
+    public List<MessageData> getBulkMessageDataByIds(List<String> messageIds) throws SQLException {
+        if (messageIds == null || messageIds.size() == 0) {
+            return new LinkedList<>();
+        }
+
+        String searchString = "WHERE message_id = " + messageIds.get(0);
+        for (int i = 1; i < messageIds.size(); i++) {
+            searchString = searchString.concat("OR message_id = " + messageIds.get(i));
+        }
+
+        ResultSet rs = getConnection().prepareStatement("SELECT * FROM " + getTable()
+                + searchString).executeQuery();
+
+        List<MessageData> data = new LinkedList<>();
+        while (rs.next()) {
+            data.add(new MessageData(
+                    rs.getLong("message_id"),
+                    rs.getLong("author_id"),
+                    rs.getLong("channel_id"),
+                    rs.getLong("time_sent"),
+                    rs.getString("content"),
+                    rs.getString("image_base64")));
+        }
+
+        return data;
     }
 
     /**

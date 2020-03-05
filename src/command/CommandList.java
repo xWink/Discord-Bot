@@ -1,6 +1,7 @@
 package command;
 
 import command.commands.admin.Cleanup;
+import command.commands.admin.Restart;
 import command.commands.bang.Bang;
 import command.commands.bang.BangScore;
 import command.commands.blackjack.Bet;
@@ -53,8 +54,7 @@ public final class CommandList {
     private static void addAllCommands() {
         // Admin commands
         commands.add(new Purge());
-        //commands.add(new Cleanup());
-
+        commands.add(new Restart());
         // Everyone commands
         commands.add(new Bang());
         commands.add(new BangScore());

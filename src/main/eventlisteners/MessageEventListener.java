@@ -111,6 +111,7 @@ public class MessageEventListener extends ListenerAdapter {
         try {
             bulkData = mc.getBulkMessageDataByIds(event.getMessageIds());
         } catch (Exception e) {
+            e.printStackTrace();
             TextChannel channel = Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L));
             channel.sendMessage("FAILED TO ACQUIRE MESSAGES FROM PURGE").queue();
             return;

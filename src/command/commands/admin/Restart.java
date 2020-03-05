@@ -21,7 +21,12 @@ public class Restart extends AdminCommand {
     protected void runCommand(MessageReceivedEvent event) {
         try {
             Server.getApi().shutdownNow();
-            final String javaBin = System.getProperty("java.home") + File.separator + "build" + File.separator + "libs";
+            final String javaBin = "build" + File.separator + "libs" + File.separator + new java.io.File(
+                    RoleBot.class.getProtectionDomain()
+                            .getCodeSource()
+                            .getLocation()
+                            .getPath())
+                    .getName();
             final File currentJar = new File(RoleBot.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 
             /* is it a jar file? */

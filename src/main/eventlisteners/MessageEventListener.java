@@ -82,19 +82,32 @@ public class MessageEventListener extends ListenerAdapter {
     public void onMessageDelete(@NotNull MessageDeleteEvent event) {
         try {
             MessageData data = mc.getMessageDataById(event.getMessageIdLong());
+            BufferedImage image = null;
+            File file = null;
+
             if (data != null) {
                 TextChannel channel = Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L));
-                if (data.getImageBase64().length() == 0) {
-                    channel.sendMessage(data.toFormattedString()).queue();
+                String part1 = data.toFormattedString();
+                String part2 = "";
+
+                if (part1.length() >= 1999) {
+                    part2 = part1.substring(1999, part1.length()-1);
+                    part1 = part1.substring(0, 1998);
+                }
+
+                if (data.getImageBase64().length() != 0) {
+                    file = new File("../../res/LastImage.png");
+                    image = decodeBase64Image(data.getImageBase64());
+                }
+
+                if (image != null) {
+                    ImageIO.write(image, "png", file);
+                }
+
+                if (part2.length() > 0) {
+                    sendAsTwoMessages(part1, part2, file, channel);
                 } else {
-                    File file = new File("../../res/LastImage.png");
-                    BufferedImage image = decodeBase64Image(data.getImageBase64());
-                    if (image != null) {
-                        ImageIO.write(image, "png", file);
-                        channel.sendMessage(data.toFormattedString()).addFile(file).queue();
-                    } else {
-                        channel.sendMessage(data.toFormattedString()).queue();
-                    }
+                    sendAsOneMessage(part1, file, channel);
                 }
             }
         } catch (Exception e) {
@@ -102,31 +115,70 @@ public class MessageEventListener extends ListenerAdapter {
         }
     }
 
+    private void sendAsOneMessage(String s, File file, TextChannel channel) {
+        if (file == null) {
+            channel.sendMessage(s).queue();
+        } else {
+            channel.sendMessage(s).addFile(file).queue();
+        }
+    }
+
+    private void sendAsTwoMessages(String s1, String s2, File file, TextChannel channel) {
+        if (file == null) {
+            channel.sendMessage(s1).queue();
+            channel.sendMessage(s2).queue();
+        } else {
+            channel.sendMessage(s1).queue();
+            channel.sendMessage(s2).addFile(file).queue();
+        }
+    }
+
+    /**
+     * Searches the database for deleted messages and prints them all to an admin channel.
+     * @param event the MessageBulkDeleteEvent that triggered this handler
+     */
     @Override
     public void onMessageBulkDelete(@NotNull MessageBulkDeleteEvent event) {
+        TextChannel channel = Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L));
+        File file = null;
+        BufferedImage image = null;
         List<MessageData> bulkData;
-        List<StringBuilder> out = new LinkedList<>();
-        out.add(new StringBuilder());
+        StringBuilder out = new StringBuilder();
 
         try {
             bulkData = mc.getBulkMessageDataByIds(event.getMessageIds());
+
+            for (MessageData data : bulkData) {
+                // Avoid Discord 2000 character limit
+                if (out.length() + data.toFormattedString().length() >= 1998) {
+                    channel.sendMessage(out).queue();
+                    out = new StringBuilder();
+                }
+
+                // Build output string
+                out.append(data.toFormattedString()).append("\n");
+
+                // Generate image
+                if (data.getImageBase64().length() != 0) {
+                    file = new File("../../res/LastImage.png");
+                    image = decodeBase64Image(data.getImageBase64());
+                }
+
+                // Print any message with an image
+                if (image != null) {
+                    ImageIO.write(image, "png", file);
+                    channel.sendMessage(out).addFile(file).queue();
+                    image = null;
+                    out = new StringBuilder();
+                }
+            }
+
+            if (out.length() > 0) {
+                channel.sendMessage(out).queue();
+            }
         } catch (Exception e) {
             e.printStackTrace();
-            TextChannel channel = Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L));
             channel.sendMessage("**FAILED TO ACQUIRE MESSAGES FROM PURGE**").queue();
-            return;
-        }
-
-        for (MessageData bulkDatum : bulkData) {
-            String dataString = bulkDatum.toFormattedString();
-            if (out.get(out.size() - 1).length() + dataString.length() >= 1999) { // Avoid Discord 2000 character limit
-                out.add(new StringBuilder());
-            }
-            out.get(out.size() - 1).append(dataString).append("\n"); // Build output strings
-        }
-
-        for (StringBuilder sb : out) {
-            Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L)).sendMessage(sb).queue();
         }
     }
 

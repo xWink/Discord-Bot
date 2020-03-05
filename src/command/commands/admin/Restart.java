@@ -21,24 +21,10 @@ public class Restart extends AdminCommand {
     protected void runCommand(MessageReceivedEvent event) {
         try {
             Server.getApi().shutdownNow();
-            final String javaBin = "build" + File.separator + "libs" + File.separator + new java.io.File(
-                    RoleBot.class.getProtectionDomain()
-                            .getCodeSource()
-                            .getLocation()
-                            .getPath())
-                    .getName();
-            final File currentJar = new File(RoleBot.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-
-            /* is it a jar file? */
-            if (!currentJar.getName().endsWith(".jar"))
-                return;
 
             /* Build command: java -jar application.jar */
             final ArrayList<String> command = new ArrayList<>();
- System.out.println(currentJar.getAbsolutePath());
-            command.add(javaBin);
-            command.add("-jar");
-            command.add(currentJar.getPath());
+            command.add("java -jar /home/botadmin/DiscordBot/build/libs/DiscordBot-2-all.jar");
 
             final ProcessBuilder builder = new ProcessBuilder(command);
             builder.start();

@@ -151,7 +151,9 @@ public class Bang extends Command {
      * @throws SQLException may be thrown when accessing database
      */
     private void giveRewards() throws SQLException {
-        if (streak && (bc.getCurrentStreak(userId)) % 10 == 0)
+        int currentStreak = bc.getCurrentStreak(userId);
+
+        if (streak && currentStreak > 0 && currentStreak % 10 == 0)
             ec.addOrRemoveMoney(userId, 50);
 
         if (reward)

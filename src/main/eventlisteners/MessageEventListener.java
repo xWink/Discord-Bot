@@ -159,7 +159,7 @@ public class MessageEventListener extends ListenerAdapter {
                 out.append(data.toFormattedString()).append("\n");
 
                 // Generate image
-                if (data.getImageBase64().length() != 0) {
+                if (data.getImageBase64().length() > 0) {
                     file = new File("../../res/LastImage.png");
                     image = decodeBase64Image(data.getImageBase64());
                 }

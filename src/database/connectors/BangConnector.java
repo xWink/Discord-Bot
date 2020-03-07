@@ -183,7 +183,7 @@ public final class BangConnector extends Connector {
      */
     public void pruneStreaks() throws SQLException {
         getConnection().prepareStatement("UPDATE bang SET streak = 0 WHERE "
-                + new Date().getTime() + " - last_played > 86460000").executeUpdate();
+                + new Date().getTime() + " - last_played > 86460000 * 1.5").executeUpdate();
     }
 
     /**

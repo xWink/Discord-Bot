@@ -1,6 +1,8 @@
 package command.util.message;
 
 import main.Server;
+import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -80,8 +82,22 @@ public class MessageData {
     public String toFormattedString() {
         Date date = new Date(getTimeSent());
         DateFormat format = new SimpleDateFormat("MMM dd yyyy, HH:mm:ss");
-        String channel = Objects.requireNonNull(Server.getApi().getTextChannelById(getChannelId())).getName();
-        String author = Objects.requireNonNull(Server.getApi().getUserById(getAuthorId())).getName();
+        String channel, author;
+
+        TextChannel textChannel = Server.getApi().getTextChannelById(getChannelId());
+        if (textChannel != null) {
+            channel = textChannel.getName();
+        } else {
+            channel = "Unknown Channel";
+        }
+
+        User user = Server.getApi().getUserById(getAuthorId());
+        if (user != null) {
+            author = user.getName();
+        } else {
+            author = "Unknown User";
+        }
+        
         return String.format("[%s] <#%s> %s: \"%s\"", format.format(date), channel, author, getContent());
     }
 }

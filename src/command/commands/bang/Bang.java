@@ -78,16 +78,17 @@ public class Bang extends Command {
         else if (killed) output += "Bang! " + event.getAuthor().getName() + " died :skull:";
         else output += "Click. " + event.getAuthor().getName() + " survived  " + poggies;
 
-        output += "\nChambers left in the cylinder: ||  " + chambers + "  ||";
+        output += "Chambers left in the cylinder: ||  " + chambers + "  ||\n";
 
         if (reward)
-            output += "\n" + event.getAuthor().getName() + " received their daily reward of 5 GryphCoins!\n";
+            output += event.getAuthor().getName() + " received their daily reward of 5 GryphCoins!\n";
         if (jammed)
-            output += "\n" + event.getAuthor().getName() + " received a bonus 50 GryphCoins!";
+            output += event.getAuthor().getName() + " received a bonus 50 GryphCoins!\n";
 
         int currentStreak = bc.getCurrentStreak(userId);
         if (streak && currentStreak > 0 && currentStreak % 10 == 0)
-            output += "\n" + event.getAuthor().getName() + " received an extra 50 GryphCoins for their streak bonus!";
+            output += event.getAuthor().getName() + " received an extra 50 GryphCoins for their streak bonus!\n";
+
         return output;
     }
 

@@ -84,7 +84,9 @@ public class Bang extends Command {
             output += "\n" + event.getAuthor().getName() + " received their daily reward of 5 GryphCoins!\n";
         if (jammed)
             output += "\n" + event.getAuthor().getName() + " received a bonus 50 GryphCoins!";
-        if (streak && (bc.getCurrentStreak(userId) + 1) % 10 == 0)
+
+        int currentStreak = bc.getCurrentStreak(userId);
+        if (streak && currentStreak > 0 && currentStreak % 10 == 0)
             output += "\n" + event.getAuthor().getName() + " received an extra 50 GryphCoins for their streak bonus!";
         return output;
     }

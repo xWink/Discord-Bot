@@ -78,7 +78,7 @@ public class Bang extends Command {
         else if (killed) output += "Bang! " + event.getAuthor().getName() + " died :skull:";
         else output += "Click. " + event.getAuthor().getName() + " survived  " + poggies;
 
-        output += "Chambers left in the cylinder: ||  " + chambers + "  ||\n";
+        output += "\nChambers left in the cylinder: ||  " + chambers + "  ||\n";
 
         if (reward)
             output += event.getAuthor().getName() + " received their daily reward of 5 GryphCoins!\n";
@@ -155,7 +155,6 @@ public class Bang extends Command {
      */
     private void giveRewards() throws SQLException {
         int currentStreak = bc.getCurrentStreak(userId);
-
         if (streak && currentStreak > 0 && currentStreak % 10 == 0)
             ec.addOrRemoveMoney(userId, 50);
 

@@ -127,8 +127,6 @@ public class Bang extends Command {
                     && now.minusDays(1).getYear() == lastPlayedDate.getYear())
                     || bc.getUserRow(userId).getInt("streak") == 0;
 
-            giveRewards();
-
             cache.enqueue(new BangUpdate(
                     userId,
                     new Date().getTime(), 1,
@@ -136,6 +134,8 @@ public class Bang extends Command {
                     jammed ? 1 : 0,
                     reward,
                     streak));
+
+            giveRewards();
 
             if (!cache.isPanicking()) {
                 event.getChannel().sendMessage(getOutput(event)).queue();
@@ -154,14 +154,19 @@ public class Bang extends Command {
      * @throws SQLException may be thrown when accessing database
      */
     private void giveRewards() throws SQLException {
+        int totalReward = 0;
         int currentStreak = bc.getCurrentStreak(userId);
+
         if (streak && currentStreak > 0 && currentStreak % 10 == 0)
-            ec.addOrRemoveMoney(userId, 50);
+            totalReward += 50;
 
         if (reward)
-            ec.addOrRemoveMoney(userId, 5);
+            totalReward += 5;
 
         if (jammed)
-            ec.addOrRemoveMoney(userId, 50);
+            totalReward += 50;
+
+        if (totalReward > 0)
+            ec.addOrRemoveMoney(userId, totalReward);
     }
 }

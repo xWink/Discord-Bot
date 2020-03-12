@@ -71,7 +71,7 @@ public class MessagesConnector extends Connector {
      */
     public MessageData getMessageDataById(long messageId) throws SQLException {
         ResultSet rs = getConnection().prepareStatement("SELECT * FROM " + getTable()
-                + " WHERE message_id = " + messageId).executeQuery();
+                + " WHERE message_id = " + messageId +" LIMIT 1").executeQuery();
 
         if (rs.first()) {
             return new MessageData(

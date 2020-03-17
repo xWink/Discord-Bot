@@ -34,7 +34,11 @@ Hosted on a Google Cloud server with 24/7 uptime.
 ### And much much more
 ![Help Demo](demo/bot_help.PNG)
 
+# Reading the code? Where to start:
+In src lies 3 package: command, main, and database.
+Each package and its subpackages contain a package-info file
+explaining its contents and their purpose.
 
-# Want to Contribute?
+# Have Questions or Want to Contribute?
 All inquiries should be sent to Wink#0001 on Discord.
 I am always open to improving the bot in any way!

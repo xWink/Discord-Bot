@@ -28,3 +28,9 @@ University of Guelph Bachelor of Computer Science Discord server.
 
 ### And much much more
 ![Help Demo](demo/bot_help.PNG)
+
+
+# Want to Contribute?
+
+All inquiries about fixes, additional features, and other changes/questions
+regarding the bot should be sent to xWink (https://github.com/xWink).

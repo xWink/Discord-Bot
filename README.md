@@ -35,9 +35,16 @@ Hosted on a Google Cloud server with 24/7 uptime.
 ![Help Demo](demo/bot_help.PNG)
 
 # Reading the code? Where to start:
-In src lies 3 package: command, main, and database.
+In src lies 3 package: command, database, and main.
+
+command: Defines all commands used by the bot.  
+database: Defines the connectors to the database
+and any methods which may be used to send SQL instructions to it.  
+main: Required startup code, EventListener overrides, and reading
+data from a configuration file
+
 Each package and its subpackages contain a package-info file
-explaining its contents and their purpose.
+explaining its contents.
 
 # Have Questions or Want to Contribute?
 All inquiries should be sent to Wink#0001 on Discord.

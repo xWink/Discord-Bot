@@ -3,6 +3,11 @@ Version 2.2
 This is a Discord bot intended to provide entertainment to users of the
 University of Guelph Bachelor of Computer Science Discord server.
 
+# Technologies
+Written in Java with JDA API and built with Gradle.  
+Using MariaDB to store user info, game data, and message logs.  
+Hosted on a Google Cloud server with 24/7 uptime.
+
 # Features
 
 ### Play Russian Roulette

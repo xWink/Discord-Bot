@@ -31,7 +31,5 @@ University of Guelph Bachelor of Computer Science Discord server.
 
 
 # Want to Contribute?
-I am always open to improving the bot in any way.
-All inquiries regarding the bot should be sent to xWink on Discord
-
-ID: Wink#0001
+All inquiries should be sent to Wink#0001 on Discord.
+I am always open to improving the bot in any way!

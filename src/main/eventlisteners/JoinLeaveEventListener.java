@@ -14,13 +14,13 @@ public class JoinLeaveEventListener extends ListenerAdapter {
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
 
-        if (event.getGuild().getTextChannelById(Server.getGeneralChannel()) == null) {
+        if (event.getGuild().getTextChannelById(Server.GENERAL_CHANNEL_ID) == null) {
             System.out.println("Could not find general channel!");
             return;
         }
 
-        TextChannel channel = event.getGuild().getTextChannelById(Server.getGeneralChannel());
-        TextChannel botChannel = event.getGuild().getTextChannelById(Server.getBotsChannel());
+        TextChannel channel = event.getGuild().getTextChannelById(Server.GENERAL_CHANNEL_ID);
+        TextChannel botChannel = event.getGuild().getTextChannelById(Server.BOTS_CHANNEL_ID);
 
         if (channel != null && botChannel != null) {
             channel.sendMessage("Welcome " + event.getUser().getAsMention()

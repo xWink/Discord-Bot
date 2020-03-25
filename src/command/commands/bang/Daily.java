@@ -29,8 +29,8 @@ public class Daily extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != Server.getSpamChannel()
-                && event.getChannel().getIdLong() != Server.getBotsChannel()) {
+        if (event.getChannel().getIdLong() != Server.SPAM_CHANNEL_ID
+                && event.getChannel().getIdLong() != Server.BOTS_CHANNEL_ID) {
             return;
         }
 
@@ -41,7 +41,7 @@ public class Daily extends Command {
         try {
             long resetTime = bc.getDaily(event.getAuthor().getIdLong());
             if (resetTime <= new Date().getTime()) {
-                if (event.getChannel().getIdLong() == Server.getSpamChannel()) {
+                if (event.getChannel().getIdLong() == Server.SPAM_CHANNEL_ID) {
                     event.getChannel().sendMessage("Your daily reward is available now! Say `!bang`").queue();
                 } else {
                     event.getChannel().sendMessage("Your daily reward is available now!"

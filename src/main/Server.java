@@ -11,10 +11,10 @@ import net.dv8tion.jda.api.entities.Activity;
 public final class Server {
 
     private static JDA api;
-    private static long generalChannel;
-    private static long botsChannel;
-    private static long spamChannel;
-    private static long guild;
+    public static final long GENERAL_CHANNEL_ID = 486633949154770946L;
+    public static final long BOTS_CHANNEL_ID = 551828950871965696L;
+    public static final long SPAM_CHANNEL_ID = 674369527731060749L;
+    public static final long GUILD_ID = Long.parseLong(Config.getGuildId());
 
     private Server() {}
 
@@ -26,10 +26,6 @@ public final class Server {
                     .build();
 
             api.getPresence().setActivity(Activity.playing("!help"));
-            guild = Long.parseLong(Config.getGuildId());
-            generalChannel = 486633949154770946L;
-            botsChannel = 551828950871965696L;
-            spamChannel = 674369527731060749L;
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
@@ -43,68 +39,5 @@ public final class Server {
      */
     public static JDA getApi() {
         return api;
-    }
-
-    /**
-     * botsChannel getter.
-     *
-     * @return the TextChannel where the bot is meant to be played with.
-     */
-    public static long getBotsChannel() {
-        return botsChannel;
-    }
-
-    /**
-     * spamChannel getter.
-     *
-     * @return the TextChannel where the bot bang-related commands are to be used.
-     */
-    public static long getSpamChannel() {
-        return spamChannel;
-    }
-
-    /**
-     * Guild getter.
-     *
-     * @return the guild the bot is connected to (BComp)
-     */
-    public static long getGuild() {
-        return guild;
-    }
-
-    /**
-     * Guild setter.
-     *
-     * @param theGuildId the ID of the guild the bot connects to (BComp)
-     */
-    public static void setGuild(long theGuildId) {
-        guild = theGuildId;
-    }
-
-    /**
-     * General Channel setter.
-     *
-     * @param channelId the general channel ID for the BComp Discord server
-     */
-    public static void setGeneralChannel(long channelId) {
-        generalChannel = channelId;
-    }
-
-    /**
-     * Bots Channel setter.
-     *
-     * @param channelId the bots channel ID for the BComp Discord server
-     */
-    public static void setBotsChannel(long channelId) {
-        botsChannel = channelId;
-    }
-
-    /**
-     * generaChannel getter.
-     *
-     * @return the TextChannel named general in the server.
-     */
-    public static long getGeneralChannel() {
-        return generalChannel;
     }
 }

@@ -2,8 +2,6 @@ package command.util.cache;
 
 import database.connectors.BangConnector;
 import main.Server;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
@@ -27,7 +25,7 @@ public final class BangCache {
         panic = false;
         bc = new BangConnector();
         last20 = new ArrayList<>();
-        channel = Server.getApi().getTextChannelById(Server.getSpamChannel());
+        channel = Server.getApi().getTextChannelById(Server.SPAM_CHANNEL_ID);
     }
 
     /**

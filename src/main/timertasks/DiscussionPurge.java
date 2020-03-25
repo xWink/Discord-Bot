@@ -1,11 +1,8 @@
 package main.timertasks;
 
 import main.Server;
-import net.dv8tion.jda.api.entities.*;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
 public class DiscussionPurge implements Runnable {
 
@@ -13,7 +10,7 @@ public class DiscussionPurge implements Runnable {
      * Purges all messages in the Discussion channel up to the last 50. Not functional due to rate limiter.
      */
     @Override public void run() {
-        Guild guild = Server.getApi().getGuildById(Server.getGuild());
+        Guild guild = Server.getApi().getGuildById(Server.GUILD_ID);
         if (guild == null) {
             return;
         }

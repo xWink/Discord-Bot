@@ -25,8 +25,8 @@ public class Help extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != Server.getBotsChannel() && event.getChannel().getIdLong() != Server.getSpamChannel()) {
-            TextChannel bots = Server.getApi().getTextChannelById(Server.getBotsChannel());
+        if (event.getChannel().getIdLong() != Server.BOTS_CHANNEL_ID && event.getChannel().getIdLong() != Server.SPAM_CHANNEL_ID) {
+            TextChannel bots = Server.getApi().getTextChannelById(Server.BOTS_CHANNEL_ID);
             if (bots != null) {
                 event.getChannel().sendMessage("Say `!help` in " + bots.getAsMention() + " to see available commands!").queue();
             }

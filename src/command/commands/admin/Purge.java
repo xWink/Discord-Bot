@@ -1,14 +1,8 @@
 package command.commands.admin;
 
 import command.AdminCommand;
-import main.Server;
-import main.eventlisteners.MessageEventListener;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-
-import java.util.List;
-import java.util.function.Consumer;
 
 public class Purge extends AdminCommand {
 

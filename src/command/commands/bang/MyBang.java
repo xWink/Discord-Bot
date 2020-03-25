@@ -29,8 +29,8 @@ public class MyBang extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != Server.getSpamChannel()
-                && event.getChannel().getIdLong() != Server.getBotsChannel()) {
+        if (event.getChannel().getIdLong() != Server.SPAM_CHANNEL_ID
+                && event.getChannel().getIdLong() != Server.BOTS_CHANNEL_ID) {
             return;
         }
         int attempts = 0, deaths = 0, jams = 0, streak = 0;

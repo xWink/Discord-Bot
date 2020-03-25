@@ -32,7 +32,7 @@ public class RemoveExpiredRoles extends TimerTask {
             // For each user with expired roles
             while (rs.next()) {
                 // Get member and role
-                Guild guild = Server.getApi().getGuildById(Server.getGuild());
+                Guild guild = Server.getApi().getGuildById(Server.GUILD_ID);
                 if (guild == null)
                     return;
                 Member member = guild.getMemberById(rs.getLong("user"));

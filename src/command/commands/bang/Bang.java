@@ -103,10 +103,10 @@ public class Bang extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != Server.getSpamChannel()) {
-            if (event.getChannel().getIdLong() == Server.getBotsChannel()) {
+        if (event.getChannel().getIdLong() != Server.SPAM_CHANNEL_ID) {
+            if (event.getChannel().getIdLong() == Server.SPAM_CHANNEL_ID) {
                 event.getChannel().sendMessage("This command is only available in <#"
-                        + Server.getSpamChannel() + ">").queue();
+                        + Server.SPAM_CHANNEL_ID + ">").queue();
             }
             return;
         }

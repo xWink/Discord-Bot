@@ -1,11 +1,9 @@
 package command.commands.admin;
 
 import command.AdminCommand;
-import main.RoleBot;
 import main.Server;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.io.File;
 import java.util.ArrayList;
 
 public class Restart extends AdminCommand {

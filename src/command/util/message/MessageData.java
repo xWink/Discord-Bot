@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.entities.User;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Objects;
 
 public class MessageData {
 
@@ -97,7 +96,7 @@ public class MessageData {
         } else {
             author = "Unknown User";
         }
-        
+
         return String.format("[%s] <#%s> %s: \"%s\"", format.format(date), channel, author, getContent());
     }
 }

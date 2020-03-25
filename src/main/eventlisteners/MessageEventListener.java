@@ -6,8 +6,6 @@ import command.util.message.MessageData;
 import database.connectors.MessagesConnector;
 import main.Config;
 import main.Server;
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
@@ -20,7 +18,6 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.Base64;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -84,9 +81,9 @@ public class MessageEventListener extends ListenerAdapter {
             MessageData data = mc.getMessageDataById(event.getMessageIdLong());
             BufferedImage image = null;
             File file = null;
+            TextChannel channel = Server.getApi().getTextChannelById(677109914400980992L);
 
-            if (data != null) {
-                TextChannel channel = Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L));
+            if (data != null && channel != null) {
                 String part1 = data.toFormattedString();
                 String part2 = "";
 

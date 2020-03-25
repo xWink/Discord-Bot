@@ -11,10 +11,22 @@ import net.dv8tion.jda.api.entities.Activity;
 public final class Server {
 
     public static JDA API;
+    public static final long GUILD_ID = Long.parseLong(Config.getGuildId());
+
+    // Channels
     public static final long GENERAL_CHANNEL_ID = 486633949154770946L;
     public static final long BOTS_CHANNEL_ID = 551828950871965696L;
     public static final long SPAM_CHANNEL_ID = 674369527731060749L;
-    public static final long GUILD_ID = Long.parseLong(Config.getGuildId());
+    public static final long CHANNELS_CHANNEL_ID = 692330710614409269L;
+
+    // Messages
+    public static final long WELCOME_MESSAGE_ID = 692310650172735530L;
+
+    // Emojis
+    public static final long CHECK_EMOJI_ID = 692324735668846653L;
+
+    // Roles
+    public static final long TOS_ROLE_ID = 692309516435587142L;
 
     private Server() {}
 

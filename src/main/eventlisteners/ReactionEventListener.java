@@ -1,11 +1,18 @@
 package main.eventlisteners;
 
 import database.connectors.KarmaConnector;
+import main.Server;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ReactionEventListener extends ListenerAdapter {
 
@@ -33,30 +40,67 @@ public class ReactionEventListener extends ListenerAdapter {
 
 
     /**
-     * Adds an upVote/downVote to the user's line in the table if the correct
-     * reaction is added to their message.
+     * Adds an upVote/downVote to user's Karma or provides roles associated with
+     * certain message reactions
      *
      * @param event the MessageReactionAdd event on a user's message
      */
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
+        long messageAuthId = getMessageAuthId(event);
+        if (event.getMember() == null || event.getUser() == null || event.getUser().isBot()) {
+            return;
+        }
+
+        if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID) {
+            // User agrees to ToS
+            if (event.getMessageIdLong() == Server.WELCOME_MESSAGE_ID) {
+                addToSRole(event);
+            }
+            // Joining course channel
+            else if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) {
+                String content = event.getTextChannel().retrieveMessageById(event.getMessageId()).complete().getContentRaw();
+                Role role = event.getGuild().getRolesByName(content, false).get(0);
+                if (role != null) event.getGuild().addRoleToMember(event.getMember(), role).queue();
+            }
+        }
+
+        if (event.getUserIdLong() == getMessageAuthId(event)) {
+            return;
+        }
+
+        // Handle upvotes
         try {
-            long messageAuthId = getMessageAuthId(event);
-            if (event.getUser() != null && event.getUser().getIdLong() != messageAuthId) {
-                // If new user, add them to table
+            // If upVote, add upVotes
+            if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
                 if (!kc.userExists(messageAuthId)) {
                     kc.addUser(messageAuthId);
                 }
-                // If upVote, add upVotes
-                if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
-                    kc.updateUpVotes(messageAuthId, 1);
+                kc.updateUpVotes(messageAuthId, 1);
+            }
+            // If downVote, add downVotes
+            if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
+                if (!kc.userExists(messageAuthId)) {
+                    kc.addUser(messageAuthId);
                 }
-                // If downVote, add downVotes
-                if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
-                    kc.updateDownVotes(messageAuthId, 1);
-                }
+                kc.updateDownVotes(messageAuthId, 1);
             }
         } catch (Exception ignored) {}
+    }
+
+    private void addToSRole(MessageReactionAddEvent event) {
+        if (event.getMember() == null) {
+            return;
+        }
+
+        Role tosRole = Objects.requireNonNull(event.getGuild().getRoleById(Server.TOS_ROLE_ID));
+        TextChannel channel = Objects.requireNonNull(event.getGuild().getTextChannelById(Server.CHANNELS_CHANNEL_ID));
+        if (!event.getMember().getRoles().contains(tosRole)) {
+            event.getGuild().addRoleToMember(event.getMember().getId(), tosRole).queue();
+            channel.sendMessage(event.getMember().getAsMention())
+                    .queue(message -> channel.deleteMessageById(message.getId()).queue());
+
+        }
     }
 
 
@@ -68,20 +112,38 @@ public class ReactionEventListener extends ListenerAdapter {
      */
     @Override
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
+        long messageAuthId = getMessageAuthId(event);
+        if (event.getMember() == null || event.getUser() == null || event.getUser().isBot()) {
+            return;
+        }
+
+        if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID) {
+            // Leaving course channel
+            if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) {
+                String content = event.getTextChannel().retrieveMessageById(event.getMessageId()).complete().getContentRaw();
+                Role role = event.getGuild().getRolesByName(content, false).get(0);
+                if (role != null) event.getGuild().removeRoleFromMember(event.getMember(), role).queue();
+            }
+        }
+
+        if (event.getUserIdLong() == getMessageAuthId(event)) {
+            return;
+        }
+
         try {
-            long messageAuthId = getMessageAuthId(event);
-            if (event.getUser() != null && event.getUser().getIdLong() != messageAuthId && !event.getUser().isBot()) {
+            // If upVote removed, remove upVote
+            if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
                 if (!kc.userExists(messageAuthId)) {
                     kc.addUser(messageAuthId);
                 }
-                // If upVote removed, remove upVote
-                if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
-                    kc.updateUpVotes(messageAuthId, -1);
+                kc.updateUpVotes(messageAuthId, -1);
+            }
+            // If downVote removed, remove downVote
+            if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
+                if (!kc.userExists(messageAuthId)) {
+                    kc.addUser(messageAuthId);
                 }
-                // If downVote removed, remove downVote
-                if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
-                    kc.updateDownVotes(messageAuthId, -1);
-                }
+                kc.updateDownVotes(messageAuthId, -1);
             }
         } catch (Exception ignored) {}
     }

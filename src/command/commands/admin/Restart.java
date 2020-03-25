@@ -18,7 +18,7 @@ public class Restart extends AdminCommand {
     @Override
     protected void runCommand(MessageReceivedEvent event) {
         try {
-            Server.getApi().shutdownNow();
+            Server.API.shutdownNow();
 
             /* Build command: java -jar application.jar */
             final ArrayList<String> command = new ArrayList<>();

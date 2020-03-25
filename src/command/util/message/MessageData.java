@@ -83,14 +83,14 @@ public class MessageData {
         DateFormat format = new SimpleDateFormat("MMM dd yyyy, HH:mm:ss");
         String channel, author;
 
-        TextChannel textChannel = Server.getApi().getTextChannelById(getChannelId());
+        TextChannel textChannel = Server.API.getTextChannelById(getChannelId());
         if (textChannel != null) {
             channel = textChannel.getName();
         } else {
             channel = "Unknown Channel";
         }
 
-        User user = Server.getApi().getUserById(getAuthorId());
+        User user = Server.API.getUserById(getAuthorId());
         if (user != null) {
             author = user.getName();
         } else {

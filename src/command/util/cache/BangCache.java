@@ -25,7 +25,7 @@ public final class BangCache {
         panic = false;
         bc = new BangConnector();
         last20 = new ArrayList<>();
-        channel = Server.getApi().getTextChannelById(Server.SPAM_CHANNEL_ID);
+        channel = Server.API.getTextChannelById(Server.SPAM_CHANNEL_ID);
     }
 
     /**
@@ -132,7 +132,7 @@ public final class BangCache {
 
         String output = "**Combined Data:**\n";
         for (BangUpdate update : queue) {
-            User user = Server.getApi().getUserById(update.getId());
+            User user = Server.API.getUserById(update.getId());
             if (user != null) {
                 output = output.concat("**" + user.getName() + ":**\n"
                         + "Attempts: " + update.getAttempts() + "\n"

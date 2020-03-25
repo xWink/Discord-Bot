@@ -81,7 +81,7 @@ public class MessageEventListener extends ListenerAdapter {
             MessageData data = mc.getMessageDataById(event.getMessageIdLong());
             BufferedImage image = null;
             File file = null;
-            TextChannel channel = Server.getApi().getTextChannelById(677109914400980992L);
+            TextChannel channel = Server.API.getTextChannelById(677109914400980992L);
 
             if (data != null && channel != null) {
                 String part1 = data.toFormattedString();
@@ -136,7 +136,7 @@ public class MessageEventListener extends ListenerAdapter {
      */
     @Override
     public void onMessageBulkDelete(@NotNull MessageBulkDeleteEvent event) {
-        TextChannel channel = Objects.requireNonNull(Server.getApi().getTextChannelById(677109914400980992L));
+        TextChannel channel = Objects.requireNonNull(Server.API.getTextChannelById(677109914400980992L));
         File file = null;
         BufferedImage image = null;
         List<MessageData> bulkData;

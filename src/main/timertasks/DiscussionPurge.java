@@ -10,7 +10,7 @@ public class DiscussionPurge implements Runnable {
      * Purges all messages in the Discussion channel up to the last 50. Not functional due to rate limiter.
      */
     @Override public void run() {
-        Guild guild = Server.getApi().getGuildById(Server.GUILD_ID);
+        Guild guild = Server.API.getGuildById(Server.GUILD_ID);
         if (guild == null) {
             return;
         }

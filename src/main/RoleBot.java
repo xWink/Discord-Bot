@@ -4,7 +4,6 @@ import main.eventlisteners.ConnectionEventListener;
 import main.eventlisteners.JoinLeaveEventListener;
 import main.eventlisteners.MessageEventListener;
 import main.eventlisteners.ReactionEventListener;
-import main.timertasks.DiscussionPurge;
 import main.timertasks.PruneBangStreaks;
 import main.timertasks.RemoveExpiredRoles;
 import main.timertasks.UpdateHighScores;
@@ -12,13 +11,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 
 public class RoleBot {
@@ -34,7 +27,7 @@ public class RoleBot {
         BasicConfigurator.configure();
         try {
             logger.debug("Entering application.");
-            Server.getApi().addEventListener(
+            Server.API.addEventListener(
                     MessageEventListener.getMessageEventListener(),
                     new ReactionEventListener(),
                     new ConnectionEventListener(),

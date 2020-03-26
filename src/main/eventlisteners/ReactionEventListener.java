@@ -120,9 +120,11 @@ public class ReactionEventListener extends ListenerAdapter {
         if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID) {
             // Leaving course channel
             if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) {
-                String content = event.getTextChannel().retrieveMessageById(event.getMessageId()).complete().getContentRaw();
-                Role role = event.getGuild().getRolesByName(content, false).get(0);
-                if (role != null) event.getGuild().removeRoleFromMember(event.getMember(), role).queue();
+                event.getTextChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
+                    String content = message.getContentRaw();
+                    Role role = event.getGuild().getRolesByName(content, false).get(0);
+                    if (role != null) event.getGuild().removeRoleFromMember(event.getMember(), role).queue();
+                });
             }
         }
 

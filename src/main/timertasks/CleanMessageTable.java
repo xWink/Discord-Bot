@@ -19,7 +19,7 @@ public class CleanMessageTable extends TimerTask {
         try {
             mc.backupMessages(pruneThreshold);
             mc.pruneMessages(pruneThreshold);
-            System.out.println("Successfully backed up messages older than " + pruneThreshold + " ms");
+            System.out.println("Successfully backed up messages");
         } catch (Exception e) {
             System.out.println("Failed to backup messages");
         }

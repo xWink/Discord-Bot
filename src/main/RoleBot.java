@@ -4,6 +4,7 @@ import main.eventlisteners.ConnectionEventListener;
 import main.eventlisteners.JoinLeaveEventListener;
 import main.eventlisteners.MessageEventListener;
 import main.eventlisteners.ReactionEventListener;
+import main.timertasks.CleanMessageTable;
 import main.timertasks.PruneBangStreaks;
 import main.timertasks.RemoveExpiredRoles;
 import main.timertasks.UpdateHighScores;
@@ -36,7 +37,7 @@ public class RoleBot {
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
             timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);
             timer.schedule(new PruneBangStreaks(), 1000 * 60 * 60 * 2, 1000 * 60 * 60 * 2);
-            //startPurgeScheduler();
+            timer.schedule(new CleanMessageTable(), 0, 1000 * 60 * 60 * 24);
         } catch (Exception e) {
             e.printStackTrace();
         }

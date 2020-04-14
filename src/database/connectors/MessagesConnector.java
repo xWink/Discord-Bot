@@ -121,6 +121,30 @@ public class MessagesConnector extends Connector {
     }
 
     /**
+     * Backs up all messages older than the current time - a specified threshold.
+     *
+     * @param pruneThreshold the number of milliseconds before the current time
+     * @throws SQLException may be thrown when accessing the database
+     * @see main.timertasks.CleanMessageTable
+     */
+    public void backupMessages(long pruneThreshold) throws SQLException {
+        getConnection().prepareStatement("INSERT INTO messages_backup SELECT * FROM messages "
+                + "WHERE time_sent < (UNIX_TIMESTAMP() * 1000) - " + pruneThreshold).executeUpdate();
+    }
+
+    /**
+     * Deletes all messages older than the current time - a specified threshold.
+     *
+     * @param pruneThreshold the number of milliseconds before the current time
+     * @throws SQLException may be thrown when accessing the database
+     * @see main.timertasks.CleanMessageTable
+     */
+    public void pruneMessages(long pruneThreshold) throws SQLException {
+        getConnection().prepareStatement("DELETE FROM messages "
+                + "WHERE time_sent < (UNIX_TIMESTAMP() * 1000) - " + pruneThreshold).executeUpdate();
+    }
+
+    /**
      * Non-functional method for this table.
      * @param userId ignored
      */

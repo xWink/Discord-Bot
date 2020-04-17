@@ -3,18 +3,11 @@ package main.eventlisteners;
 import database.connectors.KarmaConnector;
 import main.Server;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.requests.RestAction;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import net.dv8tion.jda.api.requests.restaction.RoleAction;
-import net.dv8tion.jda.internal.requests.restaction.operator.FlatMapRestAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -75,7 +68,10 @@ public class ReactionEventListener extends ListenerAdapter {
 
 
     /**
-     * Adds a a course-related role to a user given a specified reaction to a message in the courses channel.
+     * Takes the message content of a message that was reacted to and assigns a role with the
+     * same name as the message content to the user, such that the role has permission to view
+     * a private channel with the same name. If either the role or the channel do not exist,
+     * they are created.
      *
      * @param event the MessageReactionEvent that triggered the ReactionEventListener
      */
@@ -86,40 +82,62 @@ public class ReactionEventListener extends ListenerAdapter {
         if (member == null)
             return;
 
-        event.getTextChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
-            String content = message.getContentRaw().replace("*", "");
-            List<Role> roles = guild.getRolesByName(content, true);
+        AtomicReference<String> content = new AtomicReference<>();
+        AtomicReference<Role> role = new AtomicReference<>();
 
-            if (roles.isEmpty()) {
-                guild.createRole().setName(content)
-                        .queue(role -> createChannel(member, guild, content, role));
-                return;
-            }
+        /*
+         * 1. Get message that was reacted to
+         * 2. Set message content to content variable
+         * 3. Get corresponding role
+         * 4. Set corresponding role to role variable
+         * 5. Get corresponding channel
+         * 6. Assign role to member
+         */
 
-            guild.addRoleToMember(member, roles.get(0)).queue();
-        });
+        event.getTextChannel().retrieveMessageById(event.getMessageId()).submit()
+                .thenAccept(message -> content.set(message.getContentRaw().replace("*", "")))
+                .thenCompose(aVoid -> getCorrespondingRole(guild, content.get()))
+                .thenAccept(role::set)
+                .thenCompose(aVoid -> getCorrespondingChannel(guild, content.get(), role.get()))
+                .thenCompose(aVoid -> guild.addRoleToMember(member, role.get()).submit())
+                .join();
     }
 
-
-    private void createChannel(@NotNull Member member, @NotNull Guild guild, @NotNull String channelName, @NotNull Role role) {
-        if (guild.getTextChannelsByName(channelName, true).isEmpty()) {
-            guild.addRoleToMember(member, role).queue();
-            return;
-        }
-        ArrayList<Permission> permissions = new ArrayList<>(Collections.singletonList(Permission.MESSAGE_READ));
-        guild.getCategoriesByName("courses", false).get(0)
-                .createTextChannel(channelName)
-                .addPermissionOverride(
-                        guild.getRolesByName("@everyone", false).get(0),
-                        null,
-                        permissions
-                ).addPermissionOverride(
-                        role,
-                        permissions,
-                        null
-                ).queue(textChannel -> guild.addRoleToMember(member, role).queue());
+    /**
+     * Checks if a role with a given name exists in a given guild. If it doesn't, the
+     * CompletableFuture of the creation of the role is returned. If it does, the
+     * CompletableFuture of the role itself is returned.
+     *
+     * @param guild the Discord server to search for a role or to add a role to
+     * @param roleName the name of the role to be found or created
+     * @return the CompletableFuture that supplies a role which either already exists or is created
+     */
+    private CompletableFuture<Role> getCorrespondingRole(Guild guild, String roleName) {
+        List<Role> roles = guild.getRolesByName(roleName, true);
+        if (roles.isEmpty())
+            return guild.createRole().setName(roleName).submit();
+        return CompletableFuture.supplyAsync(() -> roles.get(0));
     }
 
+    /**
+     * Checks if a channel with a given name exists in a given guild. If it doesn't, the
+     * CompletableFuture of the creation of the channel is returned. If it does, the
+     * CompletableFuture of the channel itself is returned.
+     *
+     * @param guild the Discord server to search for a channel or to add a channel to
+     * @param channelName the name of the channel to be found or created
+     * @return the CompletableFuture that supplies a channel which either already exists or is created
+     */
+    private CompletableFuture<TextChannel> getCorrespondingChannel(Guild guild, String channelName, Role role) {
+        List<TextChannel> channels = guild.getTextChannelsByName(channelName, true);
+        ArrayList<Permission> perms = new ArrayList<>(Collections.singletonList(Permission.MESSAGE_READ));
+        if (channels.isEmpty())
+            return guild.getCategoriesByName("courses", true).get(0)
+                    .createTextChannel(channelName)
+                    .addPermissionOverride(guild.getRolesByName("@everyone", false).get(0), null, perms)
+                    .addPermissionOverride(role, perms, null).submit();
+        return CompletableFuture.supplyAsync(() -> channels.get(0));
+    }
 
     /**
      * Adds upvotes to the user who received an upvote or a downvote if they received a downvote.
@@ -182,8 +200,7 @@ public class ReactionEventListener extends ListenerAdapter {
             return;
 
         if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID) {
-            // Leaving course channel
-            if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID)
+            if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) // Leaving course channel
                 leaveCourseChannel(event);
         }
 
@@ -204,15 +221,16 @@ public class ReactionEventListener extends ListenerAdapter {
         if (event.getMember() == null)
             return;
         event.getTextChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
+            Guild guild = event.getGuild();
             String content = message.getContentRaw().replace("*", "");
 
-            List<Role> roles = event.getGuild().getRolesByName(content, true);
+            List<Role> roles = guild.getRolesByName(content, true);
             if (roles.isEmpty())
                 return;
 
-            Role role = event.getGuild().getRolesByName(content, true).get(0);
+            Role role = roles.get(0);
             if (role != null)
-                event.getGuild().removeRoleFromMember(event.getMember(), role).queue();
+                guild.removeRoleFromMember(event.getMember(), role).queue();
         });
     }
 

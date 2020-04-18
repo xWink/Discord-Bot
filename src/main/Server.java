@@ -26,6 +26,7 @@ public final class Server {
     public static final long CHECK_EMOJI_ID = 692324735668846653L;
 
     // Roles
+    public static final long ADMIN_ROLE_ID = 546161701008179200L;
     public static final long TOS_ROLE_ID = 692309516435587142L;
 
     private Server() {}

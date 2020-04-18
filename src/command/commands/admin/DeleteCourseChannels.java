@@ -18,7 +18,7 @@ public class DeleteCourseChannels extends AdminCommand {
 
     @Override
     protected void runCommand(MessageReceivedEvent event) {
-        Category courses = Objects.requireNonNull(event.getGuild().getCategoriesByName("courses", true).get(0));
+        Category courses = Objects.requireNonNull(event.getGuild().getCategoriesByName("your channels", true).get(0));
         for (TextChannel channel : courses.getTextChannels())
             channel.delete().queue();
     }

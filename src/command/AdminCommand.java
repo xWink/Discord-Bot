@@ -1,5 +1,6 @@
 package command;
 
+import main.Server;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -22,8 +23,7 @@ public abstract class AdminCommand extends Command {
      * @return true if the member is an admin or owner
      */
     protected final boolean isAdmin(Member member) {
-        return member.getRoles().contains(member.getGuild().getRoleById("486635066928136194"))
-                || member.isOwner();
+        return member.getRoles().contains(member.getGuild().getRoleById(Server.ADMIN_ROLE_ID)) || member.isOwner();
     }
 
     /**

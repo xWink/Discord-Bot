@@ -14,7 +14,7 @@ public class CleanMessageTable extends TimerTask {
      */
     @Override
     public void run() {
-        final int pruneThreshold = 1000 * 60 * 60 * 24;
+        final int pruneThreshold = 1000 * 60 * 60 * 24 * 2;
         MessagesConnector mc = new MessagesConnector();
         try {
             mc.backupMessages(pruneThreshold);

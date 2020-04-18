@@ -1,7 +1,6 @@
 package command;
 
-import command.commands.admin.Cleanup;
-import command.commands.admin.Restart;
+import command.commands.admin.*;
 import command.commands.bang.Bang;
 import command.commands.bang.BangScore;
 import command.commands.blackjack.Bet;
@@ -12,12 +11,7 @@ import command.commands.economy.Buy;
 import command.commands.Help;
 import command.commands.economy.Gift;
 import command.commands.economy.Market;
-import command.commands.admin.Purge;
 import command.commands.misc.*;
-import command.commands.roles.Join;
-import command.commands.roles.Leave;
-import command.commands.roles.RemoveRole;
-import command.commands.roles.Roles;
 import command.commands.bang.Daily;
 
 import java.util.ArrayList;
@@ -54,7 +48,8 @@ public final class CommandList {
     private static void addAllCommands() {
         // Admin commands
         commands.add(new Purge());
-        //commands.add(new Restart());
+        commands.add(new ResetChannels());
+        commands.add(new DeleteCourseChannels());
 
         // Everyone commands
         commands.add(new Bang());
@@ -68,17 +63,14 @@ public final class CommandList {
         commands.add(new Hit());
         commands.add(new Id());
         commands.add(new Info());
-        commands.add(new Join());
-        //commands.add(new Karma());
-        commands.add(new Leave());
+        //commands.add(new Join());
+        //commands.add(new Leave());
         commands.add(new Market());
-        //commands.add(new MyBang());
         commands.add(new MyHand());
         commands.add(new Ping());
         commands.add(new Profile());
-        commands.add(new Roles());
+        //commands.add(new Roles());
         commands.add(new Stand());
-        //commands.add(new Wallet());
-        commands.add(new RemoveRole());
+        //commands.add(new RemoveRole());
     }
 }

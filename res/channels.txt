@@ -1,0 +1,36 @@
+**1000 LEVEL COURSES**
+CIS*1250 - Design I
+CIS*1300 - Programming
+CIS*1910 - Discrete I
+MATH*1160 - Linear Algebra
+MATH*1200 - Calculus I
+MATH*1210 - Calculus II
+COOP*1100 - Intro to Coop
+**2000 LEVEL COURSES**
+CIS*2030 - Microcomputers
+CIS*2170 - UI Design
+CIS*2250 - Design II
+CIS*2430 - OOP
+CIS*2500 - Intermediate Programming
+CIS*2520 - Data Structs
+CIS*2750 - Angel of Death
+CIS*2910 - Discrete II
+STAT*2040 - Statistics
+**3000 LEVEL COURSES**
+CIS*3110 - OS
+CIS*3120 - Digital Systems
+CIS*3150 - Theory of Comp
+CIS*3190 - Legacy Software
+CIS*3250 - Design III
+CIS*3490 - Algorithms
+CIS*3750 - System Analysis
+**OTHER COURSES**
+ECON*1050 - Intro to Micro
+MATH*2200 - Advanced Calc I
+MATH*2270 - Applied Diffies
+**GAMES**
+Smash
+Animal Crossing
+Minecraft
+Pokemon
+Valorant

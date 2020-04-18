@@ -49,7 +49,7 @@ public final class CommandList {
         // Admin commands
         commands.add(new Purge());
         commands.add(new ResetChannels());
-        commands.add(new DeleteCourseChannels());
+        //commands.add(new DeleteCourseChannels());
 
         // Everyone commands
         commands.add(new Bang());
@@ -63,14 +63,10 @@ public final class CommandList {
         commands.add(new Hit());
         commands.add(new Id());
         commands.add(new Info());
-        //commands.add(new Join());
-        //commands.add(new Leave());
         commands.add(new Market());
         commands.add(new MyHand());
         commands.add(new Ping());
         commands.add(new Profile());
-        //commands.add(new Roles());
         commands.add(new Stand());
-        //commands.add(new RemoveRole());
     }
 }

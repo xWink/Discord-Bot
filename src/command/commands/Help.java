@@ -44,14 +44,9 @@ public class Help extends Command {
         eb.addField("Gifts a specified number of GryphCoins to a target user.",     "!gift [@user] [# gc]", false);
         eb.addField("Shows a user's display name based on Discord ID.",             "!id [Discord ID]", false);
         eb.addField("Shows info on a course at UoGuelph.",                          "!info [course ID]", false);
-        eb.addField("Apply to join or create a private elective channel.",          "!join [role name]", false);
-        //eb.addField("Shows your upvotes, downvotes, and total karma.",              "!karma", false);
         eb.addField("View or purchase items listed on the market.",                 "!market !buy [item #]", false);
-        //eb.addField("Shows your bang scores.",                                      "!mybang", false);
         eb.addField("Shows your latency.",                                          "!ping", false);
-        eb.addField("Shows your profile.",                                           "!profile", false);
-        eb.addField("Remove your current colour role",                              "!removerole [role name]", false);
-        eb.addField("Shows a list of available roles to join.",                     "!roles", false);
+        eb.addField("Shows your profile.",                                          "!profile", false);
 
         event.getChannel().sendMessage(eb.build()).queue();
     }

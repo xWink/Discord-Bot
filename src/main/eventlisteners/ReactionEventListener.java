@@ -132,11 +132,15 @@ public class ReactionEventListener extends ListenerAdapter {
         channelName = channelName.replaceAll("\\*", "").replaceAll(" +-* *", "-").replaceAll(" ", "-");
         List<TextChannel> channels = guild.getTextChannelsByName(channelName, true);
         ArrayList<Permission> perms = new ArrayList<>(Collections.singletonList(Permission.MESSAGE_READ));
+
+        // Create channel if not exists
         if (channels.isEmpty())
             return guild.getCategoriesByName("your channels", true).get(0)
                     .createTextChannel(channelName)
                     .addPermissionOverride(guild.getRolesByName("@everyone", false).get(0), null, perms)
                     .addPermissionOverride(role, perms, null).submit();
+
+        // Add permission for new role to see channel if role not exists
         else if (channels.get(0).getPermissionOverride(role) == null)
             channels.get(0).createPermissionOverride(role).setAllow(perms).queue();
 

@@ -137,6 +137,9 @@ public class ReactionEventListener extends ListenerAdapter {
                     .createTextChannel(channelName)
                     .addPermissionOverride(guild.getRolesByName("@everyone", false).get(0), null, perms)
                     .addPermissionOverride(role, perms, null).submit();
+        else if (channels.get(0).getPermissionOverride(role) == null)
+            channels.get(0).createPermissionOverride(role).setAllow(perms).queue();
+
         return CompletableFuture.supplyAsync(() -> channels.get(0));
     }
 

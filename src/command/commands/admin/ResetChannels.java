@@ -27,7 +27,7 @@ public class ResetChannels extends AdminCommand {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
             while ((line = reader.readLine()) != null) {
-                channels.sendMessage(line).queue();
+                channels.sendMessage(line.replace("\\n", "\n")).queue();
             }
             reader.close();
         } catch (Exception e) {

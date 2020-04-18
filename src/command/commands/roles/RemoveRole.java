@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
 
+@Deprecated
 public class RemoveRole extends ResponseCommand {
 
     private String roleName;

@@ -1,4 +1,7 @@
 /**
+ * THIS PACKAGE IS NOW DEPRECATED AND ALL ITS UTILITY
+ * HAS BEEN REPLACED BY THE ROLENING UPDATE (V2.3).
+ *
  * Classes in this package are associated with commands
  * involving the available roles (groups) in the server.
  * These groups are available for joining and leaving,

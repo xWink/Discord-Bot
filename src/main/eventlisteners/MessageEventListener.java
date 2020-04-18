@@ -6,6 +6,7 @@ import command.util.message.MessageData;
 import database.connectors.MessagesConnector;
 import main.Config;
 import main.Server;
+import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
@@ -20,19 +21,18 @@ import java.io.File;
 import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class MessageEventListener extends ListenerAdapter {
 
-    private static MessageEventListener messageEventListener;
+    private ScheduledExecutorService scheduler;
     private MessagesConnector mc = new MessagesConnector();
 
-    private MessageEventListener() {}
-
-    public static MessageEventListener getMessageEventListener() {
-        if (messageEventListener == null) {
-            messageEventListener = new MessageEventListener();
-        }
-        return messageEventListener;
+    public MessageEventListener() {
+        scheduler = Executors.newScheduledThreadPool(1);
     }
 
     /**
@@ -59,6 +59,12 @@ public class MessageEventListener extends ListenerAdapter {
                 }
             }
 
+            if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) {
+                Emote checkMark = event.getGuild().getEmoteById(Server.CHECK_EMOJI_ID);
+                if (checkMark != null)
+                    event.getMessage().addReaction(checkMark).queue();
+            }
+
             try {
                 mc.storeMessage(event.getMessage());
             } catch (Exception e) {
@@ -77,39 +83,43 @@ public class MessageEventListener extends ListenerAdapter {
      */
     @Override
     public void onMessageDelete(@NotNull MessageDeleteEvent event) {
-        try {
-            MessageData data = mc.getMessageDataById(event.getMessageIdLong());
-            BufferedImage image = null;
-            File file = null;
-            TextChannel channel = Server.API.getTextChannelById(677109914400980992L);
+        Callable<Void> storeMessage = () -> {
+            try {
+                MessageData data = mc.getMessageDataById(event.getMessageIdLong());
+                BufferedImage image = null;
+                File file = null;
+                TextChannel channel = Server.API.getTextChannelById(677109914400980992L);
 
-            if (data != null && channel != null) {
-                String part1 = data.toFormattedString();
-                String part2 = "";
+                if (data != null && channel != null) {
+                    String part1 = data.toFormattedString();
+                    String part2 = "";
 
-                if (part1.length() >= 1999) {
-                    part2 = part1.substring(1999, part1.length()-1);
-                    part1 = part1.substring(0, 1998);
+                    if (part1.length() >= 1999) {
+                        part2 = part1.substring(1999, part1.length() - 1);
+                        part1 = part1.substring(0, 1998);
+                    }
+
+                    if (data.getImageBase64().length() != 0) {
+                        file = new File("../../res/LastImage.png");
+                        image = decodeBase64Image(data.getImageBase64());
+                    }
+
+                    if (image != null) {
+                        ImageIO.write(image, "png", file);
+                    }
+
+                    if (part2.length() > 0) {
+                        sendAsTwoMessages(part1, part2, file, channel);
+                    } else {
+                        sendAsOneMessage(part1, file, channel);
+                    }
                 }
-
-                if (data.getImageBase64().length() != 0) {
-                    file = new File("../../res/LastImage.png");
-                    image = decodeBase64Image(data.getImageBase64());
-                }
-
-                if (image != null) {
-                    ImageIO.write(image, "png", file);
-                }
-
-                if (part2.length() > 0) {
-                    sendAsTwoMessages(part1, part2, file, channel);
-                } else {
-                    sendAsOneMessage(part1, file, channel);
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            return null;
+        };
+        scheduler.schedule(storeMessage, 0, TimeUnit.SECONDS);
     }
 
     private void sendAsOneMessage(String s, File file, TextChannel channel) {
@@ -136,47 +146,50 @@ public class MessageEventListener extends ListenerAdapter {
      */
     @Override
     public void onMessageBulkDelete(@NotNull MessageBulkDeleteEvent event) {
-        TextChannel channel = Objects.requireNonNull(Server.API.getTextChannelById(677109914400980992L));
-        File file = null;
-        BufferedImage image = null;
-        List<MessageData> bulkData;
-        StringBuilder out = new StringBuilder();
+        Callable<Void> storeMessages = () -> {
+            TextChannel channel = Objects.requireNonNull(Server.API.getTextChannelById(677109914400980992L));
+            File file = null;
+            BufferedImage image = null;
+            List<MessageData> bulkData;
+            StringBuilder out = new StringBuilder();
+            try {
+                bulkData = mc.getBulkMessageDataByIds(event.getMessageIds());
 
-        try {
-            bulkData = mc.getBulkMessageDataByIds(event.getMessageIds());
+                for (MessageData data : bulkData) {
+                    // Avoid Discord 2000 character limit
+                    if (out.length() + data.toFormattedString().length() >= 1998) {
+                        channel.sendMessage(out).queue();
+                        out = new StringBuilder();
+                    }
 
-            for (MessageData data : bulkData) {
-                // Avoid Discord 2000 character limit
-                if (out.length() + data.toFormattedString().length() >= 1998) {
+                    // Build output string
+                    out.append(data.toFormattedString()).append("\n");
+
+                    // Generate image
+                    if (data.getImageBase64().length() > 0) {
+                        file = new File("../../res/LastImage.png");
+                        image = decodeBase64Image(data.getImageBase64());
+                    }
+
+                    // Print any message with an image
+                    if (image != null) {
+                        ImageIO.write(image, "png", file);
+                        channel.sendMessage(out).addFile(file).queue();
+                        image = null;
+                        out = new StringBuilder();
+                    }
+                }
+
+                if (out.length() > 0) {
                     channel.sendMessage(out).queue();
-                    out = new StringBuilder();
                 }
-
-                // Build output string
-                out.append(data.toFormattedString()).append("\n");
-
-                // Generate image
-                if (data.getImageBase64().length() > 0) {
-                    file = new File("../../res/LastImage.png");
-                    image = decodeBase64Image(data.getImageBase64());
-                }
-
-                // Print any message with an image
-                if (image != null) {
-                    ImageIO.write(image, "png", file);
-                    channel.sendMessage(out).addFile(file).queue();
-                    image = null;
-                    out = new StringBuilder();
-                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                channel.sendMessage("**FAILED TO ACQUIRE MESSAGES FROM PURGE**").queue();
             }
-
-            if (out.length() > 0) {
-                channel.sendMessage(out).queue();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            channel.sendMessage("**FAILED TO ACQUIRE MESSAGES FROM PURGE**").queue();
-        }
+            return null;
+        };
+        scheduler.schedule(storeMessages, 0, TimeUnit.SECONDS);
     }
 
     private BufferedImage decodeBase64Image(String string) {

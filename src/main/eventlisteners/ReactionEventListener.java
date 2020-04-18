@@ -79,7 +79,7 @@ public class ReactionEventListener extends ListenerAdapter {
         final Member member = event.getMember();
         final Guild guild = event.getGuild();
 
-        if (member == null)
+        if (member == null || member.getUser().isBot())
             return;
 
         AtomicReference<String> content = new AtomicReference<>();
@@ -95,7 +95,7 @@ public class ReactionEventListener extends ListenerAdapter {
          */
 
         event.getTextChannel().retrieveMessageById(event.getMessageId()).submit()
-                .thenAccept(message -> content.set(message.getContentRaw().replace("*", "")))
+                .thenAccept(message -> content.set(message.getContentRaw()))
                 .thenCompose(aVoid -> getCorrespondingRole(guild, content.get()))
                 .thenAccept(role::set)
                 .thenCompose(aVoid -> getCorrespondingChannel(guild, content.get(), role.get()))
@@ -129,6 +129,7 @@ public class ReactionEventListener extends ListenerAdapter {
      * @return the CompletableFuture that supplies a channel which either already exists or is created
      */
     private CompletableFuture<TextChannel> getCorrespondingChannel(Guild guild, String channelName, Role role) {
+        channelName = channelName.replaceAll("\\*", "").replaceAll(" +-* *", "-").replaceAll(" ", "-");
         List<TextChannel> channels = guild.getTextChannelsByName(channelName, true);
         ArrayList<Permission> perms = new ArrayList<>(Collections.singletonList(Permission.MESSAGE_READ));
         if (channels.isEmpty())
@@ -222,7 +223,7 @@ public class ReactionEventListener extends ListenerAdapter {
             return;
         event.getTextChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
             Guild guild = event.getGuild();
-            String content = message.getContentRaw().replace("*", "");
+            String content = message.getContentRaw();
 
             List<Role> roles = guild.getRolesByName(content, true);
             if (roles.isEmpty())

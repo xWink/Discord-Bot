@@ -59,17 +59,17 @@ public class MessageEventListener extends ListenerAdapter {
                 }
             }
 
-            if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) {
-                Emote checkMark = event.getGuild().getEmoteById(Server.CHECK_EMOJI_ID);
-                if (checkMark != null)
-                    event.getMessage().addReaction(checkMark).queue();
-            }
-
             try {
                 mc.storeMessage(event.getMessage());
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) {
+            Emote checkMark = event.getGuild().getEmoteById(Server.CHECK_EMOJI_ID);
+            if (checkMark != null && !messageContent.startsWith("**") && !messageContent.startsWith("<@"))
+                event.getMessage().addReaction(checkMark).queue();
         }
     }
 

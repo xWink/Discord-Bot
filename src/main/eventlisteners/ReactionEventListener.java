@@ -47,7 +47,7 @@ public class ReactionEventListener extends ListenerAdapter {
      */
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-        if (event.getMember() == null || event.getUser() == null || event.getUser().isBot())
+        if (event.getMember() == null || event.getUser() == null)
             return;
 
         if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID) {
@@ -79,7 +79,7 @@ public class ReactionEventListener extends ListenerAdapter {
         final Member member = event.getMember();
         final Guild guild = event.getGuild();
 
-        if (member == null || member.getUser().isBot())
+        if (member == null)
             return;
 
         AtomicReference<String> content = new AtomicReference<>();
@@ -133,7 +133,7 @@ public class ReactionEventListener extends ListenerAdapter {
         List<TextChannel> channels = guild.getTextChannelsByName(channelName, true);
         ArrayList<Permission> perms = new ArrayList<>(Collections.singletonList(Permission.MESSAGE_READ));
         if (channels.isEmpty())
-            return guild.getCategoriesByName("courses", true).get(0)
+            return guild.getCategoriesByName("your channels", true).get(0)
                     .createTextChannel(channelName)
                     .addPermissionOverride(guild.getRolesByName("@everyone", false).get(0), null, perms)
                     .addPermissionOverride(role, perms, null).submit();
@@ -202,15 +202,11 @@ public class ReactionEventListener extends ListenerAdapter {
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
         if (event.getMember() == null || event.getUser() == null || event.getUser().isBot())
             return;
-
-        if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID) {
+        if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID)
             if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) // Leaving course channel
                 leaveCourseChannel(event);
-        }
-
         if (event.getUserIdLong() == getMessageAuthId(event))
             return;
-
         handleKarmaRemove(event);
     }
 
@@ -219,7 +215,7 @@ public class ReactionEventListener extends ListenerAdapter {
      * Removes the role associated with a given course channel.
      *
      * @param event the MessageReactionRemove event that resulted in the user no longer having a reaction to
-     *              the specific course channel message in the courses channel
+     *              the specific course channel message in the channels channel
      */
     private void leaveCourseChannel(MessageReactionRemoveEvent event) {
         if (event.getMember() == null)

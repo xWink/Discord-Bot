@@ -167,25 +167,28 @@ public class ReactionEventListener extends ListenerAdapter {
 
     /**
      * Adds the ToS role to users who react to the Terms of Service agreement.
-     * This role is needed to access the rest of the server.
+     * This role is needed to access the rest of the server. Once the user receives the role,
+     * they are given a welcome message in the general channel and pinged in the channels channel.
      *
      * @param event the MessageReactionEvent that triggered the ReactionEventListener
      */
     private void addToSRole(MessageReactionAddEvent event) {
-        if (event.getMember() == null) {
+        Guild guild = event.getGuild();
+        Role tosRole = Objects.requireNonNull(guild.getRoleById(Server.TOS_ROLE_ID));
+        Member member = Objects.requireNonNull(event.getMember());
+
+        if (member.getRoles().contains(tosRole)) {
             return;
         }
 
-        Role tosRole = Objects.requireNonNull(event.getGuild().getRoleById(Server.TOS_ROLE_ID));
-        TextChannel channel = Objects.requireNonNull(event.getGuild().getTextChannelById(Server.CHANNELS_CHANNEL_ID));
+        TextChannel general = Objects.requireNonNull(guild.getTextChannelById(Server.GENERAL_CHANNEL_ID));
+        TextChannel channels = Objects.requireNonNull(guild.getTextChannelById(Server.CHANNELS_CHANNEL_ID));
 
-        if (!event.getMember().getRoles().contains(tosRole)) {
-            event.getGuild().addRoleToMember(event.getMember().getId(), tosRole).queue();
+        guild.addRoleToMember(member, tosRole).queue();
 
-            channel.sendMessage(event.getMember().getAsMention())
-                    .queue(message -> channel.deleteMessageById(message.getId()).queue());
-
-        }
+        general.sendMessage(member.getAsMention() + " Welcome to the server! "
+                + "Check out " + channels.getAsMention() + " to join course-related channels").queue();
+        channels.sendMessage(member.getAsMention()).queue(message -> message.delete().queue());
     }
 
 

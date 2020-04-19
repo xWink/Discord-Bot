@@ -52,7 +52,7 @@ public class MessageEventListener extends ListenerAdapter {
             if (messageContent.startsWith("!")) {
                 for (Command command : CommandList.getCommands()) {
                     if (command.keyMatches(messageContent)
-                            && (event.getChannel().getId().equals(Config.getChannels()[0]) || command.isGlobal())) {
+                            && (event.getChannel().getIdLong() == (Server.BOTS_CHANNEL_ID) || command.isGlobal())) {
                         command.start(event);
                         return;
                     }

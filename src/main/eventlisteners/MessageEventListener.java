@@ -68,9 +68,13 @@ public class MessageEventListener extends ListenerAdapter {
 
         if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) {
             Emote checkMark = event.getGuild().getEmoteById(Server.CHECK_EMOJI_ID);
-            if (checkMark != null && !messageContent.startsWith("-") && !messageContent.startsWith("<@"))
+            if (checkMark != null && messageNeedsCheckMark(messageContent))
                 event.getMessage().addReaction(checkMark).queue();
         }
+    }
+
+    private boolean messageNeedsCheckMark(String message) {
+        return !message.startsWith("-") && !message.startsWith("<@") && !message.startsWith("**");
     }
 
     /**

@@ -33,4 +33,4 @@ ECON*1050 - Intro to Micro
 MATH*1160 - Linear Algebra
 MATH*1200 - Calculus I
 MATH*1210 - Calculus II
---------------------------------------\n\n**__This is where you choose which channels appear in Your Channels__**\n\n**Click the green check mark below the channel you wish to join.\nYou can click it again to leave.**
+--------------------------------------\n\n**__This is where you choose which channels you can see__**\n\n**Click the green check mark below the channel you wish to join.\nYou can click it again to leave.**

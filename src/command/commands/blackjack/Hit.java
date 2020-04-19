@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
+import java.util.Objects;
 
 public class Hit extends Command {
 
@@ -30,6 +32,7 @@ public class Hit extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
+        ClassLoader loader = ClassLoader.getSystemClassLoader();
         BlackJackGame game = BlackJackList.getUserGame(event.getAuthor().getIdLong());
 
         if (game == null) {
@@ -39,16 +42,14 @@ public class Hit extends Command {
         }
 
         try {
-            File file = new File(".");
-            String path = file.getAbsolutePath().replace("build/libs/.", "");
-
             String name = event.getAuthor().getName();
             String output = "";
             int playerValue = game.hit();
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getAsList())) {
+                URL url = Objects.requireNonNull(loader.getResource("out.png"));
                 event.getChannel().sendMessage(name + "'s hand is now: " + game.getPlayer().getHand().toString())
-                        .addFile(new FileInputStream(path + "res/out.png"), "out.png")
+                        .addFile(new FileInputStream(url.getFile()), "out.png")
                         .queue();
             } else {
                 event.getChannel().sendMessage(name + "'s hand is now: " + game.getPlayer().getHand().toString())
@@ -74,8 +75,9 @@ public class Hit extends Command {
                 output += "\nDealers hand: " + game.getDealer().getHand().toString();
 
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
+                    URL url = Objects.requireNonNull(loader.getResource("out.png"));
                     event.getChannel().sendMessage(output)
-                            .addFile(new FileInputStream(path + "res/out.png"), "out.png")
+                            .addFile(new FileInputStream(url.getFile()), "out.png")
                             .queue();
                 } else {
                     event.getChannel().sendMessage(output).queue();

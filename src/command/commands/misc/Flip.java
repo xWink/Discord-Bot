@@ -4,6 +4,8 @@ import command.Command;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.File;
+import java.net.URL;
+import java.util.Objects;
 import java.util.Random;
 
 public class Flip extends Command {
@@ -24,17 +26,18 @@ public class Flip extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         boolean isHeads = new Random().nextBoolean();
+        ClassLoader loader = getClass().getClassLoader();
         String output = "";
-        String imgPath = new File("").getAbsolutePath();
+        URL url;
 
         if (isHeads) {
             output += "Heads!";
-            imgPath = imgPath.replace("build/libs", "res/loonie_heads.png");
+            url = Objects.requireNonNull(loader.getResource("loonie_heads.png"));
         } else {
             output += "Tails!";
-            imgPath = imgPath.replace("build/libs", "res/loonie_tails.png");
+            url = Objects.requireNonNull(loader.getResource("loonie_tails.png"));
         }
 
-        event.getChannel().sendMessage(output).addFile(new File(imgPath)).queue();
+        event.getChannel().sendMessage(output).addFile(new File(url.getFile())).queue();
     }
 }

@@ -11,7 +11,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
 import java.util.Collections;
+import java.util.Objects;
 
 public class Bet extends Command {
 
@@ -47,13 +49,11 @@ public class Bet extends Command {
     public void start(MessageReceivedEvent event) {
         if (!verifyInput(event)) return;
         long userId = event.getAuthor().getIdLong();
+        ClassLoader loader = ClassLoader.getSystemClassLoader();
         String name = event.getAuthor().getName();
         MessageChannel channel = event.getChannel();
 
         try {
-            File file = new File(".");
-            String path = file.getAbsolutePath().replace("build/libs/.", "");
-
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
 
             // Verify that the user has enough money
@@ -67,13 +67,15 @@ public class Bet extends Command {
             game.start();
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getAsList())) {
+                URL url = Objects.requireNonNull(loader.getResource("out.png"));
                 channel.sendMessage(name + " received their first 2 cards: "
                         + game.getPlayer().getHand().toString())
-                        .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
+                        .addFile(new FileInputStream(url.getFile()), "out.png").queue();
 
                 PhotoCombine.genPhoto(Collections.singletonList(game.getDealer().getHand().getAsList().get(0)));
+                url = Objects.requireNonNull(loader.getResource("out.png"));
                 channel.sendMessage("Dealer's first card: " + game.getDealer().getHand().getAsList().get(0).toEmote())
-                        .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
+                        .addFile(new FileInputStream(url.getFile()), "out.png").queue();
             } else {
                 channel.sendMessage(name + " received their first 2 cards: " + game.getPlayer().getHand().toString()
                         + "\nDealer's first card: " + game.getDealer().getHand().getAsList().get(0).toEmote()).queue();
@@ -92,8 +94,9 @@ public class Bet extends Command {
                 output += "Dealers hand: " + game.getDealer().getHand().toString();
 
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
+                    URL url = Objects.requireNonNull(loader.getResource("out.png"));
                     channel.sendMessage(output)
-                            .addFile(new FileInputStream(path + "res/out.png"), "out.png")
+                            .addFile(new FileInputStream(url.getFile()), "out.png")
                             .queue();
                 } else {
                     channel.sendMessage(output).queue();

@@ -9,6 +9,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
+import java.util.Objects;
 
 public class Stand extends Command {
 
@@ -43,13 +45,12 @@ public class Stand extends Command {
         int reward = game.checkWinner();
 
         try {
-            File file = new File(".");
-            String path = file.getAbsolutePath().replace("build/libs/.", "");
+            URL url = Objects.requireNonNull(getClass().getClassLoader().getResource("out.png"));
             String output = "Dealers hand: " + game.getDealer().getHand().toString();
 
             if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
                 event.getChannel().sendMessage(output)
-                        .addFile(new FileInputStream(path + "res/out.png"), "out.png")
+                        .addFile(new FileInputStream(url.getFile()), "out.png")
                         .queue();
             } else {
                 event.getChannel().sendMessage(output).queue();

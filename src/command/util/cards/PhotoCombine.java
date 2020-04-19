@@ -3,7 +3,12 @@ package command.util.cards;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
@@ -19,20 +24,21 @@ public final class PhotoCombine {
      * @return true if successful, false if something went wrong
      */
     public static boolean genPhoto(List<Card> cards) {
+        ClassLoader loader = PhotoCombine.class.getClassLoader();
         try {
-            BufferedImage cardPallet = ImageIO.read(new File("../../res/cards/"
-                    + cards.get(0).toFileFormat() + ".png"));
+            URL url = Objects.requireNonNull(loader.getResource("cards/" + cards.get(0).toFileFormat() + ".png"));
+            BufferedImage cardPallet = ImageIO.read(new File(url.getFile()));
 
             for (int i = 1; i < cards.size(); i++) {
-                BufferedImage tmpCard = ImageIO.read(new File("../../res/cards/"
-                        + cards.get(i).toFileFormat() + ".png"));
+                url = Objects.requireNonNull(loader.getResource("cards/" + cards.get(i).toFileFormat() + ".png"));
+                BufferedImage tmpCard = ImageIO.read(new File(url.getFile()));
                 cardPallet = cards.size() > 4 ? joinBIBig(cardPallet, tmpCard) : joinBISmall(cardPallet, tmpCard);
             }
 
             cardPallet = crop(cardPallet);
-            ImageIO.write(cardPallet, "png", new File("../../res/out.png"));
+            url = Objects.requireNonNull(loader.getResource("out.png"));
+            ImageIO.write(cardPallet, "png", new File(url.getFile()));
             return true;
-
         } catch (Exception e) {
             e.printStackTrace();
             return false;

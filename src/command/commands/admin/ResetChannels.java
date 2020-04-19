@@ -19,6 +19,13 @@ public class ResetChannels extends AdminCommand {
         super("!resetchannels", true);
     }
 
+    /**
+     * Prints the text from channels.txt into the Channels channel such that each line from channels.txt
+     * is a separate message. This is used to reset the content of the Channels channel in the event of a
+     * change to the list of courses.
+     *
+     * @param event the MessageReceived event sent by the admin that triggered the command
+     */
     @Override
     protected void runCommand(MessageReceivedEvent event) {
         TextChannel channels = Objects.requireNonNull(event.getGuild().getTextChannelById(Server.CHANNELS_CHANNEL_ID));

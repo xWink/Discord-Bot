@@ -88,10 +88,10 @@ public class ReactionEventListener extends ListenerAdapter {
         /*
          * 1. Get message that was reacted to
          * 2. Set message content to content variable
-         * 3. Get corresponding role
+         * 3. Create/get corresponding role
          * 4. Set corresponding role to role variable
-         * 5. Get corresponding channel
-         * 6. Assign role to member
+         * 5. Create/get corresponding channel
+         * 6. If member is not bot, assign role to member
          */
 
         event.getTextChannel().retrieveMessageById(event.getMessageId()).submit()
@@ -99,7 +99,10 @@ public class ReactionEventListener extends ListenerAdapter {
                 .thenCompose(aVoid -> getCorrespondingRole(guild, content.get()))
                 .thenAccept(role::set)
                 .thenCompose(aVoid -> getCorrespondingChannel(guild, content.get(), role.get()))
-                .thenCompose(aVoid -> guild.addRoleToMember(member, role.get()).submit())
+                .thenAccept(aVoid -> {
+                    if (member.getUser().isBot())
+                        guild.addRoleToMember(member, role.get()).queue();
+                })
                 .join();
     }
 

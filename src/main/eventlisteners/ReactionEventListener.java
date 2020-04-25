@@ -101,7 +101,7 @@ public class ReactionEventListener extends ListenerAdapter {
                 .thenAccept(role::set)
                 .thenCompose(aVoid -> getCorrespondingChannel(guild, content.get(), role.get()))
                 .thenAccept(aVoid -> {
-                    if (member.getUser().isBot())
+                    if (!member.getUser().isBot())
                         guild.addRoleToMember(member, role.get()).queue();
                 })
                 .join();

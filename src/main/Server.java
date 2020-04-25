@@ -27,6 +27,7 @@ public final class Server {
 
     // Roles
     public static final long ADMIN_ROLE_ID = 486635066928136194L;
+    public static final long JANITOR_ROLE_ID = 622128124313862164L;
     public static final long TOS_ROLE_ID = 701068412490874890L;
 
     private Server() {}

@@ -49,7 +49,7 @@ public final class CommandList {
         // Admin commands
         commands.add(new Purge());
         commands.add(new ResetChannels());
-        //commands.add(new DeleteCourseChannels());
+        commands.add(new DeleteCourseChannels());
 
         // Everyone commands
         commands.add(new Bang());

@@ -143,9 +143,14 @@ public class ReactionEventListener extends ListenerAdapter {
                     .addPermissionOverride(guild.getRolesByName("@everyone", false).get(0), null, perms)
                     .addPermissionOverride(role, perms, null).submit();
 
-        // Add permission for new role to see channel if role not exists
+        // Add permission for new role to see channel
         else if (channels.get(0).getPermissionOverride(role) == null)
             channels.get(0).createPermissionOverride(role).setAllow(perms).queue();
+
+        // Add permission for janitor to see channel
+        Role janitor = guild.getRoleById(Server.JANITOR_ROLE_ID);
+        if (janitor != null && channels.get(0).getPermissionOverride(janitor) == null)
+            channels.get(0).createPermissionOverride(janitor).setAllow(perms).queue();
 
         return CompletableFuture.supplyAsync(() -> channels.get(0));
     }

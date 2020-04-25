@@ -30,9 +30,10 @@ public class ResetChannels extends AdminCommand {
     @Override
     protected void runCommand(MessageReceivedEvent event) {
         TextChannel channels = Objects.requireNonNull(event.getGuild().getTextChannelById(Server.CHANNELS_CHANNEL_ID));
-        URL url = Objects.requireNonNull(getClass().getClassLoader().getResource("channels.txt"));
+        //URL url = Objects.requireNonNull(getClass().getClassLoader().getResource("channels.txt"));
         try {
-            File file = new File(url.getFile());
+            //File file = new File(url.getFile());
+            File file = new File("../../res/channels.txt");
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
             while ((line = reader.readLine()) != null) {

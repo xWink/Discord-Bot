@@ -2,40 +2,33 @@ package main.timertasks;
 
 import main.Server;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Message;
-import net.dv8tion.jda.api.entities.MessageHistory;
-import net.dv8tion.jda.api.entities.TextChannel;
-
-import java.util.List;
+import net.dv8tion.jda.api.entities.MessageChannel;
 
 public class DiscussionPurge implements Runnable {
 
     /**
-     * Purges all messages in the Discussion channel.
+     * Purges all messages in the Discussion channel up to the last 50. Not functional due to rate limiter.
      */
-    @Override
-    public void run() {
-        try {
-            List<Message> messages;
-            int size = 0;
-            do {
-                Guild guild = Server.getApi().getGuildById(Server.getGuild());
-                if (guild == null)
-                    return;
-                TextChannel discussionChannel = guild.getTextChannelById(670857670214942730L);
-                if (discussionChannel == null) {
-                    System.out.println("NULL Discussion Channel!!!");
-                    break;
-                }
-                messages = new MessageHistory(discussionChannel).retrievePast(99).complete();
-                if (messages.size() == size)
-                    break;
-                size = messages.size();
-                if (messages.size() > 22)
-                    discussionChannel.deleteMessages(messages.subList(20, messages.size())).queue();
-            } while (messages.size() > 22);
-        } catch (Exception e) {
-            e.printStackTrace();
+    @Override public void run() {
+        Guild guild = Server.API.getGuildById(Server.GUILD_ID);
+        if (guild == null) {
+            return;
         }
+
+        MessageChannel channel = guild.getTextChannelById(670857670214942730L);
+        if (channel == null) {
+            return;
+        }
+
+        purgeMessages(channel);
+    }
+
+    private void purgeMessages(MessageChannel channel) {
+        channel.getHistory().retrievePast(100).queue(messages -> {
+            if (messages.size() > 50) {
+                channel.purgeMessages(messages.subList(50, messages.size()));
+                purgeMessages(channel);
+            }
+        });
     }
 }

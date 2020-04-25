@@ -78,8 +78,17 @@ public class BlackJackGame {
         int playerValue = getPlayer().getHand().getValue();
         int dealerValue = getDealer().getHand().getValue();
 
+        // Player won with natural 21
+        if (playerValue == 21 && player.getHand().getAsList().size() == 2
+                && (dealerValue != 21 || dealer.getHand().getAsList().size() != 2))
+            return (int) (betAmount * 1.5);
+
+        // Dealer won with natural 21
+        if (dealerValue == 21 && dealer.getHand().getAsList().size() == 2
+                && (playerValue != 21 || player.getHand().getAsList().size() != 2))
+            return -betAmount;
+
         if (dealerValue == playerValue || (playerValue > 21 && dealerValue > 21)) return 0; // Tie
-        if (playerValue == 21) return (int) (betAmount * 1.5); // Player won with 21
         if (playerValue > 21) return -betAmount; // Player busted
         if (dealerValue > 21) return betAmount; // Dealer busted
         return playerValue > dealerValue ? betAmount : -betAmount; // Higher value wins

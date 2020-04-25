@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.util.List;
 import java.util.Objects;
 
+@Deprecated
 public class Leave extends Command {
 
     private RolesConnector rs;

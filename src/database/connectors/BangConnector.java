@@ -67,6 +67,22 @@ public final class BangConnector extends Connector {
     }
 
     /**
+     * Returns the size of the user's current streak.
+     *
+     * @param userId the user's ID number
+     * @return the number of days in a row the user has played bang
+     * @throws SQLException may be thrown when making a prepared statement
+     */
+    public int getCurrentStreak(long userId) throws SQLException {
+        if (!userExists(userId)) addUser(userId);
+        ResultSet rs = getConnection()
+                .prepareStatement("SELECT streak FROM bang WHERE user=" + userId)
+                .executeQuery();
+        rs.next();
+        return rs.getInt("streak");
+    }
+
+    /**
      * Returns the time at which a user last received a daily reward.
      *
      * @param userId the user's ID number
@@ -167,7 +183,7 @@ public final class BangConnector extends Connector {
      */
     public void pruneStreaks() throws SQLException {
         getConnection().prepareStatement("UPDATE bang SET streak = 0 WHERE "
-                + new Date().getTime() + " - last_played > 86460000").executeUpdate();
+                + new Date().getTime() + " - last_played > 86460000 * 1.5").executeUpdate();
     }
 
     /**

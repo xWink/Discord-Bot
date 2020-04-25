@@ -10,6 +10,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
+import java.util.Objects;
 
 public class Hit extends Command {
 
@@ -30,6 +32,7 @@ public class Hit extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
+        ClassLoader loader = ClassLoader.getSystemClassLoader();
         BlackJackGame game = BlackJackList.getUserGame(event.getAuthor().getIdLong());
 
         if (game == null) {
@@ -39,41 +42,49 @@ public class Hit extends Command {
         }
 
         try {
-            File file = new File(".");
-            String path = file.getAbsolutePath().replace("build/libs/.", "");
-
+            String name = event.getAuthor().getName();
             String output = "";
-            int value = game.hit();
+            int playerValue = game.hit();
 
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getAsList())) {
-                event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now: "
-                        + game.getPlayer().getHand().toString())
-                        .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
+                URL url = Objects.requireNonNull(loader.getResource("out.png"));
+                event.getChannel().sendMessage(name + "'s hand is now: " + game.getPlayer().getHand().toString())
+                        .addFile(new FileInputStream(url.getFile()), "out.png")
+                        .queue();
             } else {
-                event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is now: "
-                        + game.getPlayer().getHand().toString()).queue();
+                event.getChannel().sendMessage(name + "'s hand is now: " + game.getPlayer().getHand().toString())
+                        .queue();
             }
 
-            if (value >= 21) {
+            if (playerValue >= 21) {
                 int reward = game.checkWinner();
                 HandOfCards dealerHand = game.getDealer().getHand();
-                output += value == 21 ? "You got 21!\n" : "You busted.\n";
+                output += playerValue == 21 ? "You got 21!\n" : "You busted.\n";
 
-                if (game.getDealer().getHand().getValue() > 21)
+                if (dealerHand.getValue() > 21) {
                     output += "Dealer busted!\n";
-                if (value > 21 && dealerHand.getValue() > 21 || value == dealerHand.getValue())
-                    output += "Tie game, you didn't win or lose any money.";
-                else
-                    output += (reward >= 0 ? "You earned " + reward : "You lost " + (-reward)) + " *gc*";
+                }
 
-                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), reward);
-
+                if (reward > 0) {
+                    output += "You earned " + reward + " *gc*";
+                } else if (reward < 0) {
+                    output += "You lost " + (-reward) + " *gc*";
+                } else {
+                    output += "Tie game, you didn't win or lose any money";
+                }
                 output += "\nDealers hand: " + game.getDealer().getHand().toString();
+
                 if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
+                    URL url = Objects.requireNonNull(loader.getResource("out.png"));
                     event.getChannel().sendMessage(output)
-                            .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
+                            .addFile(new FileInputStream(url.getFile()), "out.png")
+                            .queue();
                 } else {
                     event.getChannel().sendMessage(output).queue();
+                }
+
+                if (reward != 0) {
+                    ec.addOrRemoveMoney(event.getAuthor().getIdLong(), reward);
                 }
 
                 BlackJackList.removeGame(game);

@@ -8,6 +8,7 @@ import database.connectors.EconomyConnector;
 import main.Server;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -23,6 +24,7 @@ public class Bang extends Command {
     private static boolean killed;
     private static boolean reward;
     private static boolean streak;
+    private long userId;
 
     /**
      * Initializes the command's key to "!bang".
@@ -66,7 +68,7 @@ public class Bang extends Command {
      * @param event the event that triggered the command
      * @return the string that describes the results of bang
      */
-    private String getOutput(MessageReceivedEvent event) {
+    private String getOutput(MessageReceivedEvent event) throws SQLException {
         String output = "";
         String poggers = "<:poggers:554666728878112774>";
         String poggies = "<:poggies:564285288621539328>";
@@ -76,12 +78,16 @@ public class Bang extends Command {
         else if (killed) output += "Bang! " + event.getAuthor().getName() + " died :skull:";
         else output += "Click. " + event.getAuthor().getName() + " survived  " + poggies;
 
-        output += "\nChambers left in the cylinder: ||  " + chambers + "  ||";
+        output += "\nChambers left in the cylinder: ||  " + chambers + "  ||\n";
 
-        if (reward) output += "\n" + event.getAuthor().getName()
-                    + " received their daily reward of 5 GryphCoins!\n";
-        if (jammed) output += "\n" + event.getAuthor().getName()
-                    + " received a bonus 50 GryphCoins!";
+        if (reward)
+            output += event.getAuthor().getName() + " received their daily reward of 5 GryphCoins!\n";
+        if (jammed)
+            output += event.getAuthor().getName() + " received a bonus 50 GryphCoins!\n";
+
+        int currentStreak = bc.getCurrentStreak(userId);
+        if (streak && currentStreak > 0 && currentStreak % 10 == 0)
+            output += event.getAuthor().getName() + " received an extra 50 GryphCoins for their streak bonus!\n";
 
         return output;
     }
@@ -97,51 +103,70 @@ public class Bang extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != 674369527731060749L) {
-            if (event.getChannel().getIdLong() == Server.getBotsChannel()) {
-                event.getChannel().sendMessage("This command is only available in <#674369527731060749>").queue();
+        if (event.getChannel().getIdLong() != Server.SPAM_CHANNEL_ID) {
+            if (event.getChannel().getIdLong() == Server.SPAM_CHANNEL_ID) {
+                event.getChannel().sendMessage("This command is only available in <#"
+                        + Server.SPAM_CHANNEL_ID + ">").queue();
             }
             return;
         }
 
+        userId = event.getAuthor().getIdLong();
         int pull = new Random().nextInt(chambers);
         if (pull == 0) tryToKill();
         else chambers--;
 
         try {
-            boolean oldPanic = BangCache.isPanicking();
-            long lastPlayed = bc.getUserRow(event.getAuthor().getIdLong()).getLong("last_played");
+            BangCache cache = BangCache.getInstance();
+            long lastPlayed = bc.getUserRow(userId).getLong("last_played");
             LocalDate lastPlayedDate = Instant.ofEpochMilli(lastPlayed).atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate now = Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
 
-            reward = bc.isEligibleForDaily(event.getAuthor().getIdLong());
+            reward = bc.isEligibleForDaily(userId);
             streak = (now.minusDays(1).getDayOfYear() == lastPlayedDate.getDayOfYear()
                     && now.minusDays(1).getYear() == lastPlayedDate.getYear())
-                    || bc.getUserRow(event.getAuthor().getIdLong()).getInt("streak") == 0;
+                    || bc.getUserRow(userId).getInt("streak") == 0;
 
-            BangCache.enqueue(new BangUpdate(
-                    event.getAuthor().getIdLong(),
+            cache.enqueue(new BangUpdate(
+                    userId,
                     new Date().getTime(), 1,
                     killed ? 1 : 0,
                     jammed ? 1 : 0,
                     reward,
                     streak));
 
-            if (reward) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 5);
-            if (jammed) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), 50);
+            giveRewards();
 
-            if (!BangCache.isPanicking()) {
-                if (oldPanic) {
-                    event.getChannel().sendMessage(BangCache.getQueueResults()).queue();
-                } else {
-                    event.getChannel().sendMessage(getOutput(event)).queue();
-                }
-                BangCache.updateAll();
+            if (!cache.isPanicking()) {
+                event.getChannel().sendMessage(getOutput(event)).queue();
             }
 
             resetBools();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
+    }
+
+    /**
+     * Gives the user their rewards based on current streak,
+     * whether they received their daily, and whether they jammed.
+     *
+     * @throws SQLException may be thrown when accessing database
+     */
+    private void giveRewards() throws SQLException {
+        int totalReward = 0;
+        int currentStreak = bc.getCurrentStreak(userId);
+
+        if (streak && currentStreak > 0 && currentStreak % 10 == 0)
+            totalReward += 50;
+
+        if (reward)
+            totalReward += 5;
+
+        if (jammed)
+            totalReward += 50;
+
+        if (totalReward > 0)
+            ec.addOrRemoveMoney(userId, totalReward);
     }
 }

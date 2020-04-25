@@ -7,7 +7,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class BangScore extends Command {
 
-    /**
+     /**
      * Initializes the command's key to "!bangscore".
      */
     public BangScore() {
@@ -31,10 +31,14 @@ public class BangScore extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != 674369527731060749L
-                && event.getChannel().getIdLong() != Server.getBotsChannel()) {
+        if (event.getChannel().getIdLong() != Server.SPAM_CHANNEL_ID
+                && event.getChannel().getIdLong() != Server.BOTS_CHANNEL_ID) {
             return;
         }
-        event.getChannel().sendMessage(BangHighScore.getBangHighScore().toString()).queue();
+        try {
+            event.getChannel().sendMessage(BangHighScore.getBangHighScore().toEmbed().build()).queue();
+        } catch (Exception e) {
+            printStackTraceAndSendMessage(event, e);
+        }
     }
 }

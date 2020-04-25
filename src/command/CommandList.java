@@ -1,10 +1,8 @@
 package command;
 
-import command.commands.admin.Cleanup;
+import command.commands.admin.*;
 import command.commands.bang.Bang;
 import command.commands.bang.BangScore;
-import command.commands.bang.BangScores;
-import command.commands.bang.MyBang;
 import command.commands.blackjack.Bet;
 import command.commands.blackjack.Hit;
 import command.commands.blackjack.MyHand;
@@ -13,17 +11,7 @@ import command.commands.economy.Buy;
 import command.commands.Help;
 import command.commands.economy.Gift;
 import command.commands.economy.Market;
-import command.commands.admin.Purge;
-import command.commands.economy.Wallet;
-import command.commands.misc.Flip;
-import command.commands.misc.Id;
-import command.commands.misc.Info;
-import command.commands.misc.Karma;
-import command.commands.misc.Ping;
-import command.commands.roles.Join;
-import command.commands.roles.Leave;
-import command.commands.roles.RemoveRole;
-import command.commands.roles.Roles;
+import command.commands.misc.*;
 import command.commands.bang.Daily;
 
 import java.util.ArrayList;
@@ -60,30 +48,25 @@ public final class CommandList {
     private static void addAllCommands() {
         // Admin commands
         commands.add(new Purge());
-        commands.add(new Cleanup());
+        commands.add(new ResetChannels());
+        commands.add(new DeleteCourseChannels());
 
         // Everyone commands
         commands.add(new Bang());
         commands.add(new BangScore());
-        commands.add(new Bet());
+        //commands.add(new Bet());
         commands.add(new Buy());
         commands.add(new Daily());
-        commands.add(new Flip());
+        //commands.add(new Flip());
+        commands.add(new Gift());
         commands.add(new Help());
         commands.add(new Hit());
         commands.add(new Id());
-        commands.add(new Info());
-        commands.add(new Join());
-        commands.add(new Karma());
-        commands.add(new Leave());
+        //commands.add(new Info());
         commands.add(new Market());
-        commands.add(new MyBang());
         commands.add(new MyHand());
         commands.add(new Ping());
-        commands.add(new Roles());
+        commands.add(new Profile());
         commands.add(new Stand());
-        commands.add(new Wallet());
-        commands.add(new Gift());
-        commands.add(new RemoveRole());
     }
 }

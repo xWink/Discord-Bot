@@ -1,9 +1,12 @@
 package command.util.highscores;
 
 import database.connectors.BangConnector;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 
+import java.awt.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -232,5 +235,24 @@ public final class BangHighScore extends HighScore {
                     + "\nTotal deaths: " + bc.getTotalDeaths();
         } catch (Exception ignored) { }
         return string;
+    }
+
+    /**
+     * Returns an Embed version of the toString function.
+     *
+     * @return the Embed version of the toString function.
+     */
+    public EmbedBuilder toEmbed() throws SQLException {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.setColor(Color.YELLOW);
+        eb.setTitle("Bang High Scores");
+
+        eb.addField("Most Attempts",            getMostAttemptsString().replace("Most attempts: ", ""), false);
+        eb.addField("Highest Survival Rate",    getLuckiestString().replace("Highest survival rate: ", ""), false);
+        eb.addField("Lowest Survival Rate",     getUnluckiestString().replace("Lowest survival rate: ", ""), false);
+        eb.addField("Total Attempts",           "" + bc.getTotalAttempts(), true);
+        eb.addField("Total Deaths",             "" + bc.getTotalDeaths(), true);
+
+        return eb;
     }
 }

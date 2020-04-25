@@ -1,13 +1,11 @@
 package command.commands.admin;
 
 import command.AdminCommand;
-import net.dv8tion.jda.api.entities.Message;
+import command.Command;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-import java.util.List;
-
-public class Purge extends AdminCommand {
+public class Purge extends Command implements AdminCommand {
 
     /**
      * Initializes the command's key to "!purge" and is global.
@@ -29,15 +27,13 @@ public class Purge extends AdminCommand {
     }
 
     /**
-     * Deletes a given number of messages in a text channel (not including the purge command message).
-     * Or deletes all messages by a mentioned user up to a specified number of messages back in the channel
-     * history.
+     * Deletes a given number of messages in a text channel (not including the purge command message) up to 99.
      *
      * @param event the MessageReceivedEvent that triggered the command
      */
     @Override
-    protected void runCommand(MessageReceivedEvent event) {
-        if (event.getMember() != null && !isAdmin(event.getMember())) {
+    public void start(MessageReceivedEvent event) {
+        if (!AdminCommand.memberIsAdmin(event.getMember())) {
             return;
         }
 
@@ -46,11 +42,14 @@ public class Purge extends AdminCommand {
 
         try {
             int numMessages = Integer.parseInt(strings[1]);
-            List<Message> messages = history.retrievePast(numMessages + 1).complete();
-            event.getTextChannel().deleteMessages(messages).queue();
+            if (numMessages < 100) {
+                history.retrievePast(numMessages + 1)
+                        .queue(messages -> event.getChannel().purgeMessages(messages));
+            } else {
+                history.retrievePast(1).queue(messages -> event.getChannel().purgeMessages(messages));
+            }
         } catch (Exception e) {
-            List<Message> messages = history.retrievePast(1).complete();
-            event.getTextChannel().deleteMessages(messages).queue();
+            history.retrievePast(1).queue(messages -> event.getChannel().purgeMessages(messages));
         }
     }
 }

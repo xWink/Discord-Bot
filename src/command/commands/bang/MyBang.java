@@ -1,10 +1,12 @@
 package command.commands.bang;
 
 import command.Command;
-import command.util.cache.BangCache;
 import database.connectors.BangConnector;
+import main.Server;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.awt.Color;
 import java.sql.ResultSet;
 
 public class MyBang extends Command {
@@ -27,14 +29,12 @@ public class MyBang extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != 674369527731060749L
-                && event.getChannel().getIdLong() != 551828950871965696L) {
+        if (event.getChannel().getIdLong() != Server.SPAM_CHANNEL_ID
+                && event.getChannel().getIdLong() != Server.BOTS_CHANNEL_ID) {
             return;
         }
-
         int attempts = 0, deaths = 0, jams = 0, streak = 0;
         double survivalRate = 0;
-        BangCache.updateAll();
         try {
             ResultSet rs = bc.getUserRow(event.getAuthor().getIdLong());
             attempts = rs.getInt("tries");
@@ -45,12 +45,22 @@ public class MyBang extends Command {
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         } finally {
-            event.getChannel().sendMessage("**" + event.getAuthor().getName() + "'s scores**"
-                    + "\nAttempts: " + attempts
-                    + "\nDeaths: " + deaths
-                    + "\nJams: " + jams
-                    + "\nSurvival rate: " + survivalRate + "%"
-                    + "\nStreak: " + streak + (streak > 0 ? " :fire:" : "")).queue();
+            EmbedBuilder eb = new EmbedBuilder();
+            if (event.getMember() != null) {
+                eb.setColor(event.getMember().getColor());
+            } else {
+                eb.setColor(Color.LIGHT_GRAY);
+            }
+            eb.setTitle(event.getAuthor().getName() + "'s Scores");
+
+            eb.addField("Attempts", Integer.toString(attempts), true);
+            eb.addField("Deaths", Integer.toString(deaths), true);
+            eb.addField("Jams", Integer.toString(jams), true);
+            eb.addField("Survival Rate", survivalRate + "%", false);
+            eb.addField("Streak", streak + (streak > 0 ? " :fire:" : ""), true);
+            eb.setThumbnail(event.getAuthor().getAvatarUrl());
+
+            event.getChannel().sendMessage(eb.build()).queue();
         }
     }
 }

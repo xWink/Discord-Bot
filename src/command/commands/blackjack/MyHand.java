@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
+import java.util.Objects;
 
 public class MyHand extends Command {
 
@@ -34,13 +36,11 @@ public class MyHand extends Command {
         }
 
         try {
-            File file = new File(".");
-            String path = file.getAbsolutePath().replace("build/libs/.", "");
-
             if (PhotoCombine.genPhoto(game.getPlayer().getHand().getAsList())) {
+                URL url = Objects.requireNonNull(getClass().getClassLoader().getResource("out.png"));
                 event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is: "
                         + game.getPlayer().getHand().toString())
-                        .addFile(new FileInputStream(path + "res/out.png"), "out.png").queue();
+                        .addFile(new FileInputStream(url.getFile()), "out.png").queue();
             } else {
                 event.getChannel().sendMessage(event.getAuthor().getName() + "'s hand is:"
                         + game.getPlayer().getHand().toString()).queue();

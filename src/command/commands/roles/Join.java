@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Deprecated
 public class Join extends Command {
 
     private RolesConnector rs;
@@ -167,27 +168,36 @@ public class Join extends Command {
 
         // Create role and channel
         guild.createRole().setName(courseId).queue();
-        guild.createTextChannel(courseId).setParent(guild.getCategoriesByName("Electives", true).get(0)).queue(); // might be complete()
-        TextChannel textChannel = guild.getTextChannelsByName(courseId, true).get(0);
+        guild.createTextChannel(courseId)
+                .setParent(guild.getCategoriesByName("Electives", true).get(0)).queue();
+        TextChannel channel = guild.getTextChannelsByName(courseId, true).get(0);
         Role role = guild.getRolesByName(courseId, true).get(0);
 
         // Set new channel permissions
-        if (textChannel.getPermissionOverride(role) == null)
-            textChannel.createPermissionOverride(role).queue(); // might be complete()
+        if (channel.getPermissionOverride(role) == null)
+            channel.createPermissionOverride(role).queue(permissionOverride -> {
+                // Let people with the specified role see the channel and read/send messages
+                permissionOverride.getManager().grant(Permission.VIEW_CHANNEL).queue();
+                permissionOverride.getManager().grant(Permission.MESSAGE_READ).queue();
+                hideChannel(channel);
+            });
+    }
 
-        // Let people with the specified role see the channel and read/send messages
-        Objects.requireNonNull(textChannel.getPermissionOverride(role)).getManager().grant(Permission.VIEW_CHANNEL).queue();
-        Objects.requireNonNull(textChannel.getPermissionOverride(role)).getManager().grant(Permission.MESSAGE_READ).queue();
+    /**
+     * Prevents everyone except those with the specific role for the channel from being able to see the channel.
+     *
+     * @param channel the channel to be hidden from @everyone
+     */
+    private void hideChannel(TextChannel channel) {
+        if (channel.getPermissionOverride(channel.getGuild().getRolesByName("@everyone", true).get(0)) == null)
+            channel.createPermissionOverride(channel.getGuild().getRolesByName("@everyone", true).get(0))
+                    .queue(permissionOverride1 -> {
+                        permissionOverride1.getManager().deny(Permission.MESSAGE_READ).queue();
 
-        // Prevent everyone from seeing the channel
-        if (textChannel.getPermissionOverride(guild.getRolesByName("@everyone", true).get(0)) == null)
-            textChannel.createPermissionOverride(guild.getRolesByName("@everyone", true).get(0)).queue(); // might be complete()
-
-        Objects.requireNonNull(textChannel.getPermissionOverride(guild.getRolesByName("@everyone", true).get(0))).getManager().deny(Permission.MESSAGE_READ).queue();
-
-        // Do not let people with this role do @everyone or change nicknames
-        Objects.requireNonNull(textChannel.getPermissionOverride(role)).getManager().deny(Permission.MESSAGE_MENTION_EVERYONE).queue();
-        Objects.requireNonNull(textChannel.getPermissionOverride(role)).getManager().deny(Permission.NICKNAME_CHANGE).queue();
+                        // Do not let people with this role do @everyone or change nicknames
+                        permissionOverride1.getManager().deny(Permission.MESSAGE_MENTION_EVERYONE).queue();
+                        permissionOverride1.getManager().deny(Permission.NICKNAME_CHANGE).queue();
+                    });
     }
 
     /**

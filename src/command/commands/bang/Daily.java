@@ -29,18 +29,24 @@ public class Daily extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != 674369527731060749L
-                && event.getChannel().getIdLong() != Server.getBotsChannel()) {
+        if (event.getChannel().getIdLong() != Server.SPAM_CHANNEL_ID
+                && event.getChannel().getIdLong() != Server.BOTS_CHANNEL_ID) {
             return;
         }
-            SimpleDateFormat df = new SimpleDateFormat("h:mm a"); // Set format of date/time
+
+        SimpleDateFormat df = new SimpleDateFormat("h:mm a"); // Set format of date/time
         TimeZone zone = TimeZone.getTimeZone("America/New_York"); // Get timezone
         df.setTimeZone(zone); // Apply timezone to format
+
         try {
             long resetTime = bc.getDaily(event.getAuthor().getIdLong());
             if (resetTime <= new Date().getTime()) {
-                event.getChannel().sendMessage("Your daily reward is available now!"
-                        + " Go to <#674369527731060749> and say `!bang`").queue();
+                if (event.getChannel().getIdLong() == Server.SPAM_CHANNEL_ID) {
+                    event.getChannel().sendMessage("Your daily reward is available now! Say `!bang`").queue();
+                } else {
+                    event.getChannel().sendMessage("Your daily reward is available now!"
+                            + " Go to <#674369527731060749> and say `!bang`").queue();
+                }
             } else {
                 event.getChannel().sendMessage("Your next daily reward is available at "
                         + df.format(new Date(resetTime))).queue();

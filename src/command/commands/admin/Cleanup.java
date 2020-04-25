@@ -1,10 +1,11 @@
 package command.commands.admin;
 
 import command.AdminCommand;
+import command.Command;
 import main.timertasks.DiscussionPurge;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
-public class Cleanup extends AdminCommand {
+public class Cleanup extends Command implements AdminCommand {
     /**
      * Initializes the command's key to "!cleanup"
      */
@@ -13,7 +14,10 @@ public class Cleanup extends AdminCommand {
     }
 
     @Override
-    protected void runCommand(MessageReceivedEvent event) {
-         new DiscussionPurge().run();
+    public void start(MessageReceivedEvent event) {
+        if (!AdminCommand.memberIsAdmin(event.getMember()))
+            return;
+
+        new DiscussionPurge().run();
     }
 }

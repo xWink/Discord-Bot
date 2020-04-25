@@ -14,20 +14,20 @@ public final class Server {
     public static final long GUILD_ID = Long.parseLong(Config.getGuildId());
 
     // Channels
-    public static final long GENERAL_CHANNEL_ID = 546092348069642251L;
+    public static final long GENERAL_CHANNEL_ID = 486633949154770946L;
     public static final long BOTS_CHANNEL_ID = 551828950871965696L;
     public static final long SPAM_CHANNEL_ID = 674369527731060749L;
-    public static final long CHANNELS_CHANNEL_ID = 692330710614409269L;
+    public static final long CHANNELS_CHANNEL_ID = 699595118583480331L;
 
     // Messages
-    public static final long WELCOME_MESSAGE_ID = 692310650172735530L;
+    public static final long WELCOME_MESSAGE_ID = 699594773480079430L;
 
     // Emojis
-    public static final long CHECK_EMOJI_ID = 692324735668846653L;
+    public static final long CHECK_EMOJI_ID = 699594880527106079L;
 
     // Roles
-    public static final long ADMIN_ROLE_ID = 546161701008179200L;
-    public static final long TOS_ROLE_ID = 692309516435587142L;
+    public static final long ADMIN_ROLE_ID = 486635066928136194L;
+    public static final long TOS_ROLE_ID = 701068412490874890L;
 
     private Server() {}
 

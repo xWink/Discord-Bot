@@ -47,10 +47,9 @@ public class ReactionEventListener extends ListenerAdapter {
      */
     @Override
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
-        System.out.println("REACTION");
         if (event.getMember() == null || event.getUser() == null)
             return;
-        System.out.println("MEMBER AND USER EXIST");
+
         if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID) {
             // User agrees to ToS
             if (event.getMessageIdLong() == Server.WELCOME_MESSAGE_ID)
@@ -59,8 +58,6 @@ public class ReactionEventListener extends ListenerAdapter {
                 // Joining course channel
             else if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID)
                 joinCourse(event);
-
-            else System.out.println("ACTUAL MESSAGE ID = " + event.getMessageIdLong());
         }
 
         if (event.getUserIdLong() == getMessageAuthId(event))
@@ -186,7 +183,6 @@ public class ReactionEventListener extends ListenerAdapter {
      * @param event the MessageReactionEvent that triggered the ReactionEventListener
      */
     private void addToSRole(MessageReactionAddEvent event) {
-        System.out.println("ADDING TOS ROLE");
         Guild guild = event.getGuild();
         Role tosRole = Objects.requireNonNull(guild.getRoleById(Server.TOS_ROLE_ID));
         Member member = Objects.requireNonNull(event.getMember());
@@ -194,10 +190,8 @@ public class ReactionEventListener extends ListenerAdapter {
         if (member.getRoles().contains(tosRole)) {
             return;
         }
-        System.out.println("MEMBER DIDNT HAVE ROLE");
         TextChannel general = Objects.requireNonNull(guild.getTextChannelById(Server.GENERAL_CHANNEL_ID));
         TextChannel channels = Objects.requireNonNull(guild.getTextChannelById(Server.CHANNELS_CHANNEL_ID));
-        System.out.println("GOT CHANNELS");
         guild.addRoleToMember(member, tosRole).queue();
 
         general.sendMessage(member.getAsMention() + " Welcome to the server! "

@@ -59,6 +59,8 @@ public class ReactionEventListener extends ListenerAdapter {
                 // Joining course channel
             else if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID)
                 joinCourse(event);
+
+            else System.out.println("ACTUAL MESSAGE ID = " + event.getMessageIdLong());
         }
 
         if (event.getUserIdLong() == getMessageAuthId(event))

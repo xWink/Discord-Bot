@@ -1,19 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id "com.github.johnrengelman.shadow" version '4.0.4'
-}
-
-repositories {
-    mavenCentral()
-    jcenter()
-}
-
-dependencies {
-    implementation 'net.dv8tion:JDA:4.1.1_107'
-    compile 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
-    compile 'org.slf4j:slf4j-log4j12:1.7.25'
-    compile 'com.opencsv:opencsv:4.5'
+    id "com.github.johnrengelman.shadow" version '5.2.0'
 }
 
 mainClassName = 'main.RoleBot'
@@ -31,4 +19,20 @@ sourceSets {
             srcDirs = ['res']
         }
     }
+}
+
+shadowJar {
+    minimize()
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    implementation 'net.dv8tion:JDA:4.1.1_107'
+    compileOnly 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
+    compileOnly 'org.slf4j:slf4j-log4j12:1.7.25'
+    compileOnly 'com.opencsv:opencsv:4.5'
 }

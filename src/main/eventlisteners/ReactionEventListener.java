@@ -135,10 +135,14 @@ public class ReactionEventListener extends ListenerAdapter {
         channelName = channelName.replaceAll("\\*", "").replaceAll(" +-* *", "-").replaceAll(" ", "-");
         List<TextChannel> channels = guild.getTextChannelsByName(channelName, true);
         ArrayList<Permission> perms = new ArrayList<>(Collections.singletonList(Permission.MESSAGE_READ));
+        String courseId = channelName.split("-")[0].replaceAll("[a-zA-z]", "");
+        int courseNum = -1;
+        if (courseId.length() > 0)
+            courseNum = Integer.parseInt(courseId) / 1000 * 1000;
 
         // Create channel if not exists
         if (channels.isEmpty())
-            return guild.getCategoriesByName("your channels", true).get(0)
+            return guild.getCategoriesByName(courseNum >= 0 ? courseNum + " Level Courses" : "Games", true).get(0)
                     .createTextChannel(channelName)
                     .addPermissionOverride(guild.getRolesByName("@everyone", false).get(0), null, perms)
                     .addPermissionOverride(role, perms, null).submit();

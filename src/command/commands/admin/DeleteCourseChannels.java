@@ -22,8 +22,10 @@ public class DeleteCourseChannels extends Command implements AdminCommand {
         if (!AdminCommand.memberIsAdmin(event.getMember()))
             return;
 
-        Category courses = Objects.requireNonNull(event.getGuild().getCategoriesByName("your channels", true).get(0));
+        for (int i = 1000; i < 5000; i += 1000) {
+        Category courses = Objects.requireNonNull(event.getGuild().getCategoriesByName(i + " Level Courses", true).get(0));
         for (TextChannel channel : courses.getTextChannels())
             channel.delete().queue();
+        }
     }
 }

@@ -29,7 +29,7 @@ public final class Server {
     public static final long ADMIN_ROLE_ID = 486635066928136194L;
     public static final long JANITOR_ROLE_ID = 622128124313862164L;
     public static final long TOS_ROLE_ID = 701068412490874890L;
-    public static final long ALL_ROLE_ID = 703592388047667201L;
+    public static final long ALL_ROLE_ID = 703608427036934235L;
 
     /*
         // Channels

@@ -1,6 +1,7 @@
 package command.commands.admin;
 
 import command.AdminCommand;
+import command.Command;
 import main.Server;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -8,10 +9,9 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.net.URL;
 import java.util.Objects;
 
-public class ResetChannels extends AdminCommand {
+public class ResetChannels extends Command implements AdminCommand {
 
     /**
      * Initializes the command's key to "!resetchannels"
@@ -28,7 +28,10 @@ public class ResetChannels extends AdminCommand {
      * @param event the MessageReceived event sent by the admin that triggered the command
      */
     @Override
-    protected void runCommand(MessageReceivedEvent event) {
+    public void start(MessageReceivedEvent event) {
+        if (!AdminCommand.memberIsAdmin(event.getMember()))
+            return;
+
         TextChannel channels = Objects.requireNonNull(event.getGuild().getTextChannelById(Server.CHANNELS_CHANNEL_ID));
         //URL url = Objects.requireNonNull(getClass().getClassLoader().getResource("channels.txt"));
         try {

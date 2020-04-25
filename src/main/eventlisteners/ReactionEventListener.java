@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -135,28 +136,52 @@ public class ReactionEventListener extends ListenerAdapter {
         channelName = channelName.replaceAll("\\*", "").replaceAll(" +-* *", "-").replaceAll(" ", "-");
         List<TextChannel> channels = guild.getTextChannelsByName(channelName, true);
         ArrayList<Permission> perms = new ArrayList<>(Collections.singletonList(Permission.MESSAGE_READ));
+
+        // The "All" role does not get its own channel
+        if (channelName.toLowerCase().equals("all"))
+            return CompletableFuture.supplyAsync(() -> null);
+
+        // Create channel if it doesn't exist
+        if (channels.isEmpty())
+            return createChannelAction(guild, role, channelName, perms).submit();
+
+        // Add permissions for appropriate roles to see channel
+        TextChannel channel = channels.get(0);
+        addRolePermissionsToChannel(role, channel, perms);
+        addRolePermissionsToChannel(guild.getRoleById(Server.JANITOR_ROLE_ID), channel, perms);
+        addRolePermissionsToChannel(guild.getRoleById(Server.ALL_ROLE_ID), channel, perms);
+
+        return CompletableFuture.supplyAsync(() -> channels.get(0));
+    }
+
+    ChannelAction<TextChannel> createChannelAction(Guild guild, Role role, String channelName, List<Permission> perms) {
         String courseId = channelName.split("-")[0].replaceAll("[a-zA-z]", "");
         int courseNum = -1;
         if (courseId.length() > 0)
             courseNum = Integer.parseInt(courseId) / 1000 * 1000;
 
-        // Create channel if not exists
-        if (channels.isEmpty())
-            return guild.getCategoriesByName(courseNum >= 0 ? courseNum + " Level Courses" : "Games", true).get(0)
-                    .createTextChannel(channelName)
-                    .addPermissionOverride(guild.getRolesByName("@everyone", false).get(0), null, perms)
-                    .addPermissionOverride(role, perms, null).submit();
+        ChannelAction<TextChannel> action = guild.getCategoriesByName(courseNum >= 0
+                        ? courseNum + " Level Courses"
+                        : "Games",
+                true)
+                .get(0).createTextChannel(channelName)
+                .addPermissionOverride(guild.getRolesByName("@everyone", false).get(0), null, perms)
+                .addPermissionOverride(role, perms, null);
 
-        // Add permission for new role to see channel
-        else if (channels.get(0).getPermissionOverride(role) == null)
-            channels.get(0).createPermissionOverride(role).setAllow(perms).queue();
-
-        // Add permission for janitor to see channel
         Role janitor = guild.getRoleById(Server.JANITOR_ROLE_ID);
-        if (janitor != null && channels.get(0).getPermissionOverride(janitor) == null)
-            channels.get(0).createPermissionOverride(janitor).setAllow(perms).queue();
+        if (janitor != null)
+            action.addPermissionOverride(janitor, perms, null);
 
-        return CompletableFuture.supplyAsync(() -> channels.get(0));
+        Role all = guild.getRoleById(Server.ALL_ROLE_ID);
+        if (all != null)
+            action.addPermissionOverride(all, perms, null);
+
+        return action;
+    }
+
+    private void addRolePermissionsToChannel(Role role, TextChannel channel, List<Permission> permissions) {
+        if (role != null && channel.getPermissionOverride(role) == null)
+            channel.createPermissionOverride(role).setAllow(permissions).queue();
     }
 
     /**

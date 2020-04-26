@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 
 import command.Command;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -119,9 +120,10 @@ public class Info extends Command {
 
         courseId = strings[1];
         try {
-            String tsv = new File("").getAbsolutePath();
-            tsv = tsv.replace("build/libs", "") + "res/courses.tsv";
-            reader = new BufferedReader(new FileReader(tsv));
+            URL url = getClass().getClassLoader().getResource("courses.tsv");
+            if (url == null)
+                throw new FileNotFoundException();
+            reader = new BufferedReader(new FileReader(url.getFile()));
             event.getChannel().sendMessage(printNice(searchCourse())).queue();
         } catch (FileNotFoundException e) {
             printStackTraceAndSendMessage(event, e);

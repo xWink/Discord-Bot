@@ -21,10 +21,6 @@ sourceSets {
     }
 }
 
-shadowJar {
-    minimize()
-}
-
 repositories {
     mavenCentral()
     jcenter()
@@ -32,7 +28,7 @@ repositories {
 
 dependencies {
     implementation 'net.dv8tion:JDA:4.1.1_107'
-    compileOnly 'org.mariadb.jdbc:mariadb-java-client:2.1.2'
+    compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.6.0'
     compileOnly 'org.slf4j:slf4j-log4j12:1.7.25'
     compileOnly 'com.opencsv:opencsv:4.5'
 }

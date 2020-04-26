@@ -49,20 +49,20 @@ public final class CommandList {
         // Admin commands
         commands.add(new Purge());
         commands.add(new ResetChannels());
-        commands.add(new DeleteCourseChannels());
+        //commands.add(new DeleteCourseChannels());
 
         // Everyone commands
         commands.add(new Bang());
         commands.add(new BangScore());
-        //commands.add(new Bet());
+        commands.add(new Bet());
         commands.add(new Buy());
         commands.add(new Daily());
-        //commands.add(new Flip());
+        commands.add(new Flip());
         commands.add(new Gift());
         commands.add(new Help());
         commands.add(new Hit());
         commands.add(new Id());
-        //commands.add(new Info());
+        commands.add(new Info());
         commands.add(new Market());
         commands.add(new MyHand());
         commands.add(new Ping());

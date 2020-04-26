@@ -3,6 +3,7 @@ package command.commands.misc;
 import command.Command;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import javax.imageio.ImageIO;
 import java.io.File;
 import java.net.URL;
 import java.util.Objects;
@@ -38,6 +39,10 @@ public class Flip extends Command {
             url = Objects.requireNonNull(loader.getResource("loonie_tails.png"));
         }
 
-        event.getChannel().sendMessage(output).addFile(new File(url.getFile())).queue();
+        try {
+            event.getChannel().sendMessage(output).addFile(new File(url.getFile())).queue();
+        } catch (Exception e) {
+            event.getChannel().sendMessage(output).queue();
+        }
     }
 }

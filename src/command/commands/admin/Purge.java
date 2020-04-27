@@ -2,6 +2,7 @@ package command.commands.admin;
 
 import command.AdminCommand;
 import command.Command;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -38,18 +39,17 @@ public class Purge extends Command implements AdminCommand {
         }
 
         String[] strings = event.getMessage().getContentRaw().split(" ");
-        MessageHistory history = new MessageHistory(event.getTextChannel());
+        MessageChannel channel = event.getChannel();
+        MessageHistory history = channel.getHistory();
 
         try {
             int numMessages = Integer.parseInt(strings[1]);
-            if (numMessages < 100) {
-                history.retrievePast(numMessages + 1)
-                        .queue(messages -> event.getChannel().purgeMessages(messages));
-            } else {
-                history.retrievePast(1).queue(messages -> event.getChannel().purgeMessages(messages));
-            }
+            if (numMessages < 100)
+                history.retrievePast(numMessages + 1).queue(channel::purgeMessages);
+            else
+                history.retrievePast(1).queue(channel::purgeMessages);
         } catch (Exception e) {
-            history.retrievePast(1).queue(messages -> event.getChannel().purgeMessages(messages));
+            history.retrievePast(1).queue(channel::purgeMessages);
         }
     }
 }

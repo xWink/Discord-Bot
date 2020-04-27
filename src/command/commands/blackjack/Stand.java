@@ -1,11 +1,13 @@
 package command.commands.blackjack;
 
 import command.Command;
+import command.util.cards.HandOfCards;
 import command.util.cards.PhotoCombine;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,7 +36,6 @@ public class Stand extends Command {
     public void start(MessageReceivedEvent event) {
         BlackJackGame game = BlackJackList.getUserGame(event.getAuthor().getIdLong());
         String author = event.getAuthor().getName();
-        String message = "";
 
         if (game == null) {
             event.getChannel().sendMessage("You haven't started a game yet!\n"
@@ -42,32 +43,28 @@ public class Stand extends Command {
             return;
         }
 
+        byte[] image;
         int reward = game.checkWinner();
+        HandOfCards dealerHand = game.getDealer().getHand();
+        String output = "Dealers hand: " + dealerHand.toString();
 
-        try {
-            URL url = Objects.requireNonNull(getClass().getClassLoader().getResource("out.png"));
-            String output = "Dealers hand: " + game.getDealer().getHand().toString();
+        // Show dealer hand
+        MessageAction message = event.getChannel().sendMessage(output);
+        if ((image = PhotoCombine.genPhoto(dealerHand.getAsList())) != null)
+            message.addFile(image, "out.png");
+        message.queue();
 
-            if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
-                event.getChannel().sendMessage(output)
-                        .addFile(new FileInputStream(url.getFile()), "out.png")
-                        .queue();
-            } else {
-                event.getChannel().sendMessage(output).queue();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        // Show winnings/losses/tie
+        output = "";
         if (reward > 0) {
-            message += author + " wins! Earnings: " + reward + " *gc*";
+            output += author + " wins! Earnings: " + reward + " *gc*";
         } else if (reward < 0) {
-            message += author + " lost. Losses: " + (-reward) + " *gc*";
+            output += author + " lost. Losses: " + (-reward) + " *gc*";
         } else {
-            message += "Tie game, " + author + " didn't win or lose any money.";
+            output += "Tie game, " + author + " didn't win or lose any money.";
         }
+        event.getChannel().sendMessage(output).queue();
 
-        event.getChannel().sendMessage(message).queue();
         BlackJackList.removeGame(game);
 
         try {

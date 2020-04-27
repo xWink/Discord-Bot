@@ -7,6 +7,7 @@ import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,54 +42,55 @@ public class Hit extends Command {
             return;
         }
 
+        byte[] image;
+        int playerValue = game.hit();
+        String output = "";
+        String name = event.getAuthor().getName();
+        HandOfCards playerHand = game.getPlayer().getHand();
+
         try {
-            String name = event.getAuthor().getName();
-            String output = "";
-            int playerValue = game.hit();
+            // Show player hand
+            MessageAction message = event.getChannel().sendMessage(name + "'s hand is now: " + playerHand.toString());
+            if ((image = PhotoCombine.genPhoto(playerHand.getAsList())) != null)
+                message.addFile(image, "out.png");
+            message.queue();
 
-            if (PhotoCombine.genPhoto(game.getPlayer().getHand().getAsList())) {
-                URL url = Objects.requireNonNull(loader.getResource("out.png"));
-                event.getChannel().sendMessage(name + "'s hand is now: " + game.getPlayer().getHand().toString())
-                        .addFile(new FileInputStream(url.getFile()), "out.png")
-                        .queue();
-            } else {
-                event.getChannel().sendMessage(name + "'s hand is now: " + game.getPlayer().getHand().toString())
-                        .queue();
+            // Game continues as normal if no blackjack or bust
+            if (playerValue < 21)
+                return;
+
+            // Player either won or busted
+            output += playerValue == 21 ? "You got 21!\n" : "You busted.\n";
+
+            // Check how much player won/lost
+            int reward = game.checkWinner();
+
+            // Check if dealer busted
+            HandOfCards dealerHand = game.getDealer().getHand();
+            if (dealerHand.getValue() > 21) {
+                output += "Dealer busted!\n";
             }
 
-            if (playerValue >= 21) {
-                int reward = game.checkWinner();
-                HandOfCards dealerHand = game.getDealer().getHand();
-                output += playerValue == 21 ? "You got 21!\n" : "You busted.\n";
+            // Output player's winnings/losses
+            if (reward > 0)
+                output += "You earned " + reward + " *gc*";
+            else if (reward < 0)
+                output += "You lost " + (-reward) + " *gc*";
+            else
+                output += "Tie game, you didn't win or lose any money";
+            output += "\nDealers hand: " + dealerHand.toString();
 
-                if (dealerHand.getValue() > 21) {
-                    output += "Dealer busted!\n";
-                }
+            // Send message with or without dealer hand image
+            message = event.getChannel().sendMessage(output);
+            if ((image = PhotoCombine.genPhoto(dealerHand.getAsList())) != null)
+                message.addFile(image, "out.png");
+            message.queue();
 
-                if (reward > 0) {
-                    output += "You earned " + reward + " *gc*";
-                } else if (reward < 0) {
-                    output += "You lost " + (-reward) + " *gc*";
-                } else {
-                    output += "Tie game, you didn't win or lose any money";
-                }
-                output += "\nDealers hand: " + game.getDealer().getHand().toString();
+            // Update database
+            if (reward != 0)
+                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), reward);
 
-                if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
-                    URL url = Objects.requireNonNull(loader.getResource("out.png"));
-                    event.getChannel().sendMessage(output)
-                            .addFile(new FileInputStream(url.getFile()), "out.png")
-                            .queue();
-                } else {
-                    event.getChannel().sendMessage(output).queue();
-                }
-
-                if (reward != 0) {
-                    ec.addOrRemoveMoney(event.getAuthor().getIdLong(), reward);
-                }
-
-                BlackJackList.removeGame(game);
-            }
+            BlackJackList.removeGame(game);
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

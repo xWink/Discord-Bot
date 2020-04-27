@@ -1,6 +1,8 @@
 package command.commands.blackjack;
 
 import command.Command;
+import command.util.cards.Card;
+import command.util.cards.HandOfCards;
 import command.util.cards.PhotoCombine;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
@@ -8,12 +10,9 @@ import command.util.game.Player;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
 import java.util.Collections;
-import java.util.Objects;
 
 public class Bet extends Command {
 
@@ -49,9 +48,9 @@ public class Bet extends Command {
     public void start(MessageReceivedEvent event) {
         if (!verifyInput(event)) return;
         long userId = event.getAuthor().getIdLong();
-        ClassLoader loader = ClassLoader.getSystemClassLoader();
         String name = event.getAuthor().getName();
         MessageChannel channel = event.getChannel();
+        byte[] image;
 
         try {
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
@@ -63,50 +62,50 @@ public class Bet extends Command {
                 return;
             }
 
+            // Start game
             BlackJackGame game = new BlackJackGame(new Player(userId), betAmount);
             game.start();
+            Card dealersFirstCard = game.getDealer().getHand().getAsList().get(0);
+            HandOfCards playerHand = game.getPlayer().getHand();
 
-            if (PhotoCombine.genPhoto(game.getPlayer().getHand().getAsList())) {
-                URL url = Objects.requireNonNull(loader.getResource("out.png"));
-                channel.sendMessage(name + " received their first 2 cards: "
-                        + game.getPlayer().getHand().toString())
-                        .addFile(new FileInputStream(url.getFile()), "out.png").queue();
+            // Show player's cards
+            MessageAction message = channel.sendMessage(name + " received their first 2 cards: " + playerHand.toString());
+            if ((image = PhotoCombine.genPhoto(playerHand.getAsList())) != null)
+                message.addFile(image, "out.png").queue();
+            message.queue();
 
-                PhotoCombine.genPhoto(Collections.singletonList(game.getDealer().getHand().getAsList().get(0)));
-                url = Objects.requireNonNull(loader.getResource("out.png"));
-                channel.sendMessage("Dealer's first card: " + game.getDealer().getHand().getAsList().get(0).toEmote())
-                        .addFile(new FileInputStream(url.getFile()), "out.png").queue();
-            } else {
-                channel.sendMessage(name + " received their first 2 cards: " + game.getPlayer().getHand().toString()
-                        + "\nDealer's first card: " + game.getDealer().getHand().getAsList().get(0).toEmote()).queue();
-            }
+            // Show dealer's first card
+            message = channel.sendMessage("Dealer's first card: " + dealersFirstCard.toEmote());
+            if ((image = PhotoCombine.genPhoto(Collections.singletonList(dealersFirstCard))) != null)
+                message.addFile(image, "out.png");
+            message.queue();
 
-            // Check if started with blackjack
-            if (game.getPlayer().getHand().getValue() == 21) {
-                int result = game.checkWinner();
-                String output;
-
-                if (result > 0) {
-                    output = name + " got 21!\nYou won " + result + "*gc*!\n";
-                } else {
-                    output = name + " got 21!\nIt's a draw, you earned 0 *gc*\n";
-                }
-                output += "Dealers hand: " + game.getDealer().getHand().toString();
-
-                if (PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) {
-                    URL url = Objects.requireNonNull(loader.getResource("out.png"));
-                    channel.sendMessage(output)
-                            .addFile(new FileInputStream(url.getFile()), "out.png")
-                            .queue();
-                } else {
-                    channel.sendMessage(output).queue();
-                }
-
-                if (result > 0) ec.addOrRemoveMoney(userId, result);
-                game.end();
-            } else {
+            // If game is not over, add it to list of active games
+            if (playerHand.getValue() != 21) {
                 BlackJackList.addGame(game);
+                return;
             }
+
+            // Check how much the player won or if game is a tie
+            int result = game.checkWinner();
+            String output;
+
+            // Set output string
+            if (result > 0)
+                output = name + " got 21!\nYou won " + result + "*gc*!\n";
+            else
+                output = name + " got 21!\nIt's a draw, you earned 0 *gc*\n";
+            output += "Dealers hand: " + game.getDealer().getHand().toString();
+
+            // Send message with or without image
+            message = channel.sendMessage(output);
+            if ((image = PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) != null)
+                message.addFile(image, "out.png");
+            message.queue();
+
+            // Update database and end game
+            if (result > 0) ec.addOrRemoveMoney(userId, result);
+            game.end();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

@@ -1,10 +1,11 @@
 package command.util.cards;
 
+import jdk.internal.jline.internal.Nullable;
+
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,7 +22,8 @@ public final class PhotoCombine {
      * @param cards the ArrayList of cards which will be represented in the image
      * @return true if successful, false if something went wrong
      */
-    public static boolean genPhoto(List<Card> cards) {
+    @Nullable
+    public static byte[] genPhoto(List<Card> cards) {
         ClassLoader loader = PhotoCombine.class.getClassLoader();
         try {
             InputStream in = Objects.requireNonNull(loader.getResourceAsStream("cards/" + cards.get(0).toFileFormat() + ".png"));
@@ -33,13 +35,12 @@ public final class PhotoCombine {
                 cardPallet = cards.size() > 4 ? joinBIBig(cardPallet, tmpCard) : joinBISmall(cardPallet, tmpCard);
             }
 
-            cardPallet = crop(cardPallet);
-            URL url = Objects.requireNonNull(loader.getResource("out.png"));
-            ImageIO.write(cardPallet, "png", new File(url.getFile()));
-            return true;
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ImageIO.write(crop(cardPallet), "png", os);
+            return os.toByteArray();
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 

@@ -4,14 +4,11 @@
  */
 package command.commands.misc;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
+import java.io.*;
+import java.util.Objects;
 
 import command.Command;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Info extends Command {
@@ -32,7 +29,7 @@ public class Info extends Command {
     private void closeFile() {
         try {
             reader.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Error closing file");
         }
     }
@@ -112,23 +109,17 @@ public class Info extends Command {
     @Override
     public void start(final MessageReceivedEvent event) {
         String[] strings = event.getMessage().getContentRaw().split(" ");
+        MessageChannel channel = event.getChannel();
 
         if (strings.length < 2) {
-            event.getChannel().sendMessage("To search for course info, say `!info <course ID>`").queue();
+            channel.sendMessage("To search for course info, say `!info <course ID>`").queue();
             return;
         }
 
         courseId = strings[1];
-        try {
-            URL url = getClass().getClassLoader().getResource("courses.tsv");
-            if (url == null)
-                throw new FileNotFoundException();
-            reader = new BufferedReader(new FileReader(url.getFile()));
-            event.getChannel().sendMessage(printNice(searchCourse())).queue();
-        } catch (FileNotFoundException e) {
-            printStackTraceAndSendMessage(event, e);
-        } finally {
-            closeFile();
-        }
+        InputStream in = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("courses.tsv"));
+        reader = new BufferedReader(new InputStreamReader(in));
+        channel.sendMessage(printNice(searchCourse())).queue();
+        closeFile();
     }
 }

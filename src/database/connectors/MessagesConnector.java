@@ -1,6 +1,6 @@
 package database.connectors;
 
-import command.util.message.MessageData;
+import command.util.misc.MessageData;
 import database.Connector;
 import net.dv8tion.jda.api.entities.Message;
 

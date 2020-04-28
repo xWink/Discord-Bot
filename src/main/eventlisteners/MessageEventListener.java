@@ -2,9 +2,8 @@ package main.eventlisteners;
 
 import command.Command;
 import command.CommandList;
-import command.util.message.MessageData;
+import command.util.misc.MessageData;
 import database.connectors.MessagesConnector;
-import main.Config;
 import main.Server;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.TextChannel;

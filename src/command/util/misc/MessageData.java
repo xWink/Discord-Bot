@@ -1,4 +1,4 @@
-package command.util.message;
+package command.util.misc;
 
 import main.Server;
 import net.dv8tion.jda.api.entities.TextChannel;

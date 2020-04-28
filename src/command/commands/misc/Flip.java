@@ -37,10 +37,8 @@ public class Flip extends Command {
         try {
             BufferedImage image = ImageIO.read(Objects.requireNonNull(loader.getResourceAsStream(
                     isHeads ? "loonie_heads.png" : "loonie_tails.png")));
-
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             ImageIO.write(image, "png", os);
-
             message.addFile(os.toByteArray(), "coin.png");
         } catch (Exception e) {
             e.printStackTrace();

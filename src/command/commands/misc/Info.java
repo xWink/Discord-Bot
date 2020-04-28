@@ -75,13 +75,13 @@ public class Info extends Command {
      */
     @Nullable
     private String findCourseInTSV(@Nonnull String courseId, @Nonnull InputStream in) {
-        String line, temp, tempId;
+        String tempId = courseId.replaceAll("\\*", "").toLowerCase();
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         try {
             reader.readLine();
+            String line;
             while ((line = reader.readLine()) != null) {
-                temp = line.split("\t")[0].split(" ")[0].replace("*", "").toLowerCase();
-                tempId = courseId.replaceAll("\\*", "").toLowerCase();
+                String temp = line.split("\t")[0].split(" ")[0].replace("*", "").toLowerCase();
                 if (temp.equals(tempId))
                     return line.replaceAll("\"", "");
             }

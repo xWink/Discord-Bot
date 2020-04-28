@@ -101,8 +101,8 @@ public class Info extends Command {
     private EmbedBuilder embedCourseData(@Nonnull CourseData data) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setTitle(data.getCourseId());
-        eb.addField("Restrictions:", data.getRestrictions().replaceAll("\\*", "\\\\*"), false);
-        eb.addField("Prerequisites:", data.getPrerequisites().replaceAll("\\*", "\\\\*"), false);
+        eb.addField("Restrictions:", data.getRestrictionsClean(), false);
+        eb.addField("Prerequisites:", data.getPrerequisitesClean(), false);
         eb.addField("Description:", data.getDescription(), false);
         return eb;
     }

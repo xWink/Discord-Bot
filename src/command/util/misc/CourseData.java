@@ -30,12 +30,20 @@ public class CourseData {
         return restrictions;
     }
 
+    public String getRestrictionsClean() {
+        return restrictions.replaceAll("\\*", "\\\\*").replace("Restriction(s): ", "");
+    }
+
     public void setRestrictions(String restrictions) {
         this.restrictions = restrictions;
     }
 
     public String getPrerequisites() {
         return prerequisites;
+    }
+
+    public String getPrerequisitesClean() {
+        return prerequisites.replaceAll("\\*", "\\\\*").replace("Prerequisite(s): ", "");
     }
 
     public void setPrerequisites(String prerequisites) {

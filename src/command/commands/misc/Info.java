@@ -1,6 +1,8 @@
 /*
  * Made by Jeremy Thorne.
  * GitHub: https://github.com/jeremyt123
+ *
+ * Edited by Shawn Kaplan
  */
 package command.commands.misc;
 

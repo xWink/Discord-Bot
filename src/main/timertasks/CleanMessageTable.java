@@ -7,14 +7,14 @@ import java.util.TimerTask;
 public class CleanMessageTable extends TimerTask {
 
     /**
-     * Backs up all messages older than a day and removes them from
+     * Backs up all messages older than a prune threshold and removes them from
      * the messages table.
      *
      * @see MessagesConnector
      */
     @Override
     public void run() {
-        final int pruneThreshold = 1000 * 60 * 60 * 24 * 2;
+        final int pruneThreshold = 1000 * 60 * 60 * 24 * 2; // 2 days
         MessagesConnector mc = new MessagesConnector();
         try {
             mc.backupMessages(pruneThreshold);

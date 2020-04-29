@@ -6,6 +6,8 @@ import command.util.cache.BangUpdate;
 import database.connectors.BangConnector;
 import database.connectors.EconomyConnector;
 import main.Server;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;
@@ -72,22 +74,24 @@ public class Bang extends Command {
         String output = "";
         String poggers = "<:poggers:554666728878112774>";
         String poggies = "<:poggies:564285288621539328>";
+        String name = event.getAuthor().getName();
 
-        if (jammed) output += "The gun jammed... " + event.getAuthor().getName()
-                + " survived " + poggers + poggers + poggers;
-        else if (killed) output += "Bang! " + event.getAuthor().getName() + " died :skull:";
-        else output += "Click. " + event.getAuthor().getName() + " survived  " + poggies;
-
+        if (jammed)
+            output += "The gun jammed... " + name + " survived " + poggers + poggers + poggers;
+        else if (killed)
+            output += "Bang! " + name + " died :skull:";
+        else
+            output += "Click. " + name + " survived  " + poggies;
         output += "\nChambers left in the cylinder: ||  " + chambers + "  ||\n";
 
         if (reward)
-            output += event.getAuthor().getName() + " received their daily reward of 5 GryphCoins!\n";
+            output += name + " received their daily reward of 5 GryphCoins!\n";
         if (jammed)
-            output += event.getAuthor().getName() + " received a bonus 50 GryphCoins!\n";
+            output += name + " received a bonus 50 GryphCoins!\n";
 
         int currentStreak = bc.getCurrentStreak(userId);
         if (streak && currentStreak > 0 && currentStreak % 10 == 0)
-            output += event.getAuthor().getName() + " received an extra 50 GryphCoins for their streak bonus!\n";
+            output += name + " received an extra 50 GryphCoins for their streak bonus!\n";
 
         return output;
     }
@@ -103,10 +107,12 @@ public class Bang extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != Server.SPAM_CHANNEL_ID) {
-            if (event.getChannel().getIdLong() == Server.SPAM_CHANNEL_ID) {
-                event.getChannel().sendMessage("This command is only available in <#"
-                        + Server.SPAM_CHANNEL_ID + ">").queue();
+        MessageChannel channel = event.getChannel();
+        long channelId = channel.getIdLong();
+
+        if (channelId != Server.SPAM_CHANNEL_ID) {
+            if (channelId == Server.BOTS_CHANNEL_ID) {
+                channel.sendMessage("This command is only available in <#" + Server.SPAM_CHANNEL_ID + ">").queue();
             }
             return;
         }
@@ -124,7 +130,7 @@ public class Bang extends Command {
 
             reward = bc.isEligibleForDaily(userId);
             streak = (now.minusDays(1).getDayOfYear() == lastPlayedDate.getDayOfYear()
-                    && now.minusDays(1).getYear() == lastPlayedDate.getYear())
+                            && now.minusDays(1).getYear() == lastPlayedDate.getYear())
                     || bc.getUserRow(userId).getInt("streak") == 0;
 
             cache.enqueue(new BangUpdate(
@@ -138,7 +144,7 @@ public class Bang extends Command {
             giveRewards();
 
             if (!cache.isPanicking()) {
-                event.getChannel().sendMessage(getOutput(event)).queue();
+                channel.sendMessage(getOutput(event)).queue();
             }
 
             resetBools();

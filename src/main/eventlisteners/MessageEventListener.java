@@ -1,7 +1,7 @@
 package main.eventlisteners;
 
 import command.Command;
-import command.CommandList;
+import main.CommandList;
 import command.util.misc.MessageData;
 import database.connectors.MessagesConnector;
 import main.Server;
@@ -49,6 +49,7 @@ public class MessageEventListener extends ListenerAdapter {
         String messageContent = event.getMessage().getContentRaw();
         if (!event.getAuthor().isBot()) {
             if (messageContent.startsWith("!")) {
+                // Find matching command
                 for (Command command : CommandList.getCommands()) {
                     if (command.keyMatches(messageContent)
                             && (event.getChannel().getIdLong() == (Server.BOTS_CHANNEL_ID) || command.isGlobal())) {

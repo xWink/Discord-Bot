@@ -1,18 +1,12 @@
 package command.commands.blackjack;
 
 import command.Command;
+import command.util.cards.CardMessage;
 import command.util.cards.HandOfCards;
-import command.util.cards.PhotoCombine;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
-import java.util.Objects;
 
 public class Stand extends Command {
 
@@ -43,26 +37,25 @@ public class Stand extends Command {
             return;
         }
 
-        byte[] image;
         int reward = game.checkWinner();
         HandOfCards dealerHand = game.getDealer().getHand();
         String output = "Dealers hand: " + dealerHand.toString();
 
         // Show dealer hand
-        MessageAction message = event.getChannel().sendMessage(output);
-        if ((image = PhotoCombine.genPhoto(dealerHand.getAsList())) != null)
-            message.addFile(image, "out.png");
-        message.queue();
+        CardMessage.createCardMessage(
+                event.getChannel(),
+                output,
+                dealerHand.getAsList()
+        ).queue();
 
         // Show winnings/losses/tie
         output = "";
-        if (reward > 0) {
+        if (reward > 0)
             output += author + " wins! Earnings: " + reward + " *gc*";
-        } else if (reward < 0) {
+        else if (reward < 0)
             output += author + " lost. Losses: " + (-reward) + " *gc*";
-        } else {
+        else
             output += "Tie game, " + author + " didn't win or lose any money.";
-        }
         event.getChannel().sendMessage(output).queue();
 
         BlackJackList.removeGame(game);

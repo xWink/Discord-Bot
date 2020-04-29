@@ -2,15 +2,14 @@ package command.commands.blackjack;
 
 import command.Command;
 import command.util.cards.Card;
+import command.util.cards.CardMessage;
 import command.util.cards.HandOfCards;
-import command.util.cards.PhotoCombine;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import command.util.game.Player;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
 
 import java.util.Collections;
 
@@ -50,7 +49,6 @@ public class Bet extends Command {
         long userId = event.getAuthor().getIdLong();
         String name = event.getAuthor().getName();
         MessageChannel channel = event.getChannel();
-        byte[] image;
 
         try {
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
@@ -69,16 +67,18 @@ public class Bet extends Command {
             HandOfCards playerHand = game.getPlayer().getHand();
 
             // Show player's cards
-            MessageAction message = channel.sendMessage(name + " received their first 2 cards: " + playerHand.toString());
-            if ((image = PhotoCombine.genPhoto(playerHand.getAsList())) != null)
-                message.addFile(image, "out.png").queue();
-            message.queue();
+            CardMessage.createCardMessage(
+                    channel,
+                    name + " received their first 2 cards: " + playerHand.toString(),
+                    playerHand.getAsList()
+            ).queue();
 
             // Show dealer's first card
-            message = channel.sendMessage("Dealer's first card: " + dealersFirstCard.toEmote());
-            if ((image = PhotoCombine.genPhoto(Collections.singletonList(dealersFirstCard))) != null)
-                message.addFile(image, "out.png");
-            message.queue();
+            CardMessage.createCardMessage(
+                    channel,
+                    "Dealer's first card: " + dealersFirstCard.toEmote(),
+                    Collections.singletonList(dealersFirstCard)
+            ).queue();
 
             // If game is not over, add it to list of active games
             if (playerHand.getValue() != 21) {
@@ -97,11 +97,12 @@ public class Bet extends Command {
                 output = name + " got 21!\nIt's a draw, you earned 0 *gc*\n";
             output += "Dealers hand: " + game.getDealer().getHand().toString();
 
-            // Send message with or without image
-            message = channel.sendMessage(output);
-            if ((image = PhotoCombine.genPhoto(game.getDealer().getHand().getAsList())) != null)
-                message.addFile(image, "out.png");
-            message.queue();
+            // Show game results
+            CardMessage.createCardMessage(
+                    channel,
+                    output,
+                    game.getDealer().getHand().getAsList()
+            ).queue();
 
             // Update database and end game
             if (result > 0) ec.addOrRemoveMoney(userId, result);
@@ -122,9 +123,10 @@ public class Bet extends Command {
             return false;
         }
 
-        String[] strings = event.getMessage().getContentRaw().split(" ");
         int betAmount;
+        String[] strings = event.getMessage().getContentRaw().split(" ");
 
+        // Verify that user bet an integer
         try {
             betAmount = Integer.parseInt(strings[1]);
         } catch (Exception e) {
@@ -137,7 +139,6 @@ public class Bet extends Command {
             channel.sendMessage("You must bet at least 1 GryphCoin!").queue();
             return false;
         }
-
         return true;
     }
 }

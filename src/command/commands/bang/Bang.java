@@ -6,8 +6,8 @@ import command.util.cache.BangUpdate;
 import database.connectors.BangConnector;
 import database.connectors.EconomyConnector;
 import main.Server;
+import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;
@@ -72,16 +72,20 @@ public class Bang extends Command {
      */
     private String getOutput(MessageReceivedEvent event) throws SQLException {
         String output = "";
-        String poggers = "<:poggers:554666728878112774>";
-        String poggies = "<:poggies:564285288621539328>";
+        Emote jamEmote = event.getGuild().getEmoteById(Server.JAM_EMOJI_ID);
+        Emote surviveEmote = event.getGuild().getEmoteById(Server.SURVIVE_EMOJI_ID);
         String name = event.getAuthor().getName();
 
-        if (jammed)
-            output += "The gun jammed... " + name + " survived " + poggers + poggers + poggers;
-        else if (killed)
+        if (jammed) {
+            output += "The gun jammed... " + name + " survived "
+                    + (jamEmote != null
+                    ? jamEmote.getAsMention() + jamEmote.getAsMention() + jamEmote.getAsMention()
+                    : "");
+        } else if (killed) {
             output += "Bang! " + name + " died :skull:";
-        else
-            output += "Click. " + name + " survived  " + poggies;
+        } else {
+            output += "Click. " + name + " survived  " + (surviveEmote != null ? surviveEmote.getAsMention() : "");
+        }
         output += "\nChambers left in the cylinder: ||  " + chambers + "  ||\n";
 
         if (reward)
@@ -130,7 +134,7 @@ public class Bang extends Command {
 
             reward = bc.isEligibleForDaily(userId);
             streak = (now.minusDays(1).getDayOfYear() == lastPlayedDate.getDayOfYear()
-                            && now.minusDays(1).getYear() == lastPlayedDate.getYear())
+                    && now.minusDays(1).getYear() == lastPlayedDate.getYear())
                     || bc.getUserRow(userId).getInt("streak") == 0;
 
             cache.enqueue(new BangUpdate(

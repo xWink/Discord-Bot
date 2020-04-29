@@ -1,18 +1,13 @@
 package command.commands.blackjack;
 
 import command.Command;
+import command.util.cards.CardMessage;
 import command.util.cards.HandOfCards;
-import command.util.cards.PhotoCombine;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import database.connectors.EconomyConnector;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.net.URL;
-import java.util.Objects;
 
 public class Hit extends Command {
 
@@ -33,16 +28,15 @@ public class Hit extends Command {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        ClassLoader loader = ClassLoader.getSystemClassLoader();
+        MessageChannel channel = event.getChannel();
         BlackJackGame game = BlackJackList.getUserGame(event.getAuthor().getIdLong());
 
         if (game == null) {
-            event.getChannel().sendMessage("You haven't started a game yet!\n"
+            channel.sendMessage("You haven't started a game yet!\n"
                     + "To start a new one, say `!bet <amount>`").queue();
             return;
         }
 
-        byte[] image;
         int playerValue = game.hit();
         String output = "";
         String name = event.getAuthor().getName();
@@ -50,10 +44,11 @@ public class Hit extends Command {
 
         try {
             // Show player hand
-            MessageAction message = event.getChannel().sendMessage(name + "'s hand is now: " + playerHand.toString());
-            if ((image = PhotoCombine.genPhoto(playerHand.getAsList())) != null)
-                message.addFile(image, "out.png");
-            message.queue();
+            CardMessage.createCardMessage(
+                    channel,
+                    name + "'s hand is now: " + playerHand.toString(),
+                    playerHand.getAsList()
+            ).queue();
 
             // Game continues as normal if no blackjack or bust
             if (playerValue < 21)
@@ -80,11 +75,12 @@ public class Hit extends Command {
                 output += "Tie game, you didn't win or lose any money";
             output += "\nDealers hand: " + dealerHand.toString();
 
-            // Send message with or without dealer hand image
-            message = event.getChannel().sendMessage(output);
-            if ((image = PhotoCombine.genPhoto(dealerHand.getAsList())) != null)
-                message.addFile(image, "out.png");
-            message.queue();
+            // Show game results
+            CardMessage.createCardMessage(
+                    channel,
+                    output,
+                    dealerHand.getAsList()
+            ).queue();
 
             // Update database
             if (reward != 0)

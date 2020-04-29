@@ -13,6 +13,7 @@ public final class Server {
     public static JDA API;
     public static final long GUILD_ID = Long.parseLong(Config.getGuildId());
 
+    // LIVE SERVER
     // Channels
     public static final long GENERAL_CHANNEL_ID = 486633949154770946L;
     public static final long BOTS_CHANNEL_ID = 551828950871965696L;
@@ -24,18 +25,20 @@ public final class Server {
 
     // Emojis
     public static final long CHECK_EMOJI_ID = 699594880527106079L;
+    public static final long JAM_EMOJI_ID = 554666728878112774L;
+    public static final long SURVIVE_EMOJI_ID = 564285288621539328L;
 
     // Roles
     public static final long ADMIN_ROLE_ID = 486635066928136194L;
     public static final long JANITOR_ROLE_ID = 622128124313862164L;
     public static final long TOS_ROLE_ID = 701068412490874890L;
     public static final long ALL_ROLE_ID = 703608427036934235L;
-
     /*
+        // TEST SERVER
         // Channels
         public static final long GENERAL_CHANNEL_ID = 546092348069642251L;
-        public static final long BOTS_CHANNEL_ID = 551828950871965696L;
-        public static final long SPAM_CHANNEL_ID = 674369527731060749L;
+        public static final long BOTS_CHANNEL_ID = 692309264961634355L;
+        public static final long SPAM_CHANNEL_ID = 692309251418226688L;
         public static final long CHANNELS_CHANNEL_ID = 692330710614409269L;
 
         // Messages
@@ -43,6 +46,8 @@ public final class Server {
 
         // Emojis
         public static final long CHECK_EMOJI_ID = 692324735668846653L;
+        public static final long JAM_EMOJI_ID = 554666728878112774L;
+        public static final long SURVIVE_EMOJI_ID = 564285288621539328L;
 
         // Roles
         public static final long ADMIN_ROLE_ID = 546161701008179200L;

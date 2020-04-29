@@ -1,5 +1,6 @@
-package command;
+package main;
 
+import command.Command;
 import command.commands.admin.*;
 import command.commands.bang.Bang;
 import command.commands.bang.BangScore;

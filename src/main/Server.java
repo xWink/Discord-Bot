@@ -33,6 +33,7 @@ public final class Server {
     public static final long JANITOR_ROLE_ID = 622128124313862164L;
     public static final long TOS_ROLE_ID = 701068412490874890L;
     public static final long ALL_ROLE_ID = 703608427036934235L;
+    public static final long NOTIFY_ROLE_ID = 707756300087590992L;
     /*
         // TEST SERVER
         // Channels
@@ -46,14 +47,15 @@ public final class Server {
 
         // Emojis
         public static final long CHECK_EMOJI_ID = 692324735668846653L;
-        public static final long JAM_EMOJI_ID = 554666728878112774L;
-        public static final long SURVIVE_EMOJI_ID = 564285288621539328L;
+        public static final long JAM_EMOJI_ID = 0;
+        public static final long SURVIVE_EMOJI_ID = 0;
 
         // Roles
         public static final long ADMIN_ROLE_ID = 546161701008179200L;
         public static final long JANITOR_ROLE_ID = 703579025733320705L;
         public static final long TOS_ROLE_ID = 692309516435587142L;
         public static final long ALL_ROLE_ID = 703592388047667201L;
+        public static final long NOTIFY_ROLE_ID = 707749157791596607L;
     */
     private Server() {}
 

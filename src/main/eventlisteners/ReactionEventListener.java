@@ -138,7 +138,7 @@ public class ReactionEventListener extends ListenerAdapter {
         ArrayList<Permission> perms = new ArrayList<>(Collections.singletonList(Permission.MESSAGE_READ));
 
         // The "All" role does not get its own channel
-        if (channelName.toLowerCase().equals("all"))
+        if (channelName.toLowerCase().equals("all") || channelName.toLowerCase().equals("notify"))
             return CompletableFuture.supplyAsync(() -> null);
 
         // Create channel if it doesn't exist

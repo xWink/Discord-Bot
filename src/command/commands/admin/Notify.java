@@ -76,5 +76,6 @@ public class Notify extends Command implements AdminCommand {
 
         // Mention all target members then send related message
         channel.sendMessage(mentions).queue(theMessage -> channel.sendMessage(message).queue());
+        event.getMessage().delete().queue();
     }
 }

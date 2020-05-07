@@ -60,10 +60,7 @@ public class Notify extends Command implements AdminCommand {
         }
 
         // Get all members that need to be mentioned
-        List<Member> members = Stream.concat(
-                guild.getMembersWithRoles(targetRole, guild.getRoleById(Server.NOTIFY_ROLE_ID)).stream(),
-                guild.getMembersWithRoles(targetRole, guild.getRoleById(Server.ALL_ROLE_ID)).stream()
-        ).collect(Collectors.toList());
+        List<Member> members = guild.getMembersWithRoles(targetRole, guild.getRoleById(Server.NOTIFY_ROLE_ID));
         if (members.isEmpty()) {
             channel.sendMessage("Nobody to notify").queue();
             return;

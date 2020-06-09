@@ -30,7 +30,7 @@ public class ResetChannels extends Command implements AdminCommand {
      */
     @Override
     public void start(MessageReceivedEvent event) {
-        if (!AdminCommand.memberIsAdmin(event.getMember()))
+        if (!memberIsAdmin(event.getMember()))
             return;
 
         TextChannel channels = Objects.requireNonNull(event.getGuild().getTextChannelById(Server.CHANNELS_CHANNEL_ID));

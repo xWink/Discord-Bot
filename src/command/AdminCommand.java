@@ -12,7 +12,7 @@ public interface AdminCommand {
      * @param member the member of the server
      * @return true if the member is an admin or owner
      */
-    static boolean memberIsAdmin(Member member) {
+    default boolean memberIsAdmin(Member member) {
         if (member != null)
             return member.getRoles().contains(member.getGuild().getRoleById(Server.ADMIN_ROLE_ID)) || member.isOwner();
         return false;

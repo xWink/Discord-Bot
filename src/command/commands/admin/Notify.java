@@ -28,7 +28,7 @@ public class Notify extends Command implements AdminCommand {
 
     @Override
     public void start(MessageReceivedEvent event) {
-        if (!AdminCommand.memberIsAdmin(event.getMember())) {
+        if (!memberIsAdmin(event.getMember())) {
             return;
         }
 

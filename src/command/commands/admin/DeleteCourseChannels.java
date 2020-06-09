@@ -19,7 +19,7 @@ public class DeleteCourseChannels extends Command implements AdminCommand {
 
     @Override
     public void start(MessageReceivedEvent event) {
-        if (!AdminCommand.memberIsAdmin(event.getMember()))
+        if (!memberIsAdmin(event.getMember()))
             return;
 
         for (int i = 1000; i < 5000; i += 1000) {

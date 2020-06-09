@@ -48,6 +48,7 @@ public final class CommandList {
      */
     private static void addAllCommands() {
         // Admin commands
+        commands.add(new Echo());
         commands.add(new Notify());
         commands.add(new Purge());
         commands.add(new ResetChannels());

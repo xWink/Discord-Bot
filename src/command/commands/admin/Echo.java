@@ -28,7 +28,7 @@ public class Echo extends Command implements AdminCommand {
 
         Message message = event.getMessage();
         String[] split = message.getContentRaw().split(" ");
-        String string = Arrays.toString(Arrays.copyOfRange(split, 1, split.length));
+        String string = String.join(" ", Arrays.copyOfRange(split, 1, split.length));
         event.getChannel().sendMessage(string).queue();
         message.delete().queue();
     }

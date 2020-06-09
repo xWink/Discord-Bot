@@ -2,6 +2,7 @@ package command.commands.admin;
 
 import command.AdminCommand;
 import command.Command;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.Arrays;
@@ -25,8 +26,10 @@ public class Echo extends Command implements AdminCommand {
         if (!memberIsAdmin(event.getMember()))
             return;
 
-        String[] split = event.getMessage().getContentRaw().split(" ");
-        String message = Arrays.toString(Arrays.copyOfRange(split, 1, split.length));
-        event.getChannel().sendMessage(message).queue();
+        Message message = event.getMessage();
+        String[] split = message.getContentRaw().split(" ");
+        String string = Arrays.toString(Arrays.copyOfRange(split, 1, split.length));
+        event.getChannel().sendMessage(string).queue();
+        message.delete().queue();
     }
 }

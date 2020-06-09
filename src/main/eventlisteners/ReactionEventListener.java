@@ -50,21 +50,22 @@ public class ReactionEventListener extends ListenerAdapter {
     public void onMessageReactionAdd(@NotNull MessageReactionAddEvent event) {
         if (event.getMember() == null || event.getUser() == null)
             return;
+        try {
+            if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID) {
+                // User agrees to ToS
+                if (event.getMessageIdLong() == Server.WELCOME_MESSAGE_ID)
+                    addToSRole(event);
 
-        if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID) {
-            // User agrees to ToS
-            if (event.getMessageIdLong() == Server.WELCOME_MESSAGE_ID)
-                addToSRole(event);
+                    // Joining course channel
+                else if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID)
+                    joinCourse(event);
+            }
 
-                // Joining course channel
-            else if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID)
-                joinCourse(event);
-        }
+            if (event.getUserIdLong() == getMessageAuthId(event))
+                return;
 
-        if (event.getUserIdLong() == getMessageAuthId(event))
-            return;
-
-        handleKarmaAdd(event);
+            handleKarmaAdd(event);
+        } catch (Exception ignored) {}
     }
 
 

@@ -16,6 +16,11 @@ public class Echo extends Command implements AdminCommand {
     }
 
     @Override
+    public boolean keyMatches(String string) {
+        return string.contains(getKey());
+    }
+
+    @Override
     public void start(MessageReceivedEvent event) {
         if (!memberIsAdmin(event.getMember()))
             return;

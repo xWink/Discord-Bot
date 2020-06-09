@@ -4,6 +4,8 @@ import command.AdminCommand;
 import command.Command;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.util.Arrays;
+
 public class Echo extends Command implements AdminCommand {
 
     /**
@@ -18,6 +20,8 @@ public class Echo extends Command implements AdminCommand {
         if (!memberIsAdmin(event.getMember()))
             return;
 
-        event.getChannel().sendMessage(event.getMessage().getContentRaw());
+        String[] split = event.getMessage().getContentRaw().split(" ");
+        String message = Arrays.toString(Arrays.copyOfRange(split, 1, split.length));
+        event.getChannel().sendMessage(message).queue();
     }
 }

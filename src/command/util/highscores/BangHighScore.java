@@ -100,7 +100,7 @@ public final class BangHighScore extends HighScore {
                 for (BangPlayer player : luckiest) {
                     Member member = getGuild().getMemberById(player.getId());
                     if (member != null) {
-                        if (player.getAttempts() == luckiest.get(0).getSurvivalRate()) {
+                        if (player.getSurvivalRate() == luckiest.get(0).getSurvivalRate()) {
                             getGuild().addRoleToMember(member, luckiestRole).queue();
                         } else {
                             getGuild().removeRoleFromMember(member, luckiestRole).queue();
@@ -132,7 +132,7 @@ public final class BangHighScore extends HighScore {
                 for (BangPlayer player : unluckiest) {
                     Member member = getGuild().getMemberById(player.getId());
                     if (member != null) {
-                        if (player.getAttempts() == unluckiest.get(0).getSurvivalRate()) {
+                        if (player.getSurvivalRate() == unluckiest.get(0).getSurvivalRate()) {
                             getGuild().addRoleToMember(member, unluckiestRole).queue();
                         } else {
                             getGuild().removeRoleFromMember(member, unluckiestRole).queue();

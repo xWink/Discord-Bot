@@ -61,6 +61,15 @@ public class MessagesConnector extends Connector {
         statement.executeUpdate();
     }
 
+    public void updateMessage(Message message) throws SQLException, IOException {
+        String myStatement = "UPDATE " + getTable() + " SET content=? WHERE message_id=?";
+        System.out.println(myStatement);
+        PreparedStatement statement = getConnection().prepareStatement(myStatement);
+        statement.setString(1, message.getContentRaw());
+        statement.setString(2, message.getId());
+        statement.executeUpdate();
+    }
+
     /**
      * Searches the database for a message with a matching message ID.
      *

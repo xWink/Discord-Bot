@@ -37,7 +37,6 @@ public class MessageDeleteEventListener extends ListenerAdapter {
      */
     @Override
     public void onMessageDelete(@NotNull MessageDeleteEvent event) {
-        System.out.println("deleted");
         Callable<Void> storeMessage = () -> {
             try {
                 MessageData data = mc.getMessageDataById(event.getMessageIdLong());

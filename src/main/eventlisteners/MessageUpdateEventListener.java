@@ -30,10 +30,10 @@ public class MessageUpdateEventListener extends ListenerAdapter {
 
     @Override
     public void onMessageUpdate(@NotNull MessageUpdateEvent event) {
-        System.out.println("updated");
         Callable<Void> storeMessage = () -> {
             try {
                 MessageData data = mc.getMessageDataById(event.getMessageIdLong());
+                mc.storeMessage(event.getMessage());
                 TextChannel channel = Server.API.getTextChannelById(677109914400980992L);
                 if (data != null && channel != null) {
                     String part1 = data.toFormattedString();

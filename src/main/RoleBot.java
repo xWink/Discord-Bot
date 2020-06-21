@@ -1,8 +1,6 @@
 package main;
 
-import main.eventlisteners.ConnectionEventListener;
-import main.eventlisteners.MessageEventListener;
-import main.eventlisteners.ReactionEventListener;
+import main.eventlisteners.EventListeners;
 import main.timertasks.CleanMessageTable;
 import main.timertasks.PruneBangStreaks;
 import main.timertasks.RemoveExpiredRoles;
@@ -27,10 +25,7 @@ public class RoleBot {
         BasicConfigurator.configure();
         try {
             logger.debug("Entering application.");
-            Server.API.addEventListener(
-                    new MessageEventListener(),
-                    new ReactionEventListener(),
-                    new ConnectionEventListener());
+            Server.API.addEventListener(EventListeners.ALL.toArray());
             Timer timer = new Timer();
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
             timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);

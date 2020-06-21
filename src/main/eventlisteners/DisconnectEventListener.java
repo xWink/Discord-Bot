@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.events.DisconnectEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
-public class ConnectionEventListener extends ListenerAdapter {
+public class DisconnectEventListener extends ListenerAdapter {
 
     /**
      * Prints "attempting to reconnect" when disconnecting.

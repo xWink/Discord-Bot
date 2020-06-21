@@ -72,19 +72,19 @@ public class MessageUpdateEventListener extends ListenerAdapter {
 
     private void sendAsOneMessage(String s, File file, TextChannel channel) {
         if (file == null) {
-            channel.sendMessage(s).queue();
+            channel.sendMessage("{EDIT} " + s).queue();
         } else {
-            channel.sendMessage(s).addFile(file).queue();
+            channel.sendMessage("{EDIT} " + s).addFile(file).queue();
         }
     }
 
     private void sendAsTwoMessages(String s1, String s2, File file, TextChannel channel) {
         if (file == null) {
-            channel.sendMessage(s1).queue();
-            channel.sendMessage(s2).queue();
+            channel.sendMessage("{EDIT} " + s1).queue();
+            channel.sendMessage("{EDIT} " + s2).queue();
         } else {
-            channel.sendMessage(s1).queue();
-            channel.sendMessage(s2).addFile(file).queue();
+            channel.sendMessage("{EDIT} " + s1).queue();
+            channel.sendMessage("{EDIT} " + s2).addFile(file).queue();
         }
     }
 }

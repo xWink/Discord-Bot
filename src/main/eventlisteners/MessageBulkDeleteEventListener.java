@@ -71,7 +71,7 @@ public class MessageBulkDeleteEventListener extends ListenerAdapter {
                 }
 
                 if (out.length() > 0) {
-                    channel.sendMessage(out).queue();
+                    channel.sendMessage("{BULK DELETE}\n" + out).queue();
                 }
             } catch (Exception e) {
                 e.printStackTrace();

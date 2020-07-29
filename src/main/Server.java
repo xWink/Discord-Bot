@@ -12,7 +12,7 @@ public final class Server {
 
     public static JDA API;
     public static final long GUILD_ID = Long.parseLong(Config.getGuildId());
-    /*
+
     // LIVE SERVER
     // Channels
     public static final long GENERAL_CHANNEL_ID = 486633949154770946L;
@@ -20,7 +20,7 @@ public final class Server {
     public static final long SPAM_CHANNEL_ID = 674369527731060749L;
     public static final long CHANNELS_CHANNEL_ID = 699595118583480331L;
     public static final long DELETED_MESSAGES_CHANNEL_ID = 677109914400980992L;
-    public static final long EDITED_MESSAGES_CHANNEL_ID = 738143259158904992;
+    public static final long EDITED_MESSAGES_CHANNEL_ID = 738143259158904992L;
 
     // Messages
     public static final long WELCOME_MESSAGE_ID = 699594773480079430L;
@@ -36,8 +36,8 @@ public final class Server {
     public static final long TOS_ROLE_ID = 701068412490874890L;
     public static final long ALL_ROLE_ID = 703608427036934235L;
     public static final long NOTIFY_ROLE_ID = 707756300087590992L;
-    */
-    // TEST SERVER
+
+    /* TEST SERVER
     // Channels
     public static final long GENERAL_CHANNEL_ID = 546092348069642251L;
     public static final long BOTS_CHANNEL_ID = 692309264961634355L;
@@ -60,7 +60,7 @@ public final class Server {
     public static final long TOS_ROLE_ID = 692309516435587142L;
     public static final long ALL_ROLE_ID = 703592388047667201L;
     public static final long NOTIFY_ROLE_ID = 707749157791596607L;
-
+*/
     private Server() {}
 
     static {

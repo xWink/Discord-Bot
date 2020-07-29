@@ -40,7 +40,7 @@ public class MessageDeleteEventListener extends ListenerAdapter {
         Callable<Void> storeMessage = () -> {
             try {
                 MessageData data = mc.getMessageDataById(event.getMessageIdLong());
-                TextChannel channel = Server.API.getTextChannelById(677109914400980992L);
+                TextChannel channel = Server.API.getTextChannelById(Server.DELETED_MESSAGES_CHANNEL_ID);
                 if (data != null && channel != null) {
                     String part1 = data.toFormattedString();
                     String part2 = "";

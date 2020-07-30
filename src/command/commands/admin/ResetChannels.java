@@ -9,7 +9,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.net.URL;
 import java.util.Objects;
 
 public class ResetChannels extends Command implements AdminCommand {
@@ -34,10 +33,8 @@ public class ResetChannels extends Command implements AdminCommand {
             return;
 
         TextChannel channels = Objects.requireNonNull(event.getGuild().getTextChannelById(Server.CHANNELS_CHANNEL_ID));
-        URL url = Objects.requireNonNull(getClass().getClassLoader().getResource("channels.txt"));
         try {
-            File file = new File(url.getFile());
-            //File file = new File("../../res/channels.txt");
+            File file = new File("channels.txt");
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
             while ((line = reader.readLine()) != null) {

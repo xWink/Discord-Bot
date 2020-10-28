@@ -5,10 +5,10 @@ import java.util.Map;
 
 public enum CardSuit {
 
-    SPADES("spades", "\\♠", "s"),
-    CLUBS("clubs", "\\♣", "c"),
-    HEARTS("hearts", "\\♥", "h"),
-    DIAMONDS("diamonds", "\\♦", "d");
+    SPADES("spades", "\\\u2660", "s"),
+    CLUBS("clubs", "\\\u2663", "c"),
+    HEARTS("hearts", "\\\u2665", "h"),
+    DIAMONDS("diamonds", "\\\u2666", "d");
 
     private static final Map<String, CardSuit> MY_MAP = new HashMap<>();
 

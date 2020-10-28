@@ -27,9 +27,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:4.1.1_107'
-    compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.6.0'
-    compile group: 'com.google.guava', name: 'guava', version: 'r05'
-    compile 'org.slf4j:slf4j-log4j12:1.7.25'
-    compile 'com.opencsv:opencsv:4.5'
+    implementation 'net.dv8tion:JDA:4.2.0_168'
+    compile group: 'org.mariadb.jdbc', name: 'mariadb-java-client', version: '2.7.0'
+    compile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
+    compile 'org.slf4j:slf4j-log4j12:1.7.30'
+    compile 'com.opencsv:opencsv:5.3'
 }

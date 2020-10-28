@@ -6,20 +6,19 @@
  */
 package command.commands.misc;
 
+import command.Command;
+import command.util.misc.CourseData;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Objects;
-
-import command.Command;
-import command.util.misc.CourseData;
-import jdk.internal.jline.internal.Nullable;
-import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-
-import javax.annotation.Nonnull;
 
 public class Info extends Command {
 

@@ -4,6 +4,8 @@ import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 /**
  * Contains critical details about the server.
@@ -12,7 +14,7 @@ public final class Server {
 
     public static JDA API;
     public static final long GUILD_ID = Long.parseLong(Config.getGuildId());
-
+    /*
     // LIVE SERVER
     // Channels
     public static final long GENERAL_CHANNEL_ID = 486633949154770946L;
@@ -36,8 +38,8 @@ public final class Server {
     public static final long TOS_ROLE_ID = 701068412490874890L;
     public static final long ALL_ROLE_ID = 703608427036934235L;
     public static final long NOTIFY_ROLE_ID = 707756300087590992L;
-
-    /* TEST SERVER
+    */
+    // TEST SERVER
     // Channels
     public static final long GENERAL_CHANNEL_ID = 546092348069642251L;
     public static final long BOTS_CHANNEL_ID = 692309264961634355L;
@@ -60,15 +62,16 @@ public final class Server {
     public static final long TOS_ROLE_ID = 692309516435587142L;
     public static final long ALL_ROLE_ID = 703592388047667201L;
     public static final long NOTIFY_ROLE_ID = 707749157791596607L;
-*/
+
     private Server() {}
 
     static {
         try {
-            API = new JDABuilder(AccountType.BOT)
-                    .setToken(Config.getToken())
+            API = JDABuilder.createDefault(Config.getToken())
                     .setBulkDeleteSplittingEnabled(false)
                     .setActivity(Activity.playing("!help"))
+                    .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
+                    .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .build();
 
         } catch (Exception e) {

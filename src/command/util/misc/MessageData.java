@@ -50,6 +50,10 @@ public class MessageData {
         return content;
     }
 
+    public String getContentWithoutMentions() {
+        return content.replaceAll("@", "");
+    }
+
     public String getImageBase64() {
         return imageBase64;
     }
@@ -97,6 +101,6 @@ public class MessageData {
             author = "Unknown User";
         }
 
-        return String.format("[%s] <#%s> %s: \"%s\"", format.format(date), channel, author, getContent());
+        return String.format("[%s] <#%s> %s: \"%s\"", format.format(date), channel, author, getContentWithoutMentions());
     }
 }

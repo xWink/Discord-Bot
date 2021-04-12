@@ -43,6 +43,12 @@ public class Gift extends Command {
                     event.getChannel().sendMessage("You cannot gift while in a game of blackjack").queue();
                     return;
                 }
+                
+                // ⭐ -_- 💧
+                if (targetId == 399742165598863370L && ec.canAfford(event.getAuthor().getIdLong(), amount * 10)) {
+                    amount *= 10;
+                }
+                
                 ec.addOrRemoveMoney(targetId, amount);
                 ec.addOrRemoveMoney(event.getAuthor().getIdLong(), -amount);
                 event.getChannel().sendMessage(getGiftEmbed(

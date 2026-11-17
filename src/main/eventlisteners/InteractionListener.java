@@ -15,7 +15,6 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Registers the slash commands and runs slash commands and buttons by turning
@@ -44,9 +43,9 @@ public class InteractionListener extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         SlashCommands.Translation t = SlashCommands.translate(event);
-        // The command's own replies go to the channel, so the private "thinking" reply is only there to
-        // satisfy Discord's three-second rule. It is removed once the command has run.
-        event.deferReply(true).queue(hook -> {
+        // The command's own replies go to the channel. The visible slash reply stays, showing what ran,
+        // so the channel reads "<user> used /bet" followed by the bot's answer.
+        event.deferReply().queue(hook -> {
             try {
                 MessageReceivedEvent synthetic = SyntheticMessage.event(event.getJDA(), event.getIdLong(), t.text,
                         event.getUser(), event.getMember(), event.getChannel(), t.users, t.roles, t.members);
@@ -54,7 +53,7 @@ public class InteractionListener extends ListenerAdapter {
                     hook.editOriginal("That command is not available right now.").queue();
                     return;
                 }
-                hook.deleteOriginal().queueAfter(1, TimeUnit.SECONDS, null, e -> { });
+                hook.editOriginal("Ran `" + t.text + "`").queue();
             } catch (Exception e) {
                 e.printStackTrace();
                 hook.editOriginal("Something went wrong running that. Please try again.").queue();

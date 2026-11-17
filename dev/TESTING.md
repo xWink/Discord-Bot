@@ -68,7 +68,7 @@ Use two accounts (your own and an alt, or a friend) for the social flows.
 | Victory effect | `!shop buy victory-fx`, `!equip victory-fx`, then a correct `!answer` | Confetti after the result |
 | Team banner | `!banner request @SomeRole`, a member of that role says `!banner approve 1` | 45 GC held until approved, refunded if declined |
 | Personal trivia | `!ptrivia` (lists categories), `!ptrivia geography 5`, friends `!panswer b` | Host pays 5 GC; friends join free and get normal arcade credit |
-| Slash commands | Type `/` in the server, then `/wallet`, `/bet amount:2`, `/gift who:@alt amount:3 note:hi`, `/shop buy code:flair-day` | Same result as the `!` version; the private "thinking" reply disappears and the bot answers in the channel |
+| Slash commands | Type `/` in the server, then `/wallet`, `/bet amount:2`, `/gift who:@alt amount:3 note:hi`, `/shop buy code:flair-day` | Same result as the `!` version; the slash reply stays and says `Ran !...`, and the bot answers in the channel |
 | Buttons | `!bet 5` then press **Hit** / **Stand**; `!hilo 2` then **Higher**; `!arcade` then **A-D**; `!duel @alt 2` as alt press **Accept** | Same as typing the command. Someone else pressing your buttons gets a private "not for you" |
 | Confirm buttons | `!contribute 5`, `!shop buy bundle-weekend` | A Confirm button replaces typing `confirm` / repeating the command |
 | Private wallet | `!wallet` in a channel | The embed arrives by DM (📬 reaction); if DMs are closed it posts in the channel |

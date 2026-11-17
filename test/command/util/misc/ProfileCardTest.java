@@ -23,7 +23,7 @@ public class ProfileCardTest {
 
     private static ProfileCard.Stats stats() {
         ProfileCard.Stats s = new ProfileCard.Stats();
-        s.name = "eccentriclolphus";
+        s.name = "GryphFan";
         s.bangs = 142;
         s.deaths = 19;
         s.jams = 4;

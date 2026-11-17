@@ -19,6 +19,7 @@ import command.commands.economy.QuizCommands;
 import command.commands.economy.Contribute;
 import command.commands.economy.DuelCommands;
 import command.commands.economy.Dice;
+import command.commands.economy.InstallmentCommand;
 import command.commands.economy.HiLo;
 import command.commands.economy.GoalCommand;
 import command.commands.Help;
@@ -97,6 +98,7 @@ public final class CommandList {
         commands.add(new HiLo.Move("!cashout"));
         commands.add(new Dice());
         commands.add(new Flip());
+        commands.add(new InstallmentCommand());
         commands.add(new Gift());
         commands.add(new GoalCommand());
         commands.add(new Help());

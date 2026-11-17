@@ -35,4 +35,19 @@ public class PricingIntegrationTest extends DbTestBase {
         assertNotNull(CosmeticShop.getInstance().buy(u, "bundle-weekend", "q2-" + u, 20));
         assertEquals(80, EconomyService.getInstance().getBalance(u));
     }
+
+    @Test
+    public void installmentsAreFinalCappedAndDeliverOnce() throws Exception {
+        economy.InstallmentService svc = economy.InstallmentService.getInstance();
+        long u = newUser();
+        EconomyService.getInstance().credit(u, 2995, "t", null, "c" + u); // 3000
+        assertNotNull(svc.start(u, 555L, "orange"));
+        assertNull(svc.start(u, 555L, "blue")); // one plan at a time
+        assertEquals(1000, svc.pay(u, 1000, "p1" + u).paid);
+        assertEquals(2500, svc.pay(u, 9000, "p2" + u).paid); // capped at what is left
+        assertEquals("GRANTING", svc.current(u).status);
+        assertEquals(500, EconomyService.getInstance().getBalance(u));
+        assertTrue(svc.markGranted(svc.current(u).id));
+        assertNull(svc.current(u));
+    }
 }

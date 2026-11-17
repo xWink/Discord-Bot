@@ -67,7 +67,7 @@ public class Hit extends Command {
                 }
 
                 if (reward > 0)
-                    output += "You earned " + reward + " *gc*";
+                    output += "You earned " + reward + " *gc*" + economy.Cosmetics.extras(game.getPlayer().getUserId()).effect;
                 else if (reward < 0)
                     output += "You lost " + (-reward) + " *gc*";
                 else

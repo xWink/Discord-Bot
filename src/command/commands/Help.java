@@ -4,64 +4,171 @@ import command.Command;
 import main.Server;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu;
 
 import java.awt.Color;
 
+/**
+ * {@code !help} shows a menu: pick a category from the drop-down and the embed
+ * switches to that category's commands. {@code !help games} (or any category
+ * name) opens a page directly.
+ */
 public class Help extends Command {
 
-    /**
-     * Initializes the command's key to "!help".
-     */
+    /** A command line on a help page. */
+    private static final class Entry {
+        final String usage;
+        final String what;
+
+        Entry(String usage, String what) {
+            this.usage = usage;
+            this.what = what;
+        }
+    }
+
+    /** One page of the help menu. */
+    public enum Category {
+        OVERVIEW("overview", "📖", "Overview", "Start here", new Color(0xF5C542)),
+        GAMES("games", "🎲", "Games", "Risk a few coins, or play free", new Color(0xE0457B),
+                new Entry("!bet <1-10>", "Blackjack. Pays 3:2, a tie returns your stake"),
+                new Entry("!hit  !stand  !myhand", "Play your blackjack hand"),
+                new Entry("!dice <low|high|seven> [stake]", "Two dice. Leave the stake off to play free"),
+                new Entry("!hilo <stake>", "Higher or Lower. Then !higher, !lower or !cashout"),
+                new Entry("!duel @user [stake]", "Trivia duel. They reply !accept or !decline"),
+                new Entry("!duelanswer <letter>", "Answer your duel question"),
+                new Entry("!duelboard", "Duel ratings"),
+                new Entry("!bang", "Russian roulette. Your first pull of the day pays your daily"),
+                new Entry("!flip", "Flip a coin"),
+                new Entry("!paidplay [on|off]", "Turn games that risk coins on or off for you")),
+        ARCADE("arcade", "🧠", "Arcade & quizzes", "Free daily puzzles that pay", new Color(0x3BA55D),
+                new Entry("!arcade", "Today's puzzle. Your first round each day pays your daily"),
+                new Entry("!answer <letter>", "Answer your puzzle or quiz question"),
+                new Entry("!arcadescores", "This week's arcade leaderboard"),
+                new Entry("!weekly <code|trivia>", "Weekly 3-question challenge, 10-15 GC once a week"),
+                new Entry("!gauntlet [prize]", "3 mixed rounds. 'prize' costs 3 GC and wins the weekly badge"),
+                new Entry("!coop", "Weekend server-wide target"),
+                new Entry("!ptrivia <category> [5-10]", "Host a trivia round for the channel"),
+                new Entry("!panswer <letter>", "Join a hosted round for free")),
+        ECONOMY("economy", "💰", "Wallet & shop", "Earn, spend and send GryphCoins", new Color(0xFAA61A),
+                new Entry("!wallet", "Your balance, reserved coins, decay and receipts (sent by DM)"),
+                new Entry("!daily", "When your daily reward is ready"),
+                new Entry("!gift @user <amount> [wrap note]", "Send coins. 'wrap' adds a card for 3 GC extra"),
+                new Entry("!market  !buy <#>", "Colour rentals and permanent colours"),
+                new Entry("!swap <colour>", "Change colour for 5 GC and keep your time"),
+                new Entry("!installment", "Pay for a permanent colour in parts"),
+                new Entry("!shop", "Cosmetics. !shop buy <code>, !shop owned"),
+                new Entry("!equip <code|none>", "Wear a cosmetic you own (effects, titles, flair)"),
+                new Entry("!banner request @TeamRole", "Sponsor a team banner for a week"),
+                new Entry("!goal  !contribute <amount>", "Community goal and funding it"),
+                new Entry("!bounty", "Post, claim and pay jobs for coins"),
+                new Entry("!event", "Host or confirm event attendance")),
+        PROFILE("profile", "🏆", "Profile & rankings", "Stats, boards and achievements", new Color(0x5865F2),
+                new Entry("!profile", "Your stats, cosmetics and wallet"),
+                new Entry("!achievements", "Your unlocks"),
+                new Entry("!board <arcade|duel|collection|community>", "Leaderboards and seasons"),
+                new Entry("!bangscore  !bangweek  !mybang", "Bang rankings and your numbers"),
+                new Entry("!optout [on|off]", "Hide yourself from public boards"),
+                new Entry("!karma", "Your karma")),
+        INFO("info", "ℹ️", "Info & courses", "Utilities and course channels", new Color(0x99AAB5),
+                new Entry("!ping", "Your latency"),
+                new Entry("!id <Discord ID>", "Look up a user"),
+                new Entry("!info <course>", "Course info"),
+                new Entry("!roles  !join  !leave", "Course channels")),
+        MODS("moderators", "🛡️", "Moderators", "Staff only", new Color(0xED4245),
+                new Entry("!economy receipt <id>", "Look up any wallet change"),
+                new Entry("!economy adjust @user <+/-amount> <note>", "Documented correction"),
+                new Entry("!economy goal new <target> <title>  /  cancel", "Community goals"),
+                new Entry("!economy decay <weeks>", "Publish the first decay cutoff"),
+                new Entry("!event start <name>", "Start an event without a pass"),
+                new Entry("!banner approve|decline <id>", "Approve team banners"));
+
+        final String key;
+        final String emoji;
+        final String label;
+        final String blurb;
+        final Color color;
+        private final Entry[] entries;
+
+        Category(String key, String emoji, String label, String blurb, Color color, Entry... entries) {
+            this.key = key;
+            this.emoji = emoji;
+            this.label = label;
+            this.blurb = blurb;
+            this.color = color;
+            this.entries = entries;
+        }
+
+        public static Category find(String text) {
+            for (Category c : values()) {
+                if (c.key.equalsIgnoreCase(text) || c.label.toLowerCase().startsWith(text.toLowerCase())) return c;
+            }
+            return null;
+        }
+
+        /** The embed for this page. */
+        public EmbedBuilder page() {
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setColor(color);
+            eb.setTitle(emoji + "  " + label);
+            if (this == OVERVIEW) {
+                StringBuilder sb = new StringBuilder("Pick a category from the menu below.\n\n");
+                for (Category c : values()) {
+                    if (c != OVERVIEW) sb.append(c.emoji).append("  **").append(c.label).append("** — ")
+                            .append(c.blurb).append('\n');
+                }
+                eb.setDescription(sb.toString());
+                eb.addField("New here?", "`!wallet` to see your coins, `!arcade` for a free puzzle, "
+                        + "`!bet 2` to try blackjack.", false);
+            } else {
+                StringBuilder sb = new StringBuilder();
+                for (Entry e : entries) sb.append("`").append(e.usage).append("`\n└ ").append(e.what).append("\n\n");
+                eb.setDescription(sb.toString());
+            }
+            eb.setFooter("<needed> [optional] · most commands work in the bots or spam channel", null);
+            return eb;
+        }
+    }
+
     public Help() {
         super("!help", true);
     }
 
+    @Override
+    public boolean keyMatches(String string) {
+        return string.toLowerCase().startsWith("!help");
+    }
+
     /**
-     * Displays the help interface, which shows all the commands a regular
-     * user has access to.
-     *
-     * @param event the MessageReceivedEvent that triggered the command
+     * Builds the drop-down that switches help pages. The owner's ID is part of
+     * the component ID, so only they can change their menu.
      */
+    public static StringSelectMenu menu(long ownerId, Category current) {
+        StringSelectMenu.Builder b = StringSelectMenu.create("help:" + ownerId);
+        for (Category c : Category.values()) {
+            if (c == Category.MODS) continue;
+            b.addOption(c.label, c.key, c.blurb, Emoji.fromUnicode(c.emoji));
+        }
+        b.addOption(Category.MODS.label, Category.MODS.key, Category.MODS.blurb, Emoji.fromUnicode(Category.MODS.emoji));
+        b.setDefaultValues(current.key);
+        return b.build();
+    }
+
     @Override
     public void start(MessageReceivedEvent event) {
-        if (event.getChannel().getIdLong() != Server.BOTS_CHANNEL_ID && event.getChannel().getIdLong() != Server.SPAM_CHANNEL_ID) {
+        if (event.getChannel().getIdLong() != Server.BOTS_CHANNEL_ID
+                && event.getChannel().getIdLong() != Server.SPAM_CHANNEL_ID) {
             TextChannel bots = Server.API.getTextChannelById(Server.BOTS_CHANNEL_ID);
             if (bots != null) {
                 event.getChannel().sendMessage("Say `!help` in " + bots.getAsMention() + " to see available commands!").queue();
             }
             return;
         }
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.setColor(Color.YELLOW);
-        eb.setTitle("Bot Commands:");
-
-        eb.addField("Play Russian Roulette.",                                       "!bang", false);
-        eb.addField("Shows high scores for bang.",                                  "!bangscores", false);
-        eb.addField("Play blackjack against the computer.",                         "!bet !hit !stand", false);
-        eb.addField("Shows when your daily reward resets.",                         "!daily", false);
-        eb.addField("Flips a coin, displaying the result.",                         "!flip", false);
-        eb.addField("Gifts a specified number of GryphCoins to a target user.",     "!gift [@user] [# gc]", false);
-        eb.addField("Shows a user's display name based on Discord ID.",             "!id [Discord ID]", false);
-        eb.addField("Shows info on a course at UoGuelph.",                          "!info [course ID]", false);
-        eb.addField("View or purchase items listed on the market.",                 "!market !buy [item #] !swap [colour]", false);
-        eb.addField("Free daily trivia or code puzzle; first round pays your daily.", "!arcade !answer [letter] !arcadescores", false);
-        eb.addField("Turn games that risk your coins on or off.", "!paidplay [on/off]", false);
-        eb.addField("See or fund the community goal.", "!goal !contribute [# gc]", false);
-        eb.addField("Predict two dice. Free without a stake.", "!dice [low/high/seven] [stake]", false);
-        eb.addField("Higher or Lower with a stake.", "!hilo [stake] !higher !lower !cashout", false);
-        eb.addField("Buy profile cosmetics.", "!shop !shop buy [code] !shop owned", false);
-        eb.addField("Challenge someone to a trivia/code duel.", "!duel [@user] [stake] !accept !decline !duelanswer [letter] !duelboard", false);
-        eb.addField("Weekly 3-question challenge, gauntlet, weekend co-op.", "!weekly [code/trivia] !gauntlet [prize] !coop", false);
-        eb.addField("Post jobs for coins.", "!bounty [post/list/claim/accept/cancel]", false);
-        eb.addField("Host or join events.", "!event [start/confirm/end]", false);
-        eb.addField("Leaderboards, seasons, hide yourself from boards.", "!board [arcade/duel/collection/community] !optout [on/off]", false);
-        eb.addField("Pay for a permanent colour in parts.", "!installment [start/pay/finish]", false);
-        eb.addField("Host your own trivia round; achievements, cosmetics, team banners.", "!ptrivia !panswer !achievements !equip [code] !banner", false);
-        eb.addField("Shows your wallet, reserved coins, decay estimate and receipts.", "!wallet", false);
-        eb.addField("Shows your latency.",                                          "!ping", false);
-        eb.addField("Shows your profile.",                                          "!profile", false);
-
-        event.getChannel().sendMessageEmbeds(eb.build()).queue();
+        String[] a = event.getMessage().getContentRaw().split("\\s+");
+        Category category = a.length >= 2 ? Category.find(a[1]) : Category.OVERVIEW;
+        if (category == null) category = Category.OVERVIEW;
+        event.getChannel().sendMessageEmbeds(category.page().build())
+                .setActionRow(menu(event.getAuthor().getIdLong(), category)).queue();
     }
 }

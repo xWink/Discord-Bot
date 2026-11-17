@@ -115,7 +115,8 @@ public class HiLo extends Command {
                             return;
                         }
                         int net = finish(game, game.netIfStopped());
-                        event.getChannel().sendMessage("Cashed out: +" + net + " GC.").queue();
+                        event.getChannel().sendMessage("Cashed out: +" + net + " GC."
+                                + economy.Cosmetics.extras(game.getUserId()).effect).queue();
                         return;
                     }
                     boolean ok = game.guess(mode.equals("higher"));
@@ -125,7 +126,8 @@ public class HiLo extends Command {
                         event.getChannel().sendMessage(card + "Wrong. You lost " + game.getStake() + " GC.").queue();
                     } else if (game.isFinished()) {
                         int net = finish(game, game.netIfStopped());
-                        event.getChannel().sendMessage(card + "Two in a row! +" + net + " GC.").queue();
+                        event.getChannel().sendMessage(card + "Two in a row! +" + net + " GC."
+                                + economy.Cosmetics.extras(game.getUserId()).effect).queue();
                     } else {
                         event.getChannel().sendMessage(card + "Correct! Cash out for +" + game.netIfStopped()
                                 + " GC with `!cashout`, or risk it all with `!higher` / `!lower` for +"

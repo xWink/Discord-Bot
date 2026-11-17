@@ -72,6 +72,7 @@ public class Dice extends Command {
             String result = stake == 0
                     ? (won ? "You called it (free play)." : "Missed (free play).")
                     : (won ? "You won " + net + " GC!" : "You lost " + stake + " GC.");
+            if (won) result += economy.Cosmetics.extras(event.getAuthor().getIdLong()).effect;
             event.getChannel().sendMessage(name + " picked " + pick.name().toLowerCase() + ". " + roll + "\n"
                     + result + (stake > 0 ? " Maximum loss was " + stake + " GC." : "")).queue();
         } catch (Exception e) {

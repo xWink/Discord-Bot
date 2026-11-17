@@ -97,7 +97,7 @@ public class ShopCommand extends Command {
                     item.featured ? Integer.valueOf((int) quote[0]) : null);
             QUOTES.remove(key);
             event.getChannel().sendMessage(bought == null ? "You already own that." : "Bought **" + bought.name
-                    + "** for " + (item.featured ? (int) quote[0] : bought.price) + " GC. Receipt `item:"
+                    + "**" + (bought.category.equals("pass") ? "" : " (wear it with `!equip " + bought.code + "`)") + " for " + (item.featured ? (int) quote[0] : bought.price) + " GC. Receipt `item:"
                     + event.getMessageId() + "`.").queue();
         } catch (economy.PriceChangedException e) {
             QUOTES.put(key, new long[]{e.getNewPrice(), System.currentTimeMillis()});

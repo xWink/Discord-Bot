@@ -21,7 +21,7 @@ public class GoalCommand extends Command {
     public void start(MessageReceivedEvent event) {
         try {
             GoalService.Goal goal = GoalService.getInstance().current();
-            if (goal == null) {
+            if (goal == null || goal.status.equals(GoalService.CANCELLED)) {
                 event.getChannel().sendMessage("There is no community goal right now.").queue();
                 return;
             }

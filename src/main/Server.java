@@ -65,7 +65,8 @@ public final class Server {
     private Server() {}
 
     static {
-        try {
+        // Tests set bot.offline so command code can load without logging in to Discord.
+        if (!Boolean.getBoolean("bot.offline")) try {
             API = JDABuilder.createDefault(Config.getToken())
                     .setBulkDeleteSplittingEnabled(false)
                     .setActivity(Activity.playing("!help"))

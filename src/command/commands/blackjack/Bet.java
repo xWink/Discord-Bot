@@ -114,7 +114,7 @@ public class Bet extends Command {
             int result = BlackJackStore.settle(game);
             String output;
             if (result > 0)
-                output = name + " got 21!\nYou won " + result + "*gc*!\n";
+                output = name + " got 21!\nYou won " + result + "*gc*!" + economy.Cosmetics.extras(userId).effect + "\n";
             else
                 output = name + " got 21!\nIt's a push, your stake is returned\n";
             output += "Dealers hand: " + game.getDealer().getHand().toString();

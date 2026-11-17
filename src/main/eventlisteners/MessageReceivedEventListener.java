@@ -30,11 +30,17 @@ public class MessageReceivedEventListener extends ListenerAdapter {
             if (messageContent.startsWith("!")) {
                 // Find matching command
                 for (Command command : CommandList.getCommands()) {
-                    if (command.keyMatches(messageContent)
-                            && (event.getChannel().getIdLong() == (Server.BOTS_CHANNEL_ID) || command.isGlobal())) {
+                    if (!command.keyMatches(messageContent)) continue;
+                    long channelId = event.getChannel().getIdLong();
+                    // Non-global commands work in the bots channel and the spam channel.
+                    if (command.isGlobal() || channelId == Server.BOTS_CHANNEL_ID
+                            || channelId == Server.SPAM_CHANNEL_ID) {
                         command.start(event);
-                        return;
+                    } else {
+                        event.getChannel().sendMessage("`" + command.getKey() + "` works in <#" + Server.BOTS_CHANNEL_ID
+                                + "> or <#" + Server.SPAM_CHANNEL_ID + ">.").queue();
                     }
+                    return;
                 }
             }
 

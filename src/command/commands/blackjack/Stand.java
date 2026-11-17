@@ -50,7 +50,8 @@ public class Stand extends Command {
                 // Show winnings/losses/push
                 String output = "";
                 if (reward > 0)
-                    output += author + " wins! Earnings: " + reward + " *gc*";
+                    output += author + " wins! Earnings: " + reward + " *gc*"
+                            + economy.Cosmetics.extras(event.getAuthor().getIdLong()).effect;
                 else if (reward < 0)
                     output += author + " lost. Losses: " + (-reward) + " *gc*";
                 else

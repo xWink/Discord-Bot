@@ -2,6 +2,8 @@ package database.connectors;
 
 import database.Connector;
 import command.util.economy.RoleListing;
+import economy.EconomyService;
+import economy.InsufficientFundsException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,43 +20,42 @@ public final class EconomyConnector extends Connector {
     }
 
     /**
-     * Adds/removes a specified amount of money to the user's wealth column in
-     * the economy table.
+     * Temporary shim for callers not yet moved to {@link EconomyService}.
      *
-     * @param userId the ID number of the user getting/losing money
-     * @param amount the amount of money to add (negative value to remove)
-     * @throws SQLException may be thrown when creating a PreparedStatement
+     * @deprecated use EconomyService with an explicit operation ID
      */
+    @Deprecated
     public void addOrRemoveMoney(long userId, int amount) throws SQLException {
-        if (!userExists(userId)) addUser(userId);
-        getConnection().prepareStatement("UPDATE " + getTable()
-                + " SET wallet = wallet + " + amount
-                + " WHERE user = " + userId).executeUpdate();
+        try {
+            if (amount > 0) EconomyService.getInstance().credit(userId, amount, "legacy", null, EconomyService.newOpId());
+            else if (amount < 0) EconomyService.getInstance().debit(userId, -amount, "legacy", null, EconomyService.newOpId());
+        } catch (InsufficientFundsException e) {
+            throw new SQLException(e.getMessage(), e);
+        }
     }
 
     /**
-     * Checks if the user can afford a certain expense.
+     * Checks if the user can afford a certain expense from spendable coins
+     * (the wallet minus anything reserved by an open game or purchase).
      *
      * @param userId the ID number of the user
-     * @param cost the cost that is being compared to the user's wealth
+     * @param cost the cost that is being compared to the user's spendable balance
      * @return true if the user can afford the expense, false otherwise
-     * @throws SQLException may be thrown by getting "wallet" integer in ResultSet
+     * @throws SQLException may be thrown when reading the wallet
      */
     public boolean canAfford(long userId, int cost) throws SQLException {
-        if (!userExists(userId)) addUser(userId);
-        return getUserRow(userId).getInt("wallet") - cost >= 0;
+        return EconomyService.getInstance().getSpendable(userId) >= cost;
     }
 
     /**
-     * Getter for the amount of wealth a user has.
+     * Getter for the amount of wealth a user has, including reserved coins.
      *
      * @param userId the ID number of the user
-     * @return the amount of money the user has
-     * @throws SQLException may be thrown by getting "wallet" integer in ResultSet
+     * @return the wallet balance
+     * @throws SQLException may be thrown when reading the wallet
      */
     public int getWealth(long userId) throws SQLException {
-        if (!userExists(userId)) addUser(userId);
-        return getUserRow(userId).getInt("wallet");
+        return EconomyService.getInstance().getBalance(userId);
     }
 
     /**

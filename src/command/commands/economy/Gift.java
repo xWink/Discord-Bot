@@ -2,7 +2,8 @@ package command.commands.economy;
 
 import command.Command;
 import command.util.game.BlackJackList;
-import database.connectors.EconomyConnector;
+import economy.EconomyService;
+import economy.InsufficientFundsException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -12,14 +13,11 @@ import java.awt.*;
 
 public class Gift extends Command {
 
-    EconomyConnector ec;
-
     /**
      * Initializes the command's key to "!gift"
      */
     public Gift() {
         super("!gift", true);
-        ec = new EconomyConnector();
     }
 
     @Override
@@ -38,20 +36,23 @@ public class Gift extends Command {
             long targetId = event.getMessage().getMentionedUsers().get(0).getIdLong();
             int amount = Integer.parseInt(event.getMessage().getContentRaw().split("\\s+")[2]);
 
-            if (ec.canAfford(event.getAuthor().getIdLong(), amount)) {
-                if (BlackJackList.getUserGame(event.getAuthor().getIdLong()) != null) {
-                    event.getChannel().sendMessage("You cannot gift while in a game of blackjack").queue();
-                    return;
-                }
-                ec.addOrRemoveMoney(targetId, amount);
-                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), -amount);
-                event.getChannel().sendMessage(getGiftEmbed(
-                                event.getAuthor(),
-                                event.getMessage().getMentionedUsers().get(0),
-                                amount).build()).queue();
-            } else {
-                event.getChannel().sendMessage("You cannot afford to send that gift").queue();
+            if (BlackJackList.getUserGame(event.getAuthor().getIdLong()) != null) {
+                event.getChannel().sendMessage("You cannot gift while in a game of blackjack").queue();
+                return;
             }
+
+            try {
+                // One operation ID per Discord message, so a retried event cannot pay twice.
+                EconomyService.getInstance().transfer(event.getAuthor().getIdLong(), targetId, amount,
+                        "gift", Long.toString(event.getMessageIdLong()), "gift:" + event.getMessageId());
+            } catch (InsufficientFundsException e) {
+                event.getChannel().sendMessage("You cannot afford to send that gift").queue();
+                return;
+            }
+            event.getChannel().sendMessage(getGiftEmbed(
+                    event.getAuthor(),
+                    event.getMessage().getMentionedUsers().get(0),
+                    amount).build()).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

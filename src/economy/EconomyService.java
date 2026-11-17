@@ -222,6 +222,27 @@ public final class EconomyService {
         return Database.inTransaction(c -> refundReservationIn(c, reservationId));
     }
 
+    /**
+     * Releases every open reservation of a reason. Used at startup for
+     * in-memory games that cannot be resumed.
+     *
+     * @return how many were released
+     */
+    public int refundAllByReason(String reason) throws SQLException {
+        return Database.inTransaction(c -> {
+            List<String> ids = new ArrayList<>();
+            try (PreparedStatement ps = c.prepareStatement(
+                    "SELECT reservation_id FROM economy_reservations WHERE reason = ?")) {
+                ps.setString(1, reason);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) ids.add(rs.getString(1));
+                }
+            }
+            for (String id : ids) refundReservationIn(c, id);
+            return ids.size();
+        });
+    }
+
     /** Release inside a caller-owned transaction. */
     public static boolean refundReservationIn(Connection c, String reservationId) throws SQLException {
         long user = 0;

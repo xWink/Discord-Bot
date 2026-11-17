@@ -26,11 +26,13 @@ public class RoleBot {
         try {
             logger.debug("Entering application.");
             database.Database.migrate();
+            economy.EconomyService.getInstance().refundAllByReason("hilo");
             arcade.QuestionBank.loadBundled();
             arcade.QuestionRefiller.requestRefill(0, null);
             logger.debug("Recovered " + command.util.game.BlackJackStore.recover().size() + " open blackjack hands");
             Server.API.addEventListener(EventListeners.ALL.toArray());
             Timer timer = new Timer();
+            timer.schedule(new main.timertasks.HiLoTimeout(), 1000 * 30, 1000 * 30);
             timer.schedule(new main.timertasks.BlackJackTimeout(), 1000 * 30, 1000 * 30);
             timer.schedule(new main.timertasks.DecaySweep(), 1000 * 60, 1000 * 60 * 60);
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);

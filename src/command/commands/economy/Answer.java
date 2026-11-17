@@ -25,6 +25,11 @@ public class Answer extends Command {
         }
         int choice = Character.toUpperCase(args[1].charAt(0)) - 'A';
         try {
+            arcade.QuizService.Step quiz = arcade.QuizService.answer(event.getAuthor().getIdLong(), choice);
+            if (quiz != null) {
+                QuizCommands.report(event, quiz);
+                return;
+            }
             ArcadeService.Result r = ArcadeService.answer(event.getAuthor().getIdLong(), choice);
             if (r == null) {
                 event.getChannel().sendMessage("You have no open round. Say `!arcade` to start one.").queue();

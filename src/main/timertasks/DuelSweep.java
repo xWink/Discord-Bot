@@ -12,6 +12,11 @@ public class DuelSweep extends TimerTask {
 
     @Override
     public void run() {
+        for (arcade.QuizService.Session s : arcade.QuizService.sweep()) {
+            TextChannel channel = Server.API.getTextChannelById(s.channelId);
+            if (channel != null) channel.sendMessage("<@" + s.user + "> your run timed out"
+                    + (s.reservation != null ? " and the entry fee was refunded." : ".")).queue();
+        }
         for (DuelService.Outcome o : DuelService.sweep()) {
             TextChannel channel = Server.API.getTextChannelById(o.duel.channelId);
             if (channel != null) channel.sendMessage(DuelCommands.describe(o)).queue();

@@ -112,4 +112,21 @@ public class FinishIntegrationTest extends DbTestBase {
         assertTrue(PersonalTrivia.start(newUser(), channel + 1, "nonexistent-category", 5, "x") instanceof String);
         assertTrue(PersonalTrivia.start(host, channel + 2, "geo", 11, "y") instanceof String); // cost range
     }
+
+    @Test
+    public void ownedListsUnexpiredItemsOnceWithLatestExpiry() throws Exception {
+        long u = newUser();
+        eco.credit(u, 100, "t", null, "c" + u);
+        CosmeticShop.getInstance().buy(u, "flair-day", "o1" + u);
+        CosmeticShop.getInstance().buy(u, "flair-day", "o2" + u); // extends, still one entry
+        CosmeticShop.getInstance().buy(u, "badge-set", "o3" + u); // permanent
+        exec("INSERT INTO inventory (user, item_code, purchase_id, expires_at, created_at) VALUES (" + u
+                + ", 'victory-fx', 'old" + u + "', 1, 1)"); // expired, must not appear
+        List<Cosmetics.OwnedItem> owned = Cosmetics.owned(u);
+        assertEquals(2, owned.size());
+        for (Cosmetics.OwnedItem i : owned) {
+            if (i.code.equals("badge-set")) assertEquals(0, i.expiresAt);
+            else assertTrue(i.expiresAt > System.currentTimeMillis() + 86_400_000L);
+        }
+    }
 }

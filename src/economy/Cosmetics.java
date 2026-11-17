@@ -167,11 +167,48 @@ public final class Cosmetics {
             case "badge-set": return "Badge set";
             case "badge-month": return "Monthly badge";
             case "banner-club": return "Team banner";
+            case "event-pass": return "Event pass";
+            case "gift-wrap": return "Gift wrap";
             default:
                 if (code.startsWith("season-")) return "Season winner";
                 if (code.startsWith("gauntlet-")) return "Gauntlet clear";
                 return code;
         }
+    }
+
+    /** One owned item and when it runs out (0 means permanent). */
+    public static final class OwnedItem {
+        public final String code;
+        public final long expiresAt;
+
+        public OwnedItem(String code, long expiresAt) {
+            this.code = code;
+            this.expiresAt = expiresAt;
+        }
+    }
+
+    /**
+     * @return every item the player owns that has not expired, one entry per item with its latest expiry
+     */
+    public static java.util.List<OwnedItem> owned(long user) {
+        java.util.List<OwnedItem> list = new java.util.ArrayList<>();
+        try {
+            Database.inTransaction(c -> {
+                try (PreparedStatement ps = c.prepareStatement("SELECT item_code, "
+                        + "CASE WHEN MIN(expires_at) = 0 THEN 0 ELSE MAX(expires_at) END FROM inventory "
+                        + "WHERE user = ? GROUP BY item_code HAVING MIN(expires_at) = 0 OR MAX(expires_at) > ?")) {
+                    ps.setLong(1, user);
+                    ps.setLong(2, System.currentTimeMillis());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) list.add(new OwnedItem(rs.getString(1), rs.getLong(2)));
+                    }
+                }
+                return null;
+            });
+        } catch (SQLException e) {
+            e.printStackTrace(); // the card just shows no inventory
+        }
+        return list;
     }
 
     /** The codes a player is currently wearing (owned and unexpired), plus their team name if any. */

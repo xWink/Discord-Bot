@@ -29,6 +29,7 @@ import java.util.List;
 public final class ProfileCard {
 
     public static final int WIDTH = 900;
+    /** Height of the card with no inventory panel. */
     public static final int HEIGHT = 440;
 
     private static final Color GOLD = Sticker.GOLD;
@@ -51,15 +52,26 @@ public final class ProfileCard {
     }
 
     public static byte[] render(Stats s, Cosmetics.Loadout loadout, long seed) throws IOException {
+        return render(s, loadout, java.util.Collections.<Cosmetics.OwnedItem>emptyList(), seed);
+    }
+
+    public static byte[] render(Stats s, Cosmetics.Loadout loadout, List<Cosmetics.OwnedItem> owned, long seed)
+            throws IOException {
         System.setProperty("java.awt.headless", "true");
-        BufferedImage img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // measure the inventory first so the card can grow to fit it
+        BufferedImage probe = new BufferedImage(4, 4, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D pg = probe.createGraphics();
+        List<Pill> pills = layoutPills(pg, owned, loadout);
+        pg.dispose();
+        int height = HEIGHT + panelHeight(pills);
+        BufferedImage img = new BufferedImage(WIDTH, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
         try {
             g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
             g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            draw(g, s, loadout, seed);
+            draw(g, s, loadout, pills, height, seed);
         } finally {
             g.dispose();
         }
@@ -70,18 +82,19 @@ public final class ProfileCard {
 
     // ----------------------------------------------------------------- draw
 
-    private static void draw(Graphics2D g, Stats s, Cosmetics.Loadout l, long seed) throws IOException {
+    private static void draw(Graphics2D g, Stats s, Cosmetics.Loadout l, List<Pill> pills, int height, long seed)
+            throws IOException {
         boolean bundle = l.has("bundle-weekend");
         boolean glow = l.has("flair-day");
         Color top = bundle ? new Color(0xFF2A2A) : new Color(0xA30000);
         Color bottom = bundle ? new Color(0x8A0000) : new Color(0x2E0000);
-        Shape card = new RoundRectangle2D.Float(8, 8, WIDTH - 16, HEIGHT - 16, 36, 36);
+        Shape card = new RoundRectangle2D.Float(8, 8, WIDTH - 16, height - 16, 36, 36);
 
-        g.setPaint(new GradientPaint(0, 0, top, WIDTH, HEIGHT, bottom));
+        g.setPaint(new GradientPaint(0, 0, top, WIDTH, height, bottom));
         g.fill(card);
         g.setClip(card);
-        g.setPaint(new GradientPaint(0, 0, new Color(255, 255, 255, 46), 0, HEIGHT * 0.55f, new Color(255, 255, 255, 0)));
-        g.fillRect(0, 0, WIDTH, HEIGHT);
+        g.setPaint(new GradientPaint(0, 0, new Color(255, 255, 255, 46), 0, height * 0.4f, new Color(255, 255, 255, 0)));
+        g.fillRect(0, 0, WIDTH, height);
         // soft spotlight behind the mascot
         g.setPaint(new java.awt.RadialGradientPaint(720, 190, 260, new float[]{0f, 1f},
                 new Color[]{new Color(255, 221, 0, 120), new Color(255, 221, 0, 0)}));
@@ -100,11 +113,11 @@ public final class ProfileCard {
         g.draw(card);
         g.setColor(INK);
         g.setStroke(new BasicStroke(2f));
-        g.draw(new RoundRectangle2D.Float(2, 2, WIDTH - 4, HEIGHT - 4, 42, 42));
+        g.draw(new RoundRectangle2D.Float(2, 2, WIDTH - 4, height - 4, 42, 42));
         if (bundle) {
             g.setColor(GOLD);
             g.setStroke(new BasicStroke(2.5f));
-            g.draw(new RoundRectangle2D.Float(24, 24, WIDTH - 48, HEIGHT - 48, 26, 26));
+            g.draw(new RoundRectangle2D.Float(24, 24, WIDTH - 48, height - 48, 26, 26));
         }
 
         // mascot, wearing the loadout
@@ -114,12 +127,12 @@ public final class ProfileCard {
         drawAvatar(g, s, 44, 44, 128);
         drawNameBlock(g, s, l, 196);
         drawStats(g, s, 44, 214);
-        drawWearing(g, l, 44, HEIGHT - 66);
+        drawInventory(g, pills, l, 44, HEIGHT - 24);
 
         g.setFont(new Font("SansSerif", Font.BOLD, 13));
         g.setColor(new Color(255, 221, 0, 170));
         String tag = "GRYPHCOIN";
-        g.drawString(tag, WIDTH - 40 - g.getFontMetrics().stringWidth(tag), HEIGHT - 34);
+        g.drawString(tag, WIDTH - 40 - g.getFontMetrics().stringWidth(tag), height - 30);
     }
 
     private static void drawAvatar(Graphics2D g, Stats s, int x, int y, int size) {
@@ -228,29 +241,106 @@ public final class ProfileCard {
         }
     }
 
-    private static void drawWearing(Graphics2D g, Cosmetics.Loadout l, int x, int y) {
-        List<String> names = new ArrayList<>();
-        for (String code : l.codes) names.add(Cosmetics.label(code));
-        g.setFont(new Font("SansSerif", names.isEmpty() ? Font.ITALIC : Font.BOLD, 13));
-        g.setColor(new Color(255, 255, 255, names.isEmpty() ? 150 : 225));
-        if (names.isEmpty()) {
-            g.drawString("Nothing equipped yet. Try !shop and !equip.", x, y);
+    // ------------------------------------------------------------ inventory
+
+    /** One item chip in the inventory panel. */
+    private static final class Pill {
+        String text;
+        boolean worn;
+        int x, y, w;
+    }
+
+    private static final int PILL_H = 30;
+    private static final int PILL_GAP = 10;
+    private static final int PANEL_LEFT = 44;
+    private static final int PANEL_RIGHT = WIDTH - 44;
+    private static final int MAX_PILLS = 18;
+
+    private static String timeLeft(long expiresAt) {
+        if (expiresAt == 0) return "permanent";
+        long ms = expiresAt - System.currentTimeMillis();
+        long days = ms / 86_400_000L;
+        if (days >= 1) return days + "d left";
+        long hours = ms / 3_600_000L;
+        return hours >= 1 ? hours + "h left" : "<1h left";
+    }
+
+    private static List<Pill> layoutPills(Graphics2D g, List<Cosmetics.OwnedItem> owned, Cosmetics.Loadout worn) {
+        List<Pill> pills = new ArrayList<>();
+        if (owned.isEmpty()) return pills;
+        List<Cosmetics.OwnedItem> sorted = new ArrayList<>(owned);
+        sorted.sort((a, b) -> {
+            boolean wa = worn.codes.contains(a.code), wb = worn.codes.contains(b.code);
+            if (wa != wb) return wa ? -1 : 1;
+            return Cosmetics.label(a.code).compareToIgnoreCase(Cosmetics.label(b.code));
+        });
+        g.setFont(new Font("SansSerif", Font.BOLD, 14));
+        FontMetrics fm = g.getFontMetrics();
+        int x = PANEL_LEFT;
+        int y = 0;
+        int shown = Math.min(sorted.size(), MAX_PILLS);
+        for (int i = 0; i < shown; i++) {
+            Cosmetics.OwnedItem item = sorted.get(i);
+            Pill p = new Pill();
+            p.worn = worn.codes.contains(item.code);
+            p.text = (p.worn ? "\u2713 " : "") + Cosmetics.label(item.code) + "  \u00B7  " + timeLeft(item.expiresAt);
+            p.w = fm.stringWidth(p.text) + 28;
+            if (x + p.w > PANEL_RIGHT) {
+                x = PANEL_LEFT;
+                y += PILL_H + PILL_GAP;
+            }
+            p.x = x;
+            p.y = y;
+            x += p.w + PILL_GAP;
+            pills.add(p);
+        }
+        if (sorted.size() > shown) {
+            Pill more = new Pill();
+            more.text = "+" + (sorted.size() - shown) + " more";
+            more.w = fm.stringWidth(more.text) + 28;
+            if (x + more.w > PANEL_RIGHT) {
+                x = PANEL_LEFT;
+                y += PILL_H + PILL_GAP;
+            }
+            more.x = x;
+            more.y = y;
+            pills.add(more);
+        }
+        return pills;
+    }
+
+    private static int panelHeight(List<Pill> pills) {
+        if (pills.isEmpty()) return 0;
+        int lastRowY = 0;
+        for (Pill p : pills) lastRowY = Math.max(lastRowY, p.y);
+        return 40 + lastRowY + PILL_H + 22;
+    }
+
+    private static void drawInventory(Graphics2D g, List<Pill> pills, Cosmetics.Loadout worn, int x, int y) {
+        if (pills.isEmpty()) {
+            g.setFont(new Font("SansSerif", Font.ITALIC, 13));
+            g.setColor(new Color(255, 255, 255, 150));
+            g.drawString("You own nothing yet. Try !shop, then !equip.", x, HEIGHT - 66);
             return;
         }
-        // wrap onto a second line instead of cutting items off
-        FontMetrics fm = g.getFontMetrics();
-        StringBuilder line = new StringBuilder("Wearing: ");
-        int row = 0;
-        for (int i = 0; i < names.size(); i++) {
-            String piece = names.get(i) + (i < names.size() - 1 ? "  \u2022  " : "");
-            if (fm.stringWidth(line + piece) > 470 && line.length() > 9) {
-                g.drawString(line.toString(), x, y + row * 18);
-                row++;
-                line = new StringBuilder();
-            }
-            line.append(piece);
+        g.setFont(new Font("SansSerif", Font.BOLD, 13));
+        g.setColor(new Color(255, 221, 0, 230));
+        g.drawString("INVENTORY", x, y + 4);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        g.setColor(new Color(255, 255, 255, 150));
+        g.drawString("\u2713 = wearing now", x + 96, y + 4);
+        int top = y + 18;
+        for (Pill p : pills) {
+            Shape shape = new RoundRectangle2D.Float(p.x, top + p.y, p.w, PILL_H, PILL_H, PILL_H);
+            g.setColor(p.worn ? GOLD : new Color(0, 0, 0, 130));
+            g.fill(shape);
+            g.setColor(INK);
+            g.setStroke(new BasicStroke(3f));
+            g.draw(shape);
+            g.setFont(new Font("SansSerif", Font.BOLD, 14));
+            g.setColor(p.worn ? INK : Color.WHITE);
+            g.drawString(p.text, p.x + 14, top + p.y + 20);
         }
-        g.drawString(line.toString(), x, y + row * 18);
     }
 
     private static String fit(Graphics2D g, String text, int maxWidth) {

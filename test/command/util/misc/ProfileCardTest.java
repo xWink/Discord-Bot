@@ -57,7 +57,7 @@ public class ProfileCardTest {
             byte[] png = ProfileCard.render(stats(), (Cosmetics.Loadout) c[1], 42);
             BufferedImage img = decode(png);
             assertEquals(ProfileCard.WIDTH, img.getWidth());
-            assertEquals(ProfileCard.HEIGHT, img.getHeight());
+            assertEquals(ProfileCard.HEIGHT, img.getHeight()); // no inventory panel when nothing is owned
             Files.write(new File(dir, c[0] + ".png").toPath(), png);
             long hash = Arrays.hashCode(png);
             assertNotEquals("each loadout should look different", previousHash, hash);
@@ -79,5 +79,24 @@ public class ProfileCardTest {
                 "title-week"), 7)));
         s.name = "";
         assertNotNull(decode(ProfileCard.render(s, wearing(null), 7)));
+    }
+
+    @Test
+    public void inventoryPanelGrowsTheCardAndMarksWornItems() throws Exception {
+        long now = System.currentTimeMillis();
+        java.util.List<Cosmetics.OwnedItem> owned = new java.util.ArrayList<>();
+        for (String code : new String[]{"victory-fx", "fx-fireworks", "fx-trophy", "fx-stars", "flair-day", "title-week",
+                "bundle-weekend", "badge-month", "badge-set", "banner-club", "event-pass", "season-1", "gauntlet-1"}) {
+            owned.add(new Cosmetics.OwnedItem(code, code.equals("badge-set") ? 0 : now + 3 * 86_400_000L));
+        }
+        byte[] few = ProfileCard.render(stats(), wearing(null, "fx-fireworks"),
+                owned.subList(0, 3), 3);
+        byte[] many = ProfileCard.render(stats(), wearing(null, "fx-fireworks", "title-week"), owned, 3);
+        BufferedImage fewImg = decode(few);
+        BufferedImage manyImg = decode(many);
+        assertTrue("an inventory adds height", fewImg.getHeight() > ProfileCard.HEIGHT);
+        assertTrue("more items need more rows", manyImg.getHeight() > fewImg.getHeight());
+        Files.write(new File("build/profile-cards/inventory-few.png").toPath(), few);
+        Files.write(new File("build/profile-cards/inventory-many.png").toPath(), many);
     }
 }

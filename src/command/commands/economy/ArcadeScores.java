@@ -73,6 +73,6 @@ public class ArcadeScores extends Command {
 
     private static String name(MessageReceivedEvent event, long user) {
         net.dv8tion.jda.api.entities.User u = event.getJDA().getUserById(user);
-        return u != null ? u.getName() : "<@" + user + ">";
+        return u != null ? economy.Cosmetics.nameWithTitle(user, u.getName()) : "<@" + user + ">";
     }
 }

@@ -58,7 +58,9 @@ public class Profile extends Command {
             eb.setColor(Color.LIGHT_GRAY);
         }
 
-        eb.setTitle(event.getAuthor().getName() + "'s Profile");
+        economy.Cosmetics.Extras extras = economy.Cosmetics.extras(event.getAuthor().getIdLong());
+        if (extras.color != null) eb.setColor(extras.color);
+        eb.setTitle(event.getAuthor().getName() + extras.title + "'s Profile");
         eb.setThumbnail(event.getAuthor().getAvatarUrl());
 
         eb.addField("Bangs", "" + attempts, true);
@@ -71,7 +73,9 @@ public class Profile extends Command {
         try {
             java.util.List<String> cosmetics = economy.CosmeticShop.getInstance()
                     .owned(event.getAuthor().getIdLong());
-            if (!cosmetics.isEmpty()) eb.addField("Cosmetics", String.join("\n", cosmetics), false);
+            if (!cosmetics.isEmpty()) eb.addField("Owned", String.join("\n", cosmetics), false);
+            String worn = economy.Cosmetics.extras(event.getAuthor().getIdLong()).badges.toString();
+            if (!worn.isEmpty()) eb.addField("Equipped", worn, false);
         } catch (SQLException e) {
             e.printStackTrace(); // cosmetics are optional on the profile
         }

@@ -99,7 +99,8 @@ public final class SeasonService {
                         + "AND user NOT IN (SELECT user FROM board_optout) ORDER BY s DESC, user";
                 break;
             case "collection":
-                sql = "SELECT user, COUNT(DISTINCT item_code) s FROM inventory WHERE ? < ? "
+                sql = "SELECT user, COUNT(*) s FROM (SELECT user, item_code AS k FROM inventory UNION "
+                        + "SELECT user, code FROM achievements) u WHERE ? < ? "
                         + "AND user NOT IN (SELECT user FROM board_optout) GROUP BY user ORDER BY s DESC, user";
                 break;
             case "community":

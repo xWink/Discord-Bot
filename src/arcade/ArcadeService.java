@@ -93,13 +93,23 @@ public final class ArcadeService {
         boolean correct = !timedOut && choice == round.question.getCorrectIndex();
 
         if (timedOut) return new Result(true, false, round.question, false, false);
+        return complete(user, round.question, correct, (int) elapsed, now);
+    }
 
+    /**
+     * Counts a finished question toward the player's day: score (within the daily ranked cap), the
+     * shared daily reward, and the punch card. Used by the solo arcade and personal rounds alike.
+     */
+    public static Result complete(long user, Question question, boolean correct, int elapsed, long now)
+            throws SQLException {
+        Round round = new Round(question, now - elapsed);
         if (rankedToday(user, now) < RANKED_PER_DAY_CAP) {
-            record(user, round.question.getId(), correct, (int) elapsed, now);
+            record(user, round.question.getId(), correct, elapsed, now);
         }
         // Completing a round, right or wrong, counts as the day's activity.
         boolean daily = DailyService.getInstance().claim(user, "arcade", now);
         boolean punch = PunchCard.record(user);
+        if (correct) economy.Achievements.award(user, "first-correct");
         return new Result(false, correct, round.question, daily, punch);
     }
 

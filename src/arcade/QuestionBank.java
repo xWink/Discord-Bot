@@ -98,6 +98,42 @@ public final class QuestionBank {
     }
 
     /**
+     * Like {@link #next} but matches the category by substring, case-insensitively.
+     *
+     * @return a question, or null if none match
+     */
+    public static Question nextMatching(String kind, String categoryText, long user) throws SQLException {
+        return Database.inTransaction(c -> {
+            try (PreparedStatement ps = c.prepareStatement("SELECT DISTINCT category FROM question_bank "
+                    + "WHERE kind = ? AND LOWER(category) LIKE ? ORDER BY category LIMIT 1")) {
+                ps.setString(1, kind);
+                ps.setString(2, "%" + categoryText.toLowerCase().replace("%", "") + "%");
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (!rs.next()) return null;
+                    String exact = rs.getString(1);
+                    Question q = pick(c, kind, exact, user, true);
+                    return q != null ? q : pick(c, kind, exact, user, false);
+                }
+            }
+        });
+    }
+
+    /** @return the categories available for a kind, alphabetical */
+    public static List<String> categories(String kind) throws SQLException {
+        return Database.inTransaction(c -> {
+            List<String> list = new ArrayList<>();
+            try (PreparedStatement ps = c.prepareStatement(
+                    "SELECT DISTINCT category FROM question_bank WHERE kind = ? ORDER BY category LIMIT 40")) {
+                ps.setString(1, kind);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) list.add(rs.getString(1));
+                }
+            }
+            return list;
+        });
+    }
+
+    /**
      * @return how many questions of this kind and category are stored
      */
     public static int stock(String kind, String category) throws SQLException {

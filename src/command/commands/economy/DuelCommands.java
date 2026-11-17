@@ -27,7 +27,7 @@ public final class DuelCommands {
         if (o.winner == 0) {
             sb.append("Draw.").append(d.stake > 0 ? " Both stakes were returned." : "");
         } else {
-            sb.append("<@").append(o.winner).append("> wins");
+            sb.append("<@").append(o.winner).append("> wins").append(economy.Cosmetics.extras(o.winner).effect);
             if (d.stake > 0) sb.append(" +").append(DuelMath.winnerNet(d.stake)).append(" GC")
                     .append(DuelMath.fee(d.stake) > 0 ? " (after a " + DuelMath.fee(d.stake) + " GC fee)" : "");
             sb.append('.');

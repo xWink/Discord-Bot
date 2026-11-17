@@ -61,6 +61,7 @@ public final class PunchCard {
             }
             if (already) return false;
             EconomyService.creditIn(c, user, REWARD, "punchcard", Integer.toString(week), opId);
+            economy.Achievements.awardIn(c, user, "punch-card");
             return true;
         });
     }

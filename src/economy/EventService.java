@@ -131,6 +131,7 @@ public final class EventService {
                     total += pay;
                 }
                 WeeklyChallenge.completeViaEventIn(c, user);
+                Achievements.awardIn(c, user, "event-goer");
             }
             try (PreparedStatement ps = c.prepareStatement("UPDATE events SET status = 'ENDED' WHERE id = ?")) {
                 ps.setLong(1, id);

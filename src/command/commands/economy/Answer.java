@@ -43,6 +43,7 @@ public class Answer extends Command {
             } else {
                 out.append(r.correct ? "Correct, " : "Not quite, ").append(name).append(". The answer was **")
                         .append(answer).append("**.");
+                if (r.correct) out.append(economy.Cosmetics.extras(event.getAuthor().getIdLong()).effect);
                 if (r.question.getExplanation() != null) out.append('\n').append(r.question.getExplanation());
                 if (r.dailyPaid) out.append("\nDaily reward: +5 GC");
                 else out.append("\nDaily reward already claimed. This round was free practice.");

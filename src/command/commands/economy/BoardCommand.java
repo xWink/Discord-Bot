@@ -77,7 +77,7 @@ public final class BoardCommand {
             switch (b) {
                 case "arcade": return " correct";
                 case "duel": return " rating";
-                case "collection": return " items";
+                case "collection": return " unlocks";
                 default: return " goals";
             }
         }
@@ -85,7 +85,7 @@ public final class BoardCommand {
         private static String footer(String b) {
             switch (b) {
                 case "duel": return "Needs 5 rated matches. Stake size never changes ratings.";
-                case "collection": return "Each unlock counts once.";
+                case "collection": return "Cosmetics plus achievements; each unlock counts once.";
                 case "community": return "Goals you helped complete.";
                 default: return "Season runs on calendar months (Eastern). Winners earn a 30-day badge.";
             }

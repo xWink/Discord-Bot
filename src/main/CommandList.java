@@ -9,13 +9,17 @@ import command.commands.blackjack.Bet;
 import command.commands.blackjack.Hit;
 import command.commands.blackjack.MyHand;
 import command.commands.blackjack.Stand;
+import command.commands.economy.AchievementsCommand;
 import command.commands.economy.Answer;
 import command.commands.economy.Arcade;
 import command.commands.economy.ArcadeScores;
 import command.commands.economy.BountyCommand;
+import command.commands.economy.BannerCommand;
 import command.commands.economy.BoardCommand;
 import command.commands.economy.Buy;
+import command.commands.economy.EquipCommand;
 import command.commands.economy.EventCommand;
+import command.commands.economy.PersonalTriviaCommands;
 import command.commands.economy.QuizCommands;
 import command.commands.economy.Contribute;
 import command.commands.economy.DuelCommands;
@@ -74,6 +78,7 @@ public final class CommandList {
         //commands.add(new DeleteCourseChannels());
 
         // Everyone commands
+        commands.add(new AchievementsCommand());
         commands.add(new Answer());
         commands.add(new Arcade());
         commands.add(new ArcadeScores());
@@ -82,10 +87,14 @@ public final class CommandList {
         commands.add(new BangWeek());
         commands.add(new Bet());
         commands.add(new BountyCommand());
+        commands.add(new BannerCommand());
         commands.add(new BoardCommand.Board());
         commands.add(new BoardCommand.OptOut());
         commands.add(new Buy());
+        commands.add(new EquipCommand());
         commands.add(new EventCommand());
+        commands.add(new PersonalTriviaCommands.Start());
+        commands.add(new PersonalTriviaCommands.Answer());
         commands.add(new QuizCommands.Weekly());
         commands.add(new QuizCommands.Gauntlet());
         commands.add(new QuizCommands.Coop());

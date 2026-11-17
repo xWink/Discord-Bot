@@ -65,6 +65,7 @@ public class BangWeek extends Command {
                 return list;
             });
 
+            java.util.Map<Long, Integer> streaks = bestStreaks(since);
             EmbedBuilder eb = new EmbedBuilder();
             eb.setColor(Color.YELLOW);
             eb.setTitle("Bang survival · this week");
@@ -87,11 +88,45 @@ public class BangWeek extends Command {
                     }
                 }
             }
+            StringBuilder streakText = new StringBuilder();
+            rows.stream().filter(r -> streaks.containsKey(r.user))
+                    .sorted((x, y) -> streaks.get(y.user) - streaks.get(x.user) != 0
+                            ? streaks.get(y.user) - streaks.get(x.user) : Long.compare(x.user, y.user))
+                    .limit(5).forEach(r -> streakText.append("<@").append(r.user).append("> — ")
+                            .append(streaks.get(r.user)).append(" in a row (").append(r.attempts)
+                            .append(" attempts)\n"));
+            if (streakText.length() > 0) eb.addField("Best streak (survived in a row)", streakText.toString(), false);
             eb.setFooter("Needs " + MIN_ATTEMPTS + "+ attempts this week. Ties go to more attempts. "
                     + "Counting started when weekly tracking was added.", null);
             event.getChannel().sendMessage(eb.build()).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
+    }
+
+    /**
+     * Longest run of survived pulls this week for each player with enough attempts.
+     */
+    static java.util.Map<Long, Integer> bestStreaks(long since) throws java.sql.SQLException {
+        return Database.inTransaction(c -> {
+            java.util.Map<Long, Integer> best = new java.util.HashMap<>();
+            java.util.Map<Long, Integer> attempts = new java.util.HashMap<>();
+            java.util.Map<Long, Integer> run = new java.util.HashMap<>();
+            try (PreparedStatement ps = c.prepareStatement("SELECT user, died FROM bang_results WHERE played_at >= ? "
+                    + "AND user NOT IN (SELECT user FROM board_optout) ORDER BY user, played_at, id")) {
+                ps.setLong(1, since);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        long user = rs.getLong(1);
+                        attempts.merge(user, 1, Integer::sum);
+                        int now = rs.getInt(2) == 0 ? run.merge(user, 1, Integer::sum) : 0;
+                        run.put(user, now);
+                        best.merge(user, now, Math::max);
+                    }
+                }
+            }
+            best.keySet().removeIf(u -> attempts.get(u) < MIN_ATTEMPTS);
+            return best;
+        });
     }
 }

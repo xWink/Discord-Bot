@@ -138,6 +138,7 @@ public final class BountyService {
             EconomyService.settleReservationIn(c, r.reservation, -r.reward, "bounty");
             EconomyService.creditIn(c, r.claimer, r.reward, "bounty:paid", Long.toString(id), "bounty-pay:" + id);
             setStatus(c, id, "PAID");
+            Achievements.awardIn(c, r.claimer, "bounty-worker");
             return r.claimer;
         });
     }

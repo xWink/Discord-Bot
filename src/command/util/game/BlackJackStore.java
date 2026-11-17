@@ -73,6 +73,7 @@ public final class BlackJackStore {
             });
             game.markSettled();
             BlackJackList.removeGame(game);
+            if (net > 0) economy.Achievements.award(game.getPlayer().getUserId(), "blackjack-win");
             return net;
         }
     }

@@ -109,6 +109,7 @@ public final class GoalService {
                     ps.setLong(5, System.currentTimeMillis());
                     ps.executeUpdate();
                 }
+                Achievements.awardIn(c, user, "goal-helper");
                 boolean reached = goal.raised + charge >= goal.target;
                 try (PreparedStatement ps = c.prepareStatement("UPDATE community_goals SET raised = raised + ?, "
                         + "status = ?, reached_at = ? WHERE id = ?")) {

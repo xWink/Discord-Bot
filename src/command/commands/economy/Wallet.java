@@ -26,7 +26,7 @@ public class Wallet extends Command {
     }
 
     /**
-     * Shows spendable GryphCoins first, then reserved coins, the estimated
+     * Sends your wallet by direct message (or in the channel if DMs are closed). Shows spendable GryphCoins first, then reserved coins, the estimated
      * next decay, and the latest receipts.
      *
      * @param event the MessageReceivedEvent that triggered the command
@@ -52,7 +52,15 @@ public class Wallet extends Command {
             eb.addField("Decay", decayText(decay, firstWeek), false);
             eb.addField("Recent receipts", receiptText(history), false);
             eb.setFooter("Receipt IDs are shown so a moderator can look up any change.", null);
-            event.getChannel().sendMessage(eb.build()).queue();
+            // Balances are private by default: DM the embed, and fall back to the channel if DMs are closed.
+            net.dv8tion.jda.api.entities.MessageEmbed embed = eb.build();
+            event.getAuthor().openPrivateChannel().queue(
+                    pm -> pm.sendMessage(embed).queue(
+                            ok -> {
+                                if (event.isFromGuild()) event.getMessage().addReaction("\uD83D\uDCEC").queue();
+                            },
+                            fail -> event.getChannel().sendMessage(embed).queue()),
+                    fail -> event.getChannel().sendMessage(embed).queue());
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

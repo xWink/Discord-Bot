@@ -65,7 +65,13 @@ Use two accounts (your own and an alt, or a friend) for the social flows.
 | Goal | `!economy goal new 20 Trivia night` (admin), `!goal`, `!contribute 5`, `!contribute 5 confirm` | Progress bar moves |
 | Bounty | `!bounty post 5 test my feature`, alt `!bounty claim 1`, you `!bounty accept 1` | Reward moves to the alt |
 | Event | `!event start night` (admin), `!event confirm @alt`, `!event end` | Alt gets 5 GC (and the weekly bonus) |
-| Boards | `!board arcade`, `!bangweek`, `!optout on` | Opted-out accounts disappear |
+| Boards | `!board arcade`, `!bangweek`, `!optout on` | Opted-out accounts disappear; `!bangweek` also shows best streaks |
+| Achievements | `!achievements` after your first correct arcade answer | One item ticked; `!board collection` counts it |
+| Equip | `!shop buy title-week`, `!equip title-week`, `!profile`, `!arcadescores` | Title after your name, badge under "Equipped" |
+| Victory effect | `!shop buy victory-fx`, `!equip victory-fx`, then a correct `!answer` | Confetti after the result |
+| Team banner | `!banner request @SomeRole`, a member of that role says `!banner approve 1` | 45 GC held until approved, refunded if declined |
+| Personal trivia | `!ptrivia` (lists categories), `!ptrivia geography 5`, friends `!panswer b` | Host pays 5 GC; friends join free and get normal arcade credit |
+| Private wallet | `!wallet` in a channel | The embed arrives by DM (📬 reaction); if DMs are closed it posts in the channel |
 
 Give yourself coins with the admin command: `!economy adjust @you +100 testing`. Look up any receipt with
 `!economy receipt <id>`.

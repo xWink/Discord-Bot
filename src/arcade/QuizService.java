@@ -1,6 +1,7 @@
 package arcade;
 
 import database.Database;
+import economy.Achievements;
 import economy.EconomyService;
 import economy.InsufficientFundsException;
 import economy.WeeklyChallenge;
@@ -194,6 +195,7 @@ public final class QuizService {
             switch (s.mode) {
                 case WEEKLY:
                     if (s.correct >= 2) {
+                        Achievements.awardIn(c, s.user, "weekly-done");
                         reward[0] = WeeklyChallenge.payIn(c, s.user, clear ? WeeklyChallenge.PERFECT_REWARD
                                 : WeeklyChallenge.BASE_REWARD, "quiz");
                     }
@@ -216,6 +218,7 @@ public final class QuizService {
                             ps.setLong(4, System.currentTimeMillis());
                             prize[0] = ps.executeUpdate() > 0;
                         }
+                        Achievements.awardIn(c, s.user, "gauntlet-clear");
                     }
             }
             return null;

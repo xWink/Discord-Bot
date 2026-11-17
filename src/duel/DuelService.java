@@ -169,6 +169,7 @@ public final class DuelService {
                 int[] ratings = null;
                 if (ranked) ratings = rate(c, duel, winner);
                 record(c, duel, winner, ranked);
+                if (winner != 0) economy.Achievements.awardIn(c, winner, "duel-win");
                 return new Outcome(duel, winner, ranked, ratings);
             });
             cancel(duel);

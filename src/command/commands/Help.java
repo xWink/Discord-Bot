@@ -50,6 +50,7 @@ public class Help extends Command {
         eb.addField("See or fund the community goal.", "!goal !contribute [# gc]", false);
         eb.addField("Predict two dice. Free without a stake.", "!dice [low/high/seven] [stake]", false);
         eb.addField("Higher or Lower with a stake.", "!hilo [stake] !higher !lower !cashout", false);
+        eb.addField("Buy profile cosmetics.", "!shop !shop buy [code] !shop owned", false);
         eb.addField("Shows your wallet, reserved coins, decay estimate and receipts.", "!wallet", false);
         eb.addField("Shows your latency.",                                          "!ping", false);
         eb.addField("Shows your profile.",                                          "!profile", false);

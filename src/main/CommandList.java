@@ -20,6 +20,7 @@ import command.commands.Help;
 import command.commands.economy.Gift;
 import command.commands.economy.Market;
 import command.commands.economy.PaidPlay;
+import command.commands.economy.ShopCommand;
 import command.commands.economy.Wallet;
 import command.commands.misc.*;
 import command.commands.bang.Daily;
@@ -92,6 +93,7 @@ public final class CommandList {
         commands.add(new Ping());
         commands.add(new Profile());
         commands.add(new Stand());
+        commands.add(new ShopCommand());
         commands.add(new Wallet());
     }
 }

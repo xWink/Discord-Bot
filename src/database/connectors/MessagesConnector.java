@@ -40,7 +40,7 @@ public class MessagesConnector extends Connector {
 
         if (message.getAttachments().size() > 0 && message.getAttachments().get(0).isImage()) {
             File file = new File("../../res/LastImage.png");
-            file = message.getAttachments().get(0).downloadToFile(file).join();
+            file = message.getAttachments().get(0).getProxy().downloadToFile(file).join();
             FileInputStream inputStream = new FileInputStream(file);
             byte[] bytes = new byte[(int)file.length()];
             inputStream.read(bytes);

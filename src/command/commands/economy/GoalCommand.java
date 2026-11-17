@@ -25,7 +25,7 @@ public class GoalCommand extends Command {
                 event.getChannel().sendMessage("There is no community goal right now.").queue();
                 return;
             }
-            event.getChannel().sendMessage(embed(goal).build()).queue();
+            event.getChannel().sendMessageEmbeds(embed(goal).build()).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

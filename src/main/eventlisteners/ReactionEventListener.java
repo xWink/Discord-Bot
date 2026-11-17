@@ -4,6 +4,7 @@ import database.connectors.KarmaConnector;
 import main.Server;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
@@ -35,7 +36,7 @@ public class ReactionEventListener extends ListenerAdapter {
      * @return the ID number of the message author
      */
     private long getMessageAuthId(GenericMessageReactionEvent event) {
-        return event.getTextChannel().retrieveMessageById(event.getMessageId())
+        return event.getChannel().asTextChannel().retrieveMessageById(event.getMessageId())
                 .complete().getAuthor().getIdLong();
     }
 
@@ -51,7 +52,7 @@ public class ReactionEventListener extends ListenerAdapter {
         if (event.getMember() == null || event.getUser() == null)
             return;
         try {
-            if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID) {
+            if (emojiId(event.getEmoji()) == Server.CHECK_EMOJI_ID) {
                 // User agrees to ToS
                 if (event.getMessageIdLong() == Server.WELCOME_MESSAGE_ID)
                     addToSRole(event);
@@ -96,7 +97,7 @@ public class ReactionEventListener extends ListenerAdapter {
          * 6. If member is not bot, assign role to member
          */
 
-        event.getTextChannel().retrieveMessageById(event.getMessageId()).submit()
+        event.getChannel().asTextChannel().retrieveMessageById(event.getMessageId()).submit()
                 .thenAccept(message -> content.set(message.getContentRaw()))
                 .thenCompose(aVoid -> getCorrespondingRole(guild, content.get()))
                 .thenAccept(role::set)
@@ -136,7 +137,7 @@ public class ReactionEventListener extends ListenerAdapter {
     private CompletableFuture<TextChannel> getCorrespondingChannel(Guild guild, String channelName, Role role) {
         channelName = channelName.replaceAll("\\*", "").replaceAll(" +-* *", "-").replaceAll(" ", "-");
         List<TextChannel> channels = guild.getTextChannelsByName(channelName, true);
-        ArrayList<Permission> perms = new ArrayList<>(Collections.singletonList(Permission.MESSAGE_READ));
+        ArrayList<Permission> perms = new ArrayList<>(Collections.singletonList(Permission.VIEW_CHANNEL));
 
         // The "All" role does not get its own channel
         if (channelName.toLowerCase().equals("all") || channelName.toLowerCase().equals("notify"))
@@ -182,7 +183,7 @@ public class ReactionEventListener extends ListenerAdapter {
 
     private void addRolePermissionsToChannel(Role role, TextChannel channel, List<Permission> permissions) {
         if (role != null && channel.getPermissionOverride(role) == null)
-            channel.createPermissionOverride(role).setAllow(permissions).queue();
+            channel.upsertPermissionOverride(role).setAllowed(permissions).queue();
     }
 
     /**
@@ -194,14 +195,14 @@ public class ReactionEventListener extends ListenerAdapter {
         long messageAuthId = getMessageAuthId(event);
         try {
             // Add upVotes
-            if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
+            if (event.getEmoji().getName().startsWith("upvote")) {
                 if (!kc.userExists(messageAuthId))
                     kc.addUser(messageAuthId);
                 kc.updateUpVotes(messageAuthId, 1);
             }
 
             // Add downVotes
-            if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
+            if (event.getEmoji().getName().startsWith("downvote")) {
                 if (!kc.userExists(messageAuthId))
                     kc.addUser(messageAuthId);
                 kc.updateDownVotes(messageAuthId, 1);
@@ -245,7 +246,7 @@ public class ReactionEventListener extends ListenerAdapter {
     public void onMessageReactionRemove(@NotNull MessageReactionRemoveEvent event) {
         if (event.getMember() == null || event.getUser() == null || event.getUser().isBot())
             return;
-        if (event.getReactionEmote().getIdLong() == Server.CHECK_EMOJI_ID)
+        if (emojiId(event.getEmoji()) == Server.CHECK_EMOJI_ID)
             if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) // Leaving course channel
                 leaveCourseChannel(event);
         if (event.getUserIdLong() == getMessageAuthId(event))
@@ -263,7 +264,7 @@ public class ReactionEventListener extends ListenerAdapter {
     private void leaveCourseChannel(MessageReactionRemoveEvent event) {
         if (event.getMember() == null)
             return;
-        event.getTextChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
+        event.getChannel().asTextChannel().retrieveMessageById(event.getMessageId()).queue(message -> {
             Guild guild = event.getGuild();
             String content = message.getContentRaw();
 
@@ -288,18 +289,24 @@ public class ReactionEventListener extends ListenerAdapter {
         long messageAuthId = getMessageAuthId(event);
         try {
             // If upVote removed, remove upVote
-            if (event.getReactionEmote().getEmote().getName().startsWith("upvote")) {
+            if (event.getEmoji().getName().startsWith("upvote")) {
                 if (!kc.userExists(messageAuthId))
                     kc.addUser(messageAuthId);
                 kc.updateUpVotes(messageAuthId, -1);
             }
 
             // If downVote removed, remove downVote
-            if (event.getReactionEmote().getEmote().getName().startsWith("downvote")) {
+            if (event.getEmoji().getName().startsWith("downvote")) {
                 if (!kc.userExists(messageAuthId))
                     kc.addUser(messageAuthId);
                 kc.updateDownVotes(messageAuthId, -1);
             }
         } catch (Exception ignored) {}
+    }
+
+    /** The custom emoji's ID, or 0 for a standard (unicode) emoji. */
+    private static long emojiId(net.dv8tion.jda.api.entities.emoji.Emoji emoji) {
+        return emoji.getType() == net.dv8tion.jda.api.entities.emoji.Emoji.Type.CUSTOM
+                ? ((net.dv8tion.jda.api.entities.emoji.CustomEmoji) emoji).getIdLong() : 0L;
     }
 }

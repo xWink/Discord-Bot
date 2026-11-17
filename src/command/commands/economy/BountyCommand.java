@@ -73,7 +73,7 @@ public class BountyCommand extends Command {
                 }
                 eb.setDescription(open.isEmpty() ? "No open bounties." : sb.toString());
                 eb.setFooter("!bounty post <reward> <job> · claim <id> · accept <id> · cancel <id>", null);
-                event.getChannel().sendMessage(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build()).queue();
             }
         } catch (NumberFormatException e) {
             event.getChannel().sendMessage("Check the numbers in your command.").queue();

@@ -11,7 +11,7 @@ import command.util.game.BlackJackStore;
 import economy.EconomyService;
 import economy.WagerLimits;
 import database.connectors.EconomyConnector;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;

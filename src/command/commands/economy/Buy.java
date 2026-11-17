@@ -2,7 +2,7 @@ package command.commands.economy;
 
 import command.Command;
 import database.connectors.EconomyConnector;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.entities.Role;
 import economy.InsufficientFundsException;
 import economy.ShopService;

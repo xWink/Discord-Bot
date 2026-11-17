@@ -3,7 +3,7 @@ package main.timertasks;
 import command.commands.economy.DuelCommands;
 import duel.DuelService;
 import main.Server;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.TimerTask;
 

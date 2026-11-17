@@ -37,7 +37,7 @@ public class Profile extends Command {
         this.event = event;
         eb = new EmbedBuilder();
         createProfile();
-        event.getChannel().sendMessage(eb.build()).queue();
+        event.getChannel().sendMessageEmbeds(eb.build()).queue();
     }
 
     private void createProfile() {

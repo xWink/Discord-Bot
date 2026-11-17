@@ -36,7 +36,7 @@ public class EconomyAdmin extends Command implements AdminCommand {
             if (args.length >= 3 && args[1].equalsIgnoreCase("receipt")) {
                 receipt(event, args[2]);
             } else if (args.length >= 5 && args[1].equalsIgnoreCase("adjust")
-                    && !event.getMessage().getMentionedUsers().isEmpty()) {
+                    && !event.getMessage().getMentions().getUsers().isEmpty()) {
                 adjust(event, args);
             } else if (args.length >= 5 && args[1].equalsIgnoreCase("goal") && args[2].equalsIgnoreCase("new")) {
                 newGoal(event, args);
@@ -73,7 +73,7 @@ public class EconomyAdmin extends Command implements AdminCommand {
     }
 
     private void adjust(MessageReceivedEvent event, String[] args) throws Exception {
-        long target = event.getMessage().getMentionedUsers().get(0).getIdLong();
+        long target = event.getMessage().getMentions().getUsers().get(0).getIdLong();
         int amount = Integer.parseInt(args[3].replace("+", ""));
         String note = String.join(" ", Arrays.copyOfRange(args, 4, args.length));
         String opId = "admin:" + event.getMessageId();

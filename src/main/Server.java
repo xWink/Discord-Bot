@@ -1,6 +1,5 @@
 package main;
 
-import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Activity;
@@ -70,7 +69,7 @@ public final class Server {
             API = JDABuilder.createDefault(Config.getToken())
                     .setBulkDeleteSplittingEnabled(false)
                     .setActivity(Activity.playing("!help"))
-                    .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
+                    .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES, GatewayIntent.MESSAGE_CONTENT)
                     .setMemberCachePolicy(MemberCachePolicy.ALL)
                     .build();
 

@@ -8,8 +8,8 @@ import database.connectors.BangResults;
 import economy.DailyService;
 import economy.EconomyService;
 import main.Server;
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;
@@ -74,8 +74,8 @@ public class Bang extends Command {
      */
     private String getOutput(MessageReceivedEvent event) throws SQLException {
         String output = "";
-        Emote jamEmote = event.getGuild().getEmoteById(Server.JAM_EMOJI_ID);
-        Emote surviveEmote = event.getGuild().getEmoteById(Server.SURVIVE_EMOJI_ID);
+        RichCustomEmoji jamEmote = event.getGuild().getEmojiById(Server.JAM_EMOJI_ID);
+        RichCustomEmoji surviveEmote = event.getGuild().getEmojiById(Server.SURVIVE_EMOJI_ID);
         String name = event.getAuthor().getName();
 
         if (jammed) {

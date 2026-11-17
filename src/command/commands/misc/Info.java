@@ -9,7 +9,7 @@ package command.commands.misc;
 import command.Command;
 import command.util.misc.CourseData;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,7 +64,7 @@ public class Info extends Command {
 
         String[] split = courseLine.split("\t");
         CourseData data = new CourseData(split[0], split[1], split[2], split[3]);
-        channel.sendMessage(embedCourseData(data).build()).queue();
+        channel.sendMessageEmbeds(embedCourseData(data).build()).queue();
     }
 
     /**

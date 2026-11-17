@@ -32,8 +32,8 @@ public class BannerCommand extends Command implements AdminCommand {
         long user = event.getAuthor().getIdLong();
         try {
             String sub = a.length >= 2 ? a[1].toLowerCase() : "";
-            if (sub.equals("request") && event.getMessage().getMentionedRoles().size() == 1) {
-                Role team = event.getMessage().getMentionedRoles().get(0);
+            if (sub.equals("request") && event.getMessage().getMentions().getRoles().size() == 1) {
+                Role team = event.getMessage().getMentions().getRoles().get(0);
                 try {
                     long id = svc.request(user, team.getIdLong(), team.getName());
                     event.getChannel().sendMessage(id < 0 ? "You already have a request waiting."

@@ -54,7 +54,7 @@ public class ShopCommand extends Command {
                 eb.addField("Always available", regular.length() == 0 ? "None." : regular.toString(), false);
                 eb.setFooter("!shop buy <code> (featured items show a price to confirm first) · !shop owned · "
                         + "Cosmetics never change payouts or rankings.", null);
-                event.getChannel().sendMessage(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build()).queue();
             }
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);

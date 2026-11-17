@@ -60,7 +60,7 @@ public class MyBang extends Command {
             eb.addField("Streak", streak + (streak > 0 ? " :fire:" : ""), true);
             eb.setThumbnail(event.getAuthor().getAvatarUrl());
 
-            event.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         }
     }
 }

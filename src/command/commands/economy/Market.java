@@ -40,7 +40,7 @@ public class Market extends Command {
             eb.addField("Permanent colours", permanent.toString(), false);
             eb.setFooter("Buy with !buy <number>. Buying the colour you already rent extends it. "
                     + "Prices are in GryphCoins (gc).", null);
-            event.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

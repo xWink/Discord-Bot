@@ -3,7 +3,7 @@ package command.commands;
 import command.Command;
 import main.Server;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.Color;
@@ -62,6 +62,6 @@ public class Help extends Command {
         eb.addField("Shows your latency.",                                          "!ping", false);
         eb.addField("Shows your profile.",                                          "!profile", false);
 
-        event.getChannel().sendMessage(eb.build()).queue();
+        event.getChannel().sendMessageEmbeds(eb.build()).queue();
     }
 }

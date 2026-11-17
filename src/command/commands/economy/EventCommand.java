@@ -41,7 +41,7 @@ public class EventCommand extends Command implements AdminCommand {
                         + " GC a week).").queue();
             } else if (sub.equals("confirm")) {
                 List<Long> users = new ArrayList<>();
-                event.getMessage().getMentionedUsers().forEach(u -> {
+                event.getMessage().getMentions().getUsers().forEach(u -> {
                     if (!u.isBot()) users.add(u.getIdLong());
                 });
                 int added = svc.confirm(host, users);

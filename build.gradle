@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'net.dv8tion:JDA:4.2.1_253'
+    implementation 'net.dv8tion:JDA:5.0.2'
     implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.0'
     implementation 'com.zaxxer:HikariCP:4.0.3'
     implementation 'com.google.guava:guava:30.0-jre'

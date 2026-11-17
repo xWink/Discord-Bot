@@ -53,7 +53,7 @@ public class Contribute extends Command {
                     event.getChannel().sendMessage("The goal is already full.").queue();
                     return;
                 }
-                event.getChannel().sendMessage(GoalCommand.embed(out.goal).build()).queue();
+                event.getChannel().sendMessageEmbeds(GoalCommand.embed(out.goal).build()).queue();
                 if (out.reachedNow) {
                     event.getChannel().sendMessage("**Goal reached!** \"" + out.goal.title
                             + "\" is unlocked. Staff will schedule it and announce the time.").queue();

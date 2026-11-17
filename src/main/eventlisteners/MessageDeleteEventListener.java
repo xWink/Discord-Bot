@@ -3,7 +3,7 @@ package main.eventlisteners;
 import command.util.misc.MessageData;
 import database.connectors.MessagesConnector;
 import main.Server;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -80,7 +80,7 @@ public class MessageDeleteEventListener extends ListenerAdapter {
         if (file == null) {
             channel.sendMessage("{DELETE} " + s).queue();
         } else {
-            channel.sendMessage("{DELETE} " + s).addFile(file).queue();
+            channel.sendMessage("{DELETE} " + s).addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(file)).queue();
         }
     }
 
@@ -90,7 +90,7 @@ public class MessageDeleteEventListener extends ListenerAdapter {
             channel.sendMessage("{DELETE} " + s2).queue();
         } else {
             channel.sendMessage("{DELETE} " + s1).queue();
-            channel.sendMessage("{DELETE} " + s2).addFile(file).queue();
+            channel.sendMessage("{DELETE} " + s2).addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(file)).queue();
         }
     }
 }

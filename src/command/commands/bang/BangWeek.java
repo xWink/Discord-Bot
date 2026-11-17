@@ -98,7 +98,7 @@ public class BangWeek extends Command {
             if (streakText.length() > 0) eb.addField("Best streak (survived in a row)", streakText.toString(), false);
             eb.setFooter("Needs " + MIN_ATTEMPTS + "+ attempts this week. Ties go to more attempts. "
                     + "Counting started when weekly tracking was added.", null);
-            event.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

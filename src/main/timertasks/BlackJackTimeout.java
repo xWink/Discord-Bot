@@ -5,7 +5,7 @@ import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import command.util.game.BlackJackStore;
 import main.Server;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 
 import java.util.TimerTask;
 

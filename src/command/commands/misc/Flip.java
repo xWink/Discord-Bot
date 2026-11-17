@@ -2,7 +2,7 @@ package command.commands.misc;
 
 import command.Command;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.requests.restaction.MessageAction;
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -32,14 +32,14 @@ public class Flip extends Command {
     public void start(MessageReceivedEvent event) {
         boolean isHeads = new Random().nextBoolean();
         ClassLoader loader = getClass().getClassLoader();
-        MessageAction message = event.getChannel().sendMessage(isHeads ? "Heads!" : "Tails!");
+        MessageCreateAction message = event.getChannel().sendMessage(isHeads ? "Heads!" : "Tails!");
 
         try {
             BufferedImage image = ImageIO.read(Objects.requireNonNull(loader.getResourceAsStream(
                     isHeads ? "loonie_heads.png" : "loonie_tails.png")));
             ByteArrayOutputStream os = new ByteArrayOutputStream();
             ImageIO.write(image, "png", os);
-            message.addFile(os.toByteArray(), "coin.png");
+            message.addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(os.toByteArray(), "coin.png"));
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

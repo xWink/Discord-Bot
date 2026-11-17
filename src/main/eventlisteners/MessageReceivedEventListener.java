@@ -5,7 +5,7 @@ import main.CommandList;
 import command.util.misc.MessageData;
 import database.connectors.MessagesConnector;
 import main.Server;
-import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -46,7 +46,7 @@ public class MessageReceivedEventListener extends ListenerAdapter {
         }
 
         if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) {
-            Emote checkMark = event.getGuild().getEmoteById(Server.CHECK_EMOJI_ID);
+            RichCustomEmoji checkMark = event.getGuild().getEmojiById(Server.CHECK_EMOJI_ID);
             if (checkMark != null && messageNeedsCheckMark(messageContent))
                 event.getMessage().addReaction(checkMark).queue();
         }

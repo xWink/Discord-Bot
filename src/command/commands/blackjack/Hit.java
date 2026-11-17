@@ -6,7 +6,7 @@ import command.util.cards.HandOfCards;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import command.util.game.BlackJackStore;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Hit extends Command {

@@ -27,7 +27,7 @@ public class AchievementsCommand extends Command {
             eb.setColor(Color.YELLOW);
             eb.setTitle(event.getAuthor().getName() + "'s achievements (" + have.size() + "/" + Achievements.ALL.size() + ")");
             eb.setDescription(sb.toString());
-            event.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

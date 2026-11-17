@@ -55,12 +55,12 @@ public class Wallet extends Command {
             // Balances are private by default: DM the embed, and fall back to the channel if DMs are closed.
             net.dv8tion.jda.api.entities.MessageEmbed embed = eb.build();
             event.getAuthor().openPrivateChannel().queue(
-                    pm -> pm.sendMessage(embed).queue(
+                    pm -> pm.sendMessageEmbeds(embed).queue(
                             ok -> {
-                                if (event.isFromGuild()) event.getMessage().addReaction("\uD83D\uDCEC").queue();
+                                if (event.isFromGuild()) event.getMessage().addReaction(net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode("\uD83D\uDCEC")).queue();
                             },
-                            fail -> event.getChannel().sendMessage(embed).queue()),
-                    fail -> event.getChannel().sendMessage(embed).queue());
+                            fail -> event.getChannel().sendMessageEmbeds(embed).queue()),
+                    fail -> event.getChannel().sendMessageEmbeds(embed).queue());
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

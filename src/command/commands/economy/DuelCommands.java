@@ -52,7 +52,7 @@ public final class DuelCommands {
         @Override
         public void start(MessageReceivedEvent event) {
             String[] args = event.getMessage().getContentRaw().split("\\s+");
-            if (event.getMessage().getMentionedUsers().size() != 1 || args.length < 2 || args.length > 3) {
+            if (event.getMessage().getMentions().getUsers().size() != 1 || args.length < 2 || args.length > 3) {
                 event.getChannel().sendMessage("Say `!duel @user [stake]`. Stake 0-" + Bet.MAX_STAKE
                         + " GC; leave it off to play free. Winner takes the pot (1 GC fee from 5 GC stakes up).")
                         .queue();
@@ -69,7 +69,7 @@ public final class DuelCommands {
                 event.getChannel().sendMessage("Stakes run from 0 to " + Bet.MAX_STAKE + " GC.").queue();
                 return;
             }
-            net.dv8tion.jda.api.entities.User target = event.getMessage().getMentionedUsers().get(0);
+            net.dv8tion.jda.api.entities.User target = event.getMessage().getMentions().getUsers().get(0);
             if (target.isBot()) return;
             Duel d = DuelService.challenge(event.getAuthor().getIdLong(), target.getIdLong(), stake,
                     event.getChannel().getIdLong());
@@ -107,7 +107,7 @@ public final class DuelCommands {
                 eb.addField("Time", arcade.ArcadeService.ROUND_SECONDS + " seconds", true);
                 eb.setFooter("Both players: !duelanswer <letter>. Correct and fastest wins.", null);
                 event.getChannel().sendMessage("<@" + d.challenger + "> <@" + d.opponent + ">")
-                        .embed(eb.build()).queue();
+                        .setEmbeds(eb.build()).queue();
             } catch (Exception e) {
                 e.printStackTrace();
                 DuelService.cancel(d);
@@ -141,7 +141,7 @@ public final class DuelCommands {
             try {
                 DuelService.Outcome o = DuelService.answer(event.getAuthor().getIdLong(),
                         Character.toUpperCase(args[1].charAt(0)) - 'A');
-                event.getMessage().addReaction("✅").queue();
+                event.getMessage().addReaction(net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode("✅")).queue();
                 if (o != null) event.getChannel().sendMessage(describe(o)).queue();
             } catch (Exception e) {
                 printStackTraceAndSendMessage(event, e);
@@ -176,7 +176,7 @@ public final class DuelCommands {
                 }
                 eb.setFooter("Needs " + DuelMath.RATED_MATCHES_FOR_RANK + " matches. Stake size never changes "
                         + "ratings.", null);
-                event.getChannel().sendMessage(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build()).queue();
             } catch (Exception e) {
                 printStackTraceAndSendMessage(event, e);
             }

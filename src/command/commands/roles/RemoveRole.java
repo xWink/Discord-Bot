@@ -49,7 +49,7 @@ public class RemoveRole extends ResponseCommand {
             if (colorName != null && colorName.toLowerCase().equals(roleName)) {
                 try {
                     ec.resetUserRole(event.getAuthor().getIdLong());
-                    event.getGuild().removeRoleFromMember(event.getAuthor().getId(), roles.get(0)).queue();
+                    event.getGuild().removeRoleFromMember(net.dv8tion.jda.api.entities.UserSnowflake.fromId(event.getAuthor().getId()), roles.get(0)).queue();
                     event.getChannel().sendMessage("Role removed!").queue();
                     handler.expire();
                 } catch (Exception e) {

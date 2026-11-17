@@ -61,7 +61,7 @@ public final class BoardCommand {
                     }
                 }
                 eb.setFooter(footer(board) + " Ties are ordered by player ID. `!optout on` hides you.", null);
-                event.getChannel().sendMessage(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build()).queue();
             } catch (NumberFormatException e) {
                 event.getChannel().sendMessage("Seasons look like `202611`.").queue();
             } catch (Exception e) {

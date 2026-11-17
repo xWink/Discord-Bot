@@ -43,7 +43,7 @@ public class ArcadeScores extends Command {
             }
             eb.setFooter("Ties are broken by faster average time on correct answers. Free and practice rounds "
                     + "beyond " + ArcadeService.RANKED_PER_DAY_CAP + " a day are unranked.", null);
-            event.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

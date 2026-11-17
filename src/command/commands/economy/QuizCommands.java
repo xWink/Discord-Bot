@@ -5,7 +5,7 @@ import arcade.QuizService;
 import command.Command;
 import economy.WeeklyChallenge;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.awt.Color;
@@ -31,7 +31,7 @@ public final class QuizCommands {
         eb.addField("Time", arcade.ArcadeService.ROUND_SECONDS + " seconds", true);
         eb.addField("Choices", Arcade.choices(q.getChoices()), false);
         eb.setFooter("Answer with !answer <letter>", null);
-        channel.sendMessage(eb.build()).queue();
+        channel.sendMessageEmbeds(eb.build()).queue();
     }
 
     /** Called by {@code !answer} when the player has an open run. */
@@ -154,7 +154,7 @@ public final class QuizCommands {
                 eb.addField("Window", "Friday to Sunday (Eastern)", true);
                 eb.setFooter(open ? "Play with !arcade. Taking part is free. Fund the community unlock with "
                         + "!contribute." : "Opens Friday. Taking part is free.", null);
-                event.getChannel().sendMessage(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build()).queue();
             } catch (Exception e) {
                 printStackTraceAndSendMessage(event, e);
             }

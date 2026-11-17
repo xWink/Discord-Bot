@@ -38,7 +38,7 @@ public class Gift extends Command {
         }
 
         try {
-            long targetId = event.getMessage().getMentionedUsers().get(0).getIdLong();
+            long targetId = event.getMessage().getMentions().getUsers().get(0).getIdLong();
             int amount = Integer.parseInt(event.getMessage().getContentRaw().split("\\s+")[2]);
 
             if (BlackJackList.getUserGame(event.getAuthor().getIdLong()) != null) {
@@ -65,9 +65,9 @@ public class Gift extends Command {
                 event.getChannel().sendMessage("You cannot afford to send that gift").queue();
                 return;
             }
-            event.getChannel().sendMessage(getGiftEmbed(
+            event.getChannel().sendMessageEmbeds(getGiftEmbed(
                     event.getAuthor(),
-                    event.getMessage().getMentionedUsers().get(0),
+                    event.getMessage().getMentions().getUsers().get(0),
                     amount).build()).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
@@ -91,11 +91,11 @@ public class Gift extends Command {
     }
 
     private boolean inputIsValid(Message message) {
-        if (message.getMentionedMembers().size() != 1) {
+        if (message.getMentions().getMembers().size() != 1) {
             return false;
         }
 
-        if (message.getMentionedMembers().get(0).getUser().getIdLong() == message.getAuthor().getIdLong()) {
+        if (message.getMentions().getMembers().get(0).getUser().getIdLong() == message.getAuthor().getIdLong()) {
             message.getChannel().sendMessage("You cannot gift yourself!").queue();
             return false;
         }

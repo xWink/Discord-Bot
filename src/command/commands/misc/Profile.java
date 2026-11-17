@@ -50,6 +50,7 @@ public class Profile extends Command {
             card.karma = karma;
             card.achievements = economy.Achievements.unlocked(user).size();
             card.achievementsTotal = economy.Achievements.ALL.size();
+            card.extras = economy.ProfileExtras.pills(user);
             card.avatar = fetchAvatar(event.getAuthor().getEffectiveAvatarUrl());
             byte[] png = command.util.misc.ProfileCard.render(card, economy.Cosmetics.loadout(user), economy.Cosmetics.owned(user), user);
             event.getChannel().sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(png, "profile.png")).queue();

@@ -99,4 +99,14 @@ public class ProfileCardTest {
         Files.write(new File("build/profile-cards/inventory-few.png").toPath(), few);
         Files.write(new File("build/profile-cards/inventory-many.png").toPath(), many);
     }
+
+    @Test
+    public void colourRentalAndInstallmentShowEvenWithNoCosmetics() throws Exception {
+        ProfileCard.Stats s = stats();
+        s.extras = java.util.Arrays.asList("Colour: orange  \u00B7  4d left", "Installment: blue  \u00B7  1200/2500 GC");
+        byte[] withExtras = ProfileCard.render(s, wearing(null), java.util.Collections.<Cosmetics.OwnedItem>emptyList(), 5);
+        byte[] without = ProfileCard.render(stats(), wearing(null), java.util.Collections.<Cosmetics.OwnedItem>emptyList(), 5);
+        assertTrue(decode(withExtras).getHeight() > decode(without).getHeight());
+        Files.write(new File("build/profile-cards/extras.png").toPath(), withExtras);
+    }
 }

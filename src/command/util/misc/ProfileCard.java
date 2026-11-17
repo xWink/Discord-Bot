@@ -49,6 +49,8 @@ public final class ProfileCard {
         public int achievements;
         public int achievementsTotal;
         public BufferedImage avatar; // may be null
+        /** Labels for the colour rental and installment plan, shown before the cosmetics. */
+        public List<String> extras = new ArrayList<>();
     }
 
     public static byte[] render(Stats s, Cosmetics.Loadout loadout, long seed) throws IOException {
@@ -61,7 +63,7 @@ public final class ProfileCard {
         // measure the inventory first so the card can grow to fit it
         BufferedImage probe = new BufferedImage(4, 4, BufferedImage.TYPE_INT_ARGB);
         Graphics2D pg = probe.createGraphics();
-        List<Pill> pills = layoutPills(pg, owned, loadout);
+        List<Pill> pills = layoutPills(pg, owned, loadout, s.extras);
         pg.dispose();
         int height = HEIGHT + panelHeight(pills);
         BufferedImage img = new BufferedImage(WIDTH, height, BufferedImage.TYPE_INT_ARGB);
@@ -247,6 +249,7 @@ public final class ProfileCard {
     private static final class Pill {
         String text;
         boolean worn;
+        boolean special;
         int x, y, w;
     }
 
@@ -265,9 +268,10 @@ public final class ProfileCard {
         return hours >= 1 ? hours + "h left" : "<1h left";
     }
 
-    private static List<Pill> layoutPills(Graphics2D g, List<Cosmetics.OwnedItem> owned, Cosmetics.Loadout worn) {
+    private static List<Pill> layoutPills(Graphics2D g, List<Cosmetics.OwnedItem> owned, Cosmetics.Loadout worn,
+                                          List<String> extras) {
         List<Pill> pills = new ArrayList<>();
-        if (owned.isEmpty()) return pills;
+        if (owned.isEmpty() && extras.isEmpty()) return pills;
         List<Cosmetics.OwnedItem> sorted = new ArrayList<>(owned);
         sorted.sort((a, b) -> {
             boolean wa = worn.codes.contains(a.code), wb = worn.codes.contains(b.code);
@@ -278,6 +282,20 @@ public final class ProfileCard {
         FontMetrics fm = g.getFontMetrics();
         int x = PANEL_LEFT;
         int y = 0;
+        for (String text : extras) {
+            Pill p = new Pill();
+            p.special = true;
+            p.text = text;
+            p.w = fm.stringWidth(text) + 28;
+            if (x + p.w > PANEL_RIGHT) {
+                x = PANEL_LEFT;
+                y += PILL_H + PILL_GAP;
+            }
+            p.x = x;
+            p.y = y;
+            x += p.w + PILL_GAP;
+            pills.add(p);
+        }
         int shown = Math.min(sorted.size(), MAX_PILLS);
         for (int i = 0; i < shown; i++) {
             Cosmetics.OwnedItem item = sorted.get(i);
@@ -332,10 +350,10 @@ public final class ProfileCard {
         int top = y + 18;
         for (Pill p : pills) {
             Shape shape = new RoundRectangle2D.Float(p.x, top + p.y, p.w, PILL_H, PILL_H, PILL_H);
-            g.setColor(p.worn ? GOLD : new Color(0, 0, 0, 130));
+            g.setColor(p.worn ? GOLD : p.special ? new Color(0xB30000) : new Color(0, 0, 0, 130));
             g.fill(shape);
-            g.setColor(INK);
-            g.setStroke(new BasicStroke(3f));
+            g.setColor(p.special ? GOLD : INK);
+            g.setStroke(new BasicStroke(p.special ? 2.5f : 3f));
             g.draw(shape);
             g.setFont(new Font("SansSerif", Font.BOLD, 14));
             g.setColor(p.worn ? INK : Color.WHITE);

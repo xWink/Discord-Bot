@@ -48,6 +48,7 @@ public class Help extends Command {
         eb.addField("Free daily trivia or code puzzle; first round pays your daily.", "!arcade !answer [letter] !arcadescores", false);
         eb.addField("Turn games that risk your coins on or off.", "!paidplay [on/off]", false);
         eb.addField("See or fund the community goal.", "!goal !contribute [# gc]", false);
+        eb.addField("Predict two dice. Free without a stake.", "!dice [low/high/seven] [stake]", false);
         eb.addField("Shows your wallet, reserved coins, decay estimate and receipts.", "!wallet", false);
         eb.addField("Shows your latency.",                                          "!ping", false);
         eb.addField("Shows your profile.",                                          "!profile", false);

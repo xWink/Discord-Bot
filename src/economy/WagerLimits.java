@@ -48,7 +48,7 @@ public final class WagerLimits {
     public static int lossesToday(long user) throws SQLException {
         return Database.inTransaction(c -> {
             try (PreparedStatement ps = c.prepareStatement("SELECT COALESCE(-SUM(delta), 0) FROM economy_ledger "
-                    + "WHERE user = ? AND reason IN ('blackjack', 'duel') AND delta < 0 AND created_at >= ?")) {
+                    + "WHERE user = ? AND reason IN ('blackjack', 'duel', 'dice') AND delta < 0 AND created_at >= ?")) {
                 ps.setLong(1, user);
                 ps.setLong(2, System.currentTimeMillis() - DAY_MS);
                 try (ResultSet rs = ps.executeQuery()) {

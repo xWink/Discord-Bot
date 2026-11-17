@@ -13,6 +13,7 @@ import command.commands.economy.Arcade;
 import command.commands.economy.ArcadeScores;
 import command.commands.economy.Buy;
 import command.commands.economy.Contribute;
+import command.commands.economy.Dice;
 import command.commands.economy.GoalCommand;
 import command.commands.Help;
 import command.commands.economy.Gift;
@@ -72,6 +73,7 @@ public final class CommandList {
         commands.add(new Buy());
         commands.add(new Contribute());
         commands.add(new Daily());
+        commands.add(new Dice());
         commands.add(new Flip());
         commands.add(new Gift());
         commands.add(new GoalCommand());

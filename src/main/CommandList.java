@@ -4,6 +4,7 @@ import command.Command;
 import command.commands.admin.*;
 import command.commands.bang.Bang;
 import command.commands.bang.BangScore;
+import command.commands.bang.BangWeek;
 import command.commands.blackjack.Bet;
 import command.commands.blackjack.Hit;
 import command.commands.blackjack.MyHand;
@@ -71,6 +72,7 @@ public final class CommandList {
         commands.add(new ArcadeScores());
         commands.add(new Bang());
         commands.add(new BangScore());
+        commands.add(new BangWeek());
         commands.add(new Bet());
         commands.add(new Buy());
         commands.add(new Contribute());

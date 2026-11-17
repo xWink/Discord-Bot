@@ -85,7 +85,7 @@ docker exec gryph-dev-db mariadb -uroot -pdev discord_bot -e \
   "UPDATE economy_settings SET value = value - 1 WHERE name = 'decay_first_week'"
 ```
 
-then run `!wallet` with a balance over 100.
+then run `!wallet` with a balance of 150 or more. Decay is 2% of the part above 100 GC, rounded down to whole coins, so 149 GC or less pays nothing.
 
 ## 4. Failure drills
 

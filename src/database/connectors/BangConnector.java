@@ -2,6 +2,7 @@ package database.connectors;
 
 import command.util.highscores.BangPlayer;
 import database.Connector;
+import economy.DailyService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -39,7 +40,7 @@ public final class BangConnector extends Connector {
     public boolean isEligibleForDaily(long userId) throws SQLException {
         if (!userExists(userId)) addUser(userId);
         return new Date().getTime() - getUserRow(userId, getTable())
-                .getLong("last_daily") >= 86400000;
+                .getLong("last_daily") >= DailyService.COOLDOWN_MS;
     }
 
     /**
@@ -95,7 +96,7 @@ public final class BangConnector extends Connector {
                 .prepareStatement("SELECT last_daily FROM bang WHERE user=" + userId)
                 .executeQuery();
         rs.next();
-        return rs.getLong("last_daily") + 86460000;
+        return rs.getLong("last_daily") + DailyService.COOLDOWN_MS;
     }
 
     /**

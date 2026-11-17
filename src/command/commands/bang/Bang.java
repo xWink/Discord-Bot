@@ -4,7 +4,8 @@ import command.Command;
 import command.util.cache.BangCache;
 import command.util.cache.BangUpdate;
 import database.connectors.BangConnector;
-import database.connectors.EconomyConnector;
+import economy.DailyService;
+import economy.EconomyService;
 import main.Server;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.MessageChannel;
@@ -20,13 +21,14 @@ import java.util.Random;
 public class Bang extends Command {
 
     private BangConnector bc;
-    private EconomyConnector ec;
     private static int chambers;
     private static boolean jammed;
     private static boolean killed;
     private static boolean reward;
     private static boolean streak;
     private long userId;
+    private long messageId;
+    private final EconomyService ec2 = EconomyService.getInstance();
 
     /**
      * Initializes the command's key to "!bang".
@@ -36,7 +38,6 @@ public class Bang extends Command {
     public Bang() {
         super("!bang", true);
         bc = new BangConnector();
-        ec = new EconomyConnector();
         resetBools();
         resetChambers();
     }
@@ -122,6 +123,7 @@ public class Bang extends Command {
         }
 
         userId = event.getAuthor().getIdLong();
+        messageId = event.getMessageIdLong();
         int pull = new Random().nextInt(chambers);
         if (pull == 0) tryToKill();
         else chambers--;
@@ -132,7 +134,7 @@ public class Bang extends Command {
             LocalDate lastPlayedDate = Instant.ofEpochMilli(lastPlayed).atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate now = Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
 
-            reward = bc.isEligibleForDaily(userId);
+            reward = DailyService.getInstance().claim(userId, "bang", new Date().getTime());
             streak = (now.minusDays(1).getDayOfYear() == lastPlayedDate.getDayOfYear()
                     && now.minusDays(1).getYear() == lastPlayedDate.getYear())
                     || bc.getUserRow(userId).getInt("streak") == 0;
@@ -164,19 +166,15 @@ public class Bang extends Command {
      * @throws SQLException may be thrown when accessing database
      */
     private void giveRewards() throws SQLException {
-        int totalReward = 0;
+        // The daily was already paid atomically with its claim in DailyService.
+        // Each bonus carries a per-message operation ID so a retry cannot pay it twice.
+        String key = Long.toString(messageId);
         int currentStreak = bc.getCurrentStreak(userId);
 
         if (streak && currentStreak > 0 && currentStreak % 10 == 0)
-            totalReward += 50;
-
-        if (reward)
-            totalReward += 5;
+            ec2.credit(userId, 50, "bang:streak", key, "bang-streak:" + key);
 
         if (jammed)
-            totalReward += 50;
-
-        if (totalReward > 0)
-            ec.addOrRemoveMoney(userId, totalReward);
+            ec2.credit(userId, 50, "bang:jam", key, "bang-jam:" + key);
     }
 }

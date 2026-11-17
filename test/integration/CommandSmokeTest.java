@@ -267,11 +267,13 @@ public class CommandSmokeTest extends DbTestBase {
         // visible: no equipping needed
         assertTrue(economy.Cosmetics.tag(member).contains("\uD83C\uDF93"));
         assertTrue(economy.Cosmetics.nameWithTitle(member, "Bea").contains("\uD83C\uDF93"));
-        assertTrue(economy.Cosmetics.loadout(member).alumniYear > 0);
+        assertTrue(economy.Cosmetics.loadout(member).alumni);
+        assertEquals("no year was given, so none is shown", 0, economy.Cosmetics.loadout(member).alumniYear);
+        assertEquals("", r.classLabel());
         assertTrue(economy.ProfileExtras.pills(member).get(0).startsWith("Alumni"));
         FakeDiscord self = FakeDiscord.say(member, "Bea", "!alumni", main.Server.BOTS_CHANNEL_ID);
         new AlumniCommand().start(self.event);
-        assertTrue(self.said(), self.said().contains("class of"));
+        assertTrue(self.said(), self.said().contains("You are alumni") && !self.said().contains("class of"));
 
         FakeDiscord list = FakeDiscord.say(nobody, "Cy", "!alumni list", main.Server.BOTS_CHANNEL_ID);
         new AlumniCommand().start(list.event);
@@ -283,6 +285,24 @@ public class CommandSmokeTest extends DbTestBase {
         FakeDiscord after = FakeDiscord.say(member, "Bea", "!profile", main.Server.BOTS_CHANNEL_ID);
         new Profile().start(after.event);
         assertFalse(java.util.Arrays.equals(before.files.get(0), after.files.get(0)));
+
+        // a year is optional but can be given, and re-granting without one keeps it
+        FakeDiscord withYear = FakeDiscord.sayAsOwner(mod, "Mod", "!alumni grant <@" + member + "> 2019 captain of the chess club",
+                main.Server.BOTS_CHANNEL_ID, um);
+        new AlumniCommand().start(withYear.event);
+        assertTrue(withYear.said(), withYear.said().contains("class of 2019"));
+        economy.AlumniService.Record dated = economy.AlumniService.getInstance().get(member);
+        assertEquals(2019, dated.classYear());
+        assertEquals("captain of the chess club", dated.note);
+        assertEquals(2019, economy.Cosmetics.loadout(member).alumniYear);
+        assertTrue(economy.ProfileExtras.pills(member).get(0).contains("Class of 2019"));
+        FakeDiscord noYear = FakeDiscord.sayAsOwner(mod, "Mod", "!alumni grant <@" + member + "> updated note", main.Server.BOTS_CHANNEL_ID, um);
+        new AlumniCommand().start(noYear.event);
+        assertEquals(2019, economy.AlumniService.getInstance().get(member).classYear());
+        FakeDiscord notAYear = FakeDiscord.sayAsOwner(mod, "Mod", "!alumni grant <@" + member + "> 12345 a long number", main.Server.BOTS_CHANNEL_ID, um);
+        new AlumniCommand().start(notAYear.event);
+        assertEquals("a non-year number is part of the note", "12345 a long number",
+                economy.AlumniService.getInstance().get(member).note);
 
         // revoking removes it
         FakeDiscord gone = FakeDiscord.sayAsOwner(mod, "Mod", "!alumni revoke <@" + member + ">", main.Server.BOTS_CHANNEL_ID, um);

@@ -176,8 +176,8 @@ public final class ProfileCard {
         g.fill(outline);
 
         int y = 106;
-        if (l.alumniYear > 0) {
-            ribbon(g, x, y, "\u2605 ALUMNI  \u00B7  Class of " + l.alumniYear);
+        if (l.alumni) {
+            ribbon(g, x, y, "\u2605 ALUMNI" + (l.alumniYear > 0 ? "  \u00B7  Class of " + l.alumniYear : ""));
             y += 40;
         }
         if (l.has("bundle-weekend") || l.has("title-week")) {
@@ -342,7 +342,7 @@ public final class ProfileCard {
         if (pills.isEmpty()) {
             g.setFont(new Font("SansSerif", Font.ITALIC, 13));
             g.setColor(new Color(255, 255, 255, 150));
-            g.drawString("You own nothing yet. Try !shop, then !equip.", x, HEIGHT - 66);
+            g.drawString("You own nothing yet. Try !shop, then !equip.", x, HEIGHT - 48);
             return;
         }
         g.setFont(new Font("SansSerif", Font.BOLD, 13));

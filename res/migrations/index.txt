@@ -12,3 +12,4 @@ V11__social.sql
 V12__finish.sql
 V13__effects.sql
 V14__alumni.sql
+V15__alumni_year.sql

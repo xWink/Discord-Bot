@@ -113,11 +113,25 @@ public class ProfileCardTest {
     @Test
     public void alumniCardHasItsRibbon() throws Exception {
         Cosmetics.Loadout l = wearing("Gryphon Hockey", "alumni", "banner-club", "title-week");
+        l.alumni = true;
         l.alumniYear = 2026;
         ProfileCard.Stats s = stats();
         s.extras = java.util.Arrays.asList("Alumni  \u00B7  Class of 2026");
         byte[] png = ProfileCard.render(s, l, java.util.Collections.<Cosmetics.OwnedItem>emptyList(), 9);
         Files.write(new File("build/profile-cards/alumni.png").toPath(), png);
         assertNotNull(decode(png));
+    }
+
+    @Test
+    public void alumniWithoutAYearShowsPlainRibbon() throws Exception {
+        Cosmetics.Loadout withYear = wearing(null, "alumni");
+        withYear.alumni = true;
+        withYear.alumniYear = 2019;
+        Cosmetics.Loadout noYear = wearing(null, "alumni");
+        noYear.alumni = true;
+        byte[] a = ProfileCard.render(stats(), withYear, 4);
+        byte[] b = ProfileCard.render(stats(), noYear, 4);
+        assertFalse("the year changes the ribbon text", java.util.Arrays.equals(a, b));
+        Files.write(new File("build/profile-cards/alumni-no-year.png").toPath(), b);
     }
 }

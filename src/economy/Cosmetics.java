@@ -138,7 +138,7 @@ public final class Cosmetics {
                         while (rs.next()) apply(ex, rs.getString(1));
                     }
                 }
-                if (AlumniService.yearIn(c, user) > 0) {
+                if (AlumniService.isAlumniIn(c, user)) {
                     ex.icons += "\uD83C\uDF93";
                     ex.badges.append("\uD83C\uDF93 Alumni\n");
                 }
@@ -220,8 +220,10 @@ public final class Cosmetics {
     public static final class Loadout {
         public final java.util.List<String> codes = new java.util.ArrayList<>();
         public String team;
-        /** The class year if the member is alumni, otherwise 0. Alumni also appears in {@code codes}. */
+        /** The class year a mod chose, or 0 if none. Alumni also appears in {@code codes}. */
         public int alumniYear;
+        /** True for alumni, whether or not a class year was given. */
+        public boolean alumni;
 
         public boolean has(String prefix) {
             for (String c : codes) if (c.startsWith(prefix)) return true;
@@ -243,8 +245,9 @@ public final class Cosmetics {
                     }
                 }
                 if (l.has("banner-club")) l.team = BannerService.activeTeam(c, user);
-                l.alumniYear = AlumniService.yearIn(c, user);
-                if (l.alumniYear > 0) l.codes.add("alumni");
+                l.alumni = AlumniService.isAlumniIn(c, user);
+                l.alumniYear = l.alumni ? AlumniService.classYearIn(c, user) : 0;
+                if (l.alumni) l.codes.add("alumni");
                 return null;
             });
         } catch (SQLException e) {

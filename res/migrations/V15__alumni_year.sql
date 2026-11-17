@@ -1,0 +1,1 @@
+ALTER TABLE alumni ADD COLUMN IF NOT EXISTS class_year INT NULL;

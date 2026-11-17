@@ -83,7 +83,7 @@ public class Help extends Command {
                 new Entry("!economy goal new <target> <title>  /  cancel", "Community goals"),
                 new Entry("!economy decay <weeks>", "Publish the first decay cutoff"),
                 new Entry("!event start <name>", "Start an event without a pass"),
-                new Entry("!alumni grant @user [note]", "Bestow alumni (also adds the Alumni role if it exists)"),
+                new Entry("!alumni grant @user [year] [note]", "Bestow alumni. The year is optional. Adds the Alumni role if it exists"),
                 new Entry("!alumni revoke @user", "Remove alumni"),
                 new Entry("!banner approve|decline <id>", "Approve team banners"));
 

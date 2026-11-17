@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * Alumni, an honour mods bestow. {@code !alumni} shows your own status and {@code !alumni list} shows everyone;
- * {@code !alumni grant @user [note]} and {@code !alumni revoke @user} are for mods only.
+ * {@code !alumni grant @user [year] [note]} (the year is optional) and {@code !alumni revoke @user} are for mods only.
  */
 public class AlumniCommand extends Command implements AdminCommand {
 
@@ -47,7 +47,7 @@ public class AlumniCommand extends Command implements AdminCommand {
                 }
                 if (event.getMessage().getMentions().getUsers().size() != 1) {
                     event.getChannel().sendMessage("Say `!alumni " + sub + " @user"
-                            + (sub.equals("grant") ? " [note]" : "") + "`.").queue();
+                            + (sub.equals("grant") ? " [year] [note]" : "") + "`. The year is optional, e.g. `2019`.").queue();
                     return;
                 }
                 User target = event.getMessage().getMentions().getUsers().get(0);
@@ -59,7 +59,7 @@ public class AlumniCommand extends Command implements AdminCommand {
                 AlumniService.Record r = svc.get(event.getAuthor().getIdLong());
                 event.getChannel().sendMessage(r == null
                         ? "You are not alumni. Mods award it to members who have moved on. See `!alumni list`."
-                        : "🎓 You are alumni, class of " + r.classYear()
+                        : "🎓 You are alumni" + (r.classYear() > 0 ? ", " + r.classLabel().toLowerCase() : "")
                         + (r.note != null ? ": " + r.note : "") + ".").queue();
             }
         } catch (Exception e) {
@@ -68,9 +68,16 @@ public class AlumniCommand extends Command implements AdminCommand {
     }
 
     private void grant(MessageReceivedEvent event, AlumniService svc, User target, String[] a) throws Exception {
-        String note = a.length > 3 ? String.join(" ", Arrays.copyOfRange(a, 3, a.length)) : "";
+        // !alumni grant @user [year] [note]: a 4-digit year is optional, anything after it (or after the mention) is the note
+        int year = 0;
+        int noteStart = 3;
+        if (a.length > 3 && a[3].matches("(19|20)\\d{2}")) {
+            year = Integer.parseInt(a[3]);
+            noteStart = 4;
+        }
+        String note = a.length > noteStart ? String.join(" ", Arrays.copyOfRange(a, noteStart, a.length)) : "";
         if (note.length() > 200) note = note.substring(0, 200);
-        boolean isNew = svc.grant(target.getIdLong(), event.getAuthor().getIdLong(), note);
+        boolean isNew = svc.grant(target.getIdLong(), event.getAuthor().getIdLong(), note, year);
 
         // Give the Discord role too, if the server has one named "Alumni".
         List<Role> roles = event.getGuild().getRolesByName(ROLE_NAME, true);
@@ -82,8 +89,9 @@ public class AlumniCommand extends Command implements AdminCommand {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(Sticker.GOLD);
         eb.setTitle("🎓 Welcome to the alumni!");
-        eb.setDescription(target.getAsMention() + (isNew ? " is now an alumnus, class of " : " is alumni, class of ")
-                + r.classYear() + "." + (r.note != null ? "\n" + r.note : ""));
+        eb.setDescription(target.getAsMention() + (isNew ? " is now an alumnus" : " is alumni")
+                + (r.classYear() > 0 ? ", " + r.classLabel().toLowerCase() : "") + "."
+                + (r.note != null ? "\n" + r.note : ""));
         eb.setFooter("Shown on your !profile and next to your name. Nothing to equip.", null);
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -113,7 +121,7 @@ public class AlumniCommand extends Command implements AdminCommand {
         eb.setTitle("🎓 Alumni");
         StringBuilder sb = new StringBuilder();
         for (AlumniService.Record r : all) {
-            sb.append("<@").append(r.user).append("> · class of ").append(r.classYear())
+            sb.append("<@").append(r.user).append(">").append(r.classYear() > 0 ? " · " + r.classLabel().toLowerCase() : "")
                     .append(r.note != null ? " — " + r.note : "").append('\n');
         }
         eb.setDescription(all.isEmpty() ? "No alumni yet." : sb.toString());

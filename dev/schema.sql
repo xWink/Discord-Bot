@@ -17,3 +17,25 @@ CREATE TABLE IF NOT EXISTS bang (
     streak      INT NOT NULL DEFAULT 0,
     death_rate  DOUBLE AS (IF(tries = 0, 0, deaths / tries)) VIRTUAL
 );
+
+CREATE TABLE IF NOT EXISTS karma (
+    user      BIGINT PRIMARY KEY,
+    upvotes   INT NOT NULL DEFAULT 0,
+    downvotes INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS ping (
+    user BIGINT PRIMARY KEY,
+    `max` INT NOT NULL DEFAULT 0,
+    `min` INT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+    message_id   BIGINT PRIMARY KEY,
+    author_id    BIGINT NOT NULL,
+    channel_id   BIGINT NOT NULL,
+    time_sent    BIGINT NOT NULL,
+    content      TEXT NULL,
+    image_base64 MEDIUMTEXT NULL
+);
+CREATE TABLE IF NOT EXISTS messages_backup LIKE messages;

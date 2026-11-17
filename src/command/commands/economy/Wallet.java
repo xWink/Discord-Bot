@@ -38,7 +38,7 @@ public class Wallet extends Command {
             EconomyService service = EconomyService.getInstance();
             int balance = service.getBalance(userId);
             int reserved = service.getReserved(userId);
-            double decay = DecayService.estimateNext(userId);
+            int decay = DecayService.estimateNext(userId);
             Long firstWeek = DecayService.getFirstWeek();
             List<LedgerEntry> history = service.getHistory(userId, RECEIPTS_SHOWN);
 
@@ -66,15 +66,15 @@ public class Wallet extends Command {
         }
     }
 
-    private static String decayText(double estimate, Long firstWeek) {
+    private static String decayText(int estimate, Long firstWeek) {
         if (firstWeek == null) {
-            return "Not active. Balances above " + DecayMath.PROTECTED + " GC lose 2% a week once it starts.";
+            return "Not active. Balances above " + DecayMath.PROTECTED + " GC lose 2% a week, rounded down to whole GC, once it starts.";
         }
         String when = formatDate(DecayService.weekStart(firstWeek.intValue()));
         boolean started = System.currentTimeMillis() >= DecayService.weekStart(firstWeek.intValue());
-        String estimateText = String.format("%.2f GC", estimate);
-        return (started ? "Next weekly charge: about " : "Starts " + when + ". It would charge about ")
-                + estimateText + " (2% of the part above " + DecayMath.PROTECTED + " GC).";
+        String estimateText = estimate + " GC";
+        return (started ? "Next weekly charge: " : "Starts " + when + ". It would charge ")
+                + estimateText + " (2% of the part above " + DecayMath.PROTECTED + " GC, rounded down).";
     }
 
     private static String receiptText(List<LedgerEntry> history) {

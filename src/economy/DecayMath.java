@@ -2,16 +2,17 @@ package economy;
 
 /**
  * Pure arithmetic for weekly balance decay: 2% a week on the part of a wallet
- * above 100 GC. Fractions are carried in thousandths of a GC so nothing is
- * lost to rounding.
+ * above 100 GC, rounded down to whole GC. Balances are always whole numbers, so
+ * a small excess simply pays nothing that week (under 50 GC above the line is
+ * less than one coin).
  */
 public final class DecayMath {
 
     /** Part of a wallet that never decays. */
     public static final int PROTECTED = 100;
 
-    /** Weekly rate in thousandths of a GC per GC of excess (2% = 20). */
-    public static final int RATE_MILLI_PER_GC = 20;
+    /** Weekly rate in percent of the excess. */
+    public static final int RATE_PERCENT = 2;
 
     private DecayMath() { }
 
@@ -21,14 +22,19 @@ public final class DecayMath {
         public final int charged;
         /** Whole GC owed but not collectable now because the coins are reserved. */
         public final int shortfall;
-        /** Fraction carried to the next week, in thousandths of a GC. */
-        public final long carryMilli;
 
-        Step(int charged, int shortfall, long carryMilli) {
+        Step(int charged, int shortfall) {
             this.charged = charged;
             this.shortfall = shortfall;
-            this.carryMilli = carryMilli;
         }
+    }
+
+    /**
+     * @return the whole GC a wallet owes for one week: 2% of the part above the protected amount, rounded down
+     */
+    public static int owed(int balance) {
+        long excess = Math.max(0, balance - PROTECTED);
+        return (int) (excess * RATE_PERCENT / 100);
     }
 
     /**
@@ -36,20 +42,17 @@ public final class DecayMath {
      * deduction is capped at the unreserved coins. The rest becomes a debt
      * collected when the reservation is released.
      */
-    public static Step step(int balance, long carryMilli, int reserved) {
-        long excess = Math.max(0, balance - PROTECTED);
-        long total = carryMilli + excess * RATE_MILLI_PER_GC;
-        int whole = (int) (total / 1000);
+    public static Step step(int balance, int reserved) {
+        int whole = owed(balance);
         int unreserved = Math.max(0, balance - reserved);
         int charged = Math.min(whole, unreserved);
-        return new Step(charged, whole - charged, total % 1000);
+        return new Step(charged, whole - charged);
     }
 
     /**
-     * @return the GC (with fraction) the next cutoff would take from this wallet
+     * @return the whole GC the next cutoff would take from this wallet
      */
-    public static double estimateNext(int balance, long carryMilli) {
-        long excess = Math.max(0, balance - PROTECTED);
-        return (carryMilli + excess * RATE_MILLI_PER_GC) / 1000.0;
+    public static int estimateNext(int balance) {
+        return owed(balance);
     }
 }

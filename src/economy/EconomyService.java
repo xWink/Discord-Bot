@@ -312,19 +312,17 @@ public final class EconomyService {
         }
         int wallet;
         int lastWeek;
-        long carry;
-        try (PreparedStatement ps = c.prepareStatement("SELECT wallet, last_decay_week, decay_carry_milli "
+        try (PreparedStatement ps = c.prepareStatement("SELECT wallet, last_decay_week "
                 + "FROM economy WHERE user = ? FOR UPDATE")) {
             ps.setLong(1, user);
             try (ResultSet rs = ps.executeQuery()) {
                 rs.next();
                 wallet = rs.getInt(1);
                 lastWeek = rs.getInt(2);
-                carry = rs.getLong(3);
             }
         }
         // Overdue decay is settled before any balance is read or changed.
-        return DecayService.settleIn(c, user, wallet, lastWeek, carry, System.currentTimeMillis());
+        return DecayService.settleIn(c, user, wallet, lastWeek, System.currentTimeMillis());
     }
 
     public static int reservedTotal(Connection c, long user) throws SQLException {

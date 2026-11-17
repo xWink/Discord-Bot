@@ -78,7 +78,7 @@ public final class DecayService {
      *
      * @return the wallet balance after decay
      */
-    static int settleIn(Connection c, long user, int wallet, int lastWeek, long carry, long now)
+    static int settleIn(Connection c, long user, int wallet, int lastWeek, long now)
             throws SQLException {
         Long first = getFirstWeek(c);
         int current = weekIndex(now);
@@ -88,8 +88,7 @@ public final class DecayService {
         int balance = wallet;
         int dueAdded = 0;
         for (int week = (int) Math.max(lastWeek + 1, first); week <= current; week++) {
-            DecayMath.Step step = DecayMath.step(balance, carry, reserved);
-            carry = step.carryMilli;
+            DecayMath.Step step = DecayMath.step(balance, reserved);
             dueAdded += step.shortfall;
             if (step.charged > 0) {
                 balance = EconomyService.applyDelta(c, user, balance, -step.charged, "decay", "week:" + week,
@@ -97,11 +96,10 @@ public final class DecayService {
             }
         }
         try (PreparedStatement ps = c.prepareStatement("UPDATE economy SET last_decay_week = ?, "
-                + "decay_carry_milli = ?, decay_due = decay_due + ? WHERE user = ?")) {
+                + "decay_due = decay_due + ? WHERE user = ?")) {
             ps.setInt(1, current);
-            ps.setLong(2, carry);
-            ps.setInt(3, dueAdded);
-            ps.setLong(4, user);
+            ps.setInt(2, dueAdded);
+            ps.setLong(3, user);
             ps.executeUpdate();
         }
         return balance;
@@ -143,8 +141,8 @@ public final class DecayService {
 
         List<Long> users = Database.inTransaction(c -> {
             List<Long> list = new ArrayList<>();
-            try (PreparedStatement ps = c.prepareStatement("SELECT user FROM economy WHERE (wallet > ? "
-                    + "OR decay_carry_milli > 0) AND last_decay_week < ?")) {
+            try (PreparedStatement ps = c.prepareStatement("SELECT user FROM economy WHERE wallet > ? "
+                    + "AND last_decay_week < ?")) {
                 ps.setInt(1, DecayMath.PROTECTED);
                 ps.setInt(2, current);
                 try (ResultSet rs = ps.executeQuery()) {
@@ -160,17 +158,17 @@ public final class DecayService {
     }
 
     /**
-     * @return pending charge at the next cutoff for display, in GC
+     * @return pending charge at the next cutoff for display, in whole GC
      */
-    public static double estimateNext(long user) throws SQLException {
+    public static int estimateNext(long user) throws SQLException {
         return Database.inTransaction(c -> {
             EconomyService.lockWallet(c, user);
             try (PreparedStatement ps = c.prepareStatement(
-                    "SELECT wallet, decay_carry_milli FROM economy WHERE user = ?")) {
+                    "SELECT wallet FROM economy WHERE user = ?")) {
                 ps.setLong(1, user);
                 try (ResultSet rs = ps.executeQuery()) {
                     rs.next();
-                    return DecayMath.estimateNext(rs.getInt(1), rs.getLong(2));
+                    return DecayMath.estimateNext(rs.getInt(1));
                 }
             }
         });

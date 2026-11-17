@@ -6,49 +6,57 @@ import static org.junit.Assert.assertEquals;
 
 public class DecayMathTest {
 
-    private static int[] simulate(int balance, int weeks) {
-        long carry = 0;
+    private static int simulate(int balance, int weeks) {
         for (int i = 0; i < weeks; i++) {
-            DecayMath.Step s = DecayMath.step(balance, carry, 0);
-            balance -= s.charged;
-            carry = s.carryMilli;
+            balance -= DecayMath.step(balance, 0).charged;
         }
-        return new int[]{balance};
+        return balance;
     }
 
     @Test
     public void protectedAmountNeverDecays() {
-        assertEquals(100, simulate(100, 12)[0]);
-        assertEquals(40, simulate(40, 12)[0]);
+        assertEquals(100, simulate(100, 12));
+        assertEquals(40, simulate(40, 12));
     }
 
     @Test
-    public void matchesPublishedTable() {
-        assertEquals(930, simulate(1000, 4)[0], 1);
-        assertEquals(806, simulate(1000, 12)[0], 2);
-        assertEquals(2314, simulate(2500, 4)[0], 2);
-        assertEquals(1983, simulate(2500, 12)[0], 3);
+    public void twoPercentOfTheExcessRoundedDown() {
+        assertEquals(18, DecayMath.owed(1000)); // 2% of 900
+        assertEquals(17, DecayMath.owed(982));  // 17.64 -> 17
+        assertEquals(1, DecayMath.owed(150));   // exactly 1
+        assertEquals(DecayMath.owed(1000), DecayMath.estimateNext(1000));
     }
 
     @Test
-    public void fractionsAreCarriedNotLost() {
-        // 110 GC: excess 10 -> 0.2 GC a week. Five weeks add up to one whole coin.
-        long carry = 0;
-        int charged = 0;
-        int balance = 110;
-        for (int i = 0; i < 5; i++) {
-            DecayMath.Step s = DecayMath.step(balance, carry, 0);
-            charged += s.charged;
-            balance -= s.charged;
-            carry = s.carryMilli;
+    public void smallExcessPaysNothing() {
+        // 49 GC above the line is 0.98 GC: rounds down to nothing, and nothing is carried to later weeks.
+        assertEquals(0, DecayMath.owed(149));
+        assertEquals(149, simulate(149, 52));
+        assertEquals(110, simulate(110, 52));
+    }
+
+    @Test
+    public void matchesWholeCoinTable() {
+        assertEquals(932, simulate(1000, 4));
+        assertEquals(811, simulate(1000, 12));
+        assertEquals(2314, simulate(2500, 4));
+        assertEquals(1987, simulate(2500, 12));
+    }
+
+    @Test
+    public void chargesAreAlwaysWholeAndNeverGoBelowTheProtectedAmount() {
+        for (int balance = 0; balance <= 5000; balance += 7) {
+            int owed = DecayMath.owed(balance);
+            assertEquals(owed, (long) owed);
+            if (balance >= DecayMath.PROTECTED) assertEquals(true, balance - owed >= DecayMath.PROTECTED);
+            else assertEquals(0, owed);
         }
-        assertEquals(1, charged);
     }
 
     @Test
     public void reservedCoinsAreAssessedButNotCollected() {
         // 1000 GC with 990 reserved: 18 GC owed, only 10 unreserved to take.
-        DecayMath.Step s = DecayMath.step(1000, 0, 990);
+        DecayMath.Step s = DecayMath.step(1000, 990);
         assertEquals(10, s.charged);
         assertEquals(8, s.shortfall);
     }

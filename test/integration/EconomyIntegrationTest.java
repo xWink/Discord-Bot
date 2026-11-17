@@ -161,7 +161,7 @@ public class EconomyIntegrationTest extends DbTestBase {
         DecayService.setFirstWeek(week - 3);
         exec("UPDATE economy SET last_decay_week = " + (week - 4) + " WHERE user = " + u);
         int after = eco.getBalance(u);
-        assertEquals(930, after, 1);
+        assertEquals(932, after); // 18, 17, 17, 16 GC: 2% of the excess, rounded down each week
         assertEquals(after, eco.getBalance(u)); // second read changes nothing
         // Leave decay off for other tests.
         exec("DELETE FROM economy_settings WHERE name = 'decay_first_week'");

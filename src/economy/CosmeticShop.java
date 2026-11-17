@@ -30,14 +30,23 @@ public final class CosmeticShop {
         public final int price;
         public final long durationMs;
         public final boolean featured;
+        public final int previousPrice;
+        public final int basePrice;
 
         Item(String code, String name, String category, int price, long durationMs, boolean featured) {
+            this(code, name, category, price, durationMs, featured, 0, price);
+        }
+
+        Item(String code, String name, String category, int price, long durationMs, boolean featured,
+             int previousPrice, int basePrice) {
             this.code = code;
             this.name = name;
             this.category = category;
             this.price = price;
             this.durationMs = durationMs;
             this.featured = featured;
+            this.previousPrice = previousPrice;
+            this.basePrice = basePrice;
         }
     }
 
@@ -45,11 +54,12 @@ public final class CosmeticShop {
         return Database.inTransaction(c -> {
             List<Item> items = new ArrayList<>();
             try (PreparedStatement ps = c.prepareStatement("SELECT code, name, category, price, duration_ms, "
-                    + "featured FROM shop_items WHERE active = 1 ORDER BY featured DESC, price")) {
+                    + "featured, COALESCE(prev_price, 0), base_price FROM shop_items WHERE active = 1 "
+                    + "ORDER BY featured DESC, price")) {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         items.add(new Item(rs.getString(1), rs.getString(2), rs.getString(3), rs.getInt(4),
-                                rs.getLong(5), rs.getInt(6) != 0));
+                                rs.getLong(5), rs.getInt(6) != 0, rs.getInt(7), rs.getInt(8)));
                     }
                 }
             }
@@ -65,7 +75,22 @@ public final class CosmeticShop {
      */
     public Item buy(long user, String code, String purchaseId) throws SQLException, InsufficientFundsException {
         try {
-            return Database.inTransaction(c -> {
+            return buy(user, code, purchaseId, null);
+        } catch (PriceChangedException e) {
+            throw new IllegalStateException(e); // cannot happen without a quoted price
+        }
+    }
+
+    /**
+     * Buys at a quoted price. If the shelf price moved since the quote, nothing is charged
+     * and the buyer must confirm the new price.
+     */
+    public Item buy(long user, String code, String purchaseId, Integer quotedPrice)
+            throws SQLException, InsufficientFundsException, PriceChangedException {
+        int[] moved = {-1};
+        Item bought;
+        try {
+            bought = Database.inTransaction(c -> {
                 Item item = null;
                 try (PreparedStatement ps = c.prepareStatement("SELECT code, name, category, price, duration_ms, "
                         + "featured FROM shop_items WHERE code = ? AND active = 1")) {
@@ -78,6 +103,10 @@ public final class CosmeticShop {
                     }
                 }
                 if (item == null) return null;
+                if (quotedPrice != null && quotedPrice != item.price) {
+                    moved[0] = item.price;
+                    return null;
+                }
                 EconomyService.lockWallet(c, user); // serialize this player's purchases
                 long now = System.currentTimeMillis();
                 long base = now;
@@ -108,6 +137,8 @@ public final class CosmeticShop {
         } catch (EconomyService.InsufficientFundsRuntime e) {
             throw new InsufficientFundsException(0, 0);
         }
+        if (bought == null && moved[0] >= 0) throw new PriceChangedException(moved[0]);
+        return bought;
     }
 
     /**

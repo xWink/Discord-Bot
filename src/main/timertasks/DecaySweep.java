@@ -13,6 +13,11 @@ public class DecaySweep extends TimerTask {
     @Override
     public void run() {
         try {
+            if (economy.PricingService.rotateIfDue()) System.out.println("Shop shelf rotated");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
             int n = DecayService.sweep();
             if (n > 0) System.out.println("Decay settled for " + n + " wallets");
         } catch (Exception e) {

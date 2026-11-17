@@ -2,3 +2,6 @@
 build/
 .gradle/
 .idea/
+
+# Local bot settings (contain your token)
+.rolebotconfig

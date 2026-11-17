@@ -1,0 +1,32 @@
+# Copy to .rolebotconfig (same folder you run from) and fill in. No spaces around "=".
+# .rolebotconfig is git-ignored. Never share or commit your token.
+
+TOKEN=PASTE_YOUR_BOT_TOKEN_HERE
+GUILD=000000000000000000
+CHANNEL=all
+
+# Local database from dev/start-db.sh
+DB_ADDR=127.0.0.1:33306
+DB_USER=root
+DB_PASS=dev
+
+# Discord IDs for your server. Anything you leave out keeps the live server's ID,
+# which means that feature will not work on your test server.
+# Channels
+ID_BOTS_CHANNEL=000000000000000000
+ID_SPAM_CHANNEL=000000000000000000
+ID_GENERAL_CHANNEL=000000000000000000
+#ID_CHANNELS_CHANNEL=
+#ID_DELETED_MESSAGES_CHANNEL=
+#ID_EDITED_MESSAGES_CHANNEL=
+# Roles
+ID_ADMIN_ROLE=000000000000000000
+#ID_JANITOR_ROLE=
+#ID_TOS_ROLE=
+#ID_ALL_ROLE=
+#ID_NOTIFY_ROLE=
+# Optional custom emoji for !bang (leave out if you have none)
+#ID_JAM_EMOJI=
+#ID_SURVIVE_EMOJI=
+#ID_CHECK_EMOJI=
+#ID_WELCOME_MESSAGE=

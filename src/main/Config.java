@@ -8,6 +8,7 @@ import java.util.Scanner;
 public final class Config {
 
     private static ArrayList<String> rawChannels;
+    private static final java.util.Map<String, Long> ids = new java.util.HashMap<>();
     private static String token;
     private static String[] channels;
     private static String dbAddr;
@@ -133,8 +134,25 @@ public final class Config {
     }
 
 
+    /**
+     * Optional Discord ID override from the config file, e.g. {@code ID_SPAM_CHANNEL=123}.
+     * Lets a test server be used without editing source.
+     *
+     * @param name the key without the ID_ prefix
+     * @param fallback the live server's ID, used when the key is absent
+     * @return the configured ID or the fallback
+     */
+    public static long getId(String name, long fallback) {
+        Long v = ids.get(name);
+        return v != null ? v : fallback;
+    }
+
     private static void parseLine(String contents) {
-        if (contents.startsWith("TOKEN")) { // If the line is a token line
+        if (contents.startsWith("ID_")) {
+            String name = contents.substring(3, contents.indexOf('='));
+            ids.put(name, Long.parseLong(parseArg(contents).trim()));
+            logMessage("Got ID override [" + name + "]");
+        } else if (contents.startsWith("TOKEN")) { // If the line is a token line
             token = parseArg(contents);
             logMessage("Got token");
         } else if (contents.startsWith("CHANNEL")) { // If the line is a channel line, add to rawChannels ArrayList

@@ -23,21 +23,11 @@ to also hit the real Open Trivia DB once.
    `orange`, `blue`, `green`, `purple`, `pink` (the market looks them up by name) and, optionally,
    `Season Champion`. Move the bot's own role **above** those colour roles, or role grants will fail.
 5. Turn on Developer Mode (Discord settings → Advanced), then right-click to copy IDs.
-6. `src/main/Server.java` hard-codes the live server's IDs. For your test server comment out the "LIVE SERVER"
-   block and un-comment the "TEST SERVER" block, replacing every ID with your own (channels, roles, emojis).
-   Do not commit that change.
-7. Create `.rolebotconfig` in the project folder (it is not tracked by git):
-
-```
-TOKEN=<your test bot token>
-CHANNEL=all
-DB_ADDR=127.0.0.1:33306
-DB_USER=root
-DB_PASS=dev
-GUILD=<your test server id>
-```
-
-8. `sh gradlew run` and wait for "Applied migration ..." lines, then message the bot in your spam/bots channel.
+6. Copy `.rolebotconfig.example` to `.rolebotconfig` and fill it in: your token, the server ID (`GUILD`), and the
+   channel and role IDs (`ID_...` lines). You no longer need to edit any source file. Any ID you leave out keeps the
+   live server's value, so that feature will not work on your test server.
+7. Make sure the database is running (`./dev/start-db.sh`).
+8. `./dev/run.sh` (checks your config, starts the database if needed, then runs the bot) and wait for "Applied migration ..." lines, then message the bot in your spam/bots channel.
 
 Optional JVM flags (add with `JAVA_OPTS` or `applicationDefaultJvmArgs`): `-Dtrivia.noncommercial=true` enables the
 second trivia provider (CC BY-NC data), `-Dpuzzles.repo=owner/name` syncs puzzle packs from GitHub.

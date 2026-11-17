@@ -13,6 +13,7 @@ import command.commands.economy.Answer;
 import command.commands.economy.Arcade;
 import command.commands.economy.ArcadeScores;
 import command.commands.economy.BountyCommand;
+import command.commands.economy.BoardCommand;
 import command.commands.economy.Buy;
 import command.commands.economy.EventCommand;
 import command.commands.economy.QuizCommands;
@@ -80,6 +81,8 @@ public final class CommandList {
         commands.add(new BangWeek());
         commands.add(new Bet());
         commands.add(new BountyCommand());
+        commands.add(new BoardCommand.Board());
+        commands.add(new BoardCommand.OptOut());
         commands.add(new Buy());
         commands.add(new EventCommand());
         commands.add(new QuizCommands.Weekly());

@@ -166,7 +166,7 @@ public final class ArcadeService {
             List<Standing> list = new ArrayList<>();
             try (PreparedStatement ps = c.prepareStatement("SELECT user, SUM(correct) AS right_count, COUNT(*) AS n, "
                     + "COALESCE(AVG(CASE WHEN correct = 1 THEN elapsed_ms END), 0) AS avg_ms FROM (SELECT user, "
-                    + "correct, elapsed_ms FROM arcade_scores WHERE week = ? ORDER BY id) s GROUP BY user "
+                    + "correct, elapsed_ms FROM arcade_scores WHERE week = ? AND user NOT IN (SELECT user FROM board_optout) ORDER BY id) s GROUP BY user "
                     + "ORDER BY right_count DESC, avg_ms ASC, user ASC")) {
                 ps.setInt(1, week);
                 try (ResultSet rs = ps.executeQuery()) {

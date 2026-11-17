@@ -54,7 +54,7 @@ public class BangWeek extends Command {
             List<Row> rows = Database.inTransaction(c -> {
                 List<Row> list = new ArrayList<>();
                 try (PreparedStatement ps = c.prepareStatement("SELECT user, COUNT(*), SUM(died) FROM bang_results "
-                        + "WHERE played_at >= ? GROUP BY user HAVING COUNT(*) >= ? "
+                        + "WHERE played_at >= ? AND user NOT IN (SELECT user FROM board_optout) GROUP BY user HAVING COUNT(*) >= ? "
                         + "ORDER BY 1 - SUM(died) / COUNT(*) DESC, COUNT(*) DESC, user")) {
                     ps.setLong(1, since);
                     ps.setInt(2, MIN_ATTEMPTS);

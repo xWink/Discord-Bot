@@ -55,6 +55,8 @@ public class Help extends Command {
         eb.addField("Weekly 3-question challenge, gauntlet, weekend co-op.", "!weekly [code/trivia] !gauntlet [prize] !coop", false);
         eb.addField("Post jobs for coins.", "!bounty [post/list/claim/accept/cancel]", false);
         eb.addField("Host or join events.", "!event [start/confirm/end]", false);
+        eb.addField("Leaderboards, seasons, hide yourself from boards.", "!board [arcade/duel/collection/community] !optout [on/off]", false);
+        eb.addField("Pay for a permanent colour in parts.", "!installment [start/pay/finish]", false);
         eb.addField("Shows your wallet, reserved coins, decay estimate and receipts.", "!wallet", false);
         eb.addField("Shows your latency.",                                          "!ping", false);
         eb.addField("Shows your profile.",                                          "!profile", false);

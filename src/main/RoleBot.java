@@ -34,6 +34,7 @@ public class RoleBot {
             logger.debug("Recovered " + command.util.game.BlackJackStore.recover().size() + " open blackjack hands");
             Server.API.addEventListener(EventListeners.ALL.toArray());
             Timer timer = new Timer();
+            timer.schedule(new main.timertasks.SeasonTask(), 1000 * 120, 1000 * 60 * 60);
             timer.schedule(new main.timertasks.BountyExpiry(), 1000 * 90, 1000 * 60 * 60);
             timer.schedule(new main.timertasks.DuelSweep(), 1000 * 15, 1000 * 15);
             timer.schedule(new main.timertasks.HiLoTimeout(), 1000 * 30, 1000 * 30);

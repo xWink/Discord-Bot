@@ -37,6 +37,26 @@ public class Profile extends Command {
         this.event = event;
         eb = new EmbedBuilder();
         createProfile();
+        // The picture card is the main view. If drawing it fails for any reason, the text embed still works.
+        try {
+            long user = event.getAuthor().getIdLong();
+            command.util.misc.ProfileCard.Stats card = new command.util.misc.ProfileCard.Stats();
+            card.name = event.getAuthor().getName();
+            card.bangs = attempts;
+            card.deaths = deaths;
+            card.jams = jams;
+            card.survival = survivalRate;
+            card.streak = streak;
+            card.karma = karma;
+            card.achievements = economy.Achievements.unlocked(user).size();
+            card.achievementsTotal = economy.Achievements.ALL.size();
+            card.avatar = fetchAvatar(event.getAuthor().getEffectiveAvatarUrl());
+            byte[] png = command.util.misc.ProfileCard.render(card, economy.Cosmetics.loadout(user), user);
+            event.getChannel().sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(png, "profile.png")).queue();
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         event.getChannel().sendMessageEmbeds(eb.build()).queue();
     }
 
@@ -98,5 +118,21 @@ public class Profile extends Command {
 
     private void setWalletData() throws SQLException {
         wallet = ec.getWealth(event.getAuthor().getIdLong());
+    }
+
+    /** Downloads the avatar for the card; a missing or slow avatar just means the card shows an initial. */
+    private static java.awt.image.BufferedImage fetchAvatar(String url) {
+        if (url == null) return null;
+        try {
+            java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL(url + "?size=256").openConnection();
+            c.setConnectTimeout(3000);
+            c.setReadTimeout(3000);
+            c.setRequestProperty("User-Agent", "gryph-discord-bot");
+            try (java.io.InputStream in = c.getInputStream()) {
+                return javax.imageio.ImageIO.read(in);
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

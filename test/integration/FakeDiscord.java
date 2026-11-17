@@ -38,6 +38,7 @@ public final class FakeDiscord {
     public final List<String> texts = new ArrayList<>();
     public final List<MessageEmbed> embeds = new ArrayList<>();
     public final List<MessageEmbed> directMessages = new ArrayList<>();
+    public final List<byte[]> files = new ArrayList<>();
     public final MessageReceivedEvent event;
     public final long userId;
 
@@ -75,6 +76,15 @@ public final class FakeDiscord {
         });
         when(channel.sendMessageEmbeds(any(MessageEmbed.class), any(MessageEmbed[].class))).thenAnswer(inv -> {
             embeds.add(inv.getArgument(0));
+            return action;
+        });
+
+        when(channel.sendFiles(any(net.dv8tion.jda.api.utils.FileUpload[].class))).thenAnswer(inv -> {
+            Object[] raw = inv.getRawArguments();
+            for (Object o : raw) {
+                if (o instanceof net.dv8tion.jda.api.utils.FileUpload) files.add(read((net.dv8tion.jda.api.utils.FileUpload) o));
+                else if (o instanceof Object[]) for (Object f : (Object[]) o) files.add(read((net.dv8tion.jda.api.utils.FileUpload) f));
+            }
             return action;
         });
 
@@ -150,5 +160,17 @@ public final class FakeDiscord {
         if (e.getDescription() != null) sb.append(e.getDescription()).append(" | ");
         for (MessageEmbed.Field f : e.getFields()) sb.append(f.getName()).append(": ").append(f.getValue()).append(" | ");
         return sb.toString();
+    }
+
+    private static byte[] read(net.dv8tion.jda.api.utils.FileUpload upload) {
+        try (java.io.InputStream in = upload.getData()) {
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = in.read(buf)) > 0) out.write(buf, 0, n);
+            return out.toByteArray();
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

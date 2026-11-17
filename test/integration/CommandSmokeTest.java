@@ -214,4 +214,24 @@ public class CommandSmokeTest extends DbTestBase {
         assertTrue(economy.Cosmetics.nameWithTitle(u, "Ann").startsWith("Ann the Scholar"));
         assertTrue(economy.Cosmetics.nameWithTitle(u, "Ann").contains("\u2728"));
     }
+
+    @Test
+    public void profileSendsACardPictureThatChangesWithCosmetics() throws Exception {
+        long u = newUser();
+        economy.EconomyService.getInstance().credit(u, 60, "t", null, "c" + u);
+        FakeDiscord plain = FakeDiscord.say(u, "Ann", "!profile", main.Server.BOTS_CHANNEL_ID);
+        new Profile().start(plain.event);
+        assertEquals(plain.said(), 1, plain.files.size());
+        java.awt.image.BufferedImage img = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(plain.files.get(0)));
+        assertEquals(command.util.misc.ProfileCard.WIDTH, img.getWidth());
+
+        economy.CosmeticShop.getInstance().buy(u, "title-week", "pc1" + u);
+        economy.CosmeticShop.getInstance().buy(u, "fx-fireworks", "pc2" + u);
+        economy.Cosmetics.equip(u, "title-week");
+        economy.Cosmetics.equip(u, "fx-fireworks");
+        FakeDiscord dressed = FakeDiscord.say(u, "Ann", "!profile", main.Server.BOTS_CHANNEL_ID);
+        new Profile().start(dressed.event);
+        assertEquals(1, dressed.files.size());
+        assertFalse("wearing items must change the picture", java.util.Arrays.equals(plain.files.get(0), dressed.files.get(0)));
+    }
 }

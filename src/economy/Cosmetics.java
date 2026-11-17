@@ -153,6 +153,39 @@ public final class Cosmetics {
         return ex;
     }
 
+    /** The codes a player is currently wearing (owned and unexpired), plus their team name if any. */
+    public static final class Loadout {
+        public final java.util.List<String> codes = new java.util.ArrayList<>();
+        public String team;
+
+        public boolean has(String prefix) {
+            for (String c : codes) if (c.startsWith(prefix)) return true;
+            return false;
+        }
+    }
+
+    public static Loadout loadout(long user) {
+        Loadout l = new Loadout();
+        try {
+            Database.inTransaction(c -> {
+                try (PreparedStatement ps = c.prepareStatement("SELECT e.item_code FROM equipped e WHERE e.user = ? "
+                        + "AND EXISTS (SELECT 1 FROM inventory i WHERE i.user = e.user AND i.item_code = e.item_code "
+                        + "AND (i.expires_at = 0 OR i.expires_at > ?)) ORDER BY e.slot")) {
+                    ps.setLong(1, user);
+                    ps.setLong(2, System.currentTimeMillis());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        while (rs.next()) l.codes.add(rs.getString(1));
+                    }
+                }
+                if (l.has("banner-club")) l.team = BannerService.activeTeam(c, user);
+                return null;
+            });
+        } catch (SQLException e) {
+            e.printStackTrace(); // the card falls back to the default look
+        }
+        return l;
+    }
+
     static void apply(Extras ex, String code) {
         Look look = LOOKS.get(code);
         if (look == null) {

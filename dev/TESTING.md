@@ -16,7 +16,8 @@ to also hit the real Open Trivia DB once.
 ## 2. A private Discord test server
 
 1. https://discord.com/developers/applications → New Application → Bot → copy the token.
-2. On the Bot page enable **Server Members Intent** and **Presence Intent** (the bot requests both).
+2. On the Bot page enable **Server Members Intent**, **Presence Intent** and **Message Content Intent** (the bot requests all
+   three). Without Message Content the bot cannot read `!` commands: it connects and shows online but never replies.
 3. OAuth2 → URL Generator: scope `bot`, permissions Manage Roles, Send Messages, Embed Links, Add Reactions,
    Read Message History, Attach Files. Invite it to a **new empty server you own**.
 4. In that server create text channels for bots and spam, and roles named exactly

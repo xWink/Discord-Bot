@@ -45,6 +45,7 @@ public class Help extends Command {
         eb.addField("Shows a user's display name based on Discord ID.",             "!id [Discord ID]", false);
         eb.addField("Shows info on a course at UoGuelph.",                          "!info [course ID]", false);
         eb.addField("View or purchase items listed on the market.",                 "!market !buy [item #]", false);
+        eb.addField("Shows your wallet, reserved coins, decay estimate and receipts.", "!wallet", false);
         eb.addField("Shows your latency.",                                          "!ping", false);
         eb.addField("Shows your profile.",                                          "!profile", false);
 

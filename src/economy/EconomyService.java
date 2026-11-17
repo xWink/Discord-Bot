@@ -209,6 +209,7 @@ public final class EconomyService {
         deleteReservation(c, reservationId);
         if (net > 0) creditIn(c, user, net, reason, ref, "settle:" + reservationId);
         else if (net < 0) debitRaw(c, user, -net, reason, ref, "settle:" + reservationId);
+        DecayService.collectDueIn(c, user, held, reservationId);
         return true;
     }
 
@@ -218,12 +219,26 @@ public final class EconomyService {
      * @return true if a reservation was released
      */
     public boolean refundReservation(String reservationId) throws SQLException {
-        return Database.inTransaction(c -> deleteReservation(c, reservationId));
+        return Database.inTransaction(c -> refundReservationIn(c, reservationId));
     }
 
     /** Release inside a caller-owned transaction. */
     public static boolean refundReservationIn(Connection c, String reservationId) throws SQLException {
-        return deleteReservation(c, reservationId);
+        long user = 0;
+        int held = 0;
+        try (PreparedStatement ps = c.prepareStatement(
+                "SELECT user, amount FROM economy_reservations WHERE reservation_id = ? FOR UPDATE")) {
+            ps.setString(1, reservationId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return false;
+                user = rs.getLong(1);
+                held = rs.getInt(2);
+            }
+        }
+        lockWallet(c, user);
+        deleteReservation(c, reservationId);
+        DecayService.collectDueIn(c, user, held, reservationId);
+        return true;
     }
 
     // -------------------------------------------------- transaction primitives
@@ -241,13 +256,21 @@ public final class EconomyService {
             ps.setInt(2, STARTING_BALANCE);
             ps.executeUpdate();
         }
-        try (PreparedStatement ps = c.prepareStatement("SELECT wallet FROM economy WHERE user = ? FOR UPDATE")) {
+        int wallet;
+        int lastWeek;
+        long carry;
+        try (PreparedStatement ps = c.prepareStatement("SELECT wallet, last_decay_week, decay_carry_milli "
+                + "FROM economy WHERE user = ? FOR UPDATE")) {
             ps.setLong(1, user);
             try (ResultSet rs = ps.executeQuery()) {
                 rs.next();
-                return rs.getInt(1);
+                wallet = rs.getInt(1);
+                lastWeek = rs.getInt(2);
+                carry = rs.getLong(3);
             }
         }
+        // Overdue decay is settled before any balance is read or changed.
+        return DecayService.settleIn(c, user, wallet, lastWeek, carry, System.currentTimeMillis());
     }
 
     public static int reservedTotal(Connection c, long user) throws SQLException {
@@ -302,7 +325,7 @@ public final class EconomyService {
         }
     }
 
-    private static int applyDelta(Connection c, long user, int wallet, int delta, String reason, String ref,
+    static int applyDelta(Connection c, long user, int wallet, int delta, String reason, String ref,
                                   String opId) throws SQLException {
         int after = wallet + delta;
         try (PreparedStatement ps = c.prepareStatement("UPDATE economy SET wallet = ? WHERE user = ?")) {

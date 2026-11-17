@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS economy_settings (
+    name  VARCHAR(40) PRIMARY KEY,
+    value BIGINT NOT NULL
+);
+
+ALTER TABLE economy ADD COLUMN IF NOT EXISTS decay_due INT NOT NULL DEFAULT 0;

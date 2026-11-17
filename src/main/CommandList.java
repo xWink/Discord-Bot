@@ -12,6 +12,7 @@ import command.commands.economy.Buy;
 import command.commands.Help;
 import command.commands.economy.Gift;
 import command.commands.economy.Market;
+import command.commands.economy.Wallet;
 import command.commands.misc.*;
 import command.commands.bang.Daily;
 
@@ -49,6 +50,7 @@ public final class CommandList {
     private static void addAllCommands() {
         // Admin commands
         commands.add(new Echo());
+        commands.add(new EconomyAdmin());
         commands.add(new Notify());
         commands.add(new Purge());
         commands.add(new ResetChannels());
@@ -71,5 +73,6 @@ public final class CommandList {
         commands.add(new Ping());
         commands.add(new Profile());
         commands.add(new Stand());
+        commands.add(new Wallet());
     }
 }

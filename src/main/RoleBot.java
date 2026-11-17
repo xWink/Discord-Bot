@@ -30,6 +30,7 @@ public class RoleBot {
             Server.API.addEventListener(EventListeners.ALL.toArray());
             Timer timer = new Timer();
             timer.schedule(new main.timertasks.BlackJackTimeout(), 1000 * 30, 1000 * 30);
+            timer.schedule(new main.timertasks.DecaySweep(), 1000 * 60, 1000 * 60 * 60);
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
             timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);
             timer.schedule(new PruneBangStreaks(), 1000 * 60 * 60 * 2, 1000 * 60 * 60 * 2);

@@ -1,16 +1,14 @@
 package command.util.game;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public final class BlackJackList {
 
     private BlackJackList() { }
 
-    private static ArrayList<BlackJackGame> games;
-
-    static {
-        games = new ArrayList<>();
-    }
+    private static final List<BlackJackGame> games = Collections.synchronizedList(new ArrayList<>());
 
     /**
      * Adds a game to the list of active games.
@@ -22,12 +20,14 @@ public final class BlackJackList {
     }
 
     /**
-     * Getter for the list of active games.
+     * Snapshot of the active games, safe to iterate while others change.
      *
-     * @return the list of active games
+     * @return a copy of the list of active games
      */
-    public static ArrayList<BlackJackGame> getGames() {
-        return games;
+    public static List<BlackJackGame> getGames() {
+        synchronized (games) {
+            return new ArrayList<>(games);
+        }
     }
 
     /**
@@ -40,16 +40,17 @@ public final class BlackJackList {
     }
 
     /**
-     * Gets a game from the list of active games where the player
-     * has the same userId as the parameter.
+     * Gets the active game for a user.
      *
      * @param userId the userId being searched for in the list of games
-     * @return true if a game with a player with a matching userId is found
+     * @return the user's game, or null if they have none
      */
     public static BlackJackGame getUserGame(long userId) {
-        for (BlackJackGame game : games) {
-            if (game.getPlayer().getUserId() == userId) {
-                return game;
+        synchronized (games) {
+            for (BlackJackGame game : games) {
+                if (game.getPlayer().getUserId() == userId) {
+                    return game;
+                }
             }
         }
         return null;

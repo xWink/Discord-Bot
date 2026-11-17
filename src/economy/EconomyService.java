@@ -146,24 +146,33 @@ public final class EconomyService {
         requirePositive(amount);
         try {
             Database.inTransaction(c -> {
-                int wallet = lockWallet(c, user);
-                if (reservationExists(c, reservationId)) return null;
-                int spendable = wallet - reservedTotal(c, user);
-                if (spendable < amount) throw new InsufficientFundsRuntime(spendable, amount);
-                try (PreparedStatement ps = c.prepareStatement("INSERT INTO economy_reservations "
-                        + "(reservation_id, user, amount, reason, ref, created_at) VALUES (?, ?, ?, ?, ?, ?)")) {
-                    ps.setString(1, reservationId);
-                    ps.setLong(2, user);
-                    ps.setInt(3, amount);
-                    ps.setString(4, reason);
-                    ps.setString(5, ref);
-                    ps.setLong(6, System.currentTimeMillis());
-                    ps.executeUpdate();
-                }
+                reserveIn(c, user, amount, reason, ref, reservationId);
                 return null;
             });
         } catch (InsufficientFundsRuntime e) {
             throw e.unwrap();
+        }
+    }
+
+    /**
+     * Reserve inside a caller-owned transaction so a game row and its stake
+     * hold commit or roll back together. Throws {@link InsufficientFundsRuntime}.
+     */
+    public static void reserveIn(Connection c, long user, int amount, String reason, String ref,
+                                 String reservationId) throws SQLException {
+        int wallet = lockWallet(c, user);
+        if (reservationExists(c, reservationId)) return;
+        int spendable = wallet - reservedTotal(c, user);
+        if (spendable < amount) throw new InsufficientFundsRuntime(spendable, amount);
+        try (PreparedStatement ps = c.prepareStatement("INSERT INTO economy_reservations "
+                + "(reservation_id, user, amount, reason, ref, created_at) VALUES (?, ?, ?, ?, ?, ?)")) {
+            ps.setString(1, reservationId);
+            ps.setLong(2, user);
+            ps.setInt(3, amount);
+            ps.setString(4, reason);
+            ps.setString(5, ref);
+            ps.setLong(6, System.currentTimeMillis());
+            ps.executeUpdate();
         }
     }
 
@@ -176,27 +185,31 @@ public final class EconomyService {
      * @return true if this call settled it, false if it was already closed
      */
     public boolean settleReservation(String reservationId, int net, String reason) throws SQLException {
-        return Database.inTransaction(c -> {
-            long user;
-            int held;
-            String ref;
-            try (PreparedStatement ps = c.prepareStatement("SELECT user, amount, ref FROM economy_reservations "
-                    + "WHERE reservation_id = ? FOR UPDATE")) {
-                ps.setString(1, reservationId);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) return false;
-                    user = rs.getLong(1);
-                    held = rs.getInt(2);
-                    ref = rs.getString(3);
-                }
+        return Database.inTransaction(c -> settleReservationIn(c, reservationId, net, reason));
+    }
+
+    /** Settlement inside a caller-owned transaction. */
+    public static boolean settleReservationIn(Connection c, String reservationId, int net, String reason)
+            throws SQLException {
+        long user;
+        int held;
+        String ref;
+        try (PreparedStatement ps = c.prepareStatement("SELECT user, amount, ref FROM economy_reservations "
+                + "WHERE reservation_id = ? FOR UPDATE")) {
+            ps.setString(1, reservationId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return false;
+                user = rs.getLong(1);
+                held = rs.getInt(2);
+                ref = rs.getString(3);
             }
-            if (net < -held) throw new IllegalArgumentException("Loss exceeds the reserved stake");
-            lockWallet(c, user);
-            deleteReservation(c, reservationId);
-            if (net > 0) creditIn(c, user, net, reason, ref, "settle:" + reservationId);
-            else if (net < 0) debitRaw(c, user, -net, reason, ref, "settle:" + reservationId);
-            return true;
-        });
+        }
+        if (net < -held) throw new IllegalArgumentException("Loss exceeds the reserved stake");
+        lockWallet(c, user);
+        deleteReservation(c, reservationId);
+        if (net > 0) creditIn(c, user, net, reason, ref, "settle:" + reservationId);
+        else if (net < 0) debitRaw(c, user, -net, reason, ref, "settle:" + reservationId);
+        return true;
     }
 
     /**
@@ -206,6 +219,11 @@ public final class EconomyService {
      */
     public boolean refundReservation(String reservationId) throws SQLException {
         return Database.inTransaction(c -> deleteReservation(c, reservationId));
+    }
+
+    /** Release inside a caller-owned transaction. */
+    public static boolean refundReservationIn(Connection c, String reservationId) throws SQLException {
+        return deleteReservation(c, reservationId);
     }
 
     // -------------------------------------------------- transaction primitives

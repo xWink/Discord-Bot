@@ -26,8 +26,10 @@ public class RoleBot {
         try {
             logger.debug("Entering application.");
             database.Database.migrate();
+            logger.debug("Recovered " + command.util.game.BlackJackStore.recover().size() + " open blackjack hands");
             Server.API.addEventListener(EventListeners.ALL.toArray());
             Timer timer = new Timer();
+            timer.schedule(new main.timertasks.BlackJackTimeout(), 1000 * 30, 1000 * 30);
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
             timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);
             timer.schedule(new PruneBangStreaks(), 1000 * 60 * 60 * 2, 1000 * 60 * 60 * 2);

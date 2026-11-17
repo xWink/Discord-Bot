@@ -38,6 +38,7 @@ public class MyHand extends Command {
             return;
         }
 
+        game.touch();
         String playerHand = game.getPlayer().getHand().toString();
         MessageAction message = channel.sendMessage(event.getAuthor().getName() + "'s hand is: " + playerHand);
 

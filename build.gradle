@@ -23,6 +23,11 @@ sourceSets {
             srcDirs = ['res']
         }
     }
+    test {
+        java {
+            srcDirs = ['test']
+        }
+    }
 }
 
 repositories {
@@ -41,4 +46,5 @@ dependencies {
     implementation 'com.google.guava:guava:30.0-jre'
     implementation 'org.slf4j:slf4j-log4j12:1.7.30'
     implementation 'com.opencsv:opencsv:5.3'
+    testImplementation 'junit:junit:4.13.2'
 }

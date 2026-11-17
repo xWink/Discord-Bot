@@ -48,6 +48,15 @@ public final class EconomyConnector extends Connector {
     }
 
     /**
+     * @param userId the ID number of the user
+     * @return the wallet balance minus coins reserved by open games or purchases
+     * @throws SQLException may be thrown when reading the wallet
+     */
+    public int getSpendable(long userId) throws SQLException {
+        return EconomyService.getInstance().getSpendable(userId);
+    }
+
+    /**
      * Getter for the amount of wealth a user has, including reserved coins.
      *
      * @param userId the ID number of the user

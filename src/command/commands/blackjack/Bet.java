@@ -7,13 +7,19 @@ import command.util.cards.HandOfCards;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import command.util.game.Player;
+import command.util.game.BlackJackStore;
+import economy.EconomyService;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.sql.SQLException;
 import java.util.Collections;
 
 public class Bet extends Command {
+
+    /** Largest blackjack stake allowed. */
+    public static final int MAX_STAKE = 10;
 
     private EconomyConnector ec;
 
@@ -38,8 +44,8 @@ public class Bet extends Command {
     }
 
     /**
-     * Takes a certain amount of money from the betting player and starts
-     * a game of blackjack for them.
+     * Reserves the stake from the betting player and starts a game of
+     * blackjack for them. Blackjack pays 3:2, ties push, a bust loses at once.
      *
      * @param event the MessageReceivedEvent that triggered the command
      */
@@ -53,16 +59,24 @@ public class Bet extends Command {
         try {
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
 
-            // Verify that the user has enough money
-            if (!ec.canAfford(event.getAuthor().getIdLong(), betAmount)) {
+            // Start game. The stake is reserved and the hand saved in one transaction.
+            BlackJackGame game = new BlackJackGame(new Player(userId), betAmount);
+            game.setChannelId(channel.getIdLong());
+            game.start();
+            try {
+                BlackJackStore.open(game);
+            } catch (EconomyService.InsufficientFundsRuntime e) {
                 channel.sendMessage("You do not have enough money to make that bet!\n"
-                        + "Your wallet contains " + ec.getWealth(userId) + " GryphCoins").queue();
+                        + "Your spendable balance is " + ec.getSpendable(userId) + " GryphCoins").queue();
                 return;
+            } catch (SQLException e) {
+                if (BlackJackList.getUserGame(userId) != null || isDuplicate(e)) {
+                    channel.sendMessage("You are already in a game\nTo see your cards, say `!myhand`").queue();
+                    return;
+                }
+                throw e;
             }
 
-            // Start game
-            BlackJackGame game = new BlackJackGame(new Player(userId), betAmount);
-            game.start();
             Card dealersFirstCard = game.getDealer().getHand().getAsList().get(0);
             HandOfCards playerHand = game.getPlayer().getHand();
 
@@ -86,30 +100,28 @@ public class Bet extends Command {
                 return;
             }
 
-            // Check how much the player won or if game is a tie
-            int result = game.checkWinner();
+            // Natural 21: settle immediately
+            BlackJackList.addGame(game);
+            int result = BlackJackStore.settle(game);
             String output;
-
-            // Set output string
             if (result > 0)
                 output = name + " got 21!\nYou won " + result + "*gc*!\n";
             else
-                output = name + " got 21!\nIt's a draw, you earned 0 *gc*\n";
+                output = name + " got 21!\nIt's a push, your stake is returned\n";
             output += "Dealers hand: " + game.getDealer().getHand().toString();
 
-            // Show game results
             CardMessage.createCardMessage(
                     channel,
                     output,
                     game.getDealer().getHand().getAsList()
             ).queue();
-
-            // Update database and end game
-            if (result > 0) ec.addOrRemoveMoney(userId, result);
-            game.end();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
+    }
+
+    private static boolean isDuplicate(SQLException e) {
+        return e.getErrorCode() == 1062 || "23000".equals(e.getSQLState());
     }
 
     private boolean verifyInput(MessageReceivedEvent event) {
@@ -137,6 +149,12 @@ public class Bet extends Command {
         // Verify that user bet more than 0 GryphCoins
         if (betAmount < 1) {
             channel.sendMessage("You must bet at least 1 GryphCoin!").queue();
+            return false;
+        }
+
+        // Stakes are capped at launch
+        if (betAmount > MAX_STAKE) {
+            channel.sendMessage("The maximum stake is " + MAX_STAKE + " GryphCoins.").queue();
             return false;
         }
         return true;

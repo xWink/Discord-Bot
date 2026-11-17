@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
  */
 public final class FakeDiscord {
 
-    private static final AtomicLong IDS = new AtomicLong(700_000_000_000L);
+    private static final AtomicLong IDS = new AtomicLong(System.currentTimeMillis() * 1000);
 
     public final List<String> texts = new ArrayList<>();
     public final List<MessageEmbed> embeds = new ArrayList<>();

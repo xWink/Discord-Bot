@@ -82,11 +82,12 @@ public class Bang extends Command {
             output += "The gun jammed... " + name + " survived "
                     + (jamEmote != null
                     ? jamEmote.getAsMention() + jamEmote.getAsMention() + jamEmote.getAsMention()
-                    : "");
+                    : "\uD83C\uDF40\uD83C\uDF40\uD83C\uDF40"); // no custom emoji on this server: use clovers
         } else if (killed) {
             output += "Bang! " + name + " died :skull:";
         } else {
-            output += "Click. " + name + " survived  " + (surviveEmote != null ? surviveEmote.getAsMention() : "");
+            output += "Click. " + name + " survived  "
+                    + (surviveEmote != null ? surviveEmote.getAsMention() : "\uD83D\uDE05");
         }
         output += "\nChambers left in the cylinder: ||  " + chambers + "  ||\n";
 

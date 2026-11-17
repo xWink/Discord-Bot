@@ -38,11 +38,18 @@ public class EconomyAdmin extends Command implements AdminCommand {
             } else if (args.length >= 5 && args[1].equalsIgnoreCase("adjust")
                     && !event.getMessage().getMentionedUsers().isEmpty()) {
                 adjust(event, args);
+            } else if (args.length >= 5 && args[1].equalsIgnoreCase("goal") && args[2].equalsIgnoreCase("new")) {
+                newGoal(event, args);
+            } else if (args.length == 3 && args[1].equalsIgnoreCase("goal") && args[2].equalsIgnoreCase("cancel")) {
+                int n = economy.GoalService.getInstance().cancelCurrent();
+                event.getChannel().sendMessage(n < 0 ? "No goal to cancel."
+                        : "Goal cancelled. " + n + " contributions were returned through the ledger.").queue();
             } else if (args.length == 3 && args[1].equalsIgnoreCase("decay")) {
                 decay(event, Integer.parseInt(args[2]));
             } else {
                 event.getChannel().sendMessage("Usage:\n`!economy receipt <id>`\n"
                         + "`!economy adjust <@user> <+/-amount> <note>`\n"
+                        + "`!economy goal new <target> <title>` / `!economy goal cancel`\n"
                         + "`!economy decay <weeks from now>` (at least 1, leaving a preview week)").queue();
             }
         } catch (Exception e) {
@@ -80,6 +87,14 @@ public class EconomyAdmin extends Command implements AdminCommand {
             return;
         }
         event.getChannel().sendMessage("Correction recorded. Receipt `" + opId + "`.").queue();
+    }
+
+    private void newGoal(MessageReceivedEvent event, String[] args) throws Exception {
+        int target = Integer.parseInt(args[3]);
+        String title = String.join(" ", Arrays.copyOfRange(args, 4, args.length));
+        economy.GoalService.Goal goal = economy.GoalService.getInstance().create(title, target);
+        event.getChannel().sendMessage(goal == null ? "A goal is already active. Cancel or finish it first."
+                : "Goal created: " + goal.title + " (" + goal.target + " GC).").queue();
     }
 
     private void decay(MessageReceivedEvent event, int weeksFromNow) throws Exception {

@@ -4,11 +4,15 @@ plugins {
     id "com.github.johnrengelman.shadow" version '8.1.1'
 }
 
-mainClassName = 'main.RoleBot'
+application {
+    mainClass = 'main.RoleBot'
+}
 version '2.4'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
 
 sourceSets {
     main {

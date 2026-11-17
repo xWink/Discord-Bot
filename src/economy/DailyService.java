@@ -38,11 +38,20 @@ public final class DailyService {
      */
     public boolean claim(long user, String source, long now) throws SQLException {
         return Database.inTransaction(c -> {
-            try (PreparedStatement ps = c.prepareStatement(
-                    "INSERT IGNORE INTO bang (user, tries, deaths, jams, last_played, streak) "
-                            + "VALUES (?, 0, 0, 0, 0, 0)")) {
+            boolean exists;
+            try (PreparedStatement ps = c.prepareStatement("SELECT 1 FROM bang WHERE user = ?")) {
                 ps.setLong(1, user);
-                ps.executeUpdate();
+                try (ResultSet rs = ps.executeQuery()) {
+                    exists = rs.next();
+                }
+            }
+            if (!exists) {
+                try (PreparedStatement ps = c.prepareStatement(
+                        "INSERT IGNORE INTO bang (user, tries, deaths, jams, last_played, streak) "
+                                + "VALUES (?, 0, 0, 0, 0, 0)")) {
+                    ps.setLong(1, user);
+                    ps.executeUpdate();
+                }
             }
             long lastDaily;
             try (PreparedStatement ps = c.prepareStatement("SELECT last_daily FROM bang WHERE user = ? FOR UPDATE")) {

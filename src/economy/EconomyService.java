@@ -271,11 +271,21 @@ public final class EconomyService {
      * with a payout atomically.
      */
     public static int lockWallet(Connection c, long user) throws SQLException {
-        try (PreparedStatement ps = c.prepareStatement("INSERT IGNORE INTO economy "
-                + "(user, wallet, role_expiry, role_colour) VALUES (?, ?, 0, NULL)")) {
+        // Create the row only when missing, so the common path takes just the row lock.
+        boolean exists;
+        try (PreparedStatement ps = c.prepareStatement("SELECT 1 FROM economy WHERE user = ?")) {
             ps.setLong(1, user);
-            ps.setInt(2, STARTING_BALANCE);
-            ps.executeUpdate();
+            try (ResultSet rs = ps.executeQuery()) {
+                exists = rs.next();
+            }
+        }
+        if (!exists) {
+            try (PreparedStatement ps = c.prepareStatement("INSERT IGNORE INTO economy "
+                    + "(user, wallet, role_expiry, role_colour) VALUES (?, ?, 0, NULL)")) {
+                ps.setLong(1, user);
+                ps.setInt(2, STARTING_BALANCE);
+                ps.executeUpdate();
+            }
         }
         int wallet;
         int lastWeek;

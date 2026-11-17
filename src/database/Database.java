@@ -50,13 +50,20 @@ public final class Database {
     public static synchronized HikariDataSource getPool() {
         if (pool == null) {
             HikariConfig config = new HikariConfig();
-            config.setJdbcUrl("jdbc:mysql://" + Config.getDbAddr() + "/discord_bot");
-            config.setUsername(Config.getDbUser());
-            config.setPassword(Config.getDbPass());
+            String override = System.getProperty("db.url"); // used by local integration tests
+            if (override != null) {
+                config.setJdbcUrl(override);
+                config.setUsername(System.getProperty("db.user", "root"));
+                config.setPassword(System.getProperty("db.pass", ""));
+            } else {
+                config.setJdbcUrl("jdbc:mysql://" + Config.getDbAddr() + "/discord_bot");
+                config.setUsername(Config.getDbUser());
+                config.setPassword(Config.getDbPass());
+            }
             config.setDriverClassName("org.mariadb.jdbc.Driver");
             config.setMaximumPoolSize(8);
             config.setAutoCommit(false);
-            config.setTransactionIsolation("TRANSACTION_REPEATABLE_READ");
+            config.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
             pool = new HikariDataSource(config);
         }
         return pool;
@@ -64,7 +71,7 @@ public final class Database {
 
     /**
      * Runs the body in one transaction on its own pooled connection.
-     * Commits on success and rolls back if the body throws.
+     * Commits on success and rolls back if the body throws. Deadlocks are retried a few times.
      *
      * @param body the work to run
      * @param <T> the result type
@@ -72,16 +79,29 @@ public final class Database {
      * @throws SQLException if the work or the commit fails
      */
     public static <T> T inTransaction(TransactionBody<T> body) throws SQLException {
-        try (Connection connection = getPool().getConnection()) {
-            try {
-                T result = body.run(connection);
-                connection.commit();
-                return result;
-            } catch (SQLException | RuntimeException e) {
-                connection.rollback();
-                throw e;
+        SQLException last = null;
+        for (int attempt = 0; attempt < 4; attempt++) {
+            try (Connection connection = getPool().getConnection()) {
+                try {
+                    T result = body.run(connection);
+                    connection.commit();
+                    return result;
+                } catch (SQLException | RuntimeException e) {
+                    connection.rollback();
+                    // Deadlocks and lock timeouts roll the whole transaction back; it is safe to rerun.
+                    if (e instanceof SQLException && isRetryable((SQLException) e)) {
+                        last = (SQLException) e;
+                        continue;
+                    }
+                    throw e;
+                }
             }
         }
+        throw last;
+    }
+
+    private static boolean isRetryable(SQLException e) {
+        return "40001".equals(e.getSQLState()) || e.getErrorCode() == 1213 || e.getErrorCode() == 1205;
     }
 
     /**
@@ -91,6 +111,19 @@ public final class Database {
      */
     public static void migrate() {
         try {
+            runMigrations();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Database migration failed. Shutting down...");
+            System.exit(-1);
+        }
+    }
+
+    /**
+     * Same as {@link #migrate()} but reports failure to the caller.
+     */
+    public static void runMigrations() throws Exception {
+        {
             inTransaction(connection -> {
                 try (Statement st = connection.createStatement()) {
                     st.execute("CREATE TABLE IF NOT EXISTS schema_migrations ("
@@ -128,10 +161,6 @@ public final class Database {
                 });
                 System.out.println("Applied migration " + name);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Database migration failed. Shutting down...");
-            System.exit(-1);
         }
     }
 

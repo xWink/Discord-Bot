@@ -53,3 +53,9 @@ dependencies {
 tasks.withType(JavaCompile).configureEach {
     options.release = 8
 }
+
+tasks.named('test') {
+    ['db.url', 'db.user', 'db.pass'].each { k ->
+        if (System.getProperty(k)) systemProperty k, System.getProperty(k)
+    }
+}

@@ -25,6 +25,7 @@ public class RoleBot {
         BasicConfigurator.configure();
         try {
             logger.debug("Entering application.");
+            database.Database.migrate();
             Server.API.addEventListener(EventListeners.ALL.toArray());
             Timer timer = new Timer();
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);

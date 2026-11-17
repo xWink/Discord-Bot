@@ -26,12 +26,23 @@ public abstract class Connector {
 
 
     protected Connector(String tableName) {
+        this.table = tableName;
+        initSharedConnection();
+    }
+
+    /**
+     * Opens the legacy shared connection once. Constructing further connectors
+     * reuses a live connection instead of replacing it underneath other users.
+     * Economy writes no longer go through this connection; they use
+     * {@link Database#inTransaction(Database.TransactionBody)}.
+     */
+    private static synchronized void initSharedConnection() {
         try {
+            if (connection != null && !connection.isClosed()) return;
             Class.forName("org.mariadb.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:mysql://" + Config.getDbAddr() + "/discord_bot",
                     Config.getDbUser(),
                     Config.getDbPass());
-            this.table = tableName;
         } catch (Exception e) {
             System.out.println("Failed to connect to database. Shutting down...");
             System.exit(-1);

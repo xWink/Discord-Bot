@@ -40,20 +40,19 @@ public final class QuizCommands {
         String answer = st.answered.getChoices().get(st.answered.getCorrectIndex());
         out.append(st.timedOut ? "Too slow. " : st.correct ? "Correct. " : "Not quite. ")
                 .append("The answer was **").append(answer).append("**.");
-        if (st.correct) out.append(economy.Cosmetics.extras(event.getAuthor().getIdLong()).effect);
         if (st.answered.getExplanation() != null) out.append('\n').append(st.answered.getExplanation());
         if (st.next != null) {
             event.getChannel().sendMessage(out.toString()).queue();
             ask(event.getChannel(), st.next);
             return;
         }
-        if (st.correctTotal == QuizService.QUESTIONS) out.append(economy.Cosmetics.extras(event.getAuthor().getIdLong()).effect);
         out.append("\n**Run complete: ").append(st.correctTotal).append("/").append(QuizService.QUESTIONS)
                 .append(".**");
         if (st.reward > 0) out.append(" +").append(st.reward).append(" GC!");
         if (st.feeTaken) out.append(" The ").append(QuizService.ENTRY_FEE).append(" GC entry fee was spent.");
         if (st.prizeAwarded) out.append("\nYou earned this week's gauntlet badge (see `!shop owned`).");
-        event.getChannel().sendMessage(out.toString()).queue();
+        economy.Cosmetics.reply(event.getChannel(), event.getAuthor().getIdLong(), out.toString(),
+                st.correctTotal >= 2);
     }
 
     public static class Weekly extends Command {

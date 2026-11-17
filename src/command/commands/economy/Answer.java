@@ -36,14 +36,13 @@ public class Answer extends Command {
                 return;
             }
             StringBuilder out = new StringBuilder();
-            String name = event.getAuthor().getName();
+            String name = economy.Cosmetics.nameWithTitle(event.getAuthor().getIdLong(), event.getAuthor().getName());
             String answer = r.question.getChoices().get(r.question.getCorrectIndex());
             if (r.timedOut) {
                 out.append("Time's up, ").append(name).append(". The answer was **").append(answer).append("**.");
             } else {
                 out.append(r.correct ? "Correct, " : "Not quite, ").append(name).append(". The answer was **")
                         .append(answer).append("**.");
-                if (r.correct) out.append(economy.Cosmetics.extras(event.getAuthor().getIdLong()).effect);
                 if (r.question.getExplanation() != null) out.append('\n').append(r.question.getExplanation());
                 if (r.dailyPaid) out.append("\nDaily reward: +5 GC");
                 else out.append("\nDaily reward already claimed. This round was free practice.");
@@ -51,7 +50,8 @@ public class Answer extends Command {
             }
             out.append("\n_Source: ").append(r.question.getAttribution()).append(" (")
                     .append(r.question.getLicense()).append(")_");
-            event.getChannel().sendMessage(out.toString()).queue();
+            economy.Cosmetics.reply(event.getChannel(), event.getAuthor().getIdLong(), out.toString(),
+                    r.correct && !r.timedOut);
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

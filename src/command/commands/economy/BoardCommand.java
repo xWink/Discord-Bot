@@ -49,7 +49,7 @@ public final class BoardCommand {
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < Math.min(SeasonService.TOP, rows.size()); i++) {
                     SeasonService.Row r = rows.get(i);
-                    sb.append(r.rank).append(". <@").append(r.user).append("> — ").append(r.score)
+                    sb.append(r.rank).append(". <@").append(r.user).append(">").append(economy.Cosmetics.tag(r.user)).append(" — ").append(r.score)
                             .append(unit(board)).append('\n');
                 }
                 eb.setDescription(rows.isEmpty() ? "Nothing to show yet." : sb.toString());

@@ -54,7 +54,7 @@ public class Bet extends Command {
     public void start(MessageReceivedEvent event) {
         if (!verifyInput(event)) return;
         long userId = event.getAuthor().getIdLong();
-        String name = event.getAuthor().getName();
+        String name = economy.Cosmetics.nameWithTitle(userId, event.getAuthor().getName());
         MessageChannel channel = event.getChannel();
 
         try {
@@ -114,7 +114,7 @@ public class Bet extends Command {
             int result = BlackJackStore.settle(game);
             String output;
             if (result > 0)
-                output = name + " got 21!\nYou won " + result + "*gc*!" + economy.Cosmetics.extras(userId).effect + "\n";
+                output = economy.Cosmetics.winHeader(userId) + name + " got 21!\nYou won " + result + "*gc*!\n";
             else
                 output = name + " got 21!\nIt's a push, your stake is returned\n";
             output += "Dealers hand: " + game.getDealer().getHand().toString();

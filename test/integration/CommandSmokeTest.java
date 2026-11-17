@@ -170,4 +170,48 @@ public class CommandSmokeTest extends DbTestBase {
         run(new DuelCommands.DuelAnswer(), b, "!duelanswer b");
         run(new DuelCommands.Board(), a, "!duelboard");
     }
+
+    @Test
+    public void eachEffectGivesItsOwnWinCard() throws Exception {
+        arcade.QuestionBank.loadBundled();
+        long u = newUser();
+        economy.EconomyService.getInstance().credit(u, 60, "t", null, "c" + u);
+        String[][] effects = {{"victory-fx", "Victory!", "\uD83C\uDF89"}, {"fx-fireworks", "Fireworks!", "\uD83C\uDF86"},
+                {"fx-trophy", "Champion!", "\uD83C\uDFC6"}, {"fx-stars", "Starfall!", "\u2B50"}};
+        for (String[] fx : effects) {
+            economy.CosmeticShop.getInstance().buy(u, fx[0], "fx:" + fx[0] + u);
+            assertEquals("effect", economy.Cosmetics.equip(u, fx[0]));
+            arcade.ArcadeService.Round round = arcade.ArcadeService.start(u);
+            char right = (char) ('a' + round.question.getCorrectIndex());
+            FakeDiscord f = FakeDiscord.say(u, "Ann", "!answer " + right, main.Server.BOTS_CHANNEL_ID);
+            new Answer().start(f.event);
+            assertEquals("a styled card, not plain text: " + f.said(), 1, f.embeds.size());
+            assertTrue(f.said(), f.said().contains(fx[1]) && f.said().contains(fx[2]));
+        }
+    }
+
+    @Test
+    public void wrongAnswersAndUnequippedPlayersGetPlainText() throws Exception {
+        arcade.QuestionBank.loadBundled();
+        long u = newUser();
+        arcade.ArcadeService.Round round = arcade.ArcadeService.start(u);
+        char right = (char) ('a' + round.question.getCorrectIndex());
+        FakeDiscord f = FakeDiscord.say(u, "Ann", "!answer " + right, main.Server.BOTS_CHANNEL_ID);
+        new Answer().start(f.event);
+        assertTrue(f.embeds.isEmpty());
+        assertFalse(f.texts.isEmpty());
+    }
+
+    @Test
+    public void titleAndMarksAppearNextToNames() throws Exception {
+        long u = newUser();
+        economy.EconomyService.getInstance().credit(u, 60, "t", null, "c" + u);
+        economy.CosmeticShop.getInstance().buy(u, "title-week", "t1" + u);
+        economy.CosmeticShop.getInstance().buy(u, "flair-day", "t2" + u);
+        economy.Cosmetics.equip(u, "title-week");
+        economy.Cosmetics.equip(u, "flair-day");
+        assertTrue(economy.Cosmetics.tag(u).contains("the Scholar"));
+        assertTrue(economy.Cosmetics.nameWithTitle(u, "Ann").startsWith("Ann the Scholar"));
+        assertTrue(economy.Cosmetics.nameWithTitle(u, "Ann").contains("\u2728"));
+    }
 }

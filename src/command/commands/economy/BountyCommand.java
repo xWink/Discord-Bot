@@ -68,7 +68,7 @@ public class BountyCommand extends Command {
                 StringBuilder sb = new StringBuilder();
                 for (BountyService.Bounty b : open) {
                     sb.append("`#").append(b.id).append("` **").append(b.reward).append(" GC** — ")
-                            .append(b.description).append(" (by <@").append(b.poster).append(">")
+                            .append(b.description).append(" (by <@").append(b.poster).append(">").append(economy.Cosmetics.tag(b.poster))
                             .append(b.status.equals("CLAIMED") ? ", claimed" : "").append(")\n");
                 }
                 eb.setDescription(open.isEmpty() ? "No open bounties." : sb.toString());

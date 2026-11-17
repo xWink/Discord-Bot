@@ -51,7 +51,7 @@ public class FinishIntegrationTest extends DbTestBase {
         assertEquals(" the Scholar", ex.title);
         assertNotNull(ex.color);
         assertTrue(ex.badges.toString().contains("Daily flair"));
-        assertEquals("Ann the Scholar", Cosmetics.nameWithTitle(u, "Ann"));
+        assertEquals("Ann the Scholar \u2728", Cosmetics.nameWithTitle(u, "Ann")); // title, then the flair mark
 
         exec("UPDATE inventory SET expires_at = 1 WHERE user = " + u + " AND item_code = 'title-week'");
         assertEquals("", Cosmetics.extras(u).title); // expired items stop rendering

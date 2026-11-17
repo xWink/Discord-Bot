@@ -56,7 +56,7 @@ public class Dice extends Command {
             int[] dice = DiceGame.roll(random);
             int total = dice[0] + dice[1];
             int net = stake > 0 ? DiceGame.net(pick, total, stake) : 0;
-            String name = event.getAuthor().getName();
+            String name = economy.Cosmetics.nameWithTitle(event.getAuthor().getIdLong(), event.getAuthor().getName());
             String roll = ":game_die: " + dice[0] + " + " + dice[1] + " = **" + total + "**";
 
             if (stake > 0) {
@@ -72,9 +72,9 @@ public class Dice extends Command {
             String result = stake == 0
                     ? (won ? "You called it (free play)." : "Missed (free play).")
                     : (won ? "You won " + net + " GC!" : "You lost " + stake + " GC.");
-            if (won) result += economy.Cosmetics.extras(event.getAuthor().getIdLong()).effect;
-            event.getChannel().sendMessage(name + " picked " + pick.name().toLowerCase() + ". " + roll + "\n"
-                    + result + (stake > 0 ? " Maximum loss was " + stake + " GC." : "")).queue();
+            economy.Cosmetics.reply(event.getChannel(), event.getAuthor().getIdLong(), name + " picked "
+                    + pick.name().toLowerCase() + ". " + roll + "\n" + result
+                    + (stake > 0 ? " Maximum loss was " + stake + " GC." : ""), won && stake > 0);
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

@@ -25,7 +25,7 @@ public class DuelSweep extends TimerTask {
         }
         for (DuelService.Outcome o : DuelService.sweep()) {
             TextChannel channel = Server.API.getTextChannelById(o.duel.channelId);
-            if (channel != null) channel.sendMessage(DuelCommands.describe(o)).queue();
+            if (channel != null) economy.Cosmetics.reply(channel, o.winner, DuelCommands.describe(o), o.winner != 0);
         }
     }
 }

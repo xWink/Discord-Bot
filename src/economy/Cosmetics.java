@@ -23,25 +23,42 @@ public final class Cosmetics {
         final String title;     // shown after the player's name
         final Color color;      // profile border
         final String effect;    // appended to wins
+        final String icon;      // small mark shown next to the name
+        final String banner;    // emoji row across the top of a win card
+        final String heading;   // win card heading
 
         Look(String badge, String title, Color color, String effect) {
+            this(badge, title, color, effect, "", null, null);
+        }
+
+        Look(String badge, String title, Color color, String effect, String icon, String banner, String heading) {
             this.badge = badge;
             this.title = title;
             this.color = color;
             this.effect = effect;
+            this.icon = icon;
+            this.banner = banner;
+            this.heading = heading;
         }
     }
 
     private static final Map<String, Look> LOOKS = new HashMap<>();
 
     static {
-        LOOKS.put("flair-day", new Look("✨ Daily flair", null, new Color(0xF5C542), null));
-        LOOKS.put("victory-fx", new Look("🎉 Victory effect", null, null, "🎉🎊✨"));
-        LOOKS.put("bundle-weekend", new Look("🌟 Weekend bundle (banner, frame, title)", "the Weekender",
-                new Color(0xE0457B), null));
-        LOOKS.put("title-week", new Look("📜 Weekly title", "the Scholar", null, null));
-        LOOKS.put("badge-set", new Look("🏅 Badge set", null, null, null));
-        LOOKS.put("badge-month", new Look("🎖 Monthly collectible", null, null, null));
+        LOOKS.put("flair-day", new Look("\u2728 Daily flair", null, new Color(0xF5C542), null, "\u2728", null, null));
+        LOOKS.put("victory-fx", new Look("\uD83C\uDF89 Confetti effect", null, null, "\uD83C\uDF89\uD83C\uDF8A\u2728", "",
+                "\uD83C\uDF89\uD83C\uDF8A\u2728\uD83C\uDF8A\uD83C\uDF89\uD83C\uDF8A\u2728\uD83C\uDF8A\uD83C\uDF89", "Victory!"));
+        LOOKS.put("fx-fireworks", new Look("\uD83C\uDF86 Fireworks effect", null, null, "\uD83C\uDF86\uD83C\uDF87", "",
+                "\uD83C\uDF86\uD83C\uDF87\uD83C\uDF86\uD83C\uDF87\uD83C\uDF86\uD83C\uDF87\uD83C\uDF86", "Fireworks!"));
+        LOOKS.put("fx-trophy", new Look("\uD83C\uDFC6 Golden trophy effect", null, null, "\uD83C\uDFC6", "",
+                "\uD83C\uDFC6\uD83E\uDD47\uD83C\uDFC6\uD83E\uDD47\uD83C\uDFC6\uD83E\uDD47\uD83C\uDFC6", "Champion!"));
+        LOOKS.put("fx-stars", new Look("\u2B50 Starfall effect", null, null, "\u2B50\u2728", "",
+                "\u2728\u2B50\uD83C\uDF1F\u2B50\u2728\u2B50\uD83C\uDF1F\u2B50\u2728", "Starfall!"));
+        LOOKS.put("bundle-weekend", new Look("\uD83C\uDF1F Weekend bundle (banner, frame, title)", "the Weekender",
+                new Color(0xE0457B), null, "\uD83C\uDF1F", null, null));
+        LOOKS.put("title-week", new Look("\uD83D\uDCDC Weekly title", "the Scholar", null, null));
+        LOOKS.put("badge-set", new Look("\uD83C\uDFC5 Badge set", null, null, null, "\uD83C\uDFC5", null, null));
+        LOOKS.put("badge-month", new Look("\uD83C\uDF96 Monthly collectible", null, null, null, "\uD83C\uDF96", null, null));
     }
 
     /** What a player's equipped items add up to. */
@@ -49,6 +66,10 @@ public final class Cosmetics {
         public Color color;
         public String title = "";
         public String effect = "";
+        public String icons = "";
+        public String banner;
+        public String heading;
+        public Color effectColor;
         public final StringBuilder badges = new StringBuilder();
     }
 
@@ -135,19 +156,56 @@ public final class Cosmetics {
     static void apply(Extras ex, String code) {
         Look look = LOOKS.get(code);
         if (look == null) {
-            if (code.startsWith("season-")) ex.badges.append("🏆 Season winner\n");
-            else if (code.startsWith("gauntlet-")) ex.badges.append("🧩 Gauntlet clear\n");
-            else if (code.startsWith("banner-club")) ex.badges.append("🚩 Team banner\n");
+            if (code.startsWith("season-")) { ex.badges.append("🏆 Season winner\n"); ex.icons += "🏆"; }
+            else if (code.startsWith("gauntlet-")) { ex.badges.append("🧩 Gauntlet clear\n"); ex.icons += "🧩"; }
+            else if (code.startsWith("banner-club")) { ex.badges.append("🚩 Team banner\n"); ex.icons += "🚩"; }
             return;
         }
         ex.badges.append(look.badge).append('\n');
         if (look.title != null) ex.title = " " + look.title;
         if (look.color != null) ex.color = look.color;
         if (look.effect != null) ex.effect = " " + look.effect;
+        ex.icons += look.icon;
+        if (look.banner != null) {
+            ex.banner = look.banner;
+            ex.heading = look.heading;
+            ex.effectColor = new Color(0xF5C542);
+        }
     }
 
-    /** The name followed by an equipped title, if any. */
+    /** The name followed by an equipped title and badge marks, if any. */
     public static String nameWithTitle(long user, String name) {
-        return name + extras(user).title;
+        Extras ex = extras(user);
+        return name + ex.title + (ex.icons.isEmpty() ? "" : " " + ex.icons);
+    }
+
+    /** The top of a win message for someone with an effect equipped, or an empty string. */
+    public static String winHeader(long user) {
+        Extras ex = extras(user);
+        return ex.banner == null ? "" : ex.banner + "\n**" + ex.heading + "**\n";
+    }
+
+    /** Title and marks to put after a mention, e.g. " the Scholar \uD83C\uDFC5". Empty if none. */
+    public static String tag(long user) {
+        Extras ex = extras(user);
+        return ex.title + (ex.icons.isEmpty() ? "" : " " + ex.icons);
+    }
+
+    /**
+     * Sends a result. A win by someone with a victory effect equipped is shown as a styled card (their
+     * effect's banner and heading over a coloured border); everything else is plain text.
+     */
+    public static void reply(net.dv8tion.jda.api.entities.channel.middleman.MessageChannel channel, long user,
+                             String text, boolean won) {
+        Extras ex = won ? extras(user) : null;
+        if (ex == null || ex.banner == null) {
+            channel.sendMessage(text).queue();
+            return;
+        }
+        net.dv8tion.jda.api.EmbedBuilder eb = new net.dv8tion.jda.api.EmbedBuilder();
+        eb.setColor(ex.effectColor);
+        eb.setTitle(ex.banner);
+        eb.setDescription("**" + ex.heading + "**\n" + text);
+        channel.sendMessageEmbeds(eb.build()).queue();
     }
 }

@@ -79,10 +79,11 @@ public final class PersonalTriviaCommands {
                 ArcadeService.Result r = PersonalTrivia.answer(event.getChannel().getIdLong(),
                         event.getAuthor().getIdLong(), Character.toUpperCase(a[1].charAt(0)) - 'A');
                 if (r == null || round == null) return;
-                event.getChannel().sendMessage(event.getAuthor().getName() + (r.correct ? " got it!" : " missed.")
-                        + (r.correct ? economy.Cosmetics.extras(event.getAuthor().getIdLong()).effect : "")
+                economy.Cosmetics.reply(event.getChannel(), event.getAuthor().getIdLong(),
+                        economy.Cosmetics.nameWithTitle(event.getAuthor().getIdLong(), event.getAuthor().getName())
+                        + (r.correct ? " got it!" : " missed.")
                         + (r.dailyPaid ? " Daily reward +5 GC." : "")
-                        + (r.punchPaid ? " Punch card +" + arcade.PunchCard.REWARD + " GC!" : "")).queue();
+                        + (r.punchPaid ? " Punch card +" + arcade.PunchCard.REWARD + " GC!" : ""), r.correct);
             } catch (Exception e) {
                 printStackTraceAndSendMessage(event, e);
             }

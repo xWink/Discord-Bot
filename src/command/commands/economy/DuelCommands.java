@@ -27,7 +27,7 @@ public final class DuelCommands {
         if (o.winner == 0) {
             sb.append("Draw.").append(d.stake > 0 ? " Both stakes were returned." : "");
         } else {
-            sb.append("<@").append(o.winner).append("> wins").append(economy.Cosmetics.extras(o.winner).effect);
+            sb.append("<@").append(o.winner).append(">").append(economy.Cosmetics.tag(o.winner)).append(" wins");
             if (d.stake > 0) sb.append(" +").append(DuelMath.winnerNet(d.stake)).append(" GC")
                     .append(DuelMath.fee(d.stake) > 0 ? " (after a " + DuelMath.fee(d.stake) + " GC fee)" : "");
             sb.append('.');
@@ -142,7 +142,7 @@ public final class DuelCommands {
                 DuelService.Outcome o = DuelService.answer(event.getAuthor().getIdLong(),
                         Character.toUpperCase(args[1].charAt(0)) - 'A');
                 event.getMessage().addReaction(net.dv8tion.jda.api.entities.emoji.Emoji.fromUnicode("✅")).queue();
-                if (o != null) event.getChannel().sendMessage(describe(o)).queue();
+                if (o != null) economy.Cosmetics.reply(event.getChannel(), o.winner, describe(o), o.winner != 0);
             } catch (Exception e) {
                 printStackTraceAndSendMessage(event, e);
             }
@@ -162,7 +162,7 @@ public final class DuelCommands {
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < Math.min(10, board.size()); i++) {
                     DuelService.Standing s = board.get(i);
-                    sb.append(i + 1).append(". <@").append(s.user).append("> — ").append(s.rating)
+                    sb.append(i + 1).append(". <@").append(s.user).append(">").append(economy.Cosmetics.tag(s.user)).append(" — ").append(s.rating)
                             .append(" (").append(s.matches).append(" matches)\n");
                 }
                 eb.setDescription(board.isEmpty() ? "No one has " + DuelMath.RATED_MATCHES_FOR_RANK

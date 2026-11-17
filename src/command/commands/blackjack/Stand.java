@@ -26,7 +26,7 @@ public class Stand extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         BlackJackGame game = BlackJackList.getUserGame(event.getAuthor().getIdLong());
-        String author = event.getAuthor().getName();
+        String author = economy.Cosmetics.nameWithTitle(event.getAuthor().getIdLong(), event.getAuthor().getName());
 
         if (game == null) {
             event.getChannel().sendMessage("You haven't started a game yet!\n"
@@ -50,8 +50,8 @@ public class Stand extends Command {
                 // Show winnings/losses/push
                 String output = "";
                 if (reward > 0)
-                    output += author + " wins! Earnings: " + reward + " *gc*"
-                            + economy.Cosmetics.extras(event.getAuthor().getIdLong()).effect;
+                    output += economy.Cosmetics.winHeader(event.getAuthor().getIdLong()) + author + " wins! Earnings: "
+                            + reward + " *gc*";
                 else if (reward < 0)
                     output += author + " lost. Losses: " + (-reward) + " *gc*";
                 else

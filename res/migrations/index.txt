@@ -10,3 +10,4 @@ V9__goals.sql
 V10__cosmetics.sql
 V11__social.sql
 V12__finish.sql
+V13__effects.sql

@@ -79,7 +79,7 @@ public class Gift extends Command {
 
         eb.setColor(Color.YELLOW);
         eb.setAuthor("Gift Successfully Sent!", sending.getAvatarUrl(), sending.getAvatarUrl());
-        eb.setTitle("Sent " + amt + " gc to " + receiving.getName() + "!");
+        eb.setTitle("Sent " + amt + " gc to " + economy.Cosmetics.nameWithTitle(receiving.getIdLong(), receiving.getName()) + "!");
         eb.setThumbnail(receiving.getAvatarUrl());
         if (wrapNote != null) {
             eb.setColor(Color.PINK);

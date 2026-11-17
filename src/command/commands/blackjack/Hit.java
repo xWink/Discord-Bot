@@ -34,7 +34,7 @@ public class Hit extends Command {
             return;
         }
 
-        String name = event.getAuthor().getName();
+        String name = economy.Cosmetics.nameWithTitle(event.getAuthor().getIdLong(), event.getAuthor().getName());
 
         try {
             synchronized (game) {
@@ -67,7 +67,7 @@ public class Hit extends Command {
                 }
 
                 if (reward > 0)
-                    output += "You earned " + reward + " *gc*" + economy.Cosmetics.extras(game.getPlayer().getUserId()).effect;
+                    output = economy.Cosmetics.winHeader(game.getPlayer().getUserId()) + output + "You earned " + reward + " *gc*";
                 else if (reward < 0)
                     output += "You lost " + (-reward) + " *gc*";
                 else

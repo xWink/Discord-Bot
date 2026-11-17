@@ -76,7 +76,7 @@ public class BangWeek extends Command {
                 for (int i = 0; i < Math.min(TOP, rows.size()); i++) {
                     Row r = rows.get(i);
                     net.dv8tion.jda.api.entities.User u = event.getJDA().getUserById(r.user);
-                    sb.append(i + 1).append(". ").append(u != null ? u.getName() : "<@" + r.user + ">")
+                    sb.append(i + 1).append(". ").append(u != null ? economy.Cosmetics.nameWithTitle(r.user, u.getName()) : "<@" + r.user + ">")
                             .append(" — ").append(String.format("%.1f", r.survival())).append("% (")
                             .append(r.attempts).append(" attempts)\n");
                 }

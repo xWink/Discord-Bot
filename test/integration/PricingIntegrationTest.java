@@ -62,7 +62,13 @@ public class PricingIntegrationTest extends DbTestBase {
         assertEquals(1, shop.beginSwap("s1" + u, u, "blue", 2L));
         assertEquals(95, EconomyService.getInstance().getBalance(u));
         assertTrue(shop.complete("s1" + u, "blue"));
-        assertEquals(2L, new database.connectors.EconomyConnector().getRoleId(u));
+        assertEquals(2L, database.Database.inTransaction(c -> {
+            try (java.sql.ResultSet rs = c.createStatement().executeQuery(
+                    "SELECT role_id FROM economy WHERE user = " + u)) {
+                rs.next();
+                return rs.getLong(1);
+            }
+        }).longValue());
         assertEquals(expiry, new java.util.concurrent.atomic.AtomicLong(
                 database.Database.inTransaction(c -> {
                     try (java.sql.ResultSet rs = c.createStatement().executeQuery(

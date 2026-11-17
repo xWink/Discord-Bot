@@ -149,6 +149,7 @@ public class Bang extends Command {
                     streak));
 
             giveRewards();
+            arcade.PunchCard.record(userId);
             BangResults.record(userId, new Date().getTime(), killed, jammed);
 
             if (!cache.isPanicking()) {

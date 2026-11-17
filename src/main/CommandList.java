@@ -8,6 +8,9 @@ import command.commands.blackjack.Bet;
 import command.commands.blackjack.Hit;
 import command.commands.blackjack.MyHand;
 import command.commands.blackjack.Stand;
+import command.commands.economy.Answer;
+import command.commands.economy.Arcade;
+import command.commands.economy.ArcadeScores;
 import command.commands.economy.Buy;
 import command.commands.Help;
 import command.commands.economy.Gift;
@@ -58,6 +61,9 @@ public final class CommandList {
         //commands.add(new DeleteCourseChannels());
 
         // Everyone commands
+        commands.add(new Answer());
+        commands.add(new Arcade());
+        commands.add(new ArcadeScores());
         commands.add(new Bang());
         commands.add(new BangScore());
         commands.add(new Bet());

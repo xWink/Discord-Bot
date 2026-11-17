@@ -26,6 +26,8 @@ public class RoleBot {
         try {
             logger.debug("Entering application.");
             database.Database.migrate();
+            arcade.QuestionBank.loadBundled();
+            arcade.QuestionRefiller.requestRefill(0, null);
             logger.debug("Recovered " + command.util.game.BlackJackStore.recover().size() + " open blackjack hands");
             Server.API.addEventListener(EventListeners.ALL.toArray());
             Timer timer = new Timer();

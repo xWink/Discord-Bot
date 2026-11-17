@@ -50,4 +50,43 @@ public class PricingIntegrationTest extends DbTestBase {
         assertTrue(svc.markGranted(svc.current(u).id));
         assertNull(svc.current(u));
     }
+
+    @Test
+    public void colourSwapKeepsRemainingTimeAndRefundsOnFailure() throws Exception {
+        economy.ShopService shop = economy.ShopService.getInstance();
+        long u = newUser();
+        EconomyService.getInstance().credit(u, 95, "t", null, "c" + u);
+        assertEquals(-1, shop.beginSwap("s0" + u, u, "blue", 2L)); // no rental yet
+        long expiry = System.currentTimeMillis() + 3 * 86400000L;
+        exec("UPDATE economy SET role_expiry = " + expiry + ", role_colour = 'orange', role_id = 1 WHERE user = " + u);
+        assertEquals(1, shop.beginSwap("s1" + u, u, "blue", 2L));
+        assertEquals(95, EconomyService.getInstance().getBalance(u));
+        assertTrue(shop.complete("s1" + u, "blue"));
+        assertEquals(2L, new database.connectors.EconomyConnector().getRoleId(u));
+        assertEquals(expiry, new java.util.concurrent.atomic.AtomicLong(
+                database.Database.inTransaction(c -> {
+                    try (java.sql.ResultSet rs = c.createStatement().executeQuery(
+                            "SELECT role_expiry FROM economy WHERE user = " + u)) {
+                        rs.next();
+                        return rs.getLong(1);
+                    }
+                })).get());
+        shop.beginSwap("s2" + u, u, "pink", 3L);
+        assertTrue(shop.failAndRefund("s2" + u));
+        assertEquals(95, EconomyService.getInstance().getBalance(u));
+    }
+
+    @Test
+    public void wrappedGiftChargesFeeSeparately() throws Exception {
+        long a = newUser(), b = newUser();
+        EconomyService.getInstance().credit(a, 20, "t", null, "c" + a); // 25
+        EconomyService.getInstance().transferWithFee(a, b, 10, 3, "gift", null, "w" + a);
+        assertEquals(12, EconomyService.getInstance().getBalance(a));
+        assertEquals(15, EconomyService.getInstance().getBalance(b));
+        try {
+            EconomyService.getInstance().transferWithFee(a, b, 10, 3, "gift", null, "w2" + a); // 13 needed, 12 held
+            fail();
+        } catch (economy.InsufficientFundsException expected) { }
+        assertEquals(12, EconomyService.getInstance().getBalance(a));
+    }
 }

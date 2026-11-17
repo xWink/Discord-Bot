@@ -138,6 +138,29 @@ public final class EconomyService {
     }
 
     /**
+     * Transfer plus a separate fee, all in one transaction. The recipient always gets the full
+     * {@code amount}; the fee leaves circulation.
+     */
+    public void transferWithFee(long from, long to, int amount, int fee, String reason, String ref, String opId)
+            throws SQLException, InsufficientFundsException {
+        requirePositive(amount);
+        try {
+            Database.inTransaction(c -> {
+                if (from < to) { lockWallet(c, from); lockWallet(c, to); }
+                else { lockWallet(c, to); lockWallet(c, from); }
+                int spendable = lockWallet(c, from) - reservedTotal(c, from);
+                if (spendable < amount + fee) throw new InsufficientFundsRuntime(spendable, amount + fee);
+                debitIn(c, from, amount, reason + ":out", ref, opId);
+                if (fee > 0) debitIn(c, from, fee, reason + ":wrap", ref, opId + ":wrap");
+                creditIn(c, to, amount, reason + ":in", ref, opId);
+                return null;
+            });
+        } catch (InsufficientFundsRuntime e) {
+            throw e.unwrap();
+        }
+    }
+
+    /**
      * Holds coins aside so they cannot be spent while a game or purchase is
      * open. Idempotent on the reservation ID.
      */

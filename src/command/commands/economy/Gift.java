@@ -13,6 +13,10 @@ import java.awt.*;
 
 public class Gift extends Command {
 
+    /** Extra GC for the themed card; charged on top of the amount delivered. */
+    public static final int WRAP_FEE = 3;
+    private String wrapNote;
+
     /**
      * Initializes the command's key to "!gift"
      */
@@ -28,7 +32,8 @@ public class Gift extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         if (!inputIsValid(event.getMessage())) {
-            event.getChannel().sendMessage("To gift someone *gc* say `!gift <@user> <amount>`").queue();
+            event.getChannel().sendMessage("To gift someone *gc* say `!gift <@user> <amount>` (add `wrap <note>` for a themed card, "
+                    + WRAP_FEE + " GC extra)").queue();
             return;
         }
 
@@ -43,8 +48,19 @@ public class Gift extends Command {
 
             try {
                 // One operation ID per Discord message, so a retried event cannot pay twice.
-                EconomyService.getInstance().transfer(event.getAuthor().getIdLong(), targetId, amount,
-                        "gift", Long.toString(event.getMessageIdLong()), "gift:" + event.getMessageId());
+                String[] parts = event.getMessage().getContentRaw().split("\\s+");
+                boolean wrap = parts.length >= 4 && parts[3].equalsIgnoreCase("wrap");
+                if (wrap) {
+                    EconomyService.getInstance().transferWithFee(event.getAuthor().getIdLong(), targetId, amount,
+                            WRAP_FEE, "gift", Long.toString(event.getMessageIdLong()), "gift:" + event.getMessageId());
+                    String note = parts.length > 4 ? String.join(" ", java.util.Arrays.copyOfRange(parts, 4,
+                            parts.length)) : "";
+                    wrapNote = note.length() > 200 ? note.substring(0, 200) : note;
+                } else {
+                    wrapNote = null;
+                    EconomyService.getInstance().transfer(event.getAuthor().getIdLong(), targetId, amount,
+                            "gift", Long.toString(event.getMessageIdLong()), "gift:" + event.getMessageId());
+                }
             } catch (InsufficientFundsException e) {
                 event.getChannel().sendMessage("You cannot afford to send that gift").queue();
                 return;
@@ -65,6 +81,11 @@ public class Gift extends Command {
         eb.setAuthor("Gift Successfully Sent!", sending.getAvatarUrl(), sending.getAvatarUrl());
         eb.setTitle("Sent " + amt + " gc to " + receiving.getName() + "!");
         eb.setThumbnail(receiving.getAvatarUrl());
+        if (wrapNote != null) {
+            eb.setColor(Color.PINK);
+            eb.setDescription(":gift: " + (wrapNote.isEmpty() ? "A gift for you!" : wrapNote)
+                    + "\n_Gift wrap fee: " + WRAP_FEE + " GC_");
+        }
 
         return eb;
     }
@@ -81,7 +102,8 @@ public class Gift extends Command {
 
         String[] split = message.getContentRaw().split("\\s+");
 
-        if (split.length != 3) {
+        boolean wrapped = split.length >= 4 && split[3].equalsIgnoreCase("wrap");
+        if (split.length != 3 && !wrapped) {
             return false;
         }
 

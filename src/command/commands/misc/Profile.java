@@ -68,6 +68,13 @@ public class Profile extends Command {
         eb.addField("Streak", streak + (streak > 0 ? " :fire:" : ""), true);
         eb.addField("Karma", "" + karma, false);
         eb.addField("Wallet", wallet + " *gc*", false);
+        try {
+            java.util.List<String> cosmetics = economy.CosmeticShop.getInstance()
+                    .owned(event.getAuthor().getIdLong());
+            if (!cosmetics.isEmpty()) eb.addField("Cosmetics", String.join("\n", cosmetics), false);
+        } catch (SQLException e) {
+            e.printStackTrace(); // cosmetics are optional on the profile
+        }
     }
 
     private void setBangData() throws SQLException {

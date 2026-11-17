@@ -44,7 +44,7 @@ public class Help extends Command {
         eb.addField("Gifts a specified number of GryphCoins to a target user.",     "!gift [@user] [# gc]", false);
         eb.addField("Shows a user's display name based on Discord ID.",             "!id [Discord ID]", false);
         eb.addField("Shows info on a course at UoGuelph.",                          "!info [course ID]", false);
-        eb.addField("View or purchase items listed on the market.",                 "!market !buy [item #]", false);
+        eb.addField("View or purchase items listed on the market.",                 "!market !buy [item #] !swap [colour]", false);
         eb.addField("Free daily trivia or code puzzle; first round pays your daily.", "!arcade !answer [letter] !arcadescores", false);
         eb.addField("Turn games that risk your coins on or off.", "!paidplay [on/off]", false);
         eb.addField("See or fund the community goal.", "!goal !contribute [# gc]", false);

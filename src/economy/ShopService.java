@@ -70,6 +70,52 @@ public final class ShopService {
         }
     }
 
+    /** Cost of switching colour while keeping the remaining rental time. */
+    public static final int SWAP_FEE = 5;
+
+    /**
+     * Charges the swap fee and records a pending swap. Needs an unexpired rental.
+     *
+     * @return the user's current role ID being replaced, or -1 if they have no active rental
+     */
+    public long beginSwap(String purchaseId, long user, String colour, long newRoleId)
+            throws SQLException, InsufficientFundsException {
+        try {
+            return Database.inTransaction(c -> {
+                EconomyService.lockWallet(c, user);
+                long oldRole;
+                try (PreparedStatement ps = c.prepareStatement(
+                        "SELECT COALESCE(role_id, 0), role_expiry FROM economy WHERE user = ?")) {
+                    ps.setLong(1, user);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        rs.next();
+                        oldRole = rs.getLong(1);
+                        if (oldRole == 0 || rs.getLong(2) <= System.currentTimeMillis()) return -1L;
+                    }
+                }
+                if (oldRole == newRoleId) return -2L;
+                EconomyService.debitIn(c, user, SWAP_FEE, "shop:swap", purchaseId, purchaseId);
+                long now = System.currentTimeMillis();
+                try (PreparedStatement ps = c.prepareStatement("INSERT INTO shop_purchases (purchase_id, user, "
+                        + "listing, cost, role_id, duration_days, status, created_at, updated_at) "
+                        + "VALUES (?, ?, ?, ?, ?, 0, ?, ?, ?)")) {
+                    ps.setString(1, purchaseId);
+                    ps.setLong(2, user);
+                    ps.setString(3, "swap:" + colour);
+                    ps.setInt(4, SWAP_FEE);
+                    ps.setLong(5, newRoleId);
+                    ps.setString(6, PENDING);
+                    ps.setLong(7, now);
+                    ps.setLong(8, now);
+                    ps.executeUpdate();
+                }
+                return oldRole;
+            });
+        } catch (EconomyService.InsufficientFundsRuntime e) {
+            throw new InsufficientFundsException(0, SWAP_FEE);
+        }
+    }
+
     /**
      * Marks the purchase granted and starts the rental clock. Renewing the
      * same colour extends the current expiry instead of resetting it.
@@ -93,6 +139,17 @@ public final class ShopService {
                 }
             }
             EconomyService.lockWallet(c, user);
+            if (days == 0) { // colour swap: the rental time carries over unchanged
+                try (PreparedStatement ps = c.prepareStatement(
+                        "UPDATE economy SET role_colour = ?, role_id = ? WHERE user = ?")) {
+                    ps.setString(1, colourName);
+                    ps.setLong(2, roleId);
+                    ps.setLong(3, user);
+                    ps.executeUpdate();
+                }
+                setStatus(c, purchaseId, GRANTED);
+                return true;
+            }
             long now = System.currentTimeMillis();
             long base = now;
             try (PreparedStatement ps = c.prepareStatement(

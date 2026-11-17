@@ -116,8 +116,8 @@ public final class CosmeticShop {
     public List<String> owned(long user) throws SQLException {
         return Database.inTransaction(c -> {
             List<String> lines = new ArrayList<>();
-            try (PreparedStatement ps = c.prepareStatement("SELECT s.name, MAX(i.expires_at) FROM inventory i "
-                    + "JOIN shop_items s ON s.code = i.item_code WHERE i.user = ? GROUP BY s.name")) {
+            try (PreparedStatement ps = c.prepareStatement("SELECT COALESCE(s.name, i.item_code), MAX(i.expires_at) FROM inventory i "
+                    + "LEFT JOIN shop_items s ON s.code = i.item_code WHERE i.user = ? GROUP BY 1")) {
                 ps.setLong(1, user);
                 try (ResultSet rs = ps.executeQuery()) {
                     long now = System.currentTimeMillis();

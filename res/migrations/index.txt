@@ -8,3 +8,4 @@ V7__wager_settings.sql
 V8__arcade.sql
 V9__goals.sql
 V10__cosmetics.sql
+V11__social.sql

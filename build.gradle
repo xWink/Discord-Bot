@@ -61,3 +61,9 @@ tasks.named('test') {
         if (System.getProperty(k)) systemProperty k, System.getProperty(k)
     }
 }
+
+tasks.register('exportArt', JavaExec) {
+    description = 'Writes the mascot variants to art-out/ for upload as server emoji'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'command.util.art.ArtExport'
+}

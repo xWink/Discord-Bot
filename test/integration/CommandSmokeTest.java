@@ -156,7 +156,7 @@ public class CommandSmokeTest extends DbTestBase {
         arcade.ArcadeService.Round round = arcade.ArcadeService.start(u);
         char right = (char) ('a' + round.question.getCorrectIndex());
         String said = run(new Answer(), u, "!answer " + right);
-        assertTrue(said, said.contains("🎉"));
+        assertTrue(said, said.contains("Victory!"));
     }
 
     @Test
@@ -176,6 +176,7 @@ public class CommandSmokeTest extends DbTestBase {
         arcade.QuestionBank.loadBundled();
         long u = newUser();
         economy.EconomyService.getInstance().credit(u, 60, "t", null, "c" + u);
+        java.util.Set<Integer> seen = new java.util.HashSet<>();
         String[][] effects = {{"victory-fx", "Victory!", "\uD83C\uDF89"}, {"fx-fireworks", "Fireworks!", "\uD83C\uDF86"},
                 {"fx-trophy", "Champion!", "\uD83C\uDFC6"}, {"fx-stars", "Starfall!", "\u2B50"}};
         for (String[] fx : effects) {
@@ -186,7 +187,11 @@ public class CommandSmokeTest extends DbTestBase {
             FakeDiscord f = FakeDiscord.say(u, "Ann", "!answer " + right, main.Server.BOTS_CHANNEL_ID);
             new Answer().start(f.event);
             assertEquals("a styled card, not plain text: " + f.said(), 1, f.embeds.size());
-            assertTrue(f.said(), f.said().contains(fx[1]) && f.said().contains(fx[2]));
+            assertTrue(f.said(), f.said().contains(fx[1]));
+            assertEquals("the mascot picture is attached", 1, f.files.size());
+            java.awt.image.BufferedImage art = javax.imageio.ImageIO.read(new java.io.ByteArrayInputStream(f.files.get(0)));
+            assertEquals(256, art.getWidth());
+            assertTrue("each effect has its own art", seen.add(java.util.Arrays.hashCode(f.files.get(0))));
         }
     }
 

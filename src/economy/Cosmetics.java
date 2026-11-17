@@ -70,6 +70,7 @@ public final class Cosmetics {
         public String banner;
         public String heading;
         public Color effectColor;
+        public String effectCode;
         public final StringBuilder badges = new StringBuilder();
     }
 
@@ -153,6 +154,26 @@ public final class Cosmetics {
         return ex;
     }
 
+    /** A readable name for an item code, for the profile card and messages. */
+    public static String label(String code) {
+        switch (code) {
+            case "flair-day": return "Daily flair";
+            case "victory-fx": return "Confetti";
+            case "fx-fireworks": return "Fireworks";
+            case "fx-trophy": return "Golden trophy";
+            case "fx-stars": return "Starfall";
+            case "bundle-weekend": return "Weekend bundle";
+            case "title-week": return "Scholar title";
+            case "badge-set": return "Badge set";
+            case "badge-month": return "Monthly badge";
+            case "banner-club": return "Team banner";
+            default:
+                if (code.startsWith("season-")) return "Season winner";
+                if (code.startsWith("gauntlet-")) return "Gauntlet clear";
+                return code;
+        }
+    }
+
     /** The codes a player is currently wearing (owned and unexpired), plus their team name if any. */
     public static final class Loadout {
         public final java.util.List<String> codes = new java.util.ArrayList<>();
@@ -202,7 +223,8 @@ public final class Cosmetics {
         if (look.banner != null) {
             ex.banner = look.banner;
             ex.heading = look.heading;
-            ex.effectColor = new Color(0xF5C542);
+            ex.effectColor = new Color(0xFFDD00);
+            ex.effectCode = code;
         }
     }
 
@@ -215,7 +237,7 @@ public final class Cosmetics {
     /** The top of a win message for someone with an effect equipped, or an empty string. */
     public static String winHeader(long user) {
         Extras ex = extras(user);
-        return ex.banner == null ? "" : ex.banner + "\n**" + ex.heading + "**\n";
+        return ex.banner == null ? "" : "\u2726 **" + ex.heading + "** \u2726\n";
     }
 
     /** Title and marks to put after a mention, e.g. " the Scholar \uD83C\uDFC5". Empty if none. */
@@ -224,21 +246,43 @@ public final class Cosmetics {
         return ex.title + (ex.icons.isEmpty() ? "" : " " + ex.icons);
     }
 
+    private static final java.util.Map<String, byte[]> WIN_ART = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** The mascot wearing one effect, cached because it is the same for everyone who owns that effect. */
+    private static byte[] winArt(String effectCode) throws java.io.IOException {
+        byte[] cached = WIN_ART.get(effectCode);
+        if (cached != null) return cached;
+        java.awt.image.BufferedImage img = command.util.art.Sticker.render(
+                java.util.Collections.singletonList(effectCode), 256, 7);
+        java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+        javax.imageio.ImageIO.write(img, "png", out);
+        WIN_ART.put(effectCode, out.toByteArray());
+        return out.toByteArray();
+    }
+
     /**
-     * Sends a result. A win by someone with a victory effect equipped is shown as a styled card (their
-     * effect's banner and heading over a coloured border); everything else is plain text.
+     * Sends a result. A win by someone with a victory effect equipped is shown as a card with the mascot
+     * celebrating in that effect's style; everything else is plain text.
      */
     public static void reply(net.dv8tion.jda.api.entities.channel.middleman.MessageChannel channel, long user,
                              String text, boolean won) {
         Extras ex = won ? extras(user) : null;
-        if (ex == null || ex.banner == null) {
+        if (ex == null || ex.effectCode == null) {
             channel.sendMessage(text).queue();
             return;
         }
-        net.dv8tion.jda.api.EmbedBuilder eb = new net.dv8tion.jda.api.EmbedBuilder();
-        eb.setColor(ex.effectColor);
-        eb.setTitle(ex.banner);
-        eb.setDescription("**" + ex.heading + "**\n" + text);
-        channel.sendMessageEmbeds(eb.build()).queue();
+        try {
+            net.dv8tion.jda.api.EmbedBuilder eb = new net.dv8tion.jda.api.EmbedBuilder();
+            eb.setColor(ex.effectColor);
+            eb.setTitle(ex.heading);
+            eb.setDescription(text);
+            eb.setThumbnail("attachment://win.png");
+            channel.sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(winArt(ex.effectCode), "win.png"))
+                    .setEmbeds(eb.build()).queue();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            channel.sendMessage(text).queue(); // never lose the result because the picture failed
+        }
     }
+
 }

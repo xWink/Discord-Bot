@@ -67,6 +67,14 @@ public final class FakeDiscord {
 
         MessageCreateAction action = mock(MessageCreateAction.class, RETURNS_SELF);
 
+        org.mockito.Mockito.doAnswer(inv -> {
+            for (Object o : inv.getRawArguments()) {
+                if (o instanceof MessageEmbed) embeds.add((MessageEmbed) o);
+                else if (o instanceof Object[]) for (Object e : (Object[]) o) embeds.add((MessageEmbed) e);
+            }
+            return action;
+        }).when(action).setEmbeds(any(MessageEmbed[].class));
+
         MessageChannelUnion channel = mock(MessageChannelUnion.class);
         when(channel.getIdLong()).thenReturn(channelId);
         when(channel.getId()).thenReturn(Long.toString(channelId));

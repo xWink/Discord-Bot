@@ -5,3 +5,4 @@ build/
 
 # Local bot settings (contain your token)
 .rolebotconfig
+art-out/

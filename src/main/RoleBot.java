@@ -31,6 +31,8 @@ public class RoleBot {
             economy.EconomyService.getInstance().refundAllByReason("gauntlet");
             arcade.QuestionBank.loadBundled();
             arcade.QuestionRefiller.requestRefill(0, null);
+            arcade.QuestionRefiller.requestSecondaryRefill();
+            arcade.QuestionRefiller.requestPackSync();
             logger.debug("Recovered " + command.util.game.BlackJackStore.recover().size() + " open blackjack hands");
             Server.API.addEventListener(EventListeners.ALL.toArray());
             Timer timer = new Timer();

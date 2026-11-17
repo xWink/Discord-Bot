@@ -55,7 +55,7 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 tasks.named('test') {
-    ['db.url', 'db.user', 'db.pass'].each { k ->
+    ['db.url', 'db.user', 'db.pass', 'live.net'].each { k ->
         if (System.getProperty(k)) systemProperty k, System.getProperty(k)
     }
 }

@@ -24,6 +24,7 @@ public class SeasonIntegrationTest extends DbTestBase {
         long when = java.time.LocalDate.of(2015, 1, 15).atStartOfDay(java.time.ZoneId.of("America/New_York"))
                 .toInstant().toEpochMilli();
         exec("DELETE FROM season_snapshots WHERE season = " + season);
+        exec("DELETE FROM arcade_scores WHERE played_at BETWEEN " + (when - 20L * 86400000) + " AND " + (when + 20L * 86400000));
         long a = newUser(), b = newUser(), hidden = newUser();
         scores(a, 5, when);
         scores(b, 3, when);

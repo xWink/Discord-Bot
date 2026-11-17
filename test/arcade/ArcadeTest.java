@@ -29,4 +29,24 @@ public class ArcadeTest {
         assertNotEquals(PunchCard.weekOf(4), PunchCard.weekOf(11));
         assertNotEquals(PunchCard.weekOf(3), PunchCard.weekOf(4));
     }
+
+    @Test
+    public void parsesTheTriviaApiPayload() {
+        String json = "[{\"category\":\"science\",\"id\":\"x\",\"correctAnswer\":\"Au\","
+                + "\"incorrectAnswers\":[\"Ag\",\"Fe\",\"Pb\"],\"question\":{\"text\":\"Symbol for gold?\"},"
+                + "\"difficulty\":\"easy\"}]";
+        java.util.List<QuestionSources.Parsed> list = QuestionSources.parseTheTriviaApi(json, new java.util.Random(1));
+        assertEquals(1, list.size());
+        assertEquals("Symbol for gold?", list.get(0).prompt);
+        assertEquals("Au", list.get(0).choices.get(list.get(0).correct));
+        assertEquals(4, list.get(0).choices.size());
+    }
+
+    @Test
+    public void packParserSkipsInvalidEntries() {
+        String json = "[{\"kind\":\"code\",\"prompt\":\"p\",\"choices\":[\"a\",\"b\"],\"answer\":1},"
+                + "{\"kind\":\"code\",\"prompt\":\"bad answer\",\"choices\":[\"a\",\"b\"],\"answer\":5},"
+                + "{\"kind\":\"code\",\"prompt\":\"one choice\",\"choices\":[\"a\"],\"answer\":0}]";
+        assertEquals(1, QuestionSources.parsePack(json).size());
+    }
 }

@@ -60,6 +60,7 @@ Use two accounts (your own and an alt, or a friend) for the social flows.
 | Achievements | `!achievements` after your first correct arcade answer | One item ticked; `!board collection` counts it |
 | Profile card | `!profile` before and after `!equip` | A picture card; titles, badges, banners and effects change how it looks |
 | Emoji art | `sh gradlew exportArt`, then upload `art-out/*_128.png` as server emoji | 14 mascot variants in the server colours |
+| Alumni | `!alumni grant @alt thanks for everything` (mod), then `!profile` as the alt, `!alumni list` | Gold ribbon, cap and diploma on the card, 🎓 next to their name everywhere |
 | Equip | `!shop buy title-week`, `!equip title-week`, `!profile`, `!arcadescores` | Title after your name, badge under "Equipped" |
 | Victory effect | `!shop buy victory-fx`, `!equip victory-fx`, then a correct `!answer` | Confetti after the result |
 | Team banner | `!banner request @SomeRole`, a member of that role says `!banner approve 1` | 45 GC held until approved, refunded if declined |

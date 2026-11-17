@@ -117,7 +117,8 @@ public final class Sticker {
         if (has(codes, "fx-stars")) starEyes(g);
         if (has(codes, "bundle-weekend")) crown(g);
         else if (has(codes, "victory-fx")) partyHat(g);
-        else if (has(codes, "title-week")) gradCap(g);
+        else if (has(codes, "title-week") || has(codes, "alumni")) gradCap(g);
+        if (has(codes, "alumni")) diploma(g, 190, 1010);
         if (has(codes, "badge-month")) medal(g, 400, 1010, GOLD);
         else if (has(codes, "badge-set")) medal(g, 400, 1010, new Color(0xD9DEE6));
         if (has(codes, "gauntlet-")) puzzle(g, -200, 90, 230);
@@ -267,6 +268,23 @@ public final class Sticker {
         line(g, 840, 74, 1010, 95, GOLD, 10);
         line(g, 1010, 95, 1020, 215, GOLD, 10);
         outlined(g, new RoundRectangle2D.Double(998, 205, 46, 70, 14, 14), GOLD);
+        g.setTransform(at);
+    }
+
+    /** A rolled diploma tied with a red ribbon. */
+    private static void diploma(Graphics2D g, double cx, double cy) {
+        AffineTransform at = g.getTransform();
+        g.translate(cx, cy);
+        g.scale(1.3, 1.3);
+        g.translate(-cx, -cy);
+        g.rotate(Math.toRadians(-14), cx, cy);
+        Color paper = new Color(0xFFF4C9);
+        outlined(g, new RoundRectangle2D.Double(cx - 150, cy - 48, 300, 96, 40, 40), paper);
+        outlined(g, new Ellipse2D.Double(cx - 178, cy - 52, 56, 104), new Color(0xF2DC9B));
+        outlined(g, new Ellipse2D.Double(cx + 122, cy - 52, 56, 104), new Color(0xF2DC9B));
+        outlined(g, new RoundRectangle2D.Double(cx - 22, cy - 56, 44, 112, 14, 14), RED);
+        outlined(g, poly(cx - 4, cy + 50, cx - 40, cy + 130, cx + 4, cy + 100), RED);
+        outlined(g, poly(cx + 4, cy + 50, cx + 40, cy + 130, cx - 4, cy + 100), DARK_RED);
         g.setTransform(at);
     }
 

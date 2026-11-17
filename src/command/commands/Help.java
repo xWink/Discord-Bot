@@ -67,6 +67,7 @@ public class Help extends Command {
         PROFILE("profile", "🏆", "Profile & rankings", "Stats, boards and achievements", new Color(0x5865F2),
                 new Entry("!profile", "Your stats, cosmetics and wallet"),
                 new Entry("!achievements", "Your unlocks"),
+                new Entry("!alumni  !alumni list", "Alumni status and the alumni list"),
                 new Entry("!board <arcade|duel|collection|community>", "Leaderboards and seasons"),
                 new Entry("!bangscore  !bangweek  !mybang", "Bang rankings and your numbers"),
                 new Entry("!optout [on|off]", "Hide yourself from public boards"),
@@ -82,6 +83,8 @@ public class Help extends Command {
                 new Entry("!economy goal new <target> <title>  /  cancel", "Community goals"),
                 new Entry("!economy decay <weeks>", "Publish the first decay cutoff"),
                 new Entry("!event start <name>", "Start an event without a pass"),
+                new Entry("!alumni grant @user [note]", "Bestow alumni (also adds the Alumni role if it exists)"),
+                new Entry("!alumni revoke @user", "Remove alumni"),
                 new Entry("!banner approve|decline <id>", "Approve team banners"));
 
         final String key;

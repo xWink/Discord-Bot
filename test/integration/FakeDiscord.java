@@ -57,11 +57,16 @@ public final class FakeDiscord {
 
     @SuppressWarnings("unchecked")
     public static FakeDiscord say(long userId, String name, String content, long channelId, User... mentions) {
-        return new FakeDiscord(userId, name, content, channelId, mentions);
+        return new FakeDiscord(userId, name, content, channelId, false, mentions);
+    }
+
+    /** Same as {@link #say} but the speaker is the server owner, so admin commands accept them. */
+    public static FakeDiscord sayAsOwner(long userId, String name, String content, long channelId, User... mentions) {
+        return new FakeDiscord(userId, name, content, channelId, true, mentions);
     }
 
     @SuppressWarnings("unchecked")
-    private FakeDiscord(long userId, String name, String content, long channelId, User[] mentioned) {
+    private FakeDiscord(long userId, String name, String content, long channelId, boolean owner, User[] mentioned) {
         this.userId = userId;
         long messageId = IDS.incrementAndGet();
 
@@ -139,6 +144,8 @@ public final class FakeDiscord {
         when(self.getRoles()).thenReturn(Collections.emptyList());
         when(self.getIdLong()).thenReturn(userId);
         Guild guild = mock(Guild.class);
+        when(self.getGuild()).thenReturn(guild);
+        when(self.isOwner()).thenReturn(owner);
         JDA jda = mock(JDA.class);
 
         event = mock(MessageReceivedEvent.class);

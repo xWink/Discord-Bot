@@ -138,6 +138,10 @@ public final class Cosmetics {
                         while (rs.next()) apply(ex, rs.getString(1));
                     }
                 }
+                if (AlumniService.yearIn(c, user) > 0) {
+                    ex.icons += "\uD83C\uDF93";
+                    ex.badges.append("\uD83C\uDF93 Alumni\n");
+                }
                 if (ex.badges.indexOf("Team banner") >= 0) {
                     String team = BannerService.activeTeam(c, user);
                     if (team != null) {
@@ -168,6 +172,7 @@ public final class Cosmetics {
             case "badge-month": return "Monthly badge";
             case "banner-club": return "Team banner";
             case "event-pass": return "Event pass";
+            case "alumni": return "Alumni";
             case "gift-wrap": return "Gift wrap";
             default:
                 if (code.startsWith("season-")) return "Season winner";
@@ -215,6 +220,8 @@ public final class Cosmetics {
     public static final class Loadout {
         public final java.util.List<String> codes = new java.util.ArrayList<>();
         public String team;
+        /** The class year if the member is alumni, otherwise 0. Alumni also appears in {@code codes}. */
+        public int alumniYear;
 
         public boolean has(String prefix) {
             for (String c : codes) if (c.startsWith(prefix)) return true;
@@ -236,6 +243,8 @@ public final class Cosmetics {
                     }
                 }
                 if (l.has("banner-club")) l.team = BannerService.activeTeam(c, user);
+                l.alumniYear = AlumniService.yearIn(c, user);
+                if (l.alumniYear > 0) l.codes.add("alumni");
                 return null;
             });
         } catch (SQLException e) {

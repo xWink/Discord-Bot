@@ -10,6 +10,7 @@ import command.commands.blackjack.Hit;
 import command.commands.blackjack.MyHand;
 import command.commands.blackjack.Stand;
 import command.commands.economy.AchievementsCommand;
+import command.commands.economy.AlumniCommand;
 import command.commands.economy.Answer;
 import command.commands.economy.Arcade;
 import command.commands.economy.ArcadeScores;
@@ -79,6 +80,7 @@ public final class CommandList {
 
         // Everyone commands
         commands.add(new AchievementsCommand());
+        commands.add(new AlumniCommand());
         commands.add(new Answer());
         commands.add(new Arcade());
         commands.add(new ArcadeScores());

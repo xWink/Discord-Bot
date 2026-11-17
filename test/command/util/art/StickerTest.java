@@ -21,7 +21,7 @@ public class StickerTest {
     @Test
     public void rendersEveryPropAndSavesSamples() throws Exception {
         String[] codes = {"victory-fx", "fx-fireworks", "fx-trophy", "fx-stars", "flair-day", "bundle-weekend",
-                "title-week", "badge-month", "badge-set", "banner-club", "season-202610-arcade", "gauntlet-w3"};
+                "title-week", "alumni", "badge-month", "badge-set", "banner-club", "season-202610-arcade", "gauntlet-w3"};
         BufferedImage plain = Sticker.render(Collections.emptyList(), 512, 1);
         save("plain", plain);
         for (String c : codes) {

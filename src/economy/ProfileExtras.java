@@ -34,6 +34,8 @@ public final class ProfileExtras {
                 }
                 return null;
             });
+            AlumniService.Record alum = AlumniService.getInstance().get(user);
+            if (alum != null) list.add(0, "Alumni  \u00B7  Class of " + alum.classYear());
             InstallmentService.Plan plan = InstallmentService.getInstance().current(user);
             if (plan != null) {
                 list.add("Installment: " + plan.colour + "  ·  " + plan.paid + "/" + plan.target + " GC");

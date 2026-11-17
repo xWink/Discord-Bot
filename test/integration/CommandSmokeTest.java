@@ -239,4 +239,55 @@ public class CommandSmokeTest extends DbTestBase {
         assertEquals(1, dressed.files.size());
         assertFalse("wearing items must change the picture", java.util.Arrays.equals(plain.files.get(0), dressed.files.get(0)));
     }
+
+    @Test
+    public void onlyModsCanBestowAlumniAndItShowsEverywhere() throws Exception {
+        long mod = newUser(), member = newUser(), nobody = newUser();
+        User um = FakeDiscord.user(member, "Bea");
+
+        // a normal member cannot grant
+        FakeDiscord denied = FakeDiscord.say(nobody, "Cy", "!alumni grant <@" + member + "> thanks", main.Server.BOTS_CHANNEL_ID, um);
+        new AlumniCommand().start(denied.event);
+        assertTrue(denied.said(), denied.said().contains("Only mods"));
+        assertNull(economy.AlumniService.getInstance().get(member));
+
+        // a mod can
+        FakeDiscord ok = FakeDiscord.sayAsOwner(mod, "Mod", "!alumni grant <@" + member + "> founding member", main.Server.BOTS_CHANNEL_ID, um);
+        new AlumniCommand().start(ok.event);
+        assertTrue(ok.said(), ok.said().contains("alumnus"));
+        assertEquals("the sticker is attached", 1, ok.files.size());
+        economy.AlumniService.Record r = economy.AlumniService.getInstance().get(member);
+        assertEquals("founding member", r.note);
+
+        // granting again updates, not duplicates
+        FakeDiscord again = FakeDiscord.sayAsOwner(mod, "Mod", "!alumni grant <@" + member + "> still here", main.Server.BOTS_CHANNEL_ID, um);
+        new AlumniCommand().start(again.event);
+        assertTrue(again.said(), again.said().contains("is alumni"));
+
+        // visible: no equipping needed
+        assertTrue(economy.Cosmetics.tag(member).contains("\uD83C\uDF93"));
+        assertTrue(economy.Cosmetics.nameWithTitle(member, "Bea").contains("\uD83C\uDF93"));
+        assertTrue(economy.Cosmetics.loadout(member).alumniYear > 0);
+        assertTrue(economy.ProfileExtras.pills(member).get(0).startsWith("Alumni"));
+        FakeDiscord self = FakeDiscord.say(member, "Bea", "!alumni", main.Server.BOTS_CHANNEL_ID);
+        new AlumniCommand().start(self.event);
+        assertTrue(self.said(), self.said().contains("class of"));
+
+        FakeDiscord list = FakeDiscord.say(nobody, "Cy", "!alumni list", main.Server.BOTS_CHANNEL_ID);
+        new AlumniCommand().start(list.event);
+        assertTrue(list.said(), list.said().contains("<@" + member + ">"));
+
+        // the profile picture changes
+        FakeDiscord before = FakeDiscord.say(nobody, "Cy", "!profile", main.Server.BOTS_CHANNEL_ID);
+        new Profile().start(before.event);
+        FakeDiscord after = FakeDiscord.say(member, "Bea", "!profile", main.Server.BOTS_CHANNEL_ID);
+        new Profile().start(after.event);
+        assertFalse(java.util.Arrays.equals(before.files.get(0), after.files.get(0)));
+
+        // revoking removes it
+        FakeDiscord gone = FakeDiscord.sayAsOwner(mod, "Mod", "!alumni revoke <@" + member + ">", main.Server.BOTS_CHANNEL_ID, um);
+        new AlumniCommand().start(gone.event);
+        assertNull(economy.AlumniService.getInstance().get(member));
+        assertFalse(economy.Cosmetics.tag(member).contains("\uD83C\uDF93"));
+    }
 }

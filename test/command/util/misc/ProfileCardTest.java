@@ -109,4 +109,15 @@ public class ProfileCardTest {
         assertTrue(decode(withExtras).getHeight() > decode(without).getHeight());
         Files.write(new File("build/profile-cards/extras.png").toPath(), withExtras);
     }
+
+    @Test
+    public void alumniCardHasItsRibbon() throws Exception {
+        Cosmetics.Loadout l = wearing("Gryphon Hockey", "alumni", "banner-club", "title-week");
+        l.alumniYear = 2026;
+        ProfileCard.Stats s = stats();
+        s.extras = java.util.Arrays.asList("Alumni  \u00B7  Class of 2026");
+        byte[] png = ProfileCard.render(s, l, java.util.Collections.<Cosmetics.OwnedItem>emptyList(), 9);
+        Files.write(new File("build/profile-cards/alumni.png").toPath(), png);
+        assertNotNull(decode(png));
+    }
 }

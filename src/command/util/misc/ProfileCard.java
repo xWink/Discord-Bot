@@ -128,7 +128,7 @@ public final class ProfileCard {
 
         drawAvatar(g, s, 44, 44, 128);
         drawNameBlock(g, s, l, 196);
-        drawStats(g, s, 44, 214);
+        drawStats(g, s, 44, 226);
         drawInventory(g, pills, l, 44, HEIGHT - 24);
 
         g.setFont(new Font("SansSerif", Font.BOLD, 13));
@@ -175,10 +175,14 @@ public final class ProfileCard {
         g.setColor(Color.WHITE);
         g.fill(outline);
 
-        int y = 110;
+        int y = 106;
+        if (l.alumniYear > 0) {
+            ribbon(g, x, y, "\u2605 ALUMNI  \u00B7  Class of " + l.alumniYear);
+            y += 40;
+        }
         if (l.has("bundle-weekend") || l.has("title-week")) {
             ribbon(g, x, y, l.has("bundle-weekend") ? "the Weekender" : "the Scholar");
-            y += 46;
+            y += 40;
         }
         if (l.has("banner-club")) {
             g.setFont(new Font("SansSerif", Font.BOLD, 20));
@@ -186,7 +190,7 @@ public final class ProfileCard {
             g.setColor(INK);
             g.setStroke(new BasicStroke(5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             java.awt.font.GlyphVector tv = g.getFont().createGlyphVector(g.getFontRenderContext(), team);
-            Shape to = tv.getOutline(x + 2, y + 22);
+            Shape to = tv.getOutline(x + 2, y + 20);
             g.draw(to);
             g.setColor(GOLD);
             g.fill(to);

@@ -57,7 +57,8 @@ public final class PersonalTriviaCommands {
                 eb.addField("Choices", Arcade.choices(q.getChoices()), false);
                 eb.addField("Join", "Free for everyone: `!panswer <letter>` within 60 seconds", false);
                 eb.setFooter("Host paid " + cost + " GC. Answers count toward your daily and punch card as usual.", null);
-                event.getChannel().sendMessageEmbeds(eb.build()).queue();
+                event.getChannel().sendMessageEmbeds(eb.build())
+                        .setActionRow(command.ui.Buttons.answers(0, false, "!panswer", q.getChoices().size())).queue();
             } catch (Exception e) {
                 printStackTraceAndSendMessage(event, e);
             }

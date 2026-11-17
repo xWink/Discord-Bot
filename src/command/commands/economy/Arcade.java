@@ -47,7 +47,9 @@ public class Arcade extends Command {
             eb.setFooter("Answer with !answer <letter>. Your first round each day pays the daily reward. "
                     + "Punch card: " + PunchCard.daysThisWeek(event.getAuthor().getIdLong()) + "/"
                     + PunchCard.DAYS_NEEDED + " days this week.", null);
-            event.getChannel().sendMessageEmbeds(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build())
+                    .setActionRow(command.ui.Buttons.answers(event.getAuthor().getIdLong(), true, "!answer",
+                            q.getChoices().size())).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

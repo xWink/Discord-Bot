@@ -1,7 +1,6 @@
 package main.eventlisteners;
 
-import command.Command;
-import main.CommandList;
+import command.ui.CommandDispatcher;
 import command.util.misc.MessageData;
 import database.connectors.MessagesConnector;
 import main.Server;
@@ -27,22 +26,7 @@ public class MessageReceivedEventListener extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         String messageContent = event.getMessage().getContentRaw();
         if (!event.getAuthor().isBot()) {
-            if (messageContent.startsWith("!")) {
-                // Find matching command
-                for (Command command : CommandList.getCommands()) {
-                    if (!command.keyMatches(messageContent)) continue;
-                    long channelId = event.getChannel().getIdLong();
-                    // Non-global commands work in the bots channel and the spam channel.
-                    if (command.isGlobal() || channelId == Server.BOTS_CHANNEL_ID
-                            || channelId == Server.SPAM_CHANNEL_ID) {
-                        command.start(event);
-                    } else {
-                        event.getChannel().sendMessage("`" + command.getKey() + "` works in <#" + Server.BOTS_CHANNEL_ID
-                                + "> or <#" + Server.SPAM_CHANNEL_ID + ">.").queue();
-                    }
-                    return;
-                }
-            }
+            if (CommandDispatcher.dispatch(event)) return;
 
             try {
                 mc.storeMessage(event.getMessage());

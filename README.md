@@ -31,15 +31,26 @@ Hosted on a Google Cloud server with 24/7 uptime.
 ### Log Messages and File Uploads
 ![Message Logging Demo](demo/bot_logging.PNG)
 
+### Buttons and slash commands
+Every `!command` also works as a slash command (type `/` to browse them), and the
+moments that used to need typing now have buttons: **Hit / Stand** on your blackjack
+hand, **Higher / Lower / Cash out** in Higher or Lower, **A-D** answers on arcade,
+quiz, trivia and duel questions, **Accept / Decline** on a duel challenge,
+**Confirm** on contributions and featured shop prices, and quick links on your profile card.
+Text commands are unchanged and behave identically.
+
 ### And much much more
 ![Help Demo](demo/bot_help.PNG)
 
 # Reading the code? Where to start:
-In src lies 3 package: command, database, and main.
+In src lies 3 package: command, database, and main (plus economy, arcade and duel for the game logic).
 
 command: Defines all commands used by the bot.  
 database: Defines the connectors to the database
 and any methods which may be used to send SQL instructions to it.  
+command.ui: Buttons and slash commands. Both are rewritten into the equivalent
+text command and run through the normal command list, so there is one code path
+per feature (see `SyntheticMessage`, `SlashCommands`, `Buttons`).  
 main: Required startup code, EventListener overrides, and reading
 data from a configuration file
 

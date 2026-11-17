@@ -90,11 +90,13 @@ public class Bet extends Command {
             HandOfCards playerHand = game.getPlayer().getHand();
 
             // Show player's cards
-            CardMessage.createCardMessage(
+            net.dv8tion.jda.api.requests.restaction.MessageCreateAction first = CardMessage.createCardMessage(
                     channel,
                     name + " received their first 2 cards: " + playerHand.toString(),
                     playerHand.getAsList()
-            ).queue();
+            );
+            if (playerHand.getValue() != 21) first.setActionRow(command.ui.Buttons.blackjack(userId));
+            first.queue();
 
             // Show dealer's first card
             CardMessage.createCardMessage(

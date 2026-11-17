@@ -44,7 +44,7 @@ public class MyHand extends Command {
 
         byte[] image;
         if ((image = PhotoCombine.genPhoto(game.getPlayer().getHand().getAsList())) != null)
-            message.addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(image, "out.png")).queue();
-        message.queue();
+            message.addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(image, "out.png"));
+        message.setActionRow(command.ui.Buttons.blackjack(event.getAuthor().getIdLong())).queue();
     }
 }

@@ -53,7 +53,14 @@ public class Profile extends Command {
             card.extras = economy.ProfileExtras.pills(user);
             card.avatar = fetchAvatar(event.getAuthor().getEffectiveAvatarUrl());
             byte[] png = command.util.misc.ProfileCard.render(card, economy.Cosmetics.loadout(user), economy.Cosmetics.owned(user), user);
-            event.getChannel().sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(png, "profile.png")).queue();
+            event.getChannel().sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(png, "profile.png"))
+                    .setActionRow(
+                            command.ui.Buttons.of(user, false, "!wallet", "Wallet",
+                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SECONDARY),
+                            command.ui.Buttons.of(user, false, "!achievements", "Achievements",
+                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SECONDARY),
+                            command.ui.Buttons.of(user, false, "!shop owned", "What I own",
+                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SECONDARY)).queue();
             return;
         } catch (Exception e) {
             e.printStackTrace();

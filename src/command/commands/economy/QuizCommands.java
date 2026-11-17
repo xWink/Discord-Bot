@@ -31,7 +31,8 @@ public final class QuizCommands {
         eb.addField("Time", arcade.ArcadeService.ROUND_SECONDS + " seconds", true);
         eb.addField("Choices", Arcade.choices(q.getChoices()), false);
         eb.setFooter("Answer with !answer <letter>", null);
-        channel.sendMessageEmbeds(eb.build()).queue();
+        channel.sendMessageEmbeds(eb.build())
+                .setActionRow(command.ui.Buttons.answers(s.user, true, "!answer", q.getChoices().size())).queue();
     }
 
     /** Called by {@code !answer} when the player has an open run. */

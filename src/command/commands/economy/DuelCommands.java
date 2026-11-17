@@ -81,7 +81,11 @@ public final class DuelCommands {
             event.getChannel().sendMessage(target.getAsMention() + ", " + event.getAuthor().getName()
                     + " challenges you to a " + (stake > 0 ? stake + " GC" : "free") + " duel."
                     + (stake > 0 ? " Maximum loss: " + stake + " GC each. Stakes are held only if you accept." : "")
-                    + "\nSay `!accept` or `!decline` within 2 minutes.").queue();
+                    + "\nSay `!accept` or `!decline` within 2 minutes.")
+                    .setActionRow(command.ui.Buttons.mine(target.getIdLong(), "!accept", "Accept",
+                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SUCCESS),
+                            command.ui.Buttons.mine(target.getIdLong(), "!decline", "Decline",
+                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.DANGER)).queue();
         }
     }
 
@@ -107,7 +111,9 @@ public final class DuelCommands {
                 eb.addField("Time", arcade.ArcadeService.ROUND_SECONDS + " seconds", true);
                 eb.setFooter("Both players: !duelanswer <letter>. Correct and fastest wins.", null);
                 event.getChannel().sendMessage("<@" + d.challenger + "> <@" + d.opponent + ">")
-                        .setEmbeds(eb.build()).queue();
+                        .setEmbeds(eb.build())
+                        .setActionRow(command.ui.Buttons.answers(0, false, "!duelanswer",
+                                d.getQuestion().getChoices().size())).queue();
             } catch (Exception e) {
                 e.printStackTrace();
                 DuelService.cancel(d);

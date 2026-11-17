@@ -44,12 +44,14 @@ public class Hit extends Command {
                 String output = "";
                 HandOfCards playerHand = game.getPlayer().getHand();
 
-                // Show player hand
-                CardMessage.createCardMessage(
+                // Show player hand, with buttons while the round goes on
+                net.dv8tion.jda.api.requests.restaction.MessageCreateAction shown = CardMessage.createCardMessage(
                         channel,
                         name + "'s hand is now: " + playerHand.toString(),
                         playerHand.getAsList()
-                ).queue();
+                );
+                if (playerValue < 21) shown.setActionRow(command.ui.Buttons.blackjack(event.getAuthor().getIdLong()));
+                shown.queue();
 
                 // Game continues as normal if no blackjack or bust
                 if (playerValue < 21) {

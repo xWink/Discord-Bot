@@ -30,6 +30,9 @@ to also hit the real Open Trivia DB once.
 7. Make sure the database is running (`./dev/start-db.sh`).
 8. `./dev/run.sh` (checks your config, starts the database if needed, then runs the bot) and wait for "Applied migration ..." lines, then message the bot in your spam/bots channel.
 
+Slash commands are registered to your test server (instantly) each time the bot starts, so no extra setup is
+needed. If they do not appear, re-invite the bot with the `applications.commands` scope.
+
 Optional JVM flags (add with `JAVA_OPTS` or `applicationDefaultJvmArgs`): `-Dtrivia.noncommercial=true` enables the
 second trivia provider (CC BY-NC data), `-Dpuzzles.repo=owner/name` syncs puzzle packs from GitHub.
 
@@ -65,6 +68,9 @@ Use two accounts (your own and an alt, or a friend) for the social flows.
 | Victory effect | `!shop buy victory-fx`, `!equip victory-fx`, then a correct `!answer` | Confetti after the result |
 | Team banner | `!banner request @SomeRole`, a member of that role says `!banner approve 1` | 45 GC held until approved, refunded if declined |
 | Personal trivia | `!ptrivia` (lists categories), `!ptrivia geography 5`, friends `!panswer b` | Host pays 5 GC; friends join free and get normal arcade credit |
+| Slash commands | Type `/` in the server, then `/wallet`, `/bet amount:2`, `/gift who:@alt amount:3 note:hi`, `/shop buy code:flair-day` | Same result as the `!` version; the private "thinking" reply disappears and the bot answers in the channel |
+| Buttons | `!bet 5` then press **Hit** / **Stand**; `!hilo 2` then **Higher**; `!arcade` then **A-D**; `!duel @alt 2` as alt press **Accept** | Same as typing the command. Someone else pressing your buttons gets a private "not for you" |
+| Confirm buttons | `!contribute 5`, `!shop buy bundle-weekend` | A Confirm button replaces typing `confirm` / repeating the command |
 | Private wallet | `!wallet` in a channel | The embed arrives by DM (📬 reaction); if DMs are closed it posts in the channel |
 
 Give yourself coins with the admin command: `!economy adjust @you +100 testing`. Look up any receipt with

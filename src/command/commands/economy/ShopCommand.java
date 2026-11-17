@@ -89,7 +89,10 @@ public class ShopCommand extends Command {
             QUOTES.put(key, new long[]{item.price, System.currentTimeMillis()});
             event.getChannel().sendMessage("**" + item.name + "** costs **" + item.price + " GC**"
                     + (item.previousPrice > 0 && item.previousPrice != item.price ? " (was " + item.previousPrice + ")" : "")
-                    + ". Say `!shop buy " + code + "` again within 2 minutes to confirm.").queue();
+                    + ". Say `!shop buy " + code + "` again within 2 minutes to confirm.")
+                    .setActionRow(command.ui.Buttons.single(command.ui.Buttons.mine(user, "!shop buy " + code,
+                            "Confirm purchase",
+                            net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SUCCESS))).queue();
             return;
         }
         try {
@@ -102,7 +105,10 @@ public class ShopCommand extends Command {
         } catch (economy.PriceChangedException e) {
             QUOTES.put(key, new long[]{e.getNewPrice(), System.currentTimeMillis()});
             event.getChannel().sendMessage("The price changed to **" + e.getNewPrice() + " GC**. Say `!shop buy "
-                    + code + "` again to confirm.").queue();
+                    + code + "` again to confirm.")
+                    .setActionRow(command.ui.Buttons.single(command.ui.Buttons.mine(user, "!shop buy " + code,
+                            "Confirm purchase",
+                            net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SUCCESS))).queue();
         } catch (InsufficientFundsException e) {
             event.getChannel().sendMessage("You cannot afford that.").queue();
         }

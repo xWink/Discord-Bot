@@ -43,7 +43,10 @@ public class Contribute extends Command {
             if (!confirmed) {
                 event.getChannel().sendMessage("This will charge **" + charge + " GC** toward \"" + goal.title
                         + "\". Contributions are final and cannot be refunded.\nSay `!contribute " + amount
-                        + " confirm` to go ahead.").queue();
+                        + " confirm` to go ahead.")
+                        .setActionRow(command.ui.Buttons.single(command.ui.Buttons.mine(event.getAuthor().getIdLong(),
+                                "!contribute " + amount + " confirm", "Confirm " + charge + " GC",
+                                net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SUCCESS))).queue();
                 return;
             }
             try {

@@ -122,6 +122,8 @@ public class Help extends Command {
                             .append(c.blurb).append('\n');
                 }
                 eb.setDescription(sb.toString());
+                eb.addField("Slash commands & buttons", "Every command also works as a `/command`, and games "
+                        + "have buttons (Hit, Stand, Higher, A-D answers, Accept, Confirm).", false);
                 eb.addField("New here?", "`!wallet` to see your coins, `!arcade` for a free puzzle, "
                         + "`!bet 2` to try blackjack.", false);
             } else {

@@ -68,12 +68,26 @@ public class HiLo extends Command {
                 return;
             }
             event.getChannel().sendMessage("Your card: " + game.getCurrent().toEmote() + "\nMaximum loss: " + stake
-                    + " GC. Say `!higher` or `!lower`.").queue();
+                    + " GC. Say `!higher` or `!lower`.")
+                    .setActionRow(guessButtons(user, false)).queue();
         } catch (NumberFormatException e) {
             event.getChannel().sendMessage("Say `!hilo <stake>`.").queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
+    }
+
+    /** Higher, Lower and (after a correct guess) Cash out. */
+    static java.util.List<net.dv8tion.jda.api.interactions.components.ItemComponent> guessButtons(long user,
+                                                                                                   boolean cashout) {
+        java.util.List<net.dv8tion.jda.api.interactions.components.ItemComponent> out = new java.util.ArrayList<>();
+        out.add(command.ui.Buttons.mine(user, "!higher", "Higher",
+                net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.PRIMARY));
+        out.add(command.ui.Buttons.mine(user, "!lower", "Lower",
+                net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.PRIMARY));
+        if (cashout) out.add(command.ui.Buttons.mine(user, "!cashout", "Cash out",
+                net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SUCCESS));
+        return out;
     }
 
     public static java.util.Collection<HiLoGame> openGames() {
@@ -129,7 +143,8 @@ public class HiLo extends Command {
                     } else {
                         event.getChannel().sendMessage(card + "Correct! Cash out for +" + game.netIfStopped()
                                 + " GC with `!cashout`, or risk it all with `!higher` / `!lower` for +"
-                                + game.getStake() * 2 + " GC.").queue();
+                                + game.getStake() * 2 + " GC.")
+                                .setActionRow(guessButtons(game.getUserId(), true)).queue();
                     }
                 }
             } catch (Exception e) {

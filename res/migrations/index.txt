@@ -4,3 +4,4 @@ V3__decay.sql
 V4__blackjack_games.sql
 V5__bang_results.sql
 V6__settings.sql
+V7__wager_settings.sql

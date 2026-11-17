@@ -9,6 +9,7 @@ import command.util.game.BlackJackList;
 import command.util.game.Player;
 import command.util.game.BlackJackStore;
 import economy.EconomyService;
+import economy.WagerLimits;
 import database.connectors.EconomyConnector;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -58,6 +59,14 @@ public class Bet extends Command {
 
         try {
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
+
+            String blocked = WagerLimits.check(userId, betAmount);
+            if (blocked != null) {
+                channel.sendMessage(blocked).queue();
+                return;
+            }
+            channel.sendMessage("Stake: " + betAmount + " GC reserved. Maximum loss: " + betAmount
+                    + " GC. Blackjack pays 3:2, a push returns your stake.").queue();
 
             // Start game. The stake is reserved and the hand saved in one transaction.
             BlackJackGame game = new BlackJackGame(new Player(userId), betAmount);

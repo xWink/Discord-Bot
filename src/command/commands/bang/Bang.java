@@ -4,6 +4,7 @@ import command.Command;
 import command.util.cache.BangCache;
 import command.util.cache.BangUpdate;
 import database.connectors.BangConnector;
+import database.connectors.BangResults;
 import economy.DailyService;
 import economy.EconomyService;
 import main.Server;
@@ -148,6 +149,7 @@ public class Bang extends Command {
                     streak));
 
             giveRewards();
+            BangResults.record(userId, new Date().getTime(), killed, jammed);
 
             if (!cache.isPanicking()) {
                 channel.sendMessage(getOutput(event)).queue();

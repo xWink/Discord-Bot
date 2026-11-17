@@ -12,6 +12,7 @@ import command.commands.economy.Buy;
 import command.commands.Help;
 import command.commands.economy.Gift;
 import command.commands.economy.Market;
+import command.commands.economy.PaidPlay;
 import command.commands.economy.Wallet;
 import command.commands.misc.*;
 import command.commands.bang.Daily;
@@ -70,6 +71,7 @@ public final class CommandList {
         commands.add(new Info());
         commands.add(new Market());
         commands.add(new MyHand());
+        commands.add(new PaidPlay());
         commands.add(new Ping());
         commands.add(new Profile());
         commands.add(new Stand());

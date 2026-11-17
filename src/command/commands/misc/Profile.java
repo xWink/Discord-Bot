@@ -77,7 +77,12 @@ public class Profile extends Command {
             card.avatar = fetchAvatar(event.getAuthor().getEffectiveAvatarUrl());
             economy.Cosmetics.Loadout loadout = economy.Cosmetics.loadout(user);
             java.util.List<economy.Cosmetics.OwnedItem> owned = economy.Cosmetics.owned(user);
-            boolean animated = economy.ProfilePrefs.isAnimated(user);
+            boolean animated = false;
+            try {
+                animated = economy.ProfilePrefs.isAnimated(user);
+            } catch (Exception e) {
+                e.printStackTrace(); // a settings problem should never cost anyone their card
+            }
             byte[] picture = animated ? command.util.misc.ProfileCard.renderAnimated(card, loadout, owned, user) : null;
             if (animated && picture == null) {
                 note = (note == null ? "" : note + "\n") + "Your card is too large to animate, so here is the still one.";

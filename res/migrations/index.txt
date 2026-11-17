@@ -13,3 +13,4 @@ V12__finish.sql
 V13__effects.sql
 V14__alumni.sql
 V15__alumni_year.sql
+V16__profile_prefs.sql

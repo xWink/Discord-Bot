@@ -71,6 +71,7 @@ Use two accounts (your own and an alt, or a friend) for the social flows.
 | Slash commands | Type `/` in the server, then `/wallet`, `/bet amount:2`, `/gift who:@alt amount:3 note:hi`, `/shop buy code:flair-day` | Same result as the `!` version; the slash reply stays and says `Ran !...`, and the bot answers in the channel |
 | Buttons | `!bet 5` then press **Hit** / **Stand**; `!hilo 2` then **Higher**; `!arcade` then **A-D**; `!duel @alt 2` as alt press **Accept** | Same as typing the command. Someone else pressing your buttons gets a private "not for you" |
 | Confirm buttons | `!contribute 5`, `!shop buy bundle-weekend` | A Confirm button replaces typing `confirm` / repeating the command |
+| Animated profile | `!profile gif on`, then `!profile`; press **Stop animation**; `/profile animation:off` | A looping GIF (mascot bobs, stars twinkle) while on, the normal picture when off. The setting survives a restart |
 | Private wallet | `!wallet` in a channel | The embed arrives by DM (📬 reaction); if DMs are closed it posts in the channel |
 
 Give yourself coins with the admin command: `!economy adjust @you +100 testing`. Look up any receipt with

@@ -32,9 +32,32 @@ public class Profile extends Command {
         kc = new KarmaConnector();
     }
 
+    /** {@code !profile} or {@code !profile gif [on|off]}. */
+    @Override
+    public boolean keyMatches(String string) {
+        return string.equalsIgnoreCase(getKey()) || string.toLowerCase().startsWith(getKey() + " gif");
+    }
+
     @Override
     public void start(MessageReceivedEvent event) {
         this.event = event;
+        String note = null;
+        try {
+            String[] args = event.getMessage().getContentRaw().trim().split("\\s+");
+            long who = event.getAuthor().getIdLong();
+            if (args.length >= 3 && args[2].equalsIgnoreCase("on")) {
+                economy.ProfilePrefs.setAnimated(who, true);
+                note = "Animated profile is **on**. Turn it off any time with `!profile gif off`.";
+            } else if (args.length >= 3 && args[2].equalsIgnoreCase("off")) {
+                economy.ProfilePrefs.setAnimated(who, false);
+                note = "Animated profile is **off**.";
+            } else if (args.length >= 2 && args[1].equalsIgnoreCase("gif")) {
+                note = "Animated profile is **" + (economy.ProfilePrefs.isAnimated(who) ? "on" : "off")
+                        + "**. Say `!profile gif on` or `!profile gif off`.";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         eb = new EmbedBuilder();
         createProfile();
         // The picture card is the main view. If drawing it fails for any reason, the text embed still works.
@@ -52,15 +75,28 @@ public class Profile extends Command {
             card.achievementsTotal = economy.Achievements.ALL.size();
             card.extras = economy.ProfileExtras.pills(user);
             card.avatar = fetchAvatar(event.getAuthor().getEffectiveAvatarUrl());
-            byte[] png = command.util.misc.ProfileCard.render(card, economy.Cosmetics.loadout(user), economy.Cosmetics.owned(user), user);
-            event.getChannel().sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(png, "profile.png"))
-                    .setActionRow(
+            economy.Cosmetics.Loadout loadout = economy.Cosmetics.loadout(user);
+            java.util.List<economy.Cosmetics.OwnedItem> owned = economy.Cosmetics.owned(user);
+            boolean animated = economy.ProfilePrefs.isAnimated(user);
+            byte[] picture = animated ? command.util.misc.ProfileCard.renderAnimated(card, loadout, owned, user) : null;
+            if (animated && picture == null) {
+                note = (note == null ? "" : note + "\n") + "Your card is too large to animate, so here is the still one.";
+            }
+            boolean gif = picture != null;
+            if (!gif) picture = command.util.misc.ProfileCard.render(card, loadout, owned, user);
+            net.dv8tion.jda.api.requests.restaction.MessageCreateAction send = event.getChannel()
+                    .sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(picture, gif ? "profile.gif" : "profile.png"));
+            if (note != null) send.setContent(note);
+            send.setActionRow(
                             command.ui.Buttons.of(user, false, "!wallet", "Wallet",
                                     net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SECONDARY),
                             command.ui.Buttons.of(user, false, "!achievements", "Achievements",
                                     net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SECONDARY),
                             command.ui.Buttons.of(user, false, "!shop owned", "What I own",
-                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SECONDARY)).queue();
+                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SECONDARY),
+                            command.ui.Buttons.of(user, false, animated ? "!profile gif off" : "!profile gif on",
+                                    animated ? "Stop animation" : "\u2728 Animate",
+                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.PRIMARY)).queue();
             return;
         } catch (Exception e) {
             e.printStackTrace();

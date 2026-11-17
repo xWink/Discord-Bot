@@ -37,6 +37,7 @@ public final class SlashCommands {
         SILENT.add("shop/browse");
         SILENT.add("alumni/status");
         LITERALS.put("gift/note", "wrap");
+        LITERALS.put("profile/animation", "gif");
         build();
     }
 
@@ -63,8 +64,7 @@ public final class SlashCommands {
         simple("mybang", "Your bang numbers");
         simple("daily", "When your daily reward is ready");
         simple("wallet", "Your balance, receipts and decay (sent by DM)");
-        simple("profile", "Your profile card");
-        simple("karma", "Your karma");
+                simple("karma", "Your karma");
         simple("ping", "Your latency");
         simple("flip", "Flip a coin");
         simple("hit", "Blackjack: take a card");
@@ -81,6 +81,8 @@ public final class SlashCommands {
         simple("coop", "Weekend server-wide arcade target");
 
         // Everyone, with options
+        add(Commands.slash("profile", "Your profile card").addOptions(
+                choice("animation", "Turn the animated card on or off", false, "on", "off")));
         add(Commands.slash("help", "The command list").addOptions(choice("topic", "Which page to open", false,
                 "overview", "games", "arcade", "economy", "profile", "info", "moderators")));
         add(Commands.slash("bet", "Play blackjack").addOptions(num("amount", "Stake in GC", true, 1, maxStake)));

@@ -105,6 +105,11 @@ public class UiTest {
         assertEquals("!economy goal new 20 Trivia night", SlashCommands.translate(goal).text);
 
         assertEquals("!wallet", SlashCommands.translate(slash("wallet", null, null)).text);
+
+        SlashCommandInteractionEvent anim = slash("profile", null, null);
+        option(anim, "animation", mapping("on"));
+        assertEquals("!profile gif on", SlashCommands.translate(anim).text);
+        assertEquals("!profile", SlashCommands.translate(slash("profile", null, null)).text);
     }
 
     @Test

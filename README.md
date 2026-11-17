@@ -39,6 +39,11 @@ quiz, trivia and duel questions, **Accept / Decline** on a duel challenge,
 **Confirm** on contributions and featured shop prices, and quick links on your profile card.
 Text commands are unchanged and behave identically.
 
+### Animated profile cards
+`!profile gif on` (or the ✨ Animate button) turns your profile card into a looping GIF: the
+mascot bobs, stars twinkle and a glint sweeps across. It is off by default, saved per person,
+and falls back to the still card if the GIF would be too large to send.
+
 ### And much much more
 ![Help Demo](demo/bot_help.PNG)
 

@@ -66,6 +66,7 @@ public class Help extends Command {
                 new Entry("!event", "Host or confirm event attendance")),
         PROFILE("profile", "🏆", "Profile & rankings", "Stats, boards and achievements", new Color(0x5865F2),
                 new Entry("!profile", "Your stats, cosmetics and wallet"),
+                new Entry("!profile gif on|off", "Animate your profile card (the mascot bobs and sparkles)"),
                 new Entry("!achievements", "Your unlocks"),
                 new Entry("!alumni  !alumni list", "Alumni status and the alumni list"),
                 new Entry("!board <arcade|duel|collection|community>", "Leaderboards and seasons"),

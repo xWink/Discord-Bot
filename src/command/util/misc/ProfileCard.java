@@ -82,10 +82,147 @@ public final class ProfileCard {
         return out.toByteArray();
     }
 
+    // ------------------------------------------------------------- animated
+
+    /** Frames in the animated card. With {@link #FRAME_MS} this loops about once a second. */
+    static final int FRAMES = 12;
+    static final int FRAME_MS = 80;
+    /** Discord allows 10 MB for most uploads; stay well under so slow links and busy servers cope. */
+    static final int MAX_GIF_BYTES = 6 * 1024 * 1024;
+
+    /**
+     * Same card as {@link #render}, as a looping GIF: the mascot bobs, stars twinkle around it and a
+     * glint sweeps across the card.
+     *
+     * @return the GIF, or null if it came out too large to send (callers fall back to the still card)
+     */
+    public static byte[] renderAnimated(Stats s, Cosmetics.Loadout loadout, List<Cosmetics.OwnedItem> owned, long seed)
+            throws IOException {
+        System.setProperty("java.awt.headless", "true");
+        BufferedImage probe = new BufferedImage(4, 4, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D pg = probe.createGraphics();
+        List<Pill> pills = layoutPills(pg, owned, loadout, s.extras);
+        pg.dispose();
+        int height = HEIGHT + panelHeight(pills);
+        BufferedImage mascot = Sticker.render(loadout.codes, 400, seed);
+        java.util.Random random = new java.util.Random(seed);
+        double[][] stars = new double[9][];
+        for (int i = 0; i < stars.length; i++) {
+            // x, y, size, phase
+            stars[i] = new double[]{470 + random.nextInt(400), 30 + random.nextInt(340), 7 + random.nextInt(9),
+                    random.nextDouble()};
+        }
+
+        javax.imageio.ImageWriter writer = ImageIO.getImageWritersByFormatName("gif").next();
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try (javax.imageio.stream.ImageOutputStream ios = ImageIO.createImageOutputStream(out)) {
+            writer.setOutput(ios);
+            writer.prepareWriteSequence(null);
+            for (int i = 0; i < FRAMES; i++) {
+                double t = i / (double) FRAMES;
+                BufferedImage img = new BufferedImage(WIDTH, height, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = img.createGraphics();
+                try {
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                    g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+                    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                    drawBase(g, loadout, height);
+                    int bob = (int) Math.round(5 * Math.sin(2 * Math.PI * t));
+                    g.drawImage(mascot, 510, 22 + bob, 390, 390, null);
+                    drawFront(g, s, loadout, pills, height);
+                    for (double[] star : stars) {
+                        double glow = Math.max(0, Math.sin(2 * Math.PI * (t + star[3])));
+                        if (glow > 0.15) twinkle(g, star[0], star[1], star[2] * (0.5 + glow), (int) (60 + 195 * glow));
+                    }
+                    glint(g, t, height);
+                } finally {
+                    g.dispose();
+                }
+                writer.writeToSequence(new javax.imageio.IIOImage(img, null, frameMetadata(writer, img, i == 0)), null);
+            }
+            writer.endWriteSequence();
+        } finally {
+            writer.dispose();
+        }
+        byte[] bytes = out.toByteArray();
+        return bytes.length > MAX_GIF_BYTES ? null : bytes;
+    }
+
+    private static javax.imageio.metadata.IIOMetadata frameMetadata(javax.imageio.ImageWriter writer, BufferedImage img,
+                                                                    boolean first) throws IOException {
+        javax.imageio.metadata.IIOMetadata md = writer.getDefaultImageMetadata(
+                javax.imageio.ImageTypeSpecifier.createFromRenderedImage(img), null);
+        String format = "javax_imageio_gif_image_1.0";
+        javax.imageio.metadata.IIOMetadataNode root = (javax.imageio.metadata.IIOMetadataNode) md.getAsTree(format);
+        javax.imageio.metadata.IIOMetadataNode gce = child(root, "GraphicControlExtension");
+        gce.setAttribute("disposalMethod", "restoreToBackgroundColor");
+        gce.setAttribute("delayTime", Integer.toString(FRAME_MS / 10));
+        if (first) {
+            javax.imageio.metadata.IIOMetadataNode apps = child(root, "ApplicationExtensions");
+            javax.imageio.metadata.IIOMetadataNode app = new javax.imageio.metadata.IIOMetadataNode("ApplicationExtension");
+            app.setAttribute("applicationID", "NETSCAPE");
+            app.setAttribute("authenticationCode", "2.0");
+            app.setUserObject(new byte[]{1, 0, 0}); // loop forever
+            apps.appendChild(app);
+        }
+        md.setFromTree(format, root);
+        return md;
+    }
+
+    private static javax.imageio.metadata.IIOMetadataNode child(javax.imageio.metadata.IIOMetadataNode root, String name) {
+        for (int i = 0; i < root.getLength(); i++) {
+            if (root.item(i).getNodeName().equalsIgnoreCase(name)) return (javax.imageio.metadata.IIOMetadataNode) root.item(i);
+        }
+        javax.imageio.metadata.IIOMetadataNode node = new javax.imageio.metadata.IIOMetadataNode(name);
+        root.appendChild(node);
+        return node;
+    }
+
+    /** A four-point star in gold, for the twinkle. */
+    private static void twinkle(Graphics2D g, double cx, double cy, double r, int alpha) {
+        Path2D star = new Path2D.Double();
+        double in = r * 0.28;
+        for (int i = 0; i < 8; i++) {
+            double a = Math.PI / 4 * i - Math.PI / 2;
+            double rad = i % 2 == 0 ? r : in;
+            double x = cx + Math.cos(a) * rad;
+            double y = cy + Math.sin(a) * rad;
+            if (i == 0) star.moveTo(x, y);
+            else star.lineTo(x, y);
+        }
+        star.closePath();
+        g.setColor(new Color(255, 244, 190, Math.min(255, alpha)));
+        g.fill(star);
+    }
+
+    /** A soft diagonal shine that crosses the card once per loop. */
+    private static void glint(Graphics2D g, double t, int height) {
+        Shape card = new RoundRectangle2D.Float(8, 8, WIDTH - 16, height - 16, 36, 36);
+        java.awt.Shape oldClip = g.getClip();
+        g.setClip(card);
+        double x = -260 + t * (WIDTH + 520);
+        Color clear = new Color(255, 255, 255, 0);
+        Color shine = new Color(255, 255, 255, 46);
+        g.setPaint(new java.awt.LinearGradientPaint((float) x, 0, (float) (x + 200), 120,
+                new float[]{0f, 0.5f, 1f}, new Color[]{clear, shine, clear}));
+        g.fillRect(0, 0, WIDTH, height);
+        g.setClip(oldClip);
+    }
+
     // ----------------------------------------------------------------- draw
 
     private static void draw(Graphics2D g, Stats s, Cosmetics.Loadout l, List<Pill> pills, int height, long seed)
             throws IOException {
+        drawBase(g, l, height);
+        // mascot, wearing the loadout
+        BufferedImage mascot = Sticker.render(l.codes, 400, seed);
+        g.drawImage(mascot, 510, 22, 390, 390, null);
+        drawFront(g, s, l, pills, height);
+    }
+
+    /** The card background, border and glow: everything behind the mascot. */
+    private static void drawBase(Graphics2D g, Cosmetics.Loadout l, int height) {
         boolean bundle = l.has("bundle-weekend");
         boolean glow = l.has("flair-day");
         Color top = bundle ? new Color(0xFF2A2A) : new Color(0xA30000);
@@ -122,10 +259,10 @@ public final class ProfileCard {
             g.draw(new RoundRectangle2D.Float(24, 24, WIDTH - 48, height - 48, 26, 26));
         }
 
-        // mascot, wearing the loadout
-        BufferedImage mascot = Sticker.render(l.codes, 400, seed);
-        g.drawImage(mascot, 510, 22, 390, 390, null);
+    }
 
+    /** Everything in front of the mascot: avatar, name, stats, inventory. */
+    private static void drawFront(Graphics2D g, Stats s, Cosmetics.Loadout l, List<Pill> pills, int height) {
         drawAvatar(g, s, 44, 44, 128);
         drawNameBlock(g, s, l, 196);
         drawStats(g, s, 44, 226);

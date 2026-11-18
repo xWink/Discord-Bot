@@ -16,3 +16,4 @@ V15__alumni_year.sql
 V16__profile_prefs.sql
 V17__wordle.sql
 V18__completed_courses.sql
+V19__reminders.sql

@@ -174,6 +174,11 @@ public final class SlashCommands {
                 str("department", "Only this department, like cis", false), num("level", "Only this year, 1 to 4", false, 1, 6)));
         add(Commands.slash("whynot", "What is missing before you can take a course").addOptions(
                 str("course", "A course code like CIS3750", true).setAutoComplete(true)));
+        add(Commands.slash("remind", "Set a reminder: 2h, tomorrow, friday 5pm, 2026-12-04").addOptions(
+                str("when", "When, like 2h or friday 5pm", true), str("what", "What to remind you about", true)));
+        simple("reminders", "Your waiting reminders");
+        add(Commands.slash("dates", "The next dates on the academic calendar").addOptions(
+                str("filter", "Only dates mentioning this, like drop or exam", false)));
         add(Commands.slash("join", "Join a course channel").addOptions(str("course", "Course code", true)));
         add(Commands.slash("leave", "Leave a course channel").addOptions(str("course", "Course code", true)));
 

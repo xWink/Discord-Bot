@@ -186,6 +186,11 @@ public final class SlashCommands {
         add(Commands.slash("reviews", "How students rated a course").addOptions(
                 str("course", "A course code like CIS1300", true).setAutoComplete(true)));
         add(Commands.slash("motion", "Turn animations off or on for you").addOptions(choice("setting", "On or off", false, "on", "off")));
+        add(Commands.slash("taking", "The courses you are taking now").addOptions(
+                choice("action", "What to do", false, "add", "remove", "done", "list", "share"),
+                str("courses", "Course codes, or on/off for share", false)));
+        add(Commands.slash("classmates", "Who else is taking a course").addOptions(
+                str("course", "A course code like CIS2750", true).setAutoComplete(true)));
         add(Commands.slash("join", "Join a course channel").addOptions(str("course", "Course code", true)));
         add(Commands.slash("leave", "Leave a course channel").addOptions(str("course", "Course code", true)));
 

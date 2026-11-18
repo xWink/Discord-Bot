@@ -1,6 +1,7 @@
 package command.commands.bang;
 
 import command.Command;
+import command.util.art.GameArt;
 import command.util.cache.BangCache;
 import command.util.cache.BangUpdate;
 import database.connectors.BangConnector;
@@ -27,6 +28,8 @@ public class Bang extends Command {
     private static boolean killed;
     private static boolean reward;
     private static boolean streak;
+    /** Which chamber this pull used, 0 to 5, for the cylinder picture. */
+    private int pullIndex;
     private long userId;
     private long messageId;
     private final EconomyService ec2 = EconomyService.getInstance();
@@ -89,7 +92,7 @@ public class Bang extends Command {
             output += "Click. " + name + " survived  "
                     + (surviveEmote != null ? surviveEmote.getAsMention() : "\uD83D\uDE05");
         }
-        output += "\nChambers left in the cylinder: ||  " + chambers + "  ||\n";
+        output += "\n";
 
         if (reward)
             output += name + " received their daily reward of 5 GryphCoins!\n";
@@ -126,6 +129,7 @@ public class Bang extends Command {
 
         userId = event.getAuthor().getIdLong();
         messageId = event.getMessageIdLong();
+        pullIndex = 6 - chambers;
         int pull = new Random().nextInt(chambers);
         if (pull == 0) tryToKill();
         else chambers--;
@@ -153,13 +157,29 @@ public class Bang extends Command {
             arcade.PunchCard.record(userId);
             BangResults.record(userId, new Date().getTime(), killed, jammed);
 
-            if (!cache.isPanicking()) {
-                channel.sendMessage(getOutput(event)).queue();
-            }
+            if (!cache.isPanicking()) send(event, channel);
 
             resetBools();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
+        }
+    }
+
+    /** The result as a picture of the cylinder, with the text and a button to pull again. If the picture fails, text only. */
+    private void send(MessageReceivedEvent event, MessageChannel channel) throws SQLException {
+        String text = getOutput(event);
+        try {
+            GameArt.Pull result = jammed ? GameArt.Pull.JAM : killed ? GameArt.Pull.BANG : GameArt.Pull.CLICK;
+            byte[] card = GameArt.bangCard(event.getAuthor().getName(), pullIndex, result, bc.getCurrentStreak(userId),
+                    economy.Cosmetics.loadout(userId).codes, userId);
+            channel.sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(card, "bang.png"))
+                    .setContent(text)
+                    .setActionRow(command.ui.Buttons.mine(userId, "!bang", "Pull again",
+                            net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.DANGER))
+                    .queue();
+        } catch (java.io.IOException | RuntimeException e) {
+            e.printStackTrace();
+            channel.sendMessage(text).queue();
         }
     }
 

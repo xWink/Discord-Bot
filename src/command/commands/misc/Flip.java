@@ -9,7 +9,6 @@ import economy.Wagers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -94,8 +93,7 @@ public class Flip extends Command {
             } else {
                 buttons.add(Buttons.mine(user, "!flip", "Flip again", ButtonStyle.PRIMARY));
             }
-            Reveal.send(event.getChannel().sendFiles(FileUpload.fromData(GameArt.coinSpin(heads), "coin.gif"))
-                    .setContent("Flipping…"), event.getChannel(), text, buttons, 1500);
+            Reveal.render(event.getChannel(), "coin.gif", "Flipping…", () -> GameArt.coinSpin(heads), text, buttons, 1500);
         } catch (NumberFormatException e) {
             event.getChannel().sendMessage("The stake must be a whole number: `!flip <heads|tails> <stake>`.").queue();
         } catch (Exception e) {

@@ -7,7 +7,6 @@ import economy.EconomyService;
 import economy.Wagers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.util.Random;
 
@@ -66,10 +65,8 @@ public class Slots extends Command {
 
             String text = (won ? economy.Cosmetics.winHeader(user) : "") + name + ": **" + label + "**\n" + result
                     + " Stake " + stake + " GC, maximum loss was " + stake + " GC.";
-            command.ui.Reveal.send(event.getChannel()
-                            .sendFiles(FileUpload.fromData(GameArt.slots(reels, label, won), "slots.gif"))
-                            .setContent("Spinning\u2026"),
-                    event.getChannel(), text,
+            command.ui.Reveal.render(event.getChannel(), "slots.gif", "Spinning\u2026",
+                    () -> GameArt.slots(reels, label, won), text,
                     command.ui.Buttons.single(command.ui.Buttons.mine(user, "!slots " + stake,
                             "Spin again (" + stake + " GC)", ButtonStyle.PRIMARY)), 2200);
         } catch (Exception e) {

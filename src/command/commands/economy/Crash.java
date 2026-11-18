@@ -9,7 +9,6 @@ import economy.EconomyService;
 import economy.Wagers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.util.Random;
 
@@ -57,6 +56,7 @@ public class Crash extends Command {
                 event.getChannel().sendMessage(blocked).queue();
                 return;
             }
+            final int finalTarget = target;
             int crashPoint = CrashGame.crashPoint(random);
             int net = CrashGame.net(crashPoint, target, stake);
             boolean won = CrashGame.wins(crashPoint, target);
@@ -71,8 +71,8 @@ public class Crash extends Command {
                     + CrashGame.show(target) + ". It crashed at **" + CrashGame.show(crashPoint) + "**. "
                     + (won ? "You cashed out and won " + net + " GC!" : "You lost " + stake + " GC.")
                     + " Maximum loss was " + stake + " GC.";
-            Reveal.send(event.getChannel().sendFiles(FileUpload.fromData(GameArt.crash(crashPoint, target, won), "crash.gif"))
-                            .setContent("The multiplier is climbing…"), event.getChannel(), text,
+            Reveal.render(event.getChannel(), "crash.gif", "The multiplier is climbing…",
+                    () -> GameArt.crash(crashPoint, finalTarget, won), text,
                     Buttons.single(Buttons.mine(user, "!crash " + stake + " " + target / 100.0,
                             "Again (" + stake + " GC at " + CrashGame.show(target) + ")", ButtonStyle.PRIMARY)), 2200);
         } catch (Exception e) {

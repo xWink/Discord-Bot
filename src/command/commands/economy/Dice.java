@@ -6,7 +6,6 @@ import economy.EconomyService;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.util.Random;
 
@@ -80,10 +79,8 @@ public class Dice extends Command {
                     command.ui.Buttons.mine(user, "!dice " + pick.name().toLowerCase() + (stake > 0 ? " " + stake : ""),
                             "Roll again" + (stake > 0 ? " (" + stake + " GC)" : ""),
                             ButtonStyle.PRIMARY));
-            command.ui.Reveal.send(event.getChannel().sendFiles(FileUpload.fromData(
-                            command.util.art.GameArt.diceRoll(dice[0], dice[1]), "dice.gif"))
-                            .setContent("Rolling\u2026"),
-                    event.getChannel(), text, again, 1400);
+            command.ui.Reveal.render(event.getChannel(), "dice.gif", "Rolling\u2026",
+                    () -> command.util.art.GameArt.diceRoll(dice[0], dice[1]), text, again, 1400);
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

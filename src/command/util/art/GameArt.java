@@ -37,6 +37,46 @@ public final class GameArt {
 
     private GameArt() { }
 
+    /**
+     * Remembers the animations that come out identical every time (the coin has two outcomes, the dice 36, the wheel
+     * 37), so each is drawn once. The bytes are shared and never changed; the size is capped so memory stays small.
+     */
+    private static final class Memo {
+        private final java.util.Map<Integer, byte[]> map;
+
+        Memo(int max) {
+            map = new java.util.LinkedHashMap<Integer, byte[]>(16, 0.75f, true) {
+                @Override
+                protected boolean removeEldestEntry(java.util.Map.Entry<Integer, byte[]> eldest) {
+                    return size() > max;
+                }
+            };
+        }
+
+        byte[] get(int key, java.util.concurrent.Callable<byte[]> draw) throws IOException {
+            synchronized (map) {
+                byte[] hit = map.get(key);
+                if (hit != null) return hit;
+            }
+            byte[] made;
+            try {
+                made = draw.call();
+            } catch (IOException | RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new IOException(e);
+            }
+            synchronized (map) {
+                map.put(key, made);
+            }
+            return made;
+        }
+    }
+
+    private static final Memo COINS = new Memo(2);
+    private static final Memo DICE = new Memo(36);
+    private static final Memo WHEELS = new Memo(12);
+
     // ------------------------------------------------------------------ shared
 
     private static BufferedImage canvas(int w, int h) {
@@ -375,6 +415,10 @@ public final class GameArt {
      * @return a GIF that plays once and rests on the result
      */
     public static byte[] coinSpin(boolean heads) throws IOException {
+        return COINS.get(heads ? 1 : 0, () -> drawCoin(heads));
+    }
+
+    private static byte[] drawCoin(boolean heads) throws IOException {
         BufferedImage face = ImageIO.read(GameArt.class.getClassLoader().getResourceAsStream("loonie_heads.png"));
         BufferedImage back = ImageIO.read(GameArt.class.getClassLoader().getResourceAsStream("loonie_tails.png"));
         int halfTurns = heads ? 6 : 7;
@@ -438,6 +482,10 @@ public final class GameArt {
 
     /** Two dice that tumble and settle on the roll. */
     public static byte[] diceRoll(int a, int b) throws IOException {
+        return DICE.get(a * 10 + b, () -> drawDice(a, b));
+    }
+
+    private static byte[] drawDice(int a, int b) throws IOException {
         int w = 360;
         int h = 220;
         BufferedImage bg = canvas(w, h);
@@ -661,6 +709,10 @@ public final class GameArt {
 
     /** The wheel spins and slows until the ball sits in the result's pocket at the top; the number then lights up. */
     public static byte[] roulette(int result) throws IOException {
+        return WHEELS.get(result, () -> drawRoulette(result));
+    }
+
+    private static byte[] drawRoulette(int result) throws IOException {
         int w = 520;
         int h = 320;
         BufferedImage bg = canvas(w, h);

@@ -108,4 +108,12 @@ public class GameArtTest {
         assertTrue(isGif(gif));
         save("wordle.gif", gif);
     }
+
+    @Test
+    public void identicalAnimationsAreDrawnOnce() throws Exception {
+        org.junit.Assert.assertSame(GameArt.coinSpin(true), GameArt.coinSpin(true));
+        org.junit.Assert.assertNotSame(GameArt.coinSpin(true), GameArt.coinSpin(false));
+        org.junit.Assert.assertSame(GameArt.diceRoll(2, 5), GameArt.diceRoll(2, 5));
+        org.junit.Assert.assertSame(GameArt.roulette(8), GameArt.roulette(8));
+    }
 }

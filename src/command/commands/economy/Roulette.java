@@ -9,7 +9,6 @@ import economy.EconomyService;
 import economy.Wagers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.util.Random;
 
@@ -67,8 +66,8 @@ public class Roulette extends Command {
             String text = (net > 0 ? economy.Cosmetics.winHeader(user) : "") + name + " bet " + bet.describe() + ". The ball "
                     + "landed on **" + result + " " + colour + "**. " + (net > 0 ? "You won " + net + " GC!"
                     : "You lost " + stake + " GC.") + " Maximum loss was " + stake + " GC.";
-            Reveal.send(event.getChannel().sendFiles(FileUpload.fromData(GameArt.roulette(result), "roulette.gif"))
-                            .setContent("The wheel is spinning…"), event.getChannel(), text,
+            Reveal.render(event.getChannel(), "roulette.gif", "The wheel is spinning…", () -> GameArt.roulette(result),
+                    text,
                     Buttons.single(Buttons.mine(user, "!roulette " + args[1].toLowerCase() + " " + stake,
                             "Spin again (" + stake + " GC)", ButtonStyle.PRIMARY)), 2000);
         } catch (Exception e) {

@@ -173,13 +173,16 @@ public class Bang extends Command {
         String text = getOutput(event);
         try {
             GameArt.Pull result = jammed ? GameArt.Pull.JAM : killed ? GameArt.Pull.BANG : GameArt.Pull.CLICK;
-            byte[] gif = GameArt.bangAnimation(event.getAuthor().getName(), pullIndex, result,
-                    bc.getCurrentStreak(userId), economy.Cosmetics.loadout(userId).codes, userId);
-            command.ui.Reveal.send(channel.sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(gif, "bang.gif"))
-                            .setContent("Spinning the cylinder\u2026"),
-                    channel, text, command.ui.Buttons.single(command.ui.Buttons.mine(userId, "!bang", "Pull again",
+            String name = event.getAuthor().getName();
+            int index = pullIndex;
+            int streakNow = bc.getCurrentStreak(userId);
+            java.util.List<String> codes = new java.util.ArrayList<>(economy.Cosmetics.loadout(userId).codes);
+            long user = userId;
+            command.ui.Reveal.render(channel, "bang.gif", "Spinning the cylinder\u2026",
+                    () -> GameArt.bangAnimation(name, index, result, streakNow, codes, user),
+                    text, command.ui.Buttons.single(command.ui.Buttons.mine(userId, "!bang", "Pull again",
                             net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.DANGER)), 1900);
-        } catch (java.io.IOException | RuntimeException e) {
+        } catch (RuntimeException e) {
             e.printStackTrace();
             channel.sendMessage(text).queue();
         }

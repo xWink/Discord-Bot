@@ -21,6 +21,7 @@ public class GamesIntegrationTest extends DbTestBase {
     @Before
     public void noPause() {
         economy.Wagers.setCooldownMs(0);
+        command.ui.Reveal.setInline(true);
     }
 
     private static String say(Command c, long user, String content, long channel, User... mentions) {

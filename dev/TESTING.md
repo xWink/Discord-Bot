@@ -56,6 +56,7 @@ Use two accounts (your own and an alt, or a friend) for the social flows.
 | Trivia race | `!race 3`, then alt presses an answer button | First correct answer from someone other than the host wins the 3 GC. A wrong answer knocks that player out. After 45 seconds with no winner the host is refunded and the answer is posted |
 | Wordle | `!wordle`, `!wordle crane`, keep guessing, solve it | A board GIF flips the newest row. Solving pays 3 GC once and shows a streak; six misses reveal the word. The same word for everyone each day |
 | Rate limit | Run `!slots 1` twice within three seconds | The second says to wait a few seconds and plays nothing. This applies across all animated games and buttons, per player |
+| Busy bot | Have several people play slots, roulette and bang at once | Each shows "Spinning…" straight away and the GIF follows; the bot keeps answering other commands while GIFs draw. If the drawing queue is full or a GIF fails, the result arrives as plain text and the stake is still settled |
 | Dice, hilo | `!dice high`, `!dice seven 2`, `!hilo 2`, `!higher`, `!cashout` | Dice tumble as a GIF; HiLo shows the card as a picture. Free play works; stakes reserved/settled |
 | Arcade | `!arcade`, `!answer b`, again, `!arcadescores` | First round pays daily; repeats are free |
 | Weekly, gauntlet | `!weekly code`, `!gauntlet`, `!gauntlet prize` | 3 questions; prize run holds 3 GC then spends it |

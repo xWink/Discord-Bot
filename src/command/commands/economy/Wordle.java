@@ -82,9 +82,8 @@ public class Wordle extends Command {
             text = name + ": " + (6 - board.guesses.size()) + " guesses left.";
         }
         if (animate) {
-            Reveal.send(event.getChannel().sendFiles(FileUpload.fromData(
-                            GameArt.wordleReveal(board.guesses, answer, footer), "wordle.gif"))
-                            .setContent("Checking…"), event.getChannel(), text, new ArrayList<>(), 1800);
+            Reveal.render(event.getChannel(), "wordle.gif", "Checking…",
+                    () -> GameArt.wordleReveal(board.guesses, answer, footer), text, new ArrayList<>(), 1800);
         } else {
             event.getChannel().sendFiles(FileUpload.fromData(GameArt.wordleBoard(board.guesses, answer, footer), "wordle.png"))
                     .setContent(text).queue();

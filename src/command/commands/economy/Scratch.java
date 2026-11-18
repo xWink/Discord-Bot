@@ -9,7 +9,6 @@ import economy.EconomyService;
 import economy.Wagers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.util.Random;
 
@@ -64,8 +63,8 @@ public class Scratch extends Command {
             String text = (net > 0 ? economy.Cosmetics.winHeader(user) : "") + name + ": **" + label + "**\n"
                     + (net > 0 ? "You won " + net + " GC!" : net == 0 ? "A push: your stake came back."
                     : "You lost " + stake + " GC.") + " Maximum loss was " + stake + " GC.";
-            Reveal.send(event.getChannel().sendFiles(FileUpload.fromData(GameArt.scratch(card, label, won), "scratch.gif"))
-                            .setContent("Scratching…"), event.getChannel(), text,
+            Reveal.render(event.getChannel(), "scratch.gif", "Scratching…", () -> GameArt.scratch(card, label, won),
+                    text,
                     Buttons.single(Buttons.mine(user, "!scratch " + stake, "New card (" + stake + " GC)",
                             ButtonStyle.PRIMARY)), 2700);
         } catch (Exception e) {

@@ -10,7 +10,6 @@ import economy.Wagers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
-import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -164,10 +163,8 @@ public final class CoinDuel {
                 }
                 String text = economy.Cosmetics.winHeader(winner) + "**" + (heads ? "Heads" : "Tails") + "!** <@" + winner
                         + "> wins **" + c.stake + " GC** from <@" + loser + ">. Maximum loss was " + c.stake + " GC.";
-                Reveal.send(event.getChannel().sendFiles(FileUpload.fromData(GameArt.coinSpin(heads), "coin.gif"))
-                                .setContent("The coin is in the air…"), event.getChannel(), text,
-                        Buttons.single(Buttons.of(c.challenger, true, "!coinduel <@" + c.opponent + "> " + c.stake,
-                                "Rematch (" + c.stake + " GC)", ButtonStyle.PRIMARY)), 1500);
+                Reveal.render(event.getChannel(), "coin.gif", "The coin is in the air…", () -> GameArt.coinSpin(heads),
+                        text, new ArrayList<ItemComponent>(), 1500);
             } catch (Exception e) {
                 printStackTraceAndSendMessage(event, e);
             }

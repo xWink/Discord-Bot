@@ -53,16 +53,6 @@ public final class Reviews {
                 + bar(s.workload) + " **" + String.format("%.1f", s.workload) + "**/5 · " + s.count + " ratings";
     }
 
-    private static Course course(String query) {
-        CourseCatalog catalog = CourseCatalog.get();
-        Course c = catalog.find(query);
-        if (c == null) {
-            List<Course> found = catalog.search(query, 1);
-            c = found.isEmpty() ? null : found.get(0);
-        }
-        return c;
-    }
-
     // -------------------------------------------------------------------- rate
 
     /** {@code !rate <course> <difficulty> <workload> [comment]} and {@code !rate remove <course>}. */
@@ -162,11 +152,8 @@ public final class Reviews {
                 return;
             }
             try {
-                Course c = course(query);
-                if (c == null) {
-                    event.getChannel().sendMessage("I could not find a course matching `" + query + "`.").queue();
-                    return;
-                }
+                Course c = CourseLookup.resolve(event.getChannel(), query, "!reviews");
+                if (c == null) return;
                 Summary s = Ratings.summary(c.code);
                 if (s == null) {
                     event.getChannel().sendMessage("Nobody has rated " + c.code.replace("*", "\\*") + " yet. Say `!rate "

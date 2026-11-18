@@ -186,22 +186,38 @@ public final class CourseCatalog {
     }
 
     /**
-     * Finds courses from whatever the player typed: a code or the start of one, or words from the title (every word
-     * must appear). Words that only appear in the description rank below title matches. Best matches first.
+     * Finds courses from whatever the player typed: a code or the start of one, a bare course number
+     * ({@code 4820} finds the 4820 course of every department), or words from the title (every word must appear).
+     * Words that only appear in the description rank below title matches. Best matches first.
      */
     public List<Course> search(String text, int limit) {
+        return search(text, limit, true);
+    }
+
+    /**
+     * Like {@link #search(String, int)} but only courses whose code or title matches, never ones that merely mention
+     * the words. Use this when a command has to pick a course, so a stray mention cannot be mistaken for the one meant.
+     */
+    public List<Course> match(String text, int limit) {
+        return search(text, limit, false);
+    }
+
+    private List<Course> search(String text, int limit, boolean includeDescriptions) {
         String query = text.toLowerCase(Locale.ROOT).replace("*", " ").trim();
         if (query.isEmpty()) return Collections.emptyList();
         String compact = normalize(text);
+        boolean number = compact.matches("\\d{4}");
         String[] words = query.split("\\s+");
-        List<Course> exact = new ArrayList<>();
-        List<Course> scored = new ArrayList<>();
         Map<Course, Integer> score = new LinkedHashMap<>();
         for (Course c : byKey.values()) {
             int s = 0;
-            if (c.key.equals(compact)) s = 1000;
-            else if (compact.length() >= 3 && c.key.startsWith(compact)) s = 200 - c.number / 100; // "cis13" -> CIS*13xx
-            else {
+            if (number) {
+                if (String.valueOf(c.number).equals(compact)) s = 150;
+            } else if (c.key.equals(compact)) {
+                s = 1000;
+            } else if (compact.length() >= 3 && c.key.startsWith(compact)) {
+                s = 200 - c.number / 100; // "cis13" -> CIS*13xx
+            } else {
                 boolean inTitle = true;
                 boolean inText = true;
                 for (String w : words) {
@@ -209,17 +225,18 @@ public final class CourseCatalog {
                     if (!c.titleLower.contains(w) && !c.descriptionLower.contains(w)) inText = false;
                 }
                 if (inTitle) s = c.titleLower.equals(query) ? 150 : c.titleLower.startsWith(query) ? 120 : 100;
-                else if (inText && words.length > 0 && query.length() >= 4) s = 20;
+                else if (includeDescriptions && inText && query.length() >= 4) s = 20;
             }
             if (s > 0) score.put(c, s);
         }
-        scored.addAll(score.keySet());
+        List<Course> scored = new ArrayList<>(score.keySet());
         Collections.sort(scored, (a, b) -> {
             int d = Integer.compare(score.get(b), score.get(a));
-            return d != 0 ? d : Integer.compare(a.number, b.number);
+            if (d != 0) return d;
+            d = Integer.compare(a.number, b.number);
+            return d != 0 ? d : a.code.compareTo(b.code);
         });
-        exact.addAll(scored.subList(0, Math.min(limit, scored.size())));
-        return exact;
+        return new ArrayList<>(scored.subList(0, Math.min(limit, scored.size())));
     }
 
     /** @return the department codes, lower case, for example {@code cis} */

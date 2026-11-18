@@ -253,15 +253,8 @@ public final class Planner {
             }
             try {
                 CourseCatalog catalog = CourseCatalog.get();
-                Course c = catalog.find(query);
-                if (c == null) {
-                    List<Course> found = catalog.search(query, 1);
-                    c = found.isEmpty() ? null : found.get(0);
-                }
-                if (c == null) {
-                    event.getChannel().sendMessage("I could not find a course matching `" + query + "`.").queue();
-                    return;
-                }
+                Course c = CourseLookup.resolve(event.getChannel(), query, "!whynot");
+                if (c == null) return;
                 Set<String> finished = CompletedStore.list(user);
                 Set<String> done = Prerequisites.closure(catalog, finished);
                 Prerequisites p = Prerequisites.of(c);

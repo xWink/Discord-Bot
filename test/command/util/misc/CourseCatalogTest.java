@@ -110,4 +110,17 @@ public class CourseCatalogTest {
             }
         }
     }
+
+    @Test
+    public void aBareNumberFindsThatCourseInEveryDepartmentAndDescriptionsNeverWin() {
+        List<Course> found = catalog.match("4820", 10);
+        assertEquals(6, found.size());
+        assertEquals("CIS*4820", found.get(0).code); // ties are in code order
+        for (Course c : found) assertEquals(4820, c.number);
+        // STAT*6802 only mentions 4820 in its restrictions or text: it must not be among them
+        assertFalse(found.stream().anyMatch(c -> c.code.equals("STAT*6802")));
+        // match() ignores descriptions entirely, search() may use them but ranks them last
+        assertTrue(catalog.match("zzzzqq", 5).isEmpty());
+        for (Course c : catalog.match("generalized linear", 10)) assertTrue(c.title.toLowerCase().contains("generalized linear"));
+    }
 }

@@ -69,4 +69,18 @@ public class PlannerIntegrationTest extends DbTestBase {
         assertTrue(say(why, u, "!whynot cis1300").embeds.get(0).getDescription().contains("already"));
         assertTrue(say(why, u, "!whynot zzzzqq").said().contains("could not find"));
     }
+
+    @Test
+    public void anAmbiguousNumberAsksWhichCourseInsteadOfGuessing() throws Exception {
+        long u = newUser();
+        FakeDiscord f = say(new Planner.WhyNot(), u, "!whynot 4820");
+        assertEquals(1, f.embeds.size());
+        assertTrue(f.embeds.get(0).getTitle(), f.embeds.get(0).getTitle().startsWith("Which course"));
+        assertTrue(f.embeds.get(0).getDescription().startsWith("**CIS\\*4820**"));
+        assertFalse("no course was chosen for them", f.embeds.get(0).getDescription().contains("STAT\\*6802"));
+        // a code that names one course goes straight through
+        assertTrue(say(new Planner.WhyNot(), u, "!whynot cis4820").embeds.get(0).getTitle().contains("CIS"));
+        // a title that only one course has needs no question either
+        assertTrue(say(new Planner.WhyNot(), u, "!whynot game programming").embeds.get(0).getTitle().contains("Game Programming"));
+    }
 }

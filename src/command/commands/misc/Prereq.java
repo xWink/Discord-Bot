@@ -34,15 +34,8 @@ public class Prereq extends Command {
             return;
         }
         CourseCatalog catalog = CourseCatalog.get();
-        Course course = catalog.find(query);
-        if (course == null) {
-            List<Course> found = catalog.search(query, 1);
-            course = found.isEmpty() ? null : found.get(0);
-        }
-        if (course == null) {
-            event.getChannel().sendMessage("I could not find a course matching `" + query + "`.").queue();
-            return;
-        }
+        Course course = command.commands.course.CourseLookup.resolve(event.getChannel(), query, "!prereq");
+        if (course == null) return;
         if (CourseArt.prerequisiteCount(catalog, course) == 0) {
             event.getChannel().sendMessage(course.code + " " + course.title + " has no prerequisite courses"
                     + (course.prerequisites.isEmpty() ? "." : ": " + course.prerequisites.replace("*", "\\*"))).queue();

@@ -125,4 +125,12 @@ public class InfoCommandTest {
         prereq.start(help.event);
         assertTrue(help.said().contains("!prereq <course>"));
     }
+
+    @Test
+    public void prereqAndReviewsAlsoAskWhichCourseForAnAmbiguousNumber() {
+        FakeDiscord f = FakeDiscord.say(1, "Student", "!prereq 4820", main.Server.BOTS_CHANNEL_ID);
+        new command.commands.misc.Prereq().start(f.event);
+        assertTrue(f.embeds.get(0).getTitle().startsWith("Which course"));
+        assertTrue(f.files.isEmpty());
+    }
 }

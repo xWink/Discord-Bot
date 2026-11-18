@@ -4,7 +4,6 @@ import command.Command;
 import command.ui.Buttons;
 import command.ui.Reveal;
 import command.util.art.GameArt;
-import database.Database;
 import database.connectors.EconomyConnector;
 import economy.EconomyService;
 import economy.WagerLimits;
@@ -76,7 +75,7 @@ public class Flip extends Command {
             boolean won = call != null && call == heads;
             if (stake > 0) {
                 try {
-                    settle(user, stake, won ? stake : -stake, event.getMessageId());
+                    economy.Wagers.settleNow(user, stake, won ? stake : -stake, event.getMessageId(), "flip");
                 } catch (EconomyService.InsufficientFundsRuntime e) {
                     event.getChannel().sendMessage("You do not have " + stake + " GC spendable.").queue();
                     return;
@@ -127,15 +126,5 @@ public class Flip extends Command {
 
     private static String side(Boolean heads) {
         return heads ? "Heads" : "Tails";
-    }
-
-    /** Reserve and settle in one transaction, so a crash cannot leave the stake held. */
-    private static void settle(long user, int stake, int net, String messageId) throws Exception {
-        String reservation = "flip:" + messageId;
-        Database.inTransaction(c -> {
-            EconomyService.reserveIn(c, user, stake, "flip", messageId, reservation);
-            EconomyService.settleReservationIn(c, reservation, net, "flip");
-            return null;
-        });
     }
 }

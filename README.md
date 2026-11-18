@@ -45,9 +45,9 @@ mascot bobs, stars twinkle and a glint sweeps across. It is off by default, save
 and falls back to the still card if the GIF would be too large to send.
 
 ### Games with pictures and animation
-`!slots <stake>` spins three reels as a GIF, `!flip [heads|tails] [stake]` spins a coin that lands on
-the result, `!dice` tumbles two dice, Higher or Lower shows each card, and `!bang` sends a card of the
-six-chamber cylinder with your mascot and streak. The result text appears once the animation has
+`!slots <stake>` spins three reels as a GIF, `!roulette` spins a wheel, `!crash` climbs a multiplier you pick a cash-out for, `!scratch` scratches off a card, `!mines` is a 4x4 board of buttons, `!flip [heads|tails] [stake]` spins a coin that lands on
+the result, `!dice` tumbles two dice, Higher or Lower shows each card, and `!bang` animates the cylinder
+and the shot, then settles on a card with your mascot and streak. The result text appears once the animation has
 played, so it never spoils it, and each game has a replay button. Nothing caps a stake; blackjack warns
 you when a bet is more than half your balance.
 

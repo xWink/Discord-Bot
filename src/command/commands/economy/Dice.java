@@ -2,7 +2,6 @@ package command.commands.economy;
 
 import command.Command;
 import command.util.game.DiceGame;
-import database.Database;
 import economy.EconomyService;
 import economy.WagerLimits;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -62,7 +61,7 @@ public class Dice extends Command {
 
             if (stake > 0) {
                 try {
-                    settle(event.getAuthor().getIdLong(), stake, net, event.getMessageId());
+                    economy.Wagers.settleNow(event.getAuthor().getIdLong(), stake, net, event.getMessageId(), "dice");
                 } catch (EconomyService.InsufficientFundsRuntime e) {
                     event.getChannel().sendMessage("You do not have " + stake + " GC spendable.").queue();
                     return;
@@ -88,15 +87,5 @@ public class Dice extends Command {
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
-    }
-
-    /** Reserve and settle in one transaction, so a crash cannot leave the stake held. */
-    private static void settle(long user, int stake, int net, String messageId) throws Exception {
-        String reservation = "dice:" + messageId;
-        Database.inTransaction(c -> {
-            EconomyService.reserveIn(c, user, stake, "dice", messageId, reservation);
-            EconomyService.settleReservationIn(c, reservation, net, "dice");
-            return null;
-        });
     }
 }

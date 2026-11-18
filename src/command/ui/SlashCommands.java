@@ -88,6 +88,14 @@ public final class SlashCommands {
         add(Commands.slash("flip", "Flip a coin. Call it and add a stake to bet").addOptions(
                 choice("call", "Heads or tails", false, "heads", "tails"), num("stake", "Stake in GC", false, 1, maxStake)));
         add(Commands.slash("slots", "Spin the reels").addOptions(num("stake", "Stake in GC", true, 1, maxStake)));
+        add(Commands.slash("roulette", "Spin the wheel").addOptions(
+                choice("bet", "What to bet on", true, "red", "black", "odd", "even", "low", "high", "green"),
+                num("stake", "Stake in GC", true, 1, maxStake)));
+        add(Commands.slash("crash", "Pick a multiplier to cash out at").addOptions(
+                num("stake", "Stake in GC", true, 1, maxStake), str("target", "Multiplier to cash out at, like 2.5", false)));
+        add(Commands.slash("scratch", "Scratch card").addOptions(num("stake", "Stake in GC", true, 1, maxStake)));
+        add(Commands.slash("mines", "A 4x4 board of buttons. Uncover gems, cash out before a mine").addOptions(
+                num("stake", "Stake in GC", true, 1, maxStake), num("mines", "How many mines, 1 to 8", false, 1, 8)));
         add(Commands.slash("hilo", "Higher or Lower").addOptions(num("stake", "Stake in GC", true, 1, maxStake)));
         add(Commands.slash("dice", "Two dice. Leave the stake off to play free").addOptions(
                 choice("pick", "What you are betting on", true, "low", "high", "seven"),

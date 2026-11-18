@@ -50,10 +50,12 @@ Use two accounts (your own and an alt, or a friend) for the social flows.
 | Blackjack stakes | `!bet 3` with a 5 GC balance; `!paidplay off` then `!bet 1` | A stake over half your balance shows a warning but still plays (no cap). With paid play off it is refused |
 | Blackjack restart | Start a hand, stop the bot, start it again, `!myhand` | Hand is still there; leave it 2 min and it auto-stands |
 | Slots, flip | `!slots 3`, `!flip`, `!flip heads 2` | A GIF plays (reels stop one by one, coin spins and lands), then the text and an "again" button replace "Spinning…". Stakes settle once. `!slots` pays about 95% back |
+| Roulette, crash, scratch | `!roulette red 2`, `!roulette 17 1`, `!crash 2 1.5`, `!scratch 2` | Each plays a GIF (wheel, climbing curve, scratching cells), then the text and an "again" button replace the placeholder. `!roulette purple 1` shows the usage |
+| Mines | `!mines 5 3`, press tiles, then **Cash out**; also `!mine 5`, `!minecash`; leave one idle 5 minutes | A 4x4 button grid. Gems disable their tile and raise the payout; a mine ends the round with a board picture showing every mine. Idle rounds cash out at their standing. A restart releases open stakes |
 | Dice, hilo | `!dice high`, `!dice seven 2`, `!hilo 2`, `!higher`, `!cashout` | Dice tumble as a GIF; HiLo shows the card as a picture. Free play works; stakes reserved/settled |
 | Arcade | `!arcade`, `!answer b`, again, `!arcadescores` | First round pays daily; repeats are free |
 | Weekly, gauntlet | `!weekly code`, `!gauntlet`, `!gauntlet prize` | 3 questions; prize run holds 3 GC then spends it |
-| Bang card | `!bang` a few times in the spam channel | A picture with the cylinder (spent chambers, the pulled one, unknown ones), your mascot, your streak and a **Pull again** button. Greyed mascot on a death, clovers on a jam |
+| Bang card | `!bang` a few times in the spam channel | An animation (cylinder spins, hammer waits, shot, click or jam) that settles on a picture with the cylinder (spent chambers, the pulled one, unknown ones), your mascot, your streak and a **Pull again** button. Greyed mascot on a death, clovers on a jam |
 | Duel | `!duel @alt 5`, alt `!accept`, both `!duelanswer a` | Winner +4 GC (1 GC fee); `!duelboard` needs 5 matches |
 | Shop | `!shop`, `!shop buy flair-day`, `!shop owned`, `!profile` | Cosmetics appear on the profile |
 | Featured price | `!shop buy bundle-weekend` twice | First quotes, second confirms |

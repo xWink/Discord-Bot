@@ -27,6 +27,7 @@ public class RoleBot {
             logger.debug("Entering application.");
             database.Database.migrate();
             economy.EconomyService.getInstance().refundAllByReason("hilo");
+            economy.EconomyService.getInstance().refundAllByReason("mines");
             duel.DuelService.releaseOrphans();
             economy.EconomyService.getInstance().refundAllByReason("gauntlet");
             arcade.QuestionBank.loadBundled();
@@ -40,6 +41,7 @@ public class RoleBot {
             timer.schedule(new main.timertasks.BountyExpiry(), 1000 * 90, 1000 * 60 * 60);
             timer.schedule(new main.timertasks.DuelSweep(), 1000 * 15, 1000 * 15);
             timer.schedule(new main.timertasks.HiLoTimeout(), 1000 * 30, 1000 * 30);
+            timer.schedule(new main.timertasks.MinesTimeout(), 1000 * 30, 1000 * 30);
             timer.schedule(new main.timertasks.BlackJackTimeout(), 1000 * 30, 1000 * 30);
             timer.schedule(new main.timertasks.DecaySweep(), 1000 * 60, 1000 * 60 * 60);
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);

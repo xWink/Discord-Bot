@@ -615,4 +615,316 @@ public final class GameArt {
         }
         return GifWriter.write(frames, delays, false);
     }
+
+    // ---------------------------------------------------------------- roulette
+
+    private static Color pocketColor(int number) {
+        if (number == 0) return new Color(0x1F9D45);
+        return command.util.game.RouletteGame.isRed(number) ? new Color(0xC81E1E) : new Color(0x1A1A1A);
+    }
+
+    private static void wheel(Graphics2D g, double cx, double cy, double r, double rotation) {
+        int[] order = command.util.game.RouletteGame.WHEEL;
+        double step = Math.PI * 2 / order.length;
+        g.setColor(new Color(0x5B3A1E));
+        g.fill(new Ellipse2D.Double(cx - r - 12, cy - r - 12, (r + 12) * 2, (r + 12) * 2));
+        g.setColor(INK);
+        g.setStroke(new BasicStroke(5f));
+        g.draw(new Ellipse2D.Double(cx - r - 12, cy - r - 12, (r + 12) * 2, (r + 12) * 2));
+        for (int i = 0; i < order.length; i++) {
+            double a0 = rotation + step * i - step / 2 - Math.PI / 2;
+            g.setColor(pocketColor(order[i]));
+            g.fill(new java.awt.geom.Arc2D.Double(cx - r, cy - r, r * 2, r * 2, -Math.toDegrees(a0),
+                    -Math.toDegrees(step), java.awt.geom.Arc2D.PIE));
+        }
+        g.setColor(new Color(0x15171B));
+        g.fill(new Ellipse2D.Double(cx - r * 0.62, cy - r * 0.62, r * 1.24, r * 1.24));
+        g.setColor(GOLD);
+        g.setStroke(new BasicStroke(3f));
+        g.draw(new Ellipse2D.Double(cx - r * 0.62, cy - r * 0.62, r * 1.24, r * 1.24));
+        g.draw(new Ellipse2D.Double(cx - r, cy - r, r * 2, r * 2));
+        g.setFont(new Font("SansSerif", Font.BOLD, 11));
+        g.setColor(Color.WHITE);
+        for (int i = 0; i < order.length; i++) {
+            double a = rotation + step * i - Math.PI / 2;
+            AffineTransform old = g.getTransform();
+            g.translate(cx + Math.cos(a) * r * 0.81, cy + Math.sin(a) * r * 0.81);
+            g.rotate(a + Math.PI / 2);
+            String t = Integer.toString(order[i]);
+            g.drawString(t, -g.getFontMetrics().stringWidth(t) / 2f, 4);
+            g.setTransform(old);
+        }
+        g.setPaint(new java.awt.RadialGradientPaint((float) cx, (float) cy, (float) (r * 0.3), new float[]{0f, 1f},
+                new Color[]{new Color(0xFFE766), new Color(0xB8860B)}));
+        g.fill(new Ellipse2D.Double(cx - r * 0.3, cy - r * 0.3, r * 0.6, r * 0.6));
+    }
+
+    /** The wheel spins and slows until the ball sits in the result's pocket at the top; the number then lights up. */
+    public static byte[] roulette(int result) throws IOException {
+        int w = 520;
+        int h = 320;
+        BufferedImage bg = canvas(w, h);
+        int frames = 18;
+        double finalRotation = -Math.PI * 2 / 37 * command.util.game.RouletteGame.pocket(result);
+        List<BufferedImage> out = new ArrayList<>();
+        List<Integer> delays = new ArrayList<>();
+        for (int i = 0; i < frames; i++) {
+            double p = i / (double) (frames - 1);
+            double eased = 1 - Math.pow(1 - p, 3);
+            double rotation = finalRotation - Math.PI * 2 * 3 * (1 - eased);
+            BufferedImage f = copy(bg);
+            Graphics2D g = f.createGraphics();
+            try {
+                hints(g);
+                wheel(g, 160, 160, 120, rotation);
+                // the ball rides the rim at the top
+                g.setColor(Color.WHITE);
+                g.fill(new Ellipse2D.Double(160 - 7, 160 - 120 - 9, 14, 14));
+                g.setColor(INK);
+                g.setStroke(new BasicStroke(2f));
+                g.draw(new Ellipse2D.Double(160 - 7, 160 - 120 - 9, 14, 14));
+                if (i == frames - 1) {
+                    g.setColor(pocketColor(result));
+                    g.fill(new Ellipse2D.Double(340, 70, 140, 140));
+                    g.setColor(GOLD);
+                    g.setStroke(new BasicStroke(7f));
+                    g.draw(new Ellipse2D.Double(340, 70, 140, 140));
+                    outlined(g, Integer.toString(result), new Font("SansSerif", Font.BOLD, 64), 410, 142 + 22, Color.WHITE);
+                    String colour = result == 0 ? "GREEN" : command.util.game.RouletteGame.isRed(result) ? "RED" : "BLACK";
+                    centered(g, colour, new Font("SansSerif", Font.BOLD, 20), GOLD, 410, 245);
+                } else {
+                    centered(g, "no more bets", new Font("SansSerif", Font.BOLD, 18), new Color(255, 255, 255, 160), 410, 150);
+                }
+            } finally {
+                g.dispose();
+            }
+            out.add(f);
+            delays.add(i == frames - 1 ? 4000 : 55 + (int) (95 * p * p));
+        }
+        return GifWriter.write(out, delays, false);
+    }
+
+    // ------------------------------------------------------------------- crash
+
+    /**
+     * The multiplier climbing as a curve. It rises to the crash point; the target is marked with a dot that turns
+     * green if the climb gets there in time. Ends on the result.
+     */
+    public static byte[] crash(int crashPoint, int target, boolean won) throws IOException {
+        int w = 520;
+        int h = 320;
+        BufferedImage bg = canvas(w, h);
+        double end = crashPoint / 100.0;
+        double tgt = target / 100.0;
+        double top = Math.max(2.0, Math.max(end, tgt) * 1.25);
+        int px = 40;
+        int py = 40;
+        int pw = w - 80;
+        int ph = h - 100;
+        int frames = 20;
+        List<BufferedImage> out = new ArrayList<>();
+        List<Integer> delays = new ArrayList<>();
+        for (int i = 0; i < frames; i++) {
+            double p = (i + 1) / (double) frames;
+            double m = Math.exp(Math.log(end) * p); // climbs fast at first on a log scale, ends at the crash point
+            boolean last = i == frames - 1;
+            BufferedImage f = copy(bg);
+            Graphics2D g = f.createGraphics();
+            try {
+                hints(g);
+                g.setColor(new Color(255, 255, 255, 30));
+                g.setStroke(new BasicStroke(1.5f));
+                for (int k = 1; k <= 4; k++) g.drawLine(px, py + ph * k / 4, px + pw, py + ph * k / 4);
+                // target line
+                double ty = py + ph - ph * (tgt - 1) / (top - 1);
+                g.setColor(new Color(255, 221, 0, 140));
+                g.setStroke(new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, new float[]{8f, 8f}, 0));
+                g.draw(new java.awt.geom.Line2D.Double(px, ty, px + pw, ty));
+                g.setFont(new Font("SansSerif", Font.BOLD, 13));
+                g.setColor(GOLD);
+                g.drawString("target " + CrashGame_show(target), px + 4, (int) ty - 6);
+                // the curve
+                Path2D curve = new Path2D.Double();
+                int steps = 60;
+                double lastX = px;
+                double lastY = py + ph;
+                for (int k = 0; k <= steps; k++) {
+                    double q = p * k / steps;
+                    double mm = Math.exp(Math.log(end) * q);
+                    double x = px + pw * q;
+                    double y = py + ph - ph * (mm - 1) / (top - 1);
+                    if (k == 0) curve.moveTo(x, y);
+                    else curve.lineTo(x, y);
+                    lastX = x;
+                    lastY = y;
+                }
+                boolean crashed = last && !won;
+                g.setColor(crashed ? RED : new Color(0x4CD964));
+                g.setStroke(new BasicStroke(6f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g.draw(curve);
+                if (m >= tgt || (last && won)) {
+                    double q = Math.log(tgt) / Math.log(end); // how far along the climb the target sits
+                    double dx = px + pw * Math.min(1, q);
+                    g.setColor(new Color(0x4CD964));
+                    g.fill(new Ellipse2D.Double(dx - 9, ty - 9, 18, 18));
+                    g.setColor(INK);
+                    g.setStroke(new BasicStroke(3f));
+                    g.draw(new Ellipse2D.Double(dx - 9, ty - 9, 18, 18));
+                }
+                g.setColor(Color.WHITE);
+                g.fill(new Ellipse2D.Double(lastX - 7, lastY - 7, 14, 14));
+                String label = last ? (won ? "CASHED OUT " + CrashGame_show(target) + "  (crash " + CrashGame_show(crashPoint) + ")"
+                        : "CRASHED at " + CrashGame_show(crashPoint)) : CrashGame_show((int) Math.round(m * 100));
+                outlined(g, label, new Font("SansSerif", Font.BOLD, last ? 24 : 40), w / 2, last ? 293 : 296,
+                        last ? (won ? new Color(0x4CD964) : RED) : Color.WHITE);
+            } finally {
+                g.dispose();
+            }
+            out.add(f);
+            delays.add(last ? 4000 : 90);
+        }
+        return GifWriter.write(out, delays, false);
+    }
+
+    private static String CrashGame_show(int hundredths) {
+        return command.util.game.CrashGame.show(hundredths);
+    }
+
+    // ------------------------------------------------------------------- mines
+
+    /**
+     * The 4x4 board when a round ends: gems on the safe tiles that were found, every mine shown, and the one that
+     * went off marked with a burst.
+     *
+     * @param found    tiles the player uncovered
+     * @param mines    where the mines were
+     * @param exploded the tile that blew up, or -1 if the player cashed out
+     */
+    public static byte[] minesBoard(java.util.Set<Integer> found, java.util.Set<Integer> mines, int exploded,
+                                    String label, boolean won) throws IOException {
+        int w = 420;
+        int h = 400;
+        BufferedImage img = canvas(w, h);
+        Graphics2D g = img.createGraphics();
+        try {
+            hints(g);
+            int cell = 78;
+            int gap = 10;
+            int x0 = (w - (4 * cell + 3 * gap)) / 2;
+            for (int i = 0; i < 16; i++) {
+                int x = x0 + (i % 4) * (cell + gap);
+                int y = 26 + (i / 4) * (cell + gap);
+                RoundRectangle2D tile = new RoundRectangle2D.Float(x, y, cell, cell, 16, 16);
+                boolean isMine = mines.contains(i);
+                boolean isFound = found.contains(i);
+                g.setColor(i == exploded ? new Color(0x8A1010) : isFound ? new Color(0x1E5B3A) : new Color(0, 0, 0, 130));
+                g.fill(tile);
+                g.setColor(INK);
+                g.setStroke(new BasicStroke(3f));
+                g.draw(tile);
+                double cx = x + cell / 2.0;
+                double cy = y + cell / 2.0;
+                if (i == exploded) burst(g, cx, cy, 42, new Color(255, 240, 160, 220), new Color(255, 120, 0, 230));
+                if (isMine) {
+                    g.setColor(new Color(0x2B2F36));
+                    g.fill(new Ellipse2D.Double(cx - 17, cy - 17, 34, 34));
+                    g.setColor(INK);
+                    g.setStroke(new BasicStroke(3f));
+                    g.draw(new Ellipse2D.Double(cx - 17, cy - 17, 34, 34));
+                    g.setColor(new Color(255, 255, 255, 140));
+                    g.fill(new Ellipse2D.Double(cx - 9, cy - 11, 9, 9));
+                    g.setColor(new Color(255, 255, 255, 210));
+                    for (int k = 0; k < 8; k++) {
+                        double a = Math.PI / 4 * k;
+                        g.drawLine((int) (cx + Math.cos(a) * 17), (int) (cy + Math.sin(a) * 17),
+                                (int) (cx + Math.cos(a) * 25), (int) (cy + Math.sin(a) * 25));
+                    }
+                } else if (isFound) {
+                    Path2D gem = new Path2D.Double();
+                    gem.moveTo(cx, cy - 24);
+                    gem.lineTo(cx + 22, cy - 4);
+                    gem.lineTo(cx, cy + 24);
+                    gem.lineTo(cx - 22, cy - 4);
+                    gem.closePath();
+                    g.setPaint(new GradientPaint((float) (cx - 20), (float) (cy - 20), new Color(0x9CF5FF),
+                            (float) (cx + 20), (float) (cy + 20), new Color(0x23A8D8)));
+                    g.fill(gem);
+                    g.setColor(INK);
+                    g.setStroke(new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    g.draw(gem);
+                }
+            }
+            outlined(g, label, new Font("SansSerif", Font.BOLD, 26), w / 2, h - 18, won ? new Color(0x4CD964) : RED);
+        } finally {
+            g.dispose();
+        }
+        return png(img);
+    }
+
+    // ----------------------------------------------------------------- scratch
+
+    /**
+     * A 3x3 scratch card: silver cells are scratched off in turn to show the symbols, and the three that match
+     * (if any) light up.
+     */
+    public static byte[] scratch(command.util.game.ScratchGame.Card card, String label, boolean won) throws IOException {
+        int w = 440;
+        int h = 470;
+        BufferedImage bg = canvas(w, h);
+        int cell = 104;
+        int gap = 12;
+        int x0 = (w - (3 * cell + 2 * gap)) / 2;
+        int order[] = {4, 0, 8, 2, 6, 1, 7, 3, 5};
+        List<BufferedImage> out = new ArrayList<>();
+        List<Integer> delays = new ArrayList<>();
+        for (int step = 0; step <= 9; step++) {
+            boolean last = step == 9;
+            BufferedImage f = copy(bg);
+            Graphics2D g = f.createGraphics();
+            try {
+                hints(g);
+                outlined(g, "SCRATCH CARD", new Font("SansSerif", Font.BOLD, 26), w / 2, 40, GOLD);
+                for (int i = 0; i < 9; i++) {
+                    int x = x0 + (i % 3) * (cell + gap);
+                    int y = 62 + (i / 3) * (cell + gap);
+                    RoundRectangle2D tile = new RoundRectangle2D.Float(x, y, cell, cell, 18, 18);
+                    boolean open = false;
+                    for (int k = 0; k < step; k++) if (order[k] == i) open = true;
+                    boolean partial = step < 9 && order[step] == i;
+                    boolean hit = last && card.prize != null && card.cells[i] == card.prize.symbol;
+                    if (open) {
+                        g.setColor(hit ? new Color(0xFFF3B0) : new Color(0xF4F4F0));
+                        g.fill(tile);
+                        symbol(g, card.cells[i], x + cell / 2.0, y + cell / 2.0, cell * 0.78);
+                    } else {
+                        g.setPaint(new GradientPaint(x, y, new Color(0xC9CDD3), x + cell, y + cell, new Color(0x8C919A)));
+                        g.fill(tile);
+                        if (partial) {
+                            // half scratched: a diagonal swipe of the symbol shows through
+                            Shape old = g.getClip();
+                            g.setClip(tile);
+                            g.setColor(new Color(0xF4F4F0));
+                            g.fill(new java.awt.geom.Rectangle2D.Double(x, y, cell * 0.5, cell));
+                            symbol(g, card.cells[i], x + cell / 2.0, y + cell / 2.0, cell * 0.78);
+                            g.setColor(new Color(0x9A9FA8));
+                            g.fill(new java.awt.geom.Rectangle2D.Double(x + cell * 0.5, y, cell * 0.5, cell));
+                            g.setClip(old);
+                        } else {
+                            centered(g, "?", new Font("SansSerif", Font.BOLD, 40), new Color(255, 255, 255, 170), x + cell / 2,
+                                    y + cell / 2 + 14);
+                        }
+                    }
+                    g.setColor(hit ? GOLD : INK);
+                    g.setStroke(new BasicStroke(hit ? 7f : 4f));
+                    g.draw(tile);
+                }
+                if (last) outlined(g, label, new Font("SansSerif", Font.BOLD, 28), w / 2, h - 20, won ? GOLD : Color.WHITE);
+            } finally {
+                g.dispose();
+            }
+            out.add(f);
+            delays.add(last ? 4000 : 260);
+        }
+        return GifWriter.write(out, delays, false);
+    }
 }

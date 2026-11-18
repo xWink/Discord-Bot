@@ -113,6 +113,12 @@ public final class CommandList {
         commands.add(new HiLo.Move("!cashout"));
         commands.add(new Dice());
         commands.add(new command.commands.economy.Slots());
+        commands.add(new command.commands.economy.Roulette());
+        commands.add(new command.commands.economy.Crash());
+        commands.add(new command.commands.economy.Scratch());
+        commands.add(new command.commands.economy.Mines.Start());
+        commands.add(new command.commands.economy.Mines.Move("!minecash"));
+        commands.add(new command.commands.economy.Mines.Move("!mine"));
         commands.add(new Flip());
         commands.add(new InstallmentCommand());
         commands.add(new Gift());

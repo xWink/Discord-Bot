@@ -113,6 +113,15 @@ public class CommandSmokeTest extends DbTestBase {
         run(new command.commands.misc.Flip(), u, "!flip heads 2");
         run(new command.commands.economy.Slots(), u, "!slots 3");
         run(new command.commands.economy.Slots(), u, "!slots");
+        run(new command.commands.economy.Roulette(), u, "!roulette red 2");
+        run(new command.commands.economy.Roulette(), u, "!roulette 17 1");
+        run(new command.commands.economy.Roulette(), u, "!roulette purple 1");
+        run(new command.commands.economy.Crash(), u, "!crash 2 1.5");
+        run(new command.commands.economy.Crash(), u, "!crash 2");
+        run(new command.commands.economy.Scratch(), u, "!scratch 2");
+        run(new command.commands.economy.Mines.Start(), u, "!mines 3 2");
+        run(new command.commands.economy.Mines.Move("!mine"), u, "!mine 5");
+        run(new command.commands.economy.Mines.Move("!minecash"), u, "!minecash");
         run(new HiLo(), u, "!hilo 2");
         String r = run(new HiLo.Move("!higher"), u, "!higher");
         if (r.contains("Correct")) run(new HiLo.Move("!cashout"), u, "!cashout");

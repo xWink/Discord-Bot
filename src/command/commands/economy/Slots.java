@@ -3,7 +3,6 @@ package command.commands.economy;
 import command.Command;
 import command.util.art.GameArt;
 import command.util.game.SlotsGame;
-import database.Database;
 import database.connectors.EconomyConnector;
 import economy.EconomyService;
 import economy.WagerLimits;
@@ -60,7 +59,7 @@ public class Slots extends Command {
             SlotsGame.Symbol[] reels = SlotsGame.spin(random);
             int net = SlotsGame.net(reels, stake);
             try {
-                settle(user, stake, net, event.getMessageId());
+                economy.Wagers.settleNow(user, stake, net, event.getMessageId(), "slots");
             } catch (EconomyService.InsufficientFundsRuntime e) {
                 event.getChannel().sendMessage("You do not have " + stake + " GC spendable.").queue();
                 return;
@@ -83,15 +82,5 @@ public class Slots extends Command {
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
-    }
-
-    /** Reserve and settle in one transaction, so a crash cannot leave the stake held. */
-    private static void settle(long user, int stake, int net, String messageId) throws Exception {
-        String reservation = "slots:" + messageId;
-        Database.inTransaction(c -> {
-            EconomyService.reserveIn(c, user, stake, "slots", messageId, reservation);
-            EconomyService.settleReservationIn(c, reservation, net, "slots");
-            return null;
-        });
     }
 }

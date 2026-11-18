@@ -70,4 +70,33 @@ public class GameArtTest {
         save("slots-win.gif", win);
         save("slots-lose.gif", lose);
     }
+
+    @Test
+    public void roulettePicture() throws Exception {
+        byte[] gif = GameArt.roulette(17);
+        assertTrue(isGif(gif));
+        save("roulette.gif", gif);
+        assertTrue(isGif(GameArt.roulette(0)));
+    }
+
+    @Test
+    public void crashPictures() throws Exception {
+        save("crash-win.gif", GameArt.crash(437, 200, true));
+        save("crash-lose.gif", GameArt.crash(131, 200, false));
+        assertTrue(isGif(GameArt.crash(10_000_000, 100_000, true)));
+    }
+
+    @Test
+    public void minesAndScratchPictures() throws Exception {
+        java.util.Set<Integer> found = new java.util.HashSet<>(java.util.Arrays.asList(0, 1, 5));
+        java.util.Set<Integer> mines = new java.util.HashSet<>(java.util.Arrays.asList(2, 9, 14));
+        byte[] png = GameArt.minesBoard(found, mines, 9, "BOOM  -10 GC", false);
+        assertEquals(420, ImageIO.read(new ByteArrayInputStream(png)).getWidth());
+        save("mines-lose.png", png);
+        save("mines-win.png", GameArt.minesBoard(found, mines, -1, "CASHED OUT x1.9", true));
+        java.util.Random r = new java.util.Random(2);
+        command.util.game.ScratchGame.Card card = command.util.game.ScratchGame.deal(r);
+        for (int i = 0; i < 2000 && card.prize == null; i++) card = command.util.game.ScratchGame.deal(r);
+        save("scratch-win.gif", GameArt.scratch(card, "THREE WIN", true));
+    }
 }

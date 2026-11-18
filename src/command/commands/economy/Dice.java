@@ -6,6 +6,9 @@ import database.Database;
 import economy.EconomyService;
 import economy.WagerLimits;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.util.Random;
 
@@ -56,7 +59,6 @@ public class Dice extends Command {
             int total = dice[0] + dice[1];
             int net = stake > 0 ? DiceGame.net(pick, total, stake) : 0;
             String name = economy.Cosmetics.nameWithTitle(event.getAuthor().getIdLong(), event.getAuthor().getName());
-            String roll = ":game_die: " + dice[0] + " + " + dice[1] + " = **" + total + "**";
 
             if (stake > 0) {
                 try {
@@ -71,9 +73,18 @@ public class Dice extends Command {
             String result = stake == 0
                     ? (won ? "You called it (free play)." : "Missed (free play).")
                     : (won ? "You won " + net + " GC!" : "You lost " + stake + " GC.");
-            economy.Cosmetics.reply(event.getChannel(), event.getAuthor().getIdLong(), name + " picked "
-                    + pick.name().toLowerCase() + ". " + roll + "\n" + result
-                    + (stake > 0 ? " Maximum loss was " + stake + " GC." : ""), won && stake > 0);
+            String text = (won && stake > 0 ? economy.Cosmetics.winHeader(event.getAuthor().getIdLong()) : "") + name
+                    + " picked " + pick.name().toLowerCase() + ", rolled **" + total + "**. " + result
+                    + (stake > 0 ? " Maximum loss was " + stake + " GC." : "");
+            long user = event.getAuthor().getIdLong();
+            java.util.List<ItemComponent> again = command.ui.Buttons.single(
+                    command.ui.Buttons.mine(user, "!dice " + pick.name().toLowerCase() + (stake > 0 ? " " + stake : ""),
+                            "Roll again" + (stake > 0 ? " (" + stake + " GC)" : ""),
+                            ButtonStyle.PRIMARY));
+            command.ui.Reveal.send(event.getChannel().sendFiles(FileUpload.fromData(
+                            command.util.art.GameArt.diceRoll(dice[0], dice[1]), "dice.gif"))
+                            .setContent("Rolling\u2026"),
+                    event.getChannel(), text, again, 1400);
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

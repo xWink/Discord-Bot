@@ -80,6 +80,25 @@ public final class FakeDiscord {
             return action;
         }).when(action).setEmbeds(any(MessageEmbed[].class));
 
+        // content set on a file message counts as something said
+        org.mockito.Mockito.doAnswer(inv -> {
+            texts.add(String.valueOf((Object) inv.getArgument(0)));
+            return action;
+        }).when(action).setContent(ArgumentMatchers.<String>any());
+        // a message sent with a callback (animations that reveal the result later): run the callback at once and
+        // record the text the message is edited to
+        org.mockito.Mockito.doAnswer(inv -> {
+            Message sent = mock(Message.class);
+            net.dv8tion.jda.api.requests.restaction.MessageEditAction edit =
+                    mock(net.dv8tion.jda.api.requests.restaction.MessageEditAction.class, RETURNS_SELF);
+            when(sent.editMessage(ArgumentMatchers.<CharSequence>any())).thenAnswer(i2 -> {
+                texts.add(i2.getArgument(0).toString());
+                return edit;
+            });
+            ((Consumer<Message>) inv.getArgument(0)).accept(sent);
+            return null;
+        }).when(action).queue(any(Consumer.class));
+
         MessageChannelUnion channel = mock(MessageChannelUnion.class);
         when(channel.getIdLong()).thenReturn(channelId);
         when(channel.getId()).thenReturn(Long.toString(channelId));

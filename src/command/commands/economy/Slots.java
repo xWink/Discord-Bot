@@ -7,12 +7,10 @@ import database.Database;
 import database.connectors.EconomyConnector;
 import economy.EconomyService;
 import economy.WagerLimits;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.FileUpload;
 
-import java.awt.Color;
 import java.util.Random;
 
 /** {@code !slots <stake>}. Three reels spin as an animation; the result is settled before it is shown. */
@@ -74,17 +72,14 @@ public class Slots extends Command {
             String result = net > 0 ? "You won " + net + " GC!" : net == 0 ? "A push: your stake came back."
                     : "You lost " + stake + " GC.";
 
-            EmbedBuilder eb = new EmbedBuilder();
-            eb.setColor(won ? new Color(0xFFDD00) : new Color(0x3A3F47));
-            eb.setTitle(name + " pulls the lever");
-            eb.setDescription((won ? economy.Cosmetics.winHeader(user) : "") + result
-                    + "\nStake " + stake + " GC. Maximum loss was " + stake + " GC.");
-            eb.setImage("attachment://slots.gif");
-            eb.setFooter(label);
-            event.getChannel().sendFiles(FileUpload.fromData(GameArt.slots(reels, label, won), "slots.gif"))
-                    .setEmbeds(eb.build())
-                    .setActionRow(command.ui.Buttons.mine(user, "!slots " + stake, "Spin again (" + stake + " GC)",
-                            ButtonStyle.PRIMARY)).queue();
+            String text = (won ? economy.Cosmetics.winHeader(user) : "") + name + ": **" + label + "**\n" + result
+                    + " Stake " + stake + " GC, maximum loss was " + stake + " GC.";
+            command.ui.Reveal.send(event.getChannel()
+                            .sendFiles(FileUpload.fromData(GameArt.slots(reels, label, won), "slots.gif"))
+                            .setContent("Spinning\u2026"),
+                    event.getChannel(), text,
+                    command.ui.Buttons.single(command.ui.Buttons.mine(user, "!slots " + stake,
+                            "Spin again (" + stake + " GC)", ButtonStyle.PRIMARY)), 2200);
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

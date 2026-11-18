@@ -109,6 +109,10 @@ public class CommandSmokeTest extends DbTestBase {
         run(new Dice(), u, "!dice high");
         run(new Dice(), u, "!dice seven 2");
         run(new Dice(), u, "!dice");
+        run(new command.commands.misc.Flip(), u, "!flip");
+        run(new command.commands.misc.Flip(), u, "!flip heads 2");
+        run(new command.commands.economy.Slots(), u, "!slots 3");
+        run(new command.commands.economy.Slots(), u, "!slots");
         run(new HiLo(), u, "!hilo 2");
         String r = run(new HiLo.Move("!higher"), u, "!higher");
         if (r.contains("Correct")) run(new HiLo.Move("!cashout"), u, "!cashout");

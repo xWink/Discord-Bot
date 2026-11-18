@@ -85,6 +85,7 @@ public class Help extends Command {
                 new Entry("!ping", "Your latency"),
                 new Entry("!id <Discord ID>", "Look up a user"),
                 new Entry("!info <course | words | dept>", "Course info: a code, words from the title, or a department"),
+                new Entry("!prereq <course>", "Draws the chain of prerequisites"),
                 new Entry("!roles  !join  !leave", "Course channels")),
         MODS("moderators", "🛡️", "Moderators", "Staff only", new Color(0xED4245),
                 new Entry("!economy receipt <id>", "Look up any wallet change"),

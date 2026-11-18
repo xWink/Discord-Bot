@@ -117,6 +117,7 @@ public final class CommandList {
         commands.add(new command.commands.economy.Crash());
         commands.add(new command.commands.economy.Scratch());
         commands.add(new command.commands.economy.Wordle());
+        commands.add(new command.commands.misc.Prereq());
         commands.add(new command.commands.economy.CoinDuel.Start());
         commands.add(new command.commands.economy.CoinDuel.Reply("!coinaccept"));
         commands.add(new command.commands.economy.CoinDuel.Reply("!coindecline"));

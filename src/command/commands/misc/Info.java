@@ -8,6 +8,8 @@ package command.commands.misc;
 
 import command.Command;
 import command.ui.Buttons;
+import command.ui.Reveal;
+import command.util.art.CourseArt;
 import command.util.misc.CourseCatalog;
 import command.util.misc.CourseCatalog.Course;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -16,14 +18,15 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@code !info <course>}: the full entry for a course code ({@code cis1300}, {@code CIS*1300}), with buttons for its
- * prerequisites and for joining its channel. Anything that is not a code is searched instead: words from a title
+ * {@code !info <course>}: the full entry for a course code ({@code cis1300}, {@code CIS*1300}) under an animated
+ * banner, with buttons for its prerequisites, related courses, its prerequisite tree and its channel. Anything that is not a code is searched instead: words from a title
  * ({@code !info intro programming}), a code's start ({@code !info cis13}) or a whole department ({@code !info cis}).
  */
 public class Info extends Command {
@@ -54,7 +57,7 @@ public class Info extends Command {
 
         Course course = catalog.find(query);
         if (course != null) {
-            channel.sendMessageEmbeds(courseEmbed(course).build()).setComponents(courseButtons(course)).queue();
+            show(channel, course);
             return;
         }
         List<Course> department = catalog.department(query);
@@ -69,7 +72,7 @@ public class Info extends Command {
             return;
         }
         if (found.size() == 1) {
-            channel.sendMessageEmbeds(courseEmbed(found.get(0)).build()).setComponents(courseButtons(found.get(0))).queue();
+            show(channel, found.get(0));
             return;
         }
         EmbedBuilder eb = new EmbedBuilder().setColor(new Color(0x99AAB5)).setTitle("Courses matching \"" + shorten(query, 60) + "\"");
@@ -82,6 +85,15 @@ public class Info extends Command {
         eb.setDescription(list.toString());
         eb.setFooter("Press one for the full entry", null);
         channel.sendMessageEmbeds(eb.build()).setComponents(rows(buttons)).queue();
+    }
+
+    /** Sends a course's entry with its banner animating above it; without the picture if it cannot be drawn. */
+    private static void show(MessageChannel channel, Course course) {
+        Reveal.async(() -> CourseArt.banner(course),
+                gif -> channel.sendFiles(FileUpload.fromData(gif, "course.gif"))
+                        .setEmbeds(courseEmbed(course).setImage("attachment://course.gif").build())
+                        .setComponents(courseButtons(course)).queue(),
+                () -> channel.sendMessageEmbeds(courseEmbed(course).build()).setComponents(courseButtons(course)).queue());
     }
 
     private static String usage() {
@@ -102,27 +114,48 @@ public class Info extends Command {
         eb.addField("About", shorten(c.description.isEmpty() ? "No description." : c.description, FIELD_MAX), false);
         String pre = clean(c.prerequisites, "Prerequisite(s): ");
         eb.addField("Prerequisites", pre.isEmpty() ? "None" : shorten(escape(pre), FIELD_MAX), false);
+        String co = clean(c.corequisites, "Co-requisite(s): ");
+        if (!co.isEmpty()) eb.addField("Co-requisites (take at the same time)", shorten(escape(co), FIELD_MAX), false);
+        String equates = clean(c.equates, "Equate(s): ");
+        if (!equates.isEmpty()) eb.addField("Counts as the same course", shorten(escape(equates), FIELD_MAX), false);
         String restrictions = clean(c.restrictions, "Restriction(s): ");
         if (!restrictions.isEmpty()) eb.addField("Restrictions", shorten(escape(restrictions), FIELD_MAX), false);
-        eb.setFooter(c.level() + "000-level · " + c.department, null);
+        if (!c.offering.isEmpty()) eb.addField("How it is offered", shorten(c.offering, FIELD_MAX), false);
+        List<String> foot = new ArrayList<>();
+        foot.add(c.source.equals("graduate") ? "Graduate" : c.level() + "000-level");
+        if (!c.unit.isEmpty()) foot.add(c.unit);
+        if (!c.locations.isEmpty()) foot.add(c.locations);
+        eb.setFooter(String.join(" · ", foot), null);
         return eb;
     }
 
-    /** One button per prerequisite course, then join and department buttons. */
+    /** One button per prerequisite, one per related course, then join, tree and department buttons. */
     static List<ActionRow> courseButtons(Course c) {
+        CourseCatalog catalog = CourseCatalog.get();
         List<ItemComponent> prereqs = new ArrayList<>();
         for (String code : c.prerequisiteCodes()) {
             if (prereqs.size() == 5) break;
-            Course p = CourseCatalog.get().find(code);
-            prereqs.add(Buttons.of(0, false, "!info " + code, shorten("⬆ " + code + (p == null ? "" : " " + p.title), 78),
+            Course p = catalog.find(code);
+            prereqs.add(Buttons.of(0, false, "!info " + code, shorten("\u2B06 " + code + (p == null ? "" : " " + p.title), 78),
                     ButtonStyle.SECONDARY));
+        }
+        List<ItemComponent> related = new ArrayList<>();
+        for (String code : c.equateCodes()) {
+            if (related.size() < 3) related.add(Buttons.of(0, false, "!info " + code, "= " + code, ButtonStyle.SECONDARY));
+        }
+        for (String code : c.corequisiteCodes()) {
+            if (related.size() < 5) related.add(Buttons.of(0, false, "!info " + code, "+ " + code, ButtonStyle.SECONDARY));
         }
         List<ItemComponent> actions = new ArrayList<>();
         actions.add(Buttons.of(0, false, "!join " + c.department + c.number, "Join the " + c.department + c.number + " channel",
                 ButtonStyle.PRIMARY));
+        if (!c.prerequisiteCodes().isEmpty()) {
+            actions.add(Buttons.of(0, false, "!prereq " + c.code, "Prerequisite tree", ButtonStyle.SUCCESS));
+        }
         actions.add(Buttons.of(0, false, "!info " + c.department, "More " + c.department + " courses", ButtonStyle.SECONDARY));
         List<ActionRow> out = new ArrayList<>();
         if (!prereqs.isEmpty()) out.add(ActionRow.of(prereqs));
+        if (!related.isEmpty()) out.add(ActionRow.of(related));
         out.add(ActionRow.of(actions));
         return out;
     }

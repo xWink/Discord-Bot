@@ -165,6 +165,8 @@ public final class SlashCommands {
         add(Commands.slash("id", "Look up a user").addOptions(str("discord_id", "Discord ID", true)));
         add(Commands.slash("info", "Course info, or search by title").addOptions(
                 str("course", "A code like CIS1300, words from the title, or a department", true).setAutoComplete(true)));
+        add(Commands.slash("prereq", "Draw what a course needs").addOptions(
+                str("course", "A course code like CIS3750", true).setAutoComplete(true)));
         add(Commands.slash("join", "Join a course channel").addOptions(str("course", "Course code", true)));
         add(Commands.slash("leave", "Leave a course channel").addOptions(str("course", "Course code", true)));
 

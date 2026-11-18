@@ -57,8 +57,10 @@ five-letter word with a flip-over board, a reward and a streak. All the animated
 of a game every few seconds per player, so nobody can flood the channel.
 
 ### Course info
-`!info cis1300` shows the whole entry (when it is offered, hours, credits, description, prerequisites and
-restrictions) with a button for each prerequisite and one to join the course channel. It also searches:
+`!info cis3750` shows the whole entry under an animated banner (when it is offered, hours, credits,
+description, prerequisites, co-requisites, equivalent courses and restrictions) with a button for each related
+course and one to join the course channel. `!prereq cis3750` draws the chain of prerequisites as a tree. The
+catalogue covers both the undergraduate and graduate calendars; `res/scrape.py` rebuilds it. It also searches:
 `!info intro programming` finds courses by title words, `!info cis` lists a department, and `/info`
 autocompletes as you type.
 

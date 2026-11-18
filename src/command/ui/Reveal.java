@@ -73,6 +73,33 @@ public final class Reveal {
         }
     }
 
+    /**
+     * Draws on a worker thread, then hands the bytes to {@code ok} (also on that thread). If drawing fails or the
+     * workers are backed up, {@code fallback} runs instead, so the caller always answers.
+     */
+    public static void async(Callable<byte[]> job, java.util.function.Consumer<byte[]> ok, Runnable fallback) {
+        Runnable task = () -> {
+            byte[] bytes;
+            try {
+                bytes = job.call();
+            } catch (Exception | OutOfMemoryError e) {
+                e.printStackTrace();
+                fallback.run();
+                return;
+            }
+            ok.accept(bytes);
+        };
+        if (inline) {
+            task.run();
+            return;
+        }
+        try {
+            POOL.execute(task);
+        } catch (RejectedExecutionException e) {
+            fallback.run();
+        }
+    }
+
     private static void plain(MessageChannel channel, String result, List<ItemComponent> buttons) {
         MessageCreateAction action = channel.sendMessage(result);
         if (!buttons.isEmpty()) action.setComponents(ActionRow.of(buttons));

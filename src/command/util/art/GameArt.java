@@ -79,7 +79,7 @@ public final class GameArt {
 
     // ------------------------------------------------------------------ shared
 
-    private static BufferedImage canvas(int w, int h) {
+    static BufferedImage canvas(int w, int h) {
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
         try {
@@ -103,7 +103,7 @@ public final class GameArt {
         return img;
     }
 
-    private static void hints(Graphics2D g) {
+    static void hints(Graphics2D g) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
@@ -111,7 +111,7 @@ public final class GameArt {
     }
 
     /** Text with a dark outline, centred on {@code cx}. */
-    private static void outlined(Graphics2D g, String text, Font font, int cx, int baseline, Color fill) {
+    static void outlined(Graphics2D g, String text, Font font, int cx, int baseline, Color fill) {
         g.setFont(font);
         FontMetrics fm = g.getFontMetrics();
         java.awt.font.GlyphVector gv = font.createGlyphVector(g.getFontRenderContext(), text);
@@ -123,13 +123,13 @@ public final class GameArt {
         g.fill(outline);
     }
 
-    private static void centered(Graphics2D g, String text, Font font, Color color, int cx, int baseline) {
+    static void centered(Graphics2D g, String text, Font font, Color color, int cx, int baseline) {
         g.setFont(font);
         g.setColor(color);
         g.drawString(text, cx - g.getFontMetrics().stringWidth(text) / 2, baseline);
     }
 
-    private static byte[] png(BufferedImage img) throws IOException {
+    static byte[] png(BufferedImage img) throws IOException {
         java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
         ImageIO.write(img, "png", out);
         return out.toByteArray();
@@ -378,7 +378,7 @@ public final class GameArt {
         return GifWriter.write(frames, delays, false);
     }
 
-    private static BufferedImage copy(BufferedImage src) {
+    static BufferedImage copy(BufferedImage src) {
         BufferedImage out = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = out.createGraphics();
         g.drawImage(src, 0, 0, null);

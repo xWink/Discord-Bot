@@ -198,6 +198,154 @@ public final class GameArt {
         return png(img);
     }
 
+    private static final int BANG_W = 700;
+    private static final int BANG_H = 300;
+
+    /** A revolver cylinder seen end-on, turned by {@code angle}, with a marker at the top where the hammer falls. */
+    private static void cylinder(Graphics2D g, double cx, double cy, double r, double angle) {
+        Ellipse2D body = new Ellipse2D.Double(cx - r, cy - r, r * 2, r * 2);
+        g.setPaint(new GradientPaint((float) (cx - r), (float) (cy - r), new Color(0x9AA0AA), (float) (cx + r),
+                (float) (cy + r), new Color(0x3C4048)));
+        g.fill(body);
+        g.setColor(INK);
+        g.setStroke(new BasicStroke(6f));
+        g.draw(body);
+        for (int i = 0; i < 6; i++) {
+            double a = angle + Math.PI / 3 * i - Math.PI / 2;
+            double hx = cx + Math.cos(a) * r * 0.6;
+            double hy = cy + Math.sin(a) * r * 0.6;
+            Ellipse2D hole = new Ellipse2D.Double(hx - r * 0.2, hy - r * 0.2, r * 0.4, r * 0.4);
+            g.setColor(new Color(0x15171B));
+            g.fill(hole);
+            g.setColor(INK);
+            g.setStroke(new BasicStroke(3f));
+            g.draw(hole);
+        }
+        g.setColor(new Color(0x6A707A));
+        g.fill(new Ellipse2D.Double(cx - r * 0.18, cy - r * 0.18, r * 0.36, r * 0.36));
+        g.setColor(INK);
+        g.draw(new Ellipse2D.Double(cx - r * 0.18, cy - r * 0.18, r * 0.36, r * 0.36));
+        // the marker where the hammer falls
+        Path2D tip = new Path2D.Double();
+        tip.moveTo(cx - 12, cy - r - 20);
+        tip.lineTo(cx + 12, cy - r - 20);
+        tip.lineTo(cx, cy - r - 2);
+        tip.closePath();
+        g.setColor(GOLD);
+        g.fill(tip);
+        g.setColor(INK);
+        g.setStroke(new BasicStroke(3f));
+        g.draw(tip);
+    }
+
+    /** A burst of rays and a glow, for the shot or a sparkle of luck. */
+    private static void burst(Graphics2D g, double cx, double cy, double r, Color core, Color rays) {
+        g.setPaint(new java.awt.RadialGradientPaint((float) cx, (float) cy, (float) r, new float[]{0f, 1f},
+                new Color[]{core, new Color(core.getRed(), core.getGreen(), core.getBlue(), 0)}));
+        g.fill(new Ellipse2D.Double(cx - r, cy - r, r * 2, r * 2));
+        g.setColor(rays);
+        g.setStroke(new BasicStroke(7f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        for (int i = 0; i < 12; i++) {
+            double a = Math.PI / 6 * i;
+            double in = r * (i % 2 == 0 ? 0.35 : 0.45);
+            double out = r * (i % 2 == 0 ? 1.0 : 0.75);
+            g.draw(new java.awt.geom.Line2D.Double(cx + Math.cos(a) * in, cy + Math.sin(a) * in,
+                    cx + Math.cos(a) * out, cy + Math.sin(a) * out));
+        }
+    }
+
+    /**
+     * The pull as an animation: the cylinder spins and slows, the hammer waits, then the shot, a click or a jam
+     * lands and the animation settles on the result card.
+     *
+     * @return a GIF that plays once and rests on {@link #bangCard}
+     */
+    public static byte[] bangAnimation(String name, int pullIndex, Pull result, int streak, Collection<String> codes,
+                                       long seed) throws IOException {
+        BufferedImage bg = canvas(BANG_W, BANG_H);
+        BufferedImage m = Sticker.render(codes, 230, seed);
+        BufferedImage finalCard = ImageIO.read(new java.io.ByteArrayInputStream(
+                bangCard(name, pullIndex, result, streak, codes, seed)));
+        List<BufferedImage> frames = new ArrayList<>();
+        List<Integer> delays = new ArrayList<>();
+
+        int spin = 9;
+        for (int i = 0; i < spin; i++) {
+            double p = i / (double) (spin - 1);
+            double angle = Math.PI * 2 * 2.2 * (1 - Math.pow(1 - p, 2));
+            BufferedImage f = copy(bg);
+            Graphics2D g = f.createGraphics();
+            try {
+                hints(g);
+                cylinder(g, 220, 160, 100, angle);
+                outlined(g, "spinning\u2026", new Font("SansSerif", Font.BOLD, 22), 220, 285, Color.WHITE);
+                g.drawImage(m, 445, 35, null);
+            } finally {
+                g.dispose();
+            }
+            frames.add(f);
+            delays.add(60 + (int) (70 * p));
+        }
+        // the cylinder stops and the hammer waits
+        for (int i = 0; i < 2; i++) {
+            BufferedImage f = copy(bg);
+            Graphics2D g = f.createGraphics();
+            try {
+                hints(g);
+                cylinder(g, 220, 160, 100, 0);
+                outlined(g, i == 0 ? "\u2026" : "\u2026\u2026", new Font("SansSerif", Font.BOLD, 30), 220, 285, Color.WHITE);
+                int shake = i == 1 ? 3 : 0;
+                g.drawImage(m, 445 + shake, 35, null);
+            } finally {
+                g.dispose();
+            }
+            frames.add(f);
+            delays.add(i == 0 ? 450 : 350);
+        }
+        // the moment itself
+        int flashes = result == Pull.BANG ? 3 : 2;
+        for (int i = 0; i < flashes; i++) {
+            BufferedImage f = copy(bg);
+            Graphics2D g = f.createGraphics();
+            try {
+                hints(g);
+                cylinder(g, 220, 160, 100, 0);
+                double grow = 0.6 + 0.4 * i;
+                if (result == Pull.BANG) {
+                    burst(g, 220, 160, 150 * grow, new Color(255, 240, 160, 230), new Color(255, 120, 0, 230));
+                    g.setColor(new Color(255, 60, 40, 70 - i * 20));
+                    g.fillRect(0, 0, BANG_W, BANG_H);
+                    int dx = (i % 2 == 0 ? 7 : -7);
+                    g.drawImage(m, 445 + dx, 35, null);
+                    outlined(g, "BANG!", new Font("SansSerif", Font.BOLD, 56), 350, 150, RED);
+                } else if (result == Pull.JAM) {
+                    burst(g, 220, 160, 110 * grow, new Color(120, 255, 150, 200), new Color(60, 200, 90, 220));
+                    g.drawImage(m, 445, 35, null);
+                    outlined(g, "jam!", new Font("SansSerif", Font.BOLD, 44), 350, 150, new Color(0x4CD964));
+                } else {
+                    burst(g, 220, 70, 36 * grow, new Color(255, 255, 255, 220), new Color(255, 221, 0, 230));
+                    g.drawImage(m, 445, 35, null);
+                    outlined(g, "click", new Font("SansSerif", Font.BOLD, 40), 350, 150, Color.WHITE);
+                }
+            } finally {
+                g.dispose();
+            }
+            frames.add(f);
+            delays.add(result == Pull.BANG ? 90 : 140);
+        }
+        frames.add(finalCard);
+        delays.add(5000);
+        return GifWriter.write(frames, delays, false);
+    }
+
+    private static BufferedImage copy(BufferedImage src) {
+        BufferedImage out = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = out.createGraphics();
+        g.drawImage(src, 0, 0, null);
+        g.dispose();
+        return out;
+    }
+
     private static String fitText(Graphics2D g, String text, Font font, int max) {
         g.setFont(font);
         FontMetrics fm = g.getFontMetrics();

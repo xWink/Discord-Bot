@@ -165,18 +165,20 @@ public class Bang extends Command {
         }
     }
 
-    /** The result as a picture of the cylinder, with the text and a button to pull again. If the picture fails, text only. */
+    /**
+     * The pull as an animation (cylinder spins, hammer falls) that settles on the result card. The text and the
+     * Pull again button replace the placeholder once it has played. If the animation fails, text only.
+     */
     private void send(MessageReceivedEvent event, MessageChannel channel) throws SQLException {
         String text = getOutput(event);
         try {
             GameArt.Pull result = jammed ? GameArt.Pull.JAM : killed ? GameArt.Pull.BANG : GameArt.Pull.CLICK;
-            byte[] card = GameArt.bangCard(event.getAuthor().getName(), pullIndex, result, bc.getCurrentStreak(userId),
-                    economy.Cosmetics.loadout(userId).codes, userId);
-            channel.sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(card, "bang.png"))
-                    .setContent(text)
-                    .setActionRow(command.ui.Buttons.mine(userId, "!bang", "Pull again",
-                            net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.DANGER))
-                    .queue();
+            byte[] gif = GameArt.bangAnimation(event.getAuthor().getName(), pullIndex, result,
+                    bc.getCurrentStreak(userId), economy.Cosmetics.loadout(userId).codes, userId);
+            command.ui.Reveal.send(channel.sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(gif, "bang.gif"))
+                            .setContent("Spinning the cylinder\u2026"),
+                    channel, text, command.ui.Buttons.single(command.ui.Buttons.mine(userId, "!bang", "Pull again",
+                            net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.DANGER)), 1900);
         } catch (java.io.IOException | RuntimeException e) {
             e.printStackTrace();
             channel.sendMessage(text).queue();

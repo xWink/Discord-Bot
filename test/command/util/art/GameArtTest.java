@@ -42,6 +42,15 @@ public class GameArtTest {
     }
 
     @Test
+    public void bangAnimationSettlesOnTheCard() throws Exception {
+        for (GameArt.Pull pull : GameArt.Pull.values()) {
+            byte[] gif = GameArt.bangAnimation("Player", 2, pull, 3, Collections.<String>emptyList(), 1);
+            assertTrue(isGif(gif));
+            save("bang-anim-" + pull.name().toLowerCase() + ".gif", gif);
+        }
+    }
+
+    @Test
     public void coinLandsOnEitherFace() throws Exception {
         for (boolean heads : new boolean[]{true, false}) {
             byte[] gif = GameArt.coinSpin(heads);

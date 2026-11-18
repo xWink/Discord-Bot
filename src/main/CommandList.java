@@ -116,6 +116,11 @@ public final class CommandList {
         commands.add(new command.commands.economy.Roulette());
         commands.add(new command.commands.economy.Crash());
         commands.add(new command.commands.economy.Scratch());
+        commands.add(new command.commands.economy.CoinDuel.Start());
+        commands.add(new command.commands.economy.CoinDuel.Reply("!coinaccept"));
+        commands.add(new command.commands.economy.CoinDuel.Reply("!coindecline"));
+        commands.add(new command.commands.economy.Race.Start());
+        commands.add(new command.commands.economy.Race.Answer());
         commands.add(new command.commands.economy.Mines.Start());
         commands.add(new command.commands.economy.Mines.Move("!minecash"));
         commands.add(new command.commands.economy.Mines.Move("!mine"));

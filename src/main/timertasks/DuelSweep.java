@@ -18,6 +18,12 @@ public class DuelSweep extends TimerTask {
             if (channel != null) channel.sendMessage("Round over. The answer was **" + q.getChoices().get(q.getCorrectIndex())
                     + "** (" + arcade.PersonalTrivia.participants(e.getValue()) + " played).").queue();
         }
+        for (command.commands.economy.Race.Round r : command.commands.economy.Race.sweep()) {
+            TextChannel channel = Server.API.getTextChannelById(r.channelId);
+            if (channel != null) channel.sendMessage("Nobody got the race. The answer was **"
+                    + r.question.getChoices().get(r.question.getCorrectIndex()) + "**. <@" + r.host
+                    + "> gets their " + r.stake + " GC back.").queue();
+        }
         for (arcade.QuizService.Session s : arcade.QuizService.sweep()) {
             TextChannel channel = Server.API.getTextChannelById(s.channelId);
             if (channel != null) channel.sendMessage("<@" + s.user + "> your run timed out"

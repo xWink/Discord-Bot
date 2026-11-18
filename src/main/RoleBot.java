@@ -28,6 +28,7 @@ public class RoleBot {
             database.Database.migrate();
             economy.EconomyService.getInstance().refundAllByReason("hilo");
             economy.EconomyService.getInstance().refundAllByReason("mines");
+            economy.EconomyService.getInstance().refundAllByReason("race");
             duel.DuelService.releaseOrphans();
             economy.EconomyService.getInstance().refundAllByReason("gauntlet");
             arcade.QuestionBank.loadBundled();

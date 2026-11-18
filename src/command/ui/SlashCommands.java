@@ -163,7 +163,8 @@ public final class SlashCommands {
                         num("year", "Class year", false, 1900, 2100), str("note", "Thank-you note", false)),
                 new SubcommandData("revoke", "Remove alumni (mods)").addOptions(user("who", "Member", true))));
         add(Commands.slash("id", "Look up a user").addOptions(str("discord_id", "Discord ID", true)));
-        add(Commands.slash("info", "Course info").addOptions(str("course", "Course code, for example CIS1300", true)));
+        add(Commands.slash("info", "Course info, or search by title").addOptions(
+                str("course", "A code like CIS1300, words from the title, or a department", true).setAutoComplete(true)));
         add(Commands.slash("join", "Join a course channel").addOptions(str("course", "Course code", true)));
         add(Commands.slash("leave", "Leave a course channel").addOptions(str("course", "Course code", true)));
 

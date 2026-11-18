@@ -61,6 +61,20 @@ public class InteractionListener extends ListenerAdapter {
         });
     }
 
+    /** Suggests courses as someone types in /info. */
+    @Override
+    public void onCommandAutoCompleteInteraction(net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent event) {
+        if (!event.getName().equals("info") || !event.getFocusedOption().getName().equals("course")) return;
+        java.util.List<net.dv8tion.jda.api.interactions.commands.Command.Choice> choices = new java.util.ArrayList<>();
+        for (command.util.misc.CourseCatalog.Course c
+                : command.util.misc.CourseCatalog.get().search(event.getFocusedOption().getValue(), 25)) {
+            String name = c.code + " " + c.title;
+            choices.add(new net.dv8tion.jda.api.interactions.commands.Command.Choice(
+                    name.length() > 100 ? name.substring(0, 99) + "\u2026" : name, c.code));
+        }
+        event.replyChoices(choices).queue();
+    }
+
     @Override
     public void onButtonInteraction(ButtonInteractionEvent event) {
         Buttons.Parsed p = Buttons.parseId(event.getComponentId());

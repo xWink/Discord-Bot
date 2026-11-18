@@ -56,6 +56,12 @@ Two more are played against other people: `!coinduel @user <stake>` is a coin fl
 five-letter word with a flip-over board, a reward and a streak. All the animated games share one rate limit
 of a game every few seconds per player, so nobody can flood the channel.
 
+### Course info
+`!info cis1300` shows the whole entry (when it is offered, hours, credits, description, prerequisites and
+restrictions) with a button for each prerequisite and one to join the course channel. It also searches:
+`!info intro programming` finds courses by title words, `!info cis` lists a department, and `/info`
+autocompletes as you type.
+
 ### And much much more
 ![Help Demo](demo/bot_help.PNG)
 

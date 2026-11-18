@@ -191,6 +191,13 @@ public final class SlashCommands {
                 str("courses", "Course codes, or on/off for share", false)));
         add(Commands.slash("classmates", "Who else is taking a course").addOptions(
                 str("course", "A course code like CIS2750", true).setAutoComplete(true)));
+        add(Commands.slash("grade", "Record a mark in a course (private)").addOptions(
+                str("course", "A course code like CIS1300", true).setAutoComplete(true), str("name", "Like lab1 or midterm", true),
+                str("weight", "How much it is worth, in percent", true), str("mark", "Your mark in percent; leave off if not marked", false)));
+        add(Commands.slash("grades", "Where you stand in a course (sent by DM)").addOptions(
+                str("course", "A course code like CIS1300", false).setAutoComplete(true)));
+        add(Commands.slash("need", "What you need on the rest of a course to reach a grade").addOptions(
+                str("course", "A course code like CIS1300", true).setAutoComplete(true), str("target", "The final grade you want, in percent", true)));
         add(Commands.slash("join", "Join a course channel").addOptions(str("course", "Course code", true)));
         add(Commands.slash("leave", "Leave a course channel").addOptions(str("course", "Course code", true)));
 

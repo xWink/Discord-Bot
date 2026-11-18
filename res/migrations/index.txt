@@ -21,3 +21,4 @@ V20__course_ratings.sql
 V21__rating_excluded.sql
 V22__motion_and_sharing.sql
 V23__taking_courses.sql
+V24__grade_items.sql

@@ -69,7 +69,8 @@ autocompletes as you type.
 list meets, and `!whynot cis3750` says what is missing for one (anything it cannot check, like a credit count, is
 marked as a maybe). `!remind friday 5pm hand in lab` sends a reminder by DM, `!dates` lists the next dates on the
 academic calendar with a bell to be reminded the day before, and `!rate cis1300 3 4` / `!reviews cis1300` collect
-anonymous difficulty and workload ratings that show up in `!info`.
+anonymous difficulty and workload ratings that show up in `!info` (you can only rate a course you have added
+to your finished list). `!prereq` colours its tree by what you have finished.
 
 ### And much much more
 ![Help Demo](demo/bot_help.PNG)

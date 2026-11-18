@@ -65,6 +65,12 @@ public class ReviewsIntegrationTest extends DbTestBase {
         long u = newUser();
         Reviews.Rate rate = new Reviews.Rate();
         assertTrue(say(rate, u, "!rate").said().contains("!rate <course>"));
+        // you have to have finished the course first
+        FakeDiscord notYet = say(rate, u, "!rate cis1300 3 3");
+        assertTrue(notYet.said(), notYet.said().contains("Only people who have finished"));
+        assertTrue(notYet.said().contains("!completed add cis1300"));
+        assertTrue("nothing was saved", say(rate, u, "!rate remove cis1300").said().contains("no rating"));
+        courses.CompletedStore.add(u, java.util.Arrays.asList("CIS*1300"));
         assertTrue(say(rate, u, "!rate zzz9999 3 3").said().contains("do not know"));
         assertTrue(say(rate, u, "!rate cis1300 6 3").said().contains("1 to 5"));
         assertTrue(say(rate, u, "!rate cis1300 three 3").said().contains("!rate <course>"));
@@ -112,6 +118,15 @@ public class ReviewsIntegrationTest extends DbTestBase {
         // rating again after being hidden starts clean
         Ratings.rate(author, code, 3, 3, "better words");
         assertEquals(1, Ratings.comments(code, 5).size());
+    }
+
+    @Test
+    public void aCourseThatCountsAsTheSameOneIsEnoughToRate() throws Exception {
+        long u = newUser();
+        courses.CompletedStore.add(u, java.util.Arrays.asList("BUS*3230")); // ACCT*3230 counts as the same course
+        String ok = say(new Reviews.Rate(), u, "!rate acct3230 2 3 same course under another code").said();
+        assertTrue(ok, ok.contains("Thanks! Rated"));
+        courses.Ratings.remove(u, "ACCT*3230");
     }
 
     @Test

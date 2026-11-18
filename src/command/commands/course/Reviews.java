@@ -7,6 +7,8 @@ import command.ui.Reveal;
 import command.util.art.CourseArt;
 import command.util.misc.CourseCatalog;
 import command.util.misc.CourseCatalog.Course;
+import command.util.misc.Prerequisites;
+import courses.CompletedStore;
 import courses.Ratings;
 import courses.Ratings.Review;
 import courses.Ratings.Summary;
@@ -21,6 +23,7 @@ import net.dv8tion.jda.api.utils.FileUpload;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -44,7 +47,8 @@ public final class Reviews {
 
     /** The one-line view of the ratings, for a course entry. */
     public static String line(String code, Summary s) {
-        if (s == null) return "No ratings yet. Be the first: `!rate " + code.replace("*", "").toLowerCase() + " <difficulty 1-5> <workload 1-5>`";
+        if (s == null) return "No ratings yet. Taken it? `!completed add " + code.replace("*", "").toLowerCase() + "`, then `!rate "
+                + code.replace("*", "").toLowerCase() + " <difficulty 1-5> <workload 1-5>`";
         if (!s.enoughToShow()) {
             return s.count + (s.count == 1 ? " rating" : " ratings") + " so far (averages show from " + Ratings.SHOW_AVERAGE_FROM
                     + "). `!rate " + code.replace("*", "").toLowerCase() + " <difficulty> <workload>`";
@@ -70,7 +74,8 @@ public final class Reviews {
         private static String usage() {
             return "Say `!rate <course> <difficulty> <workload> [comment]`, for example `!rate cis1300 3 4 fair marking, "
                     + "heavy labs`. Difficulty and workload run from 1 (easy / light) to 5 (hard / heavy). Rate again to "
-                    + "change yours, `!rate remove cis1300` to delete it. Ratings are anonymous.";
+                    + "change yours, `!rate remove cis1300` to delete it. You can only rate a course you have finished: add it "
+                    + "with `!completed add cis1300` first. Ratings are anonymous.";
         }
 
         @Override
@@ -97,6 +102,16 @@ public final class Reviews {
                 }
                 if (c == null) {
                     event.getChannel().sendMessage("I do not know the course `" + words[1] + "`. " + usage()).queue();
+                    return;
+                }
+                // only people who have finished a course can rate it (a course that counts as the same one is enough)
+                Set<String> finished = Prerequisites.closure(CourseCatalog.get(), CompletedStore.list(user));
+                if (!finished.contains(c.code)) {
+                    event.getChannel().sendMessage("Only people who have finished " + c.code.replace("*", "\\*")
+                            + " can rate it. Add it to your finished courses first, then rate it again: `!completed add "
+                            + c.code.replace("*", "").toLowerCase() + "`.")
+                            .setActionRow(Buttons.of(user, false, "!completed add " + c.code, "I finished it: add it",
+                                    ButtonStyle.PRIMARY)).queue();
                     return;
                 }
                 int difficulty;
@@ -156,8 +171,9 @@ public final class Reviews {
                 if (c == null) return;
                 Summary s = Ratings.summary(c.code);
                 if (s == null) {
-                    event.getChannel().sendMessage("Nobody has rated " + c.code.replace("*", "\\*") + " yet. Say `!rate "
-                            + c.code.replace("*", "").toLowerCase() + " <difficulty 1-5> <workload 1-5>` to be the first.").queue();
+                    event.getChannel().sendMessage("Nobody has rated " + c.code.replace("*", "\\*") + " yet. If you have taken it, "
+                            + "`!completed add " + c.code.replace("*", "").toLowerCase() + "` and then `!rate "
+                            + c.code.replace("*", "").toLowerCase() + " <difficulty 1-5> <workload 1-5>` makes you the first.").queue();
                     return;
                 }
                 List<Review> comments = Ratings.comments(c.code, COMMENTS_SHOWN);

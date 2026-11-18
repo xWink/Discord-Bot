@@ -65,14 +65,22 @@ public class HiLo extends Command {
                 EconomyService.getInstance().refundReservation(reservation);
                 return;
             }
-            event.getChannel().sendMessage("Your card: " + game.getCurrent().toEmote() + "\nMaximum loss: " + stake
-                    + " GC. Say `!higher` or `!lower`.")
+            show(event.getChannel(), "Your card: " + game.getCurrent().toEmote() + "\nMaximum loss: " + stake
+                    + " GC. Say `!higher` or `!lower`.", game.getCurrent())
                     .setActionRow(guessButtons(user, false)).queue();
         } catch (NumberFormatException e) {
             event.getChannel().sendMessage("Say `!hilo <stake>`.").queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
+    }
+
+    /** A message with the card drawn as a picture, so the round reads at a glance. */
+    private static net.dv8tion.jda.api.requests.restaction.MessageCreateAction show(
+            net.dv8tion.jda.api.entities.channel.middleman.MessageChannel channel, String text,
+            command.util.cards.Card card) {
+        return command.util.cards.CardMessage.createCardMessage(channel, text,
+                java.util.Collections.singletonList(card));
     }
 
     /** Higher, Lower and (after a correct guess) Cash out. */
@@ -134,14 +142,14 @@ public class HiLo extends Command {
                     String card = "Next card: " + game.getCurrent().toEmote() + "\n";
                     if (!ok) {
                         finish(game, -game.getStake());
-                        event.getChannel().sendMessage(card + "Wrong. You lost " + game.getStake() + " GC.").queue();
+                        show(event.getChannel(), card + "Wrong. You lost " + game.getStake() + " GC.", game.getCurrent()).queue();
                     } else if (game.isFinished()) {
                         int net = finish(game, game.netIfStopped());
                         economy.Cosmetics.reply(event.getChannel(), game.getUserId(), card + "Two in a row! +" + net + " GC.", true);
                     } else {
-                        event.getChannel().sendMessage(card + "Correct! Cash out for +" + game.netIfStopped()
+                        show(event.getChannel(), card + "Correct! Cash out for +" + game.netIfStopped()
                                 + " GC with `!cashout`, or risk it all with `!higher` / `!lower` for +"
-                                + game.getStake() * 2 + " GC.")
+                                + game.getStake() * 2 + " GC.", game.getCurrent())
                                 .setActionRow(guessButtons(game.getUserId(), true)).queue();
                     }
                 }

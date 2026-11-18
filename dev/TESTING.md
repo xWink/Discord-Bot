@@ -49,9 +49,11 @@ Use two accounts (your own and an alt, or a friend) for the social flows.
 | Blackjack | `!bet 5`, then `!wallet` mid-hand | 5 GC shows as reserved. `!hit`/`!stand` settle once |
 | Blackjack stakes | `!bet 3` with a 5 GC balance; `!paidplay off` then `!bet 1` | A stake over half your balance shows a warning but still plays (no cap). With paid play off it is refused |
 | Blackjack restart | Start a hand, stop the bot, start it again, `!myhand` | Hand is still there; leave it 2 min and it auto-stands |
-| Dice, hilo | `!dice high`, `!dice seven 2`, `!hilo 2`, `!higher`, `!cashout` | Free play works; stakes reserved/settled |
+| Slots, flip | `!slots 3`, `!flip`, `!flip heads 2` | A GIF plays (reels stop one by one, coin spins and lands), then the text and an "again" button replace "Spinning…". Stakes settle once. `!slots` pays about 95% back |
+| Dice, hilo | `!dice high`, `!dice seven 2`, `!hilo 2`, `!higher`, `!cashout` | Dice tumble as a GIF; HiLo shows the card as a picture. Free play works; stakes reserved/settled |
 | Arcade | `!arcade`, `!answer b`, again, `!arcadescores` | First round pays daily; repeats are free |
 | Weekly, gauntlet | `!weekly code`, `!gauntlet`, `!gauntlet prize` | 3 questions; prize run holds 3 GC then spends it |
+| Bang card | `!bang` a few times in the spam channel | A picture with the cylinder (spent chambers, the pulled one, unknown ones), your mascot, your streak and a **Pull again** button. Greyed mascot on a death, clovers on a jam |
 | Duel | `!duel @alt 5`, alt `!accept`, both `!duelanswer a` | Winner +4 GC (1 GC fee); `!duelboard` needs 5 matches |
 | Shop | `!shop`, `!shop buy flair-day`, `!shop owned`, `!profile` | Cosmetics appear on the profile |
 | Featured price | `!shop buy bundle-weekend` twice | First quotes, second confirms |

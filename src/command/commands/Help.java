@@ -41,7 +41,7 @@ public class Help extends Command {
                 new Entry("!duelanswer <letter>", "Answer your duel question"),
                 new Entry("!duelboard", "Duel ratings"),
                 new Entry("!bang", "Russian roulette. Your first pull of the day pays your daily"),
-                new Entry("!flip", "Flip a coin"),
+                new Entry("!flip [heads|tails] [stake]", "Spinning coin. Call it and add a stake to bet 1:1"),
                 new Entry("!paidplay [on|off]", "Turn games that risk coins on or off for you")),
         ARCADE("arcade", "🧠", "Arcade & quizzes", "Free daily puzzles that pay", new Color(0x3BA55D),
                 new Entry("!arcade", "Today's puzzle. Your first round each day pays your daily"),

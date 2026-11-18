@@ -44,6 +44,13 @@ Text commands are unchanged and behave identically.
 mascot bobs, stars twinkle and a glint sweeps across. It is off by default, saved per person,
 and falls back to the still card if the GIF would be too large to send.
 
+### Games with pictures and animation
+`!slots <stake>` spins three reels as a GIF, `!flip [heads|tails] [stake]` spins a coin that lands on
+the result, `!dice` tumbles two dice, Higher or Lower shows each card, and `!bang` sends a card of the
+six-chamber cylinder with your mascot and streak. The result text appears once the animation has
+played, so it never spoils it, and each game has a replay button. Nothing caps a stake; blackjack warns
+you when a bet is more than half your balance.
+
 ### And much much more
 ![Help Demo](demo/bot_help.PNG)
 

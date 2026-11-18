@@ -102,6 +102,11 @@ public class Info extends Command {
     /** Where student ratings come from; tests that have no database replace it. */
     static java.util.function.Function<String, Ratings.Summary> ratingsSource = Ratings::summaryOrNull;
 
+    /** @return the student ratings of a course, or null if there are none or they cannot be read */
+    public static Ratings.Summary ratingsFor(String code) {
+        return ratingsSource.apply(code);
+    }
+
     /** For tests: stop looking up ratings. */
     public static void useRatings(java.util.function.Function<String, Ratings.Summary> source) {
         ratingsSource = source;
@@ -214,7 +219,7 @@ public class Info extends Command {
     }
 
     /** Removes the catalogue's label and the word NONE. */
-    static String clean(String text, String label) {
+    public static String clean(String text, String label) {
         String t = text.replace(label, "").trim();
         return t.equalsIgnoreCase("NONE") ? "" : t;
     }

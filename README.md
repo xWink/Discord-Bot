@@ -72,6 +72,14 @@ academic calendar with a bell to be reminded the day before, and `!rate cis1300 
 anonymous difficulty and workload ratings that show up in `!info` (you can only rate a course you have added
 to your finished list). `!prereq` colours its tree by what you have finished.
 
+### Planning further
+`!plan cis3750` draws the earliest route to a course, term by term, using the terms each course runs and what you
+have finished (`!completed`) and are taking now (`!taking`; `!classmates cis2750` shows who else is, for people who
+opted in). `!compare cis2500 cis2520` sets courses side by side. `!due add cis2500 lab3 friday 5pm` tracks
+deadlines with a reminder the day before, and `!digest on` sends a morning summary by DM. `!grade`, `!grades`
+and `!need` are a private grade tracker (sent by DM only). `!motion off` turns every animation into plain text for
+you, and moderators can check on the bot with `!botstatus`.
+
 ### And much much more
 ![Help Demo](demo/bot_help.PNG)
 

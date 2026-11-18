@@ -205,6 +205,9 @@ public final class SlashCommands {
                 choice("setting", "On, off or now", false, "on", "off", "now"), str("time", "When, like 7:30 or 6pm", false)));
         add(Commands.slash("plan", "The earliest route to a course, term by term").addOptions(
                 str("course", "A course code like CIS3750", true).setAutoComplete(true), num("per_term", "Most courses in a term", false, 1, 9)));
+        add(Commands.slash("compare", "Compare two or three courses").addOptions(
+                str("first", "A course code like CIS2500", true).setAutoComplete(true), str("second", "A course code like CIS2520", true).setAutoComplete(true),
+                str("third", "Optional third course", false).setAutoComplete(true)));
         add(Commands.slash("join", "Join a course channel").addOptions(str("course", "Course code", true)));
         add(Commands.slash("leave", "Leave a course channel").addOptions(str("course", "Course code", true)));
 

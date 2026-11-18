@@ -64,7 +64,7 @@ public class InteractionListener extends ListenerAdapter {
     /** Suggests courses as someone types in /info. */
     @Override
     public void onCommandAutoCompleteInteraction(net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent event) {
-        if (!(event.getName().equals("info") || event.getName().equals("prereq") || event.getName().equals("whynot") || event.getName().equals("rate") || event.getName().equals("reviews") || event.getName().equals("classmates") || event.getName().equals("grade") || event.getName().equals("plan") || event.getName().equals("grades") || event.getName().equals("need")) || !event.getFocusedOption().getName().equals("course")) return;
+        if (!(event.getName().equals("info") || event.getName().equals("prereq") || event.getName().equals("whynot") || event.getName().equals("rate") || event.getName().equals("reviews") || event.getName().equals("classmates") || event.getName().equals("compare") || event.getName().equals("grade") || event.getName().equals("plan") || event.getName().equals("grades") || event.getName().equals("need")) || !java.util.Arrays.asList("course", "first", "second", "third").contains(event.getFocusedOption().getName())) return;
         java.util.List<net.dv8tion.jda.api.interactions.commands.Command.Choice> choices = new java.util.ArrayList<>();
         for (command.util.misc.CourseCatalog.Course c
                 : command.util.misc.CourseCatalog.get().search(event.getFocusedOption().getValue(), 25)) {

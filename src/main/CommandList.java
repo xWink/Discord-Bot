@@ -130,6 +130,7 @@ public final class CommandList {
         commands.add(new command.commands.course.Reviews.Report());
         commands.add(new command.commands.course.Reviews.Hide());
         commands.add(new command.commands.course.PlanCommand());
+        commands.add(new command.commands.course.Compare());
         commands.add(new command.commands.course.Taking.Manage());
         commands.add(new command.commands.course.Taking.Classmates());
         commands.add(new command.commands.course.GradeCommands.Record());

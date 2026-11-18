@@ -36,6 +36,16 @@ public final class Reveal {
 
     private Reveal() { }
 
+    /** @return how many drawings are waiting for a worker */
+    public static int queued() {
+        return POOL.getQueue().size();
+    }
+
+    /** @return how many workers are drawing right now */
+    public static int drawing() {
+        return POOL.getActiveCount();
+    }
+
     /** Draw on the calling thread instead of the pool, so tests can check the result straight away. */
     public static void setInline(boolean inline) {
         Reveal.inline = inline;
@@ -50,12 +60,20 @@ public final class Reveal {
      */
     public static void render(MessageChannel channel, String fileName, String placeholder, Callable<byte[]> job,
                               String result, List<ItemComponent> buttons, long delayMs) {
+        if (Motion.reduced()) { // the person turned animations off: the result, as text
+            Stats.reduced();
+            plain(channel, result, buttons);
+            return;
+        }
         Runnable task = () -> {
             byte[] bytes;
+            long started = System.currentTimeMillis();
             try {
                 bytes = job.call();
+                Stats.render(System.currentTimeMillis() - started);
             } catch (Exception | OutOfMemoryError e) {
                 e.printStackTrace();
+                Stats.renderFailed();
                 plain(channel, result, buttons);
                 return;
             }
@@ -69,6 +87,7 @@ public final class Reveal {
         try {
             POOL.execute(task);
         } catch (RejectedExecutionException e) {
+            Stats.renderRejected();
             plain(channel, result, buttons);
         }
     }
@@ -78,12 +97,20 @@ public final class Reveal {
      * workers are backed up, {@code fallback} runs instead, so the caller always answers.
      */
     public static void async(Callable<byte[]> job, java.util.function.Consumer<byte[]> ok, Runnable fallback) {
+        if (Motion.reduced()) { // the person turned animations off: no picture
+            Stats.reduced();
+            fallback.run();
+            return;
+        }
         Runnable task = () -> {
             byte[] bytes;
+            long started = System.currentTimeMillis();
             try {
                 bytes = job.call();
+                Stats.render(System.currentTimeMillis() - started);
             } catch (Exception | OutOfMemoryError e) {
                 e.printStackTrace();
+                Stats.renderFailed();
                 fallback.run();
                 return;
             }
@@ -96,6 +123,7 @@ public final class Reveal {
         try {
             POOL.execute(task);
         } catch (RejectedExecutionException e) {
+            Stats.renderRejected();
             fallback.run();
         }
     }

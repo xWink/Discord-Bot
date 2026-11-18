@@ -23,7 +23,13 @@ public final class CommandDispatcher {
             if (!command.keyMatches(content)) continue;
             long channelId = event.getChannel().getIdLong();
             if (command.isGlobal() || channelId == Server.BOTS_CHANNEL_ID || channelId == Server.SPAM_CHANNEL_ID) {
-                command.start(event);
+                Stats.command(command.getKey());
+                Motion.begin(event.getAuthor().getIdLong());
+                try {
+                    command.start(event);
+                } finally {
+                    Motion.end();
+                }
             } else {
                 event.getChannel().sendMessage("`" + command.getKey() + "` works in <#" + Server.BOTS_CHANNEL_ID
                         + "> or <#" + Server.SPAM_CHANNEL_ID + ">.").queue();

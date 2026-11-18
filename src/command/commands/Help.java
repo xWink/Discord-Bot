@@ -85,6 +85,7 @@ public class Help extends Command {
                 new Entry("!ping", "Your latency"),
                 new Entry("!id <Discord ID>", "Look up a user"),
                 new Entry("!info <course | words | dept>", "Course info: a code, words from the title, or a department"),
+                new Entry("!motion off|on", "Turn every animation into plain text for you"),
                 new Entry("!prereq <course>", "Draws the chain of prerequisites"),
                 new Entry("!remind <when> <what>", "A reminder by DM: 2h, tomorrow, friday 5pm, 2026-12-04"),
                 new Entry("!reminders", "Your waiting reminders"),

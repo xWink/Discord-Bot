@@ -79,7 +79,7 @@ public class Profile extends Command {
             java.util.List<economy.Cosmetics.OwnedItem> owned = economy.Cosmetics.owned(user);
             boolean animated = false;
             try {
-                animated = economy.ProfilePrefs.isAnimated(user);
+                animated = economy.ProfilePrefs.isAnimated(user) && !command.ui.Motion.reduced();
             } catch (Exception e) {
                 e.printStackTrace(); // a settings problem should never cost anyone their card
             }

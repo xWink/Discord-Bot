@@ -63,6 +63,7 @@ public abstract class Command {
      */
     protected void printStackTraceAndSendMessage(MessageReceivedEvent event, Exception e) {
         e.printStackTrace();
+        command.ui.Stats.error(getKey(), e);
         event.getChannel().sendMessage("An error occurred with " + getKey()
                 + ". Please contact a moderator!").queue();
     }

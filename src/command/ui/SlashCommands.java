@@ -185,6 +185,7 @@ public final class SlashCommands {
                 str("comment", "Optional, up to 300 characters", false)));
         add(Commands.slash("reviews", "How students rated a course").addOptions(
                 str("course", "A course code like CIS1300", true).setAutoComplete(true)));
+        add(Commands.slash("motion", "Turn animations off or on for you").addOptions(choice("setting", "On or off", false, "on", "off")));
         add(Commands.slash("join", "Join a course channel").addOptions(str("course", "Course code", true)));
         add(Commands.slash("leave", "Leave a course channel").addOptions(str("course", "Course code", true)));
 

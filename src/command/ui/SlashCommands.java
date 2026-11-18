@@ -198,6 +198,11 @@ public final class SlashCommands {
                 str("course", "A course code like CIS1300", false).setAutoComplete(true)));
         add(Commands.slash("need", "What you need on the rest of a course to reach a grade").addOptions(
                 str("course", "A course code like CIS1300", true).setAutoComplete(true), str("target", "The final grade you want, in percent", true)));
+        add(Commands.slash("due", "What is due, or add something").addOptions(
+                choice("action", "What to do", false, "add", "done", "remove"),
+                str("details", "For add: course name when, like cis2500 lab3 friday 5pm. For done/remove: the number", false)));
+        add(Commands.slash("digest", "A morning summary by DM").addOptions(
+                choice("setting", "On, off or now", false, "on", "off", "now"), str("time", "When, like 7:30 or 6pm", false)));
         add(Commands.slash("join", "Join a course channel").addOptions(str("course", "Course code", true)));
         add(Commands.slash("leave", "Leave a course channel").addOptions(str("course", "Course code", true)));
 

@@ -120,6 +120,8 @@ public final class CommandList {
         commands.add(new command.commands.misc.Prereq());
         commands.add(new command.commands.misc.MotionCommand());
         commands.add(new command.commands.admin.BotStatus());
+        commands.add(new command.commands.course.Due());
+        commands.add(new command.commands.course.DigestCommand());
         commands.add(new command.commands.course.Remind.Create());
         commands.add(new command.commands.course.Remind.All());
         commands.add(new command.commands.course.Remind.Dates());

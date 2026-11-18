@@ -43,6 +43,7 @@ public class RoleBot {
             timer.schedule(new main.timertasks.DuelSweep(), 1000 * 15, 1000 * 15);
             timer.schedule(new main.timertasks.HiLoTimeout(), 1000 * 30, 1000 * 30);
             timer.schedule(new main.timertasks.ReminderTask(), 1000 * 20, 1000 * 30);
+            timer.schedule(new main.timertasks.DigestTask(), 1000 * 25, 1000 * 60);
             timer.schedule(new main.timertasks.MinesTimeout(), 1000 * 30, 1000 * 30);
             timer.schedule(new main.timertasks.BlackJackTimeout(), 1000 * 30, 1000 * 30);
             timer.schedule(new main.timertasks.DecaySweep(), 1000 * 60, 1000 * 60 * 60);

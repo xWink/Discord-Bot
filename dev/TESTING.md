@@ -52,6 +52,10 @@ Use two accounts (your own and an alt, or a friend) for the social flows.
 | Slots, flip | `!slots 3`, `!flip`, `!flip heads 2` | A GIF plays (reels stop one by one, coin spins and lands), then the text and an "again" button replace "Spinning…". Stakes settle once. `!slots` pays about 95% back |
 | Roulette, crash, scratch | `!roulette red 2`, `!roulette 17 1`, `!crash 2 1.5`, `!scratch 2` | Each plays a GIF (wheel, climbing curve, scratching cells), then the text and an "again" button replace the placeholder. `!roulette purple 1` shows the usage |
 | Mines | `!mines 5 3`, press tiles, then **Cash out**; also `!mine 5`, `!minecash`; leave one idle 5 minutes | A 4x4 button grid. Gems disable their tile and raise the payout; a mine ends the round with a board picture showing every mine. Idle rounds cash out at their standing. A restart releases open stakes |
+| Coin duel | `!coinduel @alt 4`, alt presses **Accept** (or `!coinaccept`); try **Decline**; try waiting a minute | Both stakes are held, a coin GIF decides, the winner gains 4 GC and the loser loses 4. Declined, expired or unaffordable duels charge nothing |
+| Trivia race | `!race 3`, then alt presses an answer button | First correct answer from someone other than the host wins the 3 GC. A wrong answer knocks that player out. After 45 seconds with no winner the host is refunded and the answer is posted |
+| Wordle | `!wordle`, `!wordle crane`, keep guessing, solve it | A board GIF flips the newest row. Solving pays 3 GC once and shows a streak; six misses reveal the word. The same word for everyone each day |
+| Rate limit | Run `!slots 1` twice within three seconds | The second says to wait a few seconds and plays nothing. This applies across all animated games and buttons, per player |
 | Dice, hilo | `!dice high`, `!dice seven 2`, `!hilo 2`, `!higher`, `!cashout` | Dice tumble as a GIF; HiLo shows the card as a picture. Free play works; stakes reserved/settled |
 | Arcade | `!arcade`, `!answer b`, again, `!arcadescores` | First round pays daily; repeats are free |
 | Weekly, gauntlet | `!weekly code`, `!gauntlet`, `!gauntlet prize` | 3 questions; prize run holds 3 GC then spends it |

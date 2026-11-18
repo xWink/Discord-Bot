@@ -96,4 +96,44 @@ public class GamesIntegrationTest extends DbTestBase {
         assertEquals(5, eco.getSpendable(host));
         assertNull(Race.current(ch));
     }
+
+    @Test
+    public void wordleSolvesOncePaysOnceAndBuildsAStreak() throws Exception {
+        long u = newUser();
+        long ch = main.Server.BOTS_CHANNEL_ID;
+        long day = java.time.LocalDate.now().toEpochDay();
+        String answer = command.util.game.WordleGame.wordFor(day);
+        String wrong = answer.equals("crane") ? "plane" : "crane";
+        command.commands.economy.Wordle w = new command.commands.economy.Wordle();
+        assertTrue(say(w, u, "!wordle", ch).contains("Guess today"));
+        assertTrue(say(w, u, "!wordle abc", ch).contains("five letters"));
+        assertTrue(say(w, u, "!wordle " + wrong, ch).contains("5 guesses left"));
+        assertEquals(5, eco.getBalance(u));
+        String solved = say(w, u, "!wordle " + answer, ch);
+        assertTrue(solved, solved.contains("solved it in 2"));
+        assertEquals(8, eco.getBalance(u));
+        assertEquals(1, economy.WordleStore.streak(u, day));
+        // done for the day: a further guess shows the board and pays nothing
+        say(w, u, "!wordle " + wrong, ch);
+        assertEquals(8, eco.getBalance(u));
+        assertEquals(2, economy.WordleStore.load(u, day).guesses.size());
+        // yesterday's solve plus today's makes two
+        exec("INSERT INTO wordle_games (user, day, guesses, solved) VALUES (" + u + ", " + (day - 1) + ", 'crane', 1)");
+        assertEquals(2, economy.WordleStore.streak(u, day));
+        assertEquals(0, economy.WordleStore.streak(newUser(), day));
+    }
+
+    @Test
+    public void wordleRunsOutAfterSixGuessesAndRevealsTheWord() throws Exception {
+        long u = newUser();
+        long ch = main.Server.BOTS_CHANNEL_ID;
+        long day = java.time.LocalDate.now().toEpochDay();
+        String answer = command.util.game.WordleGame.wordFor(day);
+        String wrong = answer.equals("crane") ? "plane" : "crane";
+        command.commands.economy.Wordle w = new command.commands.economy.Wordle();
+        String last = "";
+        for (int i = 0; i < 6; i++) last = say(w, u, "!wordle " + wrong, ch);
+        assertTrue(last, last.contains(answer.toUpperCase()));
+        assertEquals(5, eco.getBalance(u));
+    }
 }

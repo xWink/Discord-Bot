@@ -96,6 +96,12 @@ public final class SlashCommands {
         add(Commands.slash("scratch", "Scratch card").addOptions(num("stake", "Stake in GC", true, 1, maxStake)));
         add(Commands.slash("mines", "A 4x4 board of buttons. Uncover gems, cash out before a mine").addOptions(
                 num("stake", "Stake in GC", true, 1, maxStake), num("mines", "How many mines, 1 to 8", false, 1, 8)));
+        add(Commands.slash("wordle", "The daily five-letter word. Leave the word off to see your board").addOptions(
+                str("word", "Your guess", false)));
+        add(Commands.slash("race", "Put up a stake; the first right answer wins it").addOptions(
+                num("stake", "Stake in GC", true, 1, maxStake), str("category", "Trivia category", false)));
+        add(Commands.slash("coinduel", "Coin flip against a player for equal stakes").addOptions(
+                user("opponent", "Who to challenge", true), num("stake", "Stake each, in GC", true, 1, maxStake)));
         add(Commands.slash("hilo", "Higher or Lower").addOptions(num("stake", "Stake in GC", true, 1, maxStake)));
         add(Commands.slash("dice", "Two dice. Leave the stake off to play free").addOptions(
                 choice("pick", "What you are betting on", true, "low", "high", "seven"),

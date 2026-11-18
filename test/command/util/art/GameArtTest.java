@@ -99,4 +99,13 @@ public class GameArtTest {
         for (int i = 0; i < 2000 && card.prize == null; i++) card = command.util.game.ScratchGame.deal(r);
         save("scratch-win.gif", GameArt.scratch(card, "THREE WIN", true));
     }
+
+    @Test
+    public void wordlePictures() throws Exception {
+        java.util.List<String> guesses = java.util.Arrays.asList("crane", "stalk");
+        save("wordle.png", GameArt.wordleBoard(guesses, "stalk", "SOLVED in 2/6"));
+        byte[] gif = GameArt.wordleReveal(guesses, "stalk", "SOLVED in 2/6");
+        assertTrue(isGif(gif));
+        save("wordle.gif", gif);
+    }
 }

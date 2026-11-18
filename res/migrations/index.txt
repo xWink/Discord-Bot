@@ -14,3 +14,4 @@ V13__effects.sql
 V14__alumni.sql
 V15__alumni_year.sql
 V16__profile_prefs.sql
+V17__wordle.sql

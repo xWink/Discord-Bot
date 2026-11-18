@@ -927,4 +927,98 @@ public final class GameArt {
         }
         return GifWriter.write(out, delays, false);
     }
+
+    // ------------------------------------------------------------------ wordle
+
+    private static final Color WORDLE_GREEN = new Color(0x3FA34D);
+    private static final Color WORDLE_YELLOW = new Color(0xD4A017);
+    private static final Color WORDLE_GREY = new Color(0x4A4F57);
+
+    private static void wordleTile(Graphics2D g, int x, int y, int size, char letter, int score, double squash) {
+        double h = Math.max(4, size * squash);
+        double top = y + (size - h) / 2;
+        RoundRectangle2D tile = new RoundRectangle2D.Double(x, top, size, h, 12, 12);
+        if (score < 0) {
+            g.setColor(new Color(0, 0, 0, 90));
+            g.fill(tile);
+            g.setColor(letter == 0 ? new Color(255, 255, 255, 50) : new Color(255, 255, 255, 140));
+            g.setStroke(new BasicStroke(3f));
+            g.draw(tile);
+        } else {
+            g.setColor(score == 2 ? WORDLE_GREEN : score == 1 ? WORDLE_YELLOW : WORDLE_GREY);
+            g.fill(tile);
+            g.setColor(INK);
+            g.setStroke(new BasicStroke(3f));
+            g.draw(tile);
+        }
+        if (letter != 0 && squash > 0.45) {
+            Font f = new Font("SansSerif", Font.BOLD, (int) (size * 0.55));
+            g.setFont(f);
+            g.setColor(Color.WHITE);
+            String t = Character.toString(Character.toUpperCase(letter));
+            FontMetrics fm = g.getFontMetrics();
+            g.drawString(t, x + (size - fm.stringWidth(t)) / 2f, (float) (top + h / 2 + fm.getAscent() * 0.36));
+        }
+    }
+
+    private static BufferedImage wordleFrame(BufferedImage bg, List<String> guesses, String answer, int revealed,
+                                             double flip, String footer) {
+        int size = 62;
+        int gap = 8;
+        int x0 = (bg.getWidth() - (5 * size + 4 * gap)) / 2;
+        BufferedImage f = copy(bg);
+        Graphics2D g = f.createGraphics();
+        try {
+            hints(g);
+            outlined(g, "WORDLE", new Font("SansSerif", Font.BOLD, 28), bg.getWidth() / 2, 42, GOLD);
+            for (int row = 0; row < 6; row++) {
+                String guess = row < guesses.size() ? guesses.get(row) : null;
+                int[] score = guess == null ? null : command.util.game.WordleGame.score(guess, answer);
+                boolean newest = row == guesses.size() - 1;
+                for (int col = 0; col < 5; col++) {
+                    int x = x0 + col * (size + gap);
+                    int y = 62 + row * (size + gap);
+                    if (guess == null) {
+                        wordleTile(g, x, y, size, (char) 0, -1, 1);
+                    } else if (newest && col > revealed) {
+                        wordleTile(g, x, y, size, guess.charAt(col), -1, 1); // typed but not revealed yet
+                    } else if (newest && col == revealed) {
+                        // mid-flip: the letter squashes away, then comes back coloured
+                        wordleTile(g, x, y, size, guess.charAt(col), flip < 0.5 ? -1 : score[col],
+                                flip < 0.5 ? 1 - flip * 2 : (flip - 0.5) * 2);
+                    } else {
+                        wordleTile(g, x, y, size, guess.charAt(col), score[col], 1);
+                    }
+                }
+            }
+            if (footer != null) {
+                centered(g, footer, new Font("SansSerif", Font.BOLD, 18), new Color(255, 255, 255, 220), bg.getWidth() / 2,
+                        bg.getHeight() - 20);
+            }
+        } finally {
+            g.dispose();
+        }
+        return f;
+    }
+
+    /** The board as a picture. */
+    public static byte[] wordleBoard(List<String> guesses, String answer, String footer) throws IOException {
+        return png(wordleFrame(canvas(420, 62 + 6 * 70 + 30), guesses, answer, 99, 1, footer));
+    }
+
+    /** The board with the newest row flipping over tile by tile to show its colours. */
+    public static byte[] wordleReveal(List<String> guesses, String answer, String footer) throws IOException {
+        BufferedImage bg = canvas(420, 62 + 6 * 70 + 30);
+        List<BufferedImage> frames = new ArrayList<>();
+        List<Integer> delays = new ArrayList<>();
+        for (int col = 0; col < 5; col++) {
+            for (int step = 0; step < 3; step++) {
+                frames.add(wordleFrame(bg, guesses, answer, col, step / 2.0, null));
+                delays.add(step == 2 ? 120 : 90);
+            }
+        }
+        frames.add(wordleFrame(bg, guesses, answer, 99, 1, footer));
+        delays.add(5000);
+        return GifWriter.write(frames, delays, false);
+    }
 }

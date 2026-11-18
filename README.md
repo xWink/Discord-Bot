@@ -51,6 +51,11 @@ and the shot, then settles on a card with your mascot and streak. The result tex
 played, so it never spoils it, and each game has a replay button. Nothing caps a stake; blackjack warns
 you when a bet is more than half your balance.
 
+Two more are played against other people: `!coinduel @user <stake>` is a coin flip for equal stakes, and
+`!race <stake>` puts a stake on a trivia question for the first right answer to take. `!wordle` is the daily
+five-letter word with a flip-over board, a reward and a streak. All the animated games share one rate limit
+of a game every few seconds per player, so nobody can flood the channel.
+
 ### And much much more
 ![Help Demo](demo/bot_help.PNG)
 

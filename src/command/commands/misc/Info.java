@@ -151,6 +151,7 @@ public class Info extends Command {
                 ButtonStyle.PRIMARY));
         if (!c.prerequisiteCodes().isEmpty()) {
             actions.add(Buttons.of(0, false, "!prereq " + c.code, "Prerequisite tree", ButtonStyle.SUCCESS));
+            actions.add(Buttons.of(0, false, "!whynot " + c.code, "Can I take it?", ButtonStyle.SUCCESS));
         }
         actions.add(Buttons.of(0, false, "!info " + c.department, "More " + c.department + " courses", ButtonStyle.SECONDARY));
         List<ActionRow> out = new ArrayList<>();

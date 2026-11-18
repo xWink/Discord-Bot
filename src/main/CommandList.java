@@ -118,6 +118,9 @@ public final class CommandList {
         commands.add(new command.commands.economy.Scratch());
         commands.add(new command.commands.economy.Wordle());
         commands.add(new command.commands.misc.Prereq());
+        commands.add(new command.commands.course.Planner.Completed());
+        commands.add(new command.commands.course.Planner.Next());
+        commands.add(new command.commands.course.Planner.WhyNot());
         commands.add(new command.commands.economy.CoinDuel.Start());
         commands.add(new command.commands.economy.CoinDuel.Reply("!coinaccept"));
         commands.add(new command.commands.economy.CoinDuel.Reply("!coindecline"));

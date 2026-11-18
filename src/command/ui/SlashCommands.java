@@ -167,6 +167,13 @@ public final class SlashCommands {
                 str("course", "A code like CIS1300, words from the title, or a department", true).setAutoComplete(true)));
         add(Commands.slash("prereq", "Draw what a course needs").addOptions(
                 str("course", "A course code like CIS3750", true).setAutoComplete(true)));
+        add(Commands.slash("completed", "Keep the list of courses you have finished").addOptions(
+                choice("action", "What to do", false, "add", "remove", "list", "clear"),
+                str("courses", "Course codes, like cis1300 math1200", false)));
+        add(Commands.slash("next", "Courses whose prerequisites you meet").addOptions(
+                str("department", "Only this department, like cis", false), num("level", "Only this year, 1 to 4", false, 1, 6)));
+        add(Commands.slash("whynot", "What is missing before you can take a course").addOptions(
+                str("course", "A course code like CIS3750", true).setAutoComplete(true)));
         add(Commands.slash("join", "Join a course channel").addOptions(str("course", "Course code", true)));
         add(Commands.slash("leave", "Leave a course channel").addOptions(str("course", "Course code", true)));
 

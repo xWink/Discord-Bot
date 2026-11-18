@@ -3,9 +3,8 @@ package command.commands.economy;
 import command.Command;
 import command.util.art.GameArt;
 import command.util.game.SlotsGame;
-import database.connectors.EconomyConnector;
 import economy.EconomyService;
-import economy.WagerLimits;
+import economy.Wagers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
 import net.dv8tion.jda.api.utils.FileUpload;
@@ -19,7 +18,6 @@ public class Slots extends Command {
             + "mascot x50. Any two alike pay x1.4.";
 
     private final Random random = new Random();
-    private final EconomyConnector ec = new EconomyConnector();
 
     public Slots() {
         super("!slots", true);
@@ -45,14 +43,9 @@ public class Slots extends Command {
             return;
         }
         try {
-            String blocked = WagerLimits.check(user, stake);
+            String blocked = Wagers.gate(user, stake);
             if (blocked != null) {
                 event.getChannel().sendMessage(blocked).queue();
-                return;
-            }
-            int spendable = ec.getSpendable(user);
-            if (stake > spendable) {
-                event.getChannel().sendMessage("You do not have " + stake + " GC spendable.").queue();
                 return;
             }
 

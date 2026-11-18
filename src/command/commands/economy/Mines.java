@@ -116,7 +116,7 @@ public class Mines {
                     event.getChannel().sendMessage("You already have a mines round open.").queue();
                     return;
                 }
-                String blocked = Wagers.blocked(user, stake);
+                String blocked = Wagers.gate(user, stake);
                 if (blocked != null) {
                     event.getChannel().sendMessage(blocked).queue();
                     return;

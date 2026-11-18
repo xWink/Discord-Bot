@@ -4,9 +4,8 @@ import command.Command;
 import command.ui.Buttons;
 import command.ui.Reveal;
 import command.util.art.GameArt;
-import database.connectors.EconomyConnector;
 import economy.EconomyService;
-import economy.WagerLimits;
+import economy.Wagers;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
@@ -23,7 +22,6 @@ import java.util.Random;
 public class Flip extends Command {
 
     private final Random random = new Random();
-    private final EconomyConnector ec = new EconomyConnector();
 
     /**
      * Initializes the command's key to "!flip".
@@ -59,16 +57,10 @@ public class Flip extends Command {
                 event.getChannel().sendMessage("Add a stake to bet: `!flip " + args[1] + " <stake>`.").queue();
                 return;
             }
-            if (stake > 0) {
-                String blocked = WagerLimits.check(user, stake);
-                if (blocked != null) {
-                    event.getChannel().sendMessage(blocked).queue();
-                    return;
-                }
-                if (stake > ec.getSpendable(user)) {
-                    event.getChannel().sendMessage("You do not have " + stake + " GC spendable.").queue();
-                    return;
-                }
+            String blocked = stake > 0 ? Wagers.gate(user, stake) : Wagers.cooldown(user);
+            if (blocked != null) {
+                event.getChannel().sendMessage(blocked).queue();
+                return;
             }
 
             boolean heads = random.nextBoolean();

@@ -3,7 +3,6 @@ package command.commands.economy;
 import command.Command;
 import command.util.game.DiceGame;
 import economy.EconomyService;
-import economy.WagerLimits;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.interactions.components.ItemComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
@@ -47,11 +46,12 @@ public class Dice extends Command {
                     event.getChannel().sendMessage("The stake must be at least 1 GC.").queue();
                     return;
                 }
-                String blocked = WagerLimits.check(event.getAuthor().getIdLong(), stake);
-                if (blocked != null) {
-                    event.getChannel().sendMessage(blocked).queue();
-                    return;
-                }
+            }
+            String blocked = stake > 0 ? economy.Wagers.gate(event.getAuthor().getIdLong(), stake)
+                    : economy.Wagers.cooldown(event.getAuthor().getIdLong());
+            if (blocked != null) {
+                event.getChannel().sendMessage(blocked).queue();
+                return;
             }
 
             int[] dice = DiceGame.roll(random);

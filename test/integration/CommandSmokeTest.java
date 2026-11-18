@@ -104,6 +104,7 @@ public class CommandSmokeTest extends DbTestBase {
 
     @Test
     public void gamesRespondAndSettle() throws Exception {
+        economy.Wagers.setCooldownMs(0); // these run back to back
         long u = newUser();
         economy.EconomyService.getInstance().credit(u, 95, "t", null, "c" + u);
         run(new Dice(), u, "!dice high");

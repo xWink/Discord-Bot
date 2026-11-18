@@ -49,7 +49,7 @@ public class Roulette extends Command {
             return;
         }
         try {
-            String blocked = Wagers.blocked(user, stake);
+            String blocked = Wagers.gate(user, stake);
             if (blocked != null) {
                 event.getChannel().sendMessage(blocked).queue();
                 return;

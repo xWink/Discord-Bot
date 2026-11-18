@@ -24,6 +24,12 @@ public final class Prerequisites {
 
         /** @return what is still needed, or an empty string if nothing is */
         abstract String missing(Set<String> done);
+
+        /** Adds the courses that would have to be taken, picking one way through each "or" (the one needing least). */
+        abstract void needed(Set<String> done, List<String> out);
+
+        /** Adds the parts that cannot be checked. */
+        abstract void unchecked(List<String> out);
     }
 
     private static final class Code extends Node {
@@ -42,6 +48,14 @@ public final class Prerequisites {
         String missing(Set<String> done) {
             return done.contains(code) ? "" : code;
         }
+
+        @Override
+        void needed(Set<String> done, List<String> out) {
+            if (!done.contains(code) && !out.contains(code)) out.add(code);
+        }
+
+        @Override
+        void unchecked(List<String> out) { }
     }
 
     private static final class Other extends Node {
@@ -59,6 +73,14 @@ public final class Prerequisites {
         @Override
         String missing(Set<String> done) {
             return text + " (I cannot check this one)";
+        }
+
+        @Override
+        void needed(Set<String> done, List<String> out) { }
+
+        @Override
+        void unchecked(List<String> out) {
+            if (!text.isEmpty()) out.add(text);
         }
     }
 
@@ -102,6 +124,37 @@ public final class Prerequisites {
             int stillNeeded = needed() - (parts.size() - out.size());
             String what = String.join(" or ", out);
             return out.size() == 1 ? what : (stillNeeded == 1 ? "one of: " : stillNeeded + " of: ") + what;
+        }
+
+        @Override
+        void needed(Set<String> done, List<String> out) {
+            int met = 0;
+            List<List<String>> options = new ArrayList<>();
+            for (Node n : parts) {
+                if (n.status(done) == Status.MET) {
+                    met++;
+                } else {
+                    List<String> own = new ArrayList<>();
+                    n.needed(done, own);
+                    options.add(own);
+                }
+            }
+            int still = needed() - met;
+            if (still <= 0) return;
+            if (needed() == parts.size()) { // all of them
+                for (List<String> o : options) for (String code : o) if (!out.contains(code)) out.add(code);
+                return;
+            }
+            // some of them: take the ones that ask for the least
+            options.sort((a, b) -> Integer.compare(a.size(), b.size()));
+            for (int i = 0; i < Math.min(still, options.size()); i++) {
+                for (String code : options.get(i)) if (!out.contains(code)) out.add(code);
+            }
+        }
+
+        @Override
+        void unchecked(List<String> out) {
+            for (Node n : parts) n.unchecked(out);
         }
     }
 
@@ -306,6 +359,23 @@ public final class Prerequisites {
      */
     public Status check(Set<String> done) {
         return empty ? Status.MET : root.status(done);
+    }
+
+    /**
+     * @return the courses that would have to be taken, in order, choosing the shortest way through each "or" and leaving
+     *         out anything already in {@code done}
+     */
+    public List<String> needed(Set<String> done) {
+        List<String> out = new ArrayList<>();
+        if (!empty) root.needed(done, out);
+        return out;
+    }
+
+    /** @return the parts of the line that cannot be checked, such as credit counts, for example {@code 9.00 credits including} */
+    public List<String> unchecked() {
+        List<String> out = new ArrayList<>();
+        if (!empty) root.unchecked(out);
+        return out;
     }
 
     /** @return what is still needed, in words, or an empty string if nothing is */

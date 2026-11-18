@@ -102,4 +102,14 @@ public class CourseArtTest {
         assertTrue(none.nextUp.isEmpty());
         assertNotNull(CourseArt.prerequisiteTree(catalog, target, java.util.Collections.<String>emptySet()));
     }
+
+    @Test
+    public void roadmapDrawsEveryTermOfAPlan() throws Exception {
+        courses.DegreePlan.Plan plan = courses.DegreePlan.plan(catalog, catalog.find("CIS*3750"), new java.util.HashSet<String>(),
+                new courses.DegreePlan.Term(courses.DegreePlan.Season.WINTER, 2027), 3);
+        save("roadmap.gif", CourseArt.roadmap(plan, 3));
+        courses.DegreePlan.Plan done = courses.DegreePlan.plan(catalog, catalog.find("CIS*3750"), new java.util.HashSet<>(java.util.Arrays.asList("CIS*3750")),
+                new courses.DegreePlan.Term(courses.DegreePlan.Season.WINTER, 2027), 3);
+        assertNull(CourseArt.roadmap(done, 3));
+    }
 }

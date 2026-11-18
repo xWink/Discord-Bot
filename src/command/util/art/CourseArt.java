@@ -514,4 +514,87 @@ public final class CourseArt {
         }
         return GifWriter.write(frames, delays, false);
     }
+
+    // ----------------------------------------------------------------- roadmap
+
+    /**
+     * The plan as columns of boxes, one column per term, earliest on the left, arrows from what is needed to what needs it.
+     * The picture builds column by column and ends on the target and the earliest finish.
+     */
+    public static byte[] roadmap(courses.DegreePlan.Plan plan, int perTerm) throws IOException {
+        List<courses.DegreePlan.TermPlan> terms = plan.terms;
+        int columns = terms.size();
+        if (columns == 0) return null;
+        Map<String, Node> nodes = new LinkedHashMap<>();
+        int rows = 1;
+        for (int c = 0; c < columns; c++) {
+            courses.DegreePlan.TermPlan tp = terms.get(c);
+            rows = Math.max(rows, tp.courses.size());
+            for (courses.DegreePlan.Placement pl : tp.courses) {
+                boolean target = pl.course.code.equals(plan.target.code);
+                Node n = new Node(pl.course.code, pl.termUncertain ? pl.course.title + " ?" : pl.course.title, target ? 0 : columns - c);
+                n.needs.addAll(pl.needs);
+                n.state = c == 0 ? State.READY : State.NEUTRAL;
+                n.x = 40 + c * (BOX_W + COL_GAP);
+                n.y = 92 + pl.course.code.hashCode() * 0; // set below
+                nodes.put(pl.course.code, n);
+            }
+        }
+        for (int c = 0; c < columns; c++) {
+            courses.DegreePlan.TermPlan tp = terms.get(c);
+            int colHeight = tp.courses.size() * BOX_H + Math.max(0, tp.courses.size() - 1) * ROW_GAP;
+            int top = 92 + (rows * BOX_H + (rows - 1) * ROW_GAP - colHeight) / 2;
+            for (int r = 0; r < tp.courses.size(); r++) {
+                Node n = nodes.get(tp.courses.get(r).course.code);
+                n.y = top + r * (BOX_H + ROW_GAP);
+            }
+        }
+        int w = Math.max(460, 40 + columns * BOX_W + (columns - 1) * COL_GAP + 40);
+        int h = 92 + rows * BOX_H + (rows - 1) * ROW_GAP + 70;
+        BufferedImage bg = GameArt.canvas(w, h);
+        List<BufferedImage> frames = new ArrayList<>();
+        List<Integer> delays = new ArrayList<>();
+        int steps = columns * 2;
+        for (int step = 0; step <= steps; step++) {
+            BufferedImage f = GameArt.copy(bg);
+            Graphics2D g = f.createGraphics();
+            try {
+                GameArt.hints(g);
+                GameArt.outlined(g, "Route to " + plan.target.code, new Font("SansSerif", Font.BOLD, 24), w / 2, 40, GOLD);
+                for (int c = 0; c < columns; c++) {
+                    double grow = (step - c * 2) / 2.0;
+                    if (grow <= 0) continue;
+                    GameArt.centered(g, terms.get(c).term.label(), new Font("SansSerif", Font.BOLD, 15), new Color(255, 255, 255, (int) (230 * Math.min(1, grow))),
+                            40 + c * (BOX_W + COL_GAP) + BOX_W / 2, 76);
+                    if (terms.get(c).courses.isEmpty()) {
+                        GameArt.centered(g, "nothing fits", new Font("SansSerif", Font.ITALIC, 13), new Color(255, 255, 255, 120),
+                                40 + c * (BOX_W + COL_GAP) + BOX_W / 2, 92 + BOX_H / 2);
+                    }
+                }
+                for (Node n : nodes.values()) {
+                    int col = 0;
+                    for (int c = 0; c < columns; c++) for (courses.DegreePlan.Placement pl : terms.get(c).courses) if (pl.course.code.equals(n.code)) col = c;
+                    for (String need : n.needs) {
+                        Node from = nodes.get(need);
+                        if (from == null || from.depth <= n.depth) continue;
+                        int fromCol = columns - from.depth;
+                        arrow(g, from, n, (step - fromCol * 2 - 1) / 2.0);
+                    }
+                    box(g, n, n.depth == 0, (step - col * 2) / 2.0);
+                }
+                if (step == steps) {
+                    String line = plan.complete ? "Earliest finish: " + plan.finish().label() + " \u00B7 " + columns + (columns == 1 ? " term" : " terms")
+                            + " \u00B7 up to " + perTerm + " courses a term" : "No route found in " + columns + " terms";
+                    GameArt.outlined(g, line, new Font("SansSerif", Font.BOLD, 15), w / 2, h - 30, plan.complete ? new Color(0x57F287) : Color.WHITE);
+                    GameArt.centered(g, "Blue = ready to take now. A ? means the catalogue does not say when it is offered.",
+                            new Font("SansSerif", Font.PLAIN, 11), new Color(255, 255, 255, 150), w / 2, h - 12);
+                }
+            } finally {
+                g.dispose();
+            }
+            frames.add(f);
+            delays.add(step == steps ? 8000 : 260);
+        }
+        return GifWriter.write(frames, delays, false);
+    }
 }

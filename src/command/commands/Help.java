@@ -95,6 +95,7 @@ public class Help extends Command {
                 new Entry("!dates [words]", "Next academic calendar dates, with a reminder button"),
                 new Entry("!rate <course> <difficulty> <workload> [comment]", "Rate a course 1-5, anonymously"),
                 new Entry("!reviews <course>", "How students rated a course, as a chart, with comments"),
+                new Entry("!plan <course> [per term]", "The earliest semester-by-semester route to a course"),
                 new Entry("!taking add <courses>", "The courses you are taking now (done moves them to finished)"),
                 new Entry("!classmates <course>", "Who else is taking a course (people who opted in)"),
                 new Entry("!grade <course> <name> <weight> [mark]", "Record a mark (private, sent by DM)"),

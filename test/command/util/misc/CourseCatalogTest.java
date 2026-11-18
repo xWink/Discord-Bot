@@ -20,37 +20,53 @@ public class CourseCatalogTest {
 
     @Test
     public void everyCourseInTheFileParses() {
-        assertTrue("courses: " + catalog.size(), catalog.size() > 1800);
-        Set<String> offered = new HashSet<>(Arrays.asList("", "Fall and Winter", "Summer, Fall, and Winter",
-                "Summer and Fall", "Winter and Summer", "Fall Only", "Winter Only", "Summer Only", "Unspecified"));
+        assertTrue("courses: " + catalog.size(), catalog.size() > 3000);
+        int graduate = 0;
         for (String dept : catalog.departments()) {
             for (Course c : catalog.department(dept)) {
                 assertFalse(c.code, c.title.isEmpty());
                 assertFalse(c.code, c.credits.isEmpty());
-                assertTrue(c.code + " offered: " + c.offered, offered.contains(c.offered));
-                assertFalse(c.code + " title still has its tail: " + c.title, c.title.contains("["));
+                assertFalse(c.code + " title still has markup: " + c.title, c.title.contains("[") || c.title.contains("<"));
+                assertTrue(c.code, c.source.equals("undergraduate") || c.source.equals("graduate"));
+                assertFalse(c.code + " has stray spaces in brackets", c.prerequisites.contains("( ") || c.prerequisites.contains(" )"));
+                if (c.source.equals("graduate")) graduate++;
             }
         }
+        assertTrue("graduate courses: " + graduate, graduate > 1000);
     }
 
     @Test
-    public void aTitleLineIsSplitIntoItsParts() {
+    public void aRowIsReadIntoItsFields() {
         Course a = catalog.find("ACCT*1220");
         assertEquals("Introductory Financial Accounting", a.title);
         assertEquals("Summer, Fall, and Winter", a.offered);
-        assertEquals("LEC 3", a.hours);
         assertEquals("0.50", a.credits);
+        assertEquals("undergraduate", a.source);
         Course b = catalog.find("acct2290");
         assertEquals("Fall Only", b.offered);
-        assertEquals("LEC 3, LAB 2", b.hours);
-        // no hours in brackets, and no semester named
-        Course c = catalog.find("HUMN*3600");
-        assertEquals("International Field Study", c.title);
-        assertEquals("", c.offered);
-        assertEquals("1.00", c.credits);
-        // hours missing but a semester named
-        assertEquals("Winter Only", catalog.find("CIS*3190").offered);
+        assertEquals("LEC: 3, LAB: 2", b.hours);
+        assertEquals("4.00 credits including (ACCT*1240 or ACCT*2230)", b.prerequisites);
         assertEquals("Software for Legacy Systems", catalog.find("CIS*3190").title);
+        assertEquals("graduate", catalog.find("CIS*6020").source);
+        assertEquals(6, catalog.find("CIS*6020").level());
+    }
+
+    @Test
+    public void equivalentAndCorequisiteCoursesAreKept() {
+        assertEquals(java.util.Collections.singletonList("NUTR*3210"), catalog.find("ANSC*3120").corequisiteCodes());
+        assertEquals(java.util.Collections.singletonList("BUS*3230"), catalog.find("ACCT*3230").equateCodes());
+        boolean anyCoreq = false;
+        for (String dept : catalog.departments()) for (Course c : catalog.department(dept)) anyCoreq |= !c.corequisites.isEmpty();
+        assertTrue(anyCoreq);
+    }
+
+    @Test
+    public void aFileWithFewerColumnsStillReads() {
+        CourseCatalog small = CourseCatalog.of(Arrays.asList("code\ttitle\tcredits", "CIS*1300\tProgramming\t0.50",
+                "garbage line", "CIS*1500\t\t0.50"));
+        assertEquals(1, small.size()); // the line without a title is skipped
+        assertEquals("", small.find("cis1300").prerequisites);
+        assertEquals("0.50", small.find("cis1300").credits);
     }
 
     @Test

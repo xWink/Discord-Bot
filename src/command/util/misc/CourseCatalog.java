@@ -18,8 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Every course in {@code courses.tsv}, read once and indexed. Parses each title line into its parts (code, title,
- * when it is offered, hours, credits) and finds courses by code, by words in the title, or by department.
+ * Every course in {@code courses.tsv} (made by {@code res/scrape.py} from the undergraduate and graduate calendars),
+ * read once and indexed. Finds courses by code, by words in the title or description, or by department.
  */
 public final class CourseCatalog {
 
@@ -27,9 +27,12 @@ public final class CourseCatalog {
     public static final class Course {
         /** For example {@code CIS*1300}. */
         public final String code;
+        /** The subject code, for example {@code CIS}. */
         public final String department;
         public final int number;
         public final String title;
+        /** {@code undergraduate} or {@code graduate}: which calendar the course comes from. */
+        public final String source;
         /** For example {@code Fall and Winter}, or empty if the catalogue does not say. */
         public final String offered;
         /** For example {@code LEC 3, LAB 2}, or empty. */
@@ -37,23 +40,36 @@ public final class CourseCatalog {
         public final String credits;
         public final String restrictions;
         public final String prerequisites;
+        public final String corequisites;
+        /** Courses that count as the same course, for example {@code BUS*3230}. */
+        public final String equates;
+        /** A note on how it is offered, for example that it is also available by distance education. */
+        public final String offering;
+        /** The department or school that runs it, for example {@code School of Computer Science}. */
+        public final String unit;
+        public final String locations;
         public final String description;
         final String key;
         final String titleLower;
         final String descriptionLower;
 
-        Course(String code, String department, int number, String title, String offered, String hours, String credits,
-               String restrictions, String prerequisites, String description) {
+        Course(Map<String, String> row, String code, String department, int number) {
             this.code = code;
             this.department = department;
             this.number = number;
-            this.title = title;
-            this.offered = offered;
-            this.hours = hours;
-            this.credits = credits;
-            this.restrictions = restrictions;
-            this.prerequisites = prerequisites;
-            this.description = description;
+            this.title = row.get("title");
+            this.source = row.get("source");
+            this.offered = row.get("offered");
+            this.hours = row.get("hours");
+            this.credits = row.get("credits");
+            this.restrictions = row.get("restrictions");
+            this.prerequisites = row.get("prerequisites");
+            this.corequisites = row.get("corequisites");
+            this.equates = row.get("equates");
+            this.offering = row.get("offering");
+            this.unit = row.get("departments");
+            this.locations = row.get("locations");
+            this.description = row.get("description");
             this.key = (department + number).toLowerCase(Locale.ROOT);
             this.titleLower = title.toLowerCase(Locale.ROOT);
             this.descriptionLower = description.toLowerCase(Locale.ROOT);
@@ -66,8 +82,22 @@ public final class CourseCatalog {
 
         /** @return the course codes named in the prerequisites, in order, without repeats */
         public List<String> prerequisiteCodes() {
+            return codesIn(prerequisites);
+        }
+
+        /** @return the course codes that must be taken at the same time */
+        public List<String> corequisiteCodes() {
+            return codesIn(corequisites);
+        }
+
+        /** @return the course codes of the courses that count as this one */
+        public List<String> equateCodes() {
+            return codesIn(equates);
+        }
+
+        private List<String> codesIn(String text) {
             Set<String> out = new LinkedHashSet<>();
-            Matcher m = CODE.matcher(prerequisites);
+            Matcher m = CODE.matcher(text);
             while (m.find()) out.add(m.group());
             out.remove(code);
             return new ArrayList<>(out);
@@ -75,19 +105,24 @@ public final class CourseCatalog {
     }
 
     private static final Pattern CODE = Pattern.compile("[A-Z]{2,5}\\*\\d{4}");
-    private static final Pattern HEAD = Pattern.compile("^([A-Z]{2,5})\\*(\\d{4})\\s+(.*)$");
-    private static final Pattern TAIL = Pattern.compile("\\s*(?:\\(([^)]*)\\)\\s*)?\\[([\\d.]+)\\]\\s*$");
-    private static final Pattern OFFERED = Pattern.compile(
-            "\\s+((?:(?:Summer|Fall|Winter|Spring)(?:,\\s*and\\s+|,\\s*|\\s+and\\s+)?)+(?:\\s*Only)?|Unspecified)$");
-
+    private static final Pattern WHOLE_CODE = Pattern.compile("^([A-Z]{2,5})\\*(\\d{4})$");
     private static CourseCatalog instance;
 
     private final Map<String, Course> byKey = new LinkedHashMap<>();
     private final Map<String, List<Course>> byDepartment = new TreeMap<>();
 
+    /** The columns every course has; a column missing from the file reads as empty. */
+    private static final String[] COLUMNS = {"source", "code", "title", "offered", "hours", "credits", "description",
+            "prerequisites", "corequisites", "equates", "restrictions", "offering", "departments", "locations"};
+
     private CourseCatalog(List<String> lines) {
-        for (int i = 1; i < lines.size(); i++) { // the first line is the header
-            Course c = parse(lines.get(i));
+        if (lines.isEmpty()) return;
+        // columns are found by the names in the first line, so the file can gain columns without breaking this
+        String[] header = lines.get(0).split("\t", -1);
+        Map<String, Integer> at = new LinkedHashMap<>();
+        for (int i = 0; i < header.length; i++) at.put(header[i].trim().toLowerCase(Locale.ROOT), i);
+        for (int i = 1; i < lines.size(); i++) {
+            Course c = parse(lines.get(i), at);
             if (c == null) continue;
             byKey.putIfAbsent(c.key, c);
             byDepartment.computeIfAbsent(c.department.toLowerCase(Locale.ROOT), k -> new ArrayList<>()).add(c);
@@ -114,34 +149,21 @@ public final class CourseCatalog {
         return instance;
     }
 
-    /** Builds a catalogue from lines in the same format; for tests. */
+    /** Builds a catalogue from lines in the same format (the header line first); for tests. */
     static CourseCatalog of(List<String> lines) {
         return new CourseCatalog(lines);
     }
 
-    static Course parse(String line) {
-        String[] cells = line.replace("\"", "").split("\t", -1);
-        if (cells.length < 4) return null;
-        String head = cells[0].trim().replaceAll("\\s+", " ");
-        Matcher tail = TAIL.matcher(head);
-        String credits = "";
-        String hours = "";
-        if (tail.find()) {
-            credits = tail.group(2);
-            hours = tail.group(1) == null ? "" : tail.group(1).replace(":", "").trim();
-            head = head.substring(0, tail.start());
+    static Course parse(String line, Map<String, Integer> at) {
+        String[] cells = line.split("\t", -1);
+        Map<String, String> row = new LinkedHashMap<>();
+        for (String column : COLUMNS) {
+            Integer i = at.get(column);
+            row.put(column, i == null || i >= cells.length ? "" : cells[i].trim());
         }
-        Matcher h = HEAD.matcher(head);
-        if (!h.matches()) return null;
-        String rest = h.group(3);
-        String offered = "";
-        Matcher o = OFFERED.matcher(rest);
-        if (o.find()) {
-            offered = o.group(1).trim();
-            rest = rest.substring(0, o.start());
-        }
-        return new Course(h.group(1) + "*" + h.group(2), h.group(1), Integer.parseInt(h.group(2)), rest.trim(), offered,
-                hours, credits, cells[1].trim(), cells[2].trim(), cells[3].trim());
+        Matcher m = WHOLE_CODE.matcher(row.get("code"));
+        if (!m.matches() || row.get("title").isEmpty()) return null;
+        return new Course(row, row.get("code"), m.group(1), Integer.parseInt(m.group(2)));
     }
 
     public int size() {

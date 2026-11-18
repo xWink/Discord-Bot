@@ -132,4 +132,43 @@ public class ReviewsIntegrationTest extends DbTestBase {
         assertTrue(Ratings.comments(code, 5).isEmpty());
         assertNotNull(Ratings.summary(code));
     }
+
+    @Test
+    public void moderatorRemovalTakesTheRatingOutOfTheAveragesAndStaysOutWhenTheyRateAgain() throws Exception {
+        String code = freshCourse();
+        long spammer = newUser();
+        Ratings.rate(newUser(), code, 2, 2, "fair");
+        Ratings.rate(newUser(), code, 4, 4, "fair too");
+        Ratings.rate(spammer, code, 5, 5, "spam spam spam");
+        assertEquals(3, Ratings.summary(code).count);
+        assertEquals(11.0 / 3, Ratings.summary(code).difficulty, 1e-9);
+        long id = Ratings.comments(code, 1).get(0).id; // the newest: the spam
+
+        // hiding the comment keeps the scores
+        FakeDiscord hide = FakeDiscord.sayAsOwner(newUser(), "Owner", "!review hide " + id, main.Server.BOTS_CHANNEL_ID);
+        new Reviews.Hide().start(hide.event);
+        assertTrue(hide.said(), hide.said().contains("scores still count"));
+        assertEquals(3, Ratings.summary(code).count);
+
+        // removing takes them out
+        FakeDiscord remove = FakeDiscord.sayAsOwner(newUser(), "Owner", "!review remove " + id, main.Server.BOTS_CHANNEL_ID);
+        assertTrue(new Reviews.Hide().keyMatches("!review remove " + id));
+        new Reviews.Hide().start(remove.event);
+        assertTrue(remove.said(), remove.said().contains("no longer count"));
+        Ratings.Summary s = Ratings.summary(code);
+        assertEquals(2, s.count);
+        assertEquals(3.0, s.difficulty, 1e-9);
+        assertEquals(3.0, s.workload, 1e-9);
+
+        // rating again changes the words but the scores stay out
+        Ratings.rate(spammer, code, 5, 5, "I promise to be nice");
+        assertEquals(2, Ratings.summary(code).count);
+        assertEquals(1, Ratings.comments(code, 10).stream().filter(r -> r.comment.contains("nice")).count());
+
+        // an ordinary member can do neither
+        FakeDiscord member = FakeDiscord.say(newUser(), "Member", "!review remove " + id, main.Server.BOTS_CHANNEL_ID);
+        new Reviews.Hide().start(member.event);
+        assertEquals(2, Ratings.summary(code).count);
+        assertTrue(member.said().isEmpty());
+    }
 }

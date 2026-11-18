@@ -254,10 +254,13 @@ public final class Reviews {
         }
     }
 
-    /** {@code !review hide <number>}, for moderators. */
+    /**
+     * {@code !review hide <number>} hides a comment but keeps its scores; {@code !review remove <number>} hides it and
+     * takes the scores out of the averages too. For moderators.
+     */
     public static class Hide extends Command implements AdminCommand {
 
-        private static final Pattern FORM = Pattern.compile("(?i)^!review\\s+hide\\s+#?(\\d+)$");
+        private static final Pattern FORM = Pattern.compile("(?i)^!review\\s+(hide|remove)\\s+#?(\\d+)$");
 
         public Hide() {
             super("!review", true);
@@ -274,8 +277,12 @@ public final class Reviews {
             java.util.regex.Matcher m = FORM.matcher(event.getMessage().getContentRaw().trim());
             if (!m.matches()) return;
             try {
-                event.getChannel().sendMessage(Ratings.hide(Long.parseLong(m.group(1))) ? "Hidden review #" + m.group(1) + "."
-                        : "There is no review #" + m.group(1) + ".").queue();
+                long id = Long.parseLong(m.group(2));
+                boolean remove = m.group(1).equalsIgnoreCase("remove");
+                boolean done = remove ? Ratings.exclude(id) : Ratings.hide(id);
+                event.getChannel().sendMessage(!done ? "There is no review #" + id + "."
+                        : remove ? "Removed review #" + id + ": its comment is hidden and its scores no longer count toward the averages."
+                        : "Hidden review #" + id + ". Its scores still count; `!review remove " + id + "` takes them out too.").queue();
             } catch (Exception e) {
                 printStackTraceAndSendMessage(event, e);
             }

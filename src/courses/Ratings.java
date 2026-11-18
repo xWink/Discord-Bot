@@ -11,7 +11,8 @@ import java.util.List;
 /**
  * Student ratings of courses: difficulty and workload from 1 to 5, and an optional comment. One rating per person per
  * course (rating again replaces it). Ratings are anonymous on screen. A comment reported by {@link #REPORTS_TO_HIDE}
- * different people is hidden, and moderators can hide any.
+ * different people is hidden, and moderators can hide any. A moderator can also take a rating out of the averages
+ * altogether ({@link #exclude}); that stays even if the person rates again.
  */
 public final class Ratings {
 
@@ -117,10 +118,10 @@ public final class Ratings {
         });
     }
 
-    /** @return the summary, or null if nobody has rated the course. Hidden comments still count towards the scores. */
+    /** @return the summary, or null if nobody has rated the course. Hidden comments still count towards the scores; excluded ratings do not. */
     public static Summary summary(String code) throws SQLException {
         return Database.inTransaction(c -> {
-            try (PreparedStatement ps = c.prepareStatement("SELECT difficulty, workload FROM course_ratings WHERE code = ?")) {
+            try (PreparedStatement ps = c.prepareStatement("SELECT difficulty, workload FROM course_ratings WHERE code = ? AND excluded = 0")) {
                 ps.setString(1, code);
                 List<int[]> rows = new ArrayList<>();
                 try (ResultSet rs = ps.executeQuery()) {
@@ -210,7 +211,20 @@ public final class Ratings {
         }
     }
 
-    /** Moderators: hides a comment at once. @return false if there is no such rating */
+    /**
+     * Moderators: hides the comment and takes the rating out of the averages, for a rating that is spam or abuse and
+     * not just badly worded. @return false if there is no such rating
+     */
+    public static boolean exclude(long id) throws SQLException {
+        return Database.inTransaction(c -> {
+            try (PreparedStatement ps = c.prepareStatement("UPDATE course_ratings SET hidden = 1, excluded = 1 WHERE id = ?")) {
+                ps.setLong(1, id);
+                return ps.executeUpdate() > 0;
+            }
+        });
+    }
+
+    /** Moderators: hides a comment at once; the scores still count. @return false if there is no such rating */
     public static boolean hide(long id) throws SQLException {
         return Database.inTransaction(c -> {
             try (PreparedStatement ps = c.prepareStatement("UPDATE course_ratings SET hidden = 1 WHERE id = ?")) {

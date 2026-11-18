@@ -18,3 +18,4 @@ V17__wordle.sql
 V18__completed_courses.sql
 V19__reminders.sql
 V20__course_ratings.sql
+V21__rating_excluded.sql

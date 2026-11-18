@@ -89,6 +89,8 @@ public class Help extends Command {
                 new Entry("!remind <when> <what>", "A reminder by DM: 2h, tomorrow, friday 5pm, 2026-12-04"),
                 new Entry("!reminders", "Your waiting reminders"),
                 new Entry("!dates [words]", "Next academic calendar dates, with a reminder button"),
+                new Entry("!rate <course> <difficulty> <workload> [comment]", "Rate a course 1-5, anonymously"),
+                new Entry("!reviews <course>", "How students rated a course, as a chart, with comments"),
                 new Entry("!completed add <courses>", "List the courses you have finished"),
                 new Entry("!next [dept] [level]", "Courses whose prerequisites you meet"),
                 new Entry("!whynot <course>", "What is missing before you can take a course"),

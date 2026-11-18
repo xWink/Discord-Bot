@@ -121,6 +121,10 @@ public final class CommandList {
         commands.add(new command.commands.course.Remind.Create());
         commands.add(new command.commands.course.Remind.All());
         commands.add(new command.commands.course.Remind.Dates());
+        commands.add(new command.commands.course.Reviews.Rate());
+        commands.add(new command.commands.course.Reviews.Show());
+        commands.add(new command.commands.course.Reviews.Report());
+        commands.add(new command.commands.course.Reviews.Hide());
         commands.add(new command.commands.course.Planner.Completed());
         commands.add(new command.commands.course.Planner.Next());
         commands.add(new command.commands.course.Planner.WhyNot());

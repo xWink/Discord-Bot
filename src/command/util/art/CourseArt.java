@@ -321,4 +321,68 @@ public final class CourseArt {
         }
         return GifWriter.write(frames, delays, false);
     }
+
+    // ----------------------------------------------------------------- ratings
+
+    private static void histogram(Graphics2D g, String title, int[] counts, double average, int x, int y, int w, int h,
+                                  Color colour, double grow) {
+        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        g.setColor(GOLD);
+        g.drawString(title, x, y - 10);
+        int max = 1;
+        for (int c : counts) max = Math.max(max, c);
+        int barW = (w - 4 * 12) / 5;
+        for (int i = 0; i < 5; i++) {
+            int bx = x + i * (barW + 12);
+            int full = (int) ((h - 30) * counts[i] / (double) max);
+            int bh = (int) (full * Math.min(1, grow));
+            g.setColor(new Color(0, 0, 0, 120));
+            g.fill(new RoundRectangle2D.Double(bx, y, barW, h - 22, 8, 8));
+            g.setColor(colour);
+            g.fill(new RoundRectangle2D.Double(bx, y + h - 22 - bh, barW, Math.max(bh, 0), 8, 8));
+            g.setColor(INK);
+            g.setStroke(new BasicStroke(2f));
+            g.draw(new RoundRectangle2D.Double(bx, y, barW, h - 22, 8, 8));
+            g.setFont(new Font("SansSerif", Font.BOLD, 13));
+            g.setColor(Color.WHITE);
+            String label = Integer.toString(i + 1);
+            g.drawString(label, bx + (barW - g.getFontMetrics().stringWidth(label)) / 2, y + h - 4);
+            if (counts[i] > 0 && grow >= 1) {
+                String n = Integer.toString(counts[i]);
+                g.drawString(n, bx + (barW - g.getFontMetrics().stringWidth(n)) / 2, y + h - 22 - bh - 4);
+            }
+        }
+        if (grow >= 1) {
+            g.setFont(new Font("SansSerif", Font.BOLD, 20));
+            g.setColor(Color.WHITE);
+            g.drawString(String.format("avg %.1f", average), x + w - 80, y - 10);
+        }
+    }
+
+    /** Two bar charts, how hard and how heavy students found the course, growing from nothing. */
+    public static byte[] ratingsChart(Course c, courses.Ratings.Summary s) throws IOException {
+        int w = 640;
+        int h = 290;
+        BufferedImage bg = GameArt.canvas(w, h);
+        List<BufferedImage> frames = new ArrayList<>();
+        List<Integer> delays = new ArrayList<>();
+        int steps = 6;
+        for (int step = 1; step <= steps; step++) {
+            BufferedImage f = GameArt.copy(bg);
+            Graphics2D g = f.createGraphics();
+            try {
+                GameArt.hints(g);
+                double grow = step / (double) steps;
+                GameArt.outlined(g, c.code + " \u00B7 " + s.count + (s.count == 1 ? " rating" : " ratings"),
+                        new Font("SansSerif", Font.BOLD, 22), w / 2, 36, GOLD);
+                histogram(g, "Difficulty", s.difficultyCounts, s.difficulty, 40, 80, 260, 180, new Color(0xE67E22), grow);
+                histogram(g, "Workload", s.workloadCounts, s.workload, 340, 80, 260, 180, new Color(0x3498DB), grow);
+            } finally {
+                g.dispose();
+            }
+            frames.add(f);
+            delays.add(step == steps ? 6000 : 120);
+        }
+        return GifWriter.write(frames, delays, false);
+    }
 }

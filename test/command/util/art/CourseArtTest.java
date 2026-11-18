@@ -63,4 +63,17 @@ public class CourseArtTest {
         }
         assertTrue(drawn > 1000);
     }
+
+    @Test
+    public void ratingsChartGrowsAndHandlesAnEmptyBucket() throws Exception {
+        java.lang.reflect.Constructor<courses.Ratings.Summary> ctor = courses.Ratings.Summary.class.getDeclaredConstructor(
+                int.class, double.class, double.class);
+        ctor.setAccessible(true);
+        courses.Ratings.Summary s = ctor.newInstance(10, 3.2, 4.1);
+        int[] d = {1, 2, 4, 2, 1};
+        int[] w = {0, 0, 1, 4, 5};
+        System.arraycopy(d, 0, s.difficultyCounts, 0, 5);
+        System.arraycopy(w, 0, s.workloadCounts, 0, 5);
+        save("ratings.gif", CourseArt.ratingsChart(catalog.find("CIS*3750"), s));
+    }
 }

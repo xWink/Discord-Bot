@@ -9,9 +9,11 @@ package command.commands.misc;
 import command.Command;
 import command.ui.Buttons;
 import command.ui.Reveal;
+import command.commands.course.Reviews;
 import command.util.art.CourseArt;
 import command.util.misc.CourseCatalog;
 import command.util.misc.CourseCatalog.Course;
+import courses.Ratings;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -89,11 +91,20 @@ public class Info extends Command {
 
     /** Sends a course's entry with its banner animating above it; without the picture if it cannot be drawn. */
     private static void show(MessageChannel channel, Course course) {
+        Ratings.Summary ratings = ratingsSource.apply(course.code);
         Reveal.async(() -> CourseArt.banner(course),
                 gif -> channel.sendFiles(FileUpload.fromData(gif, "course.gif"))
-                        .setEmbeds(courseEmbed(course).setImage("attachment://course.gif").build())
+                        .setEmbeds(courseEmbed(course, ratings).setImage("attachment://course.gif").build())
                         .setComponents(courseButtons(course)).queue(),
-                () -> channel.sendMessageEmbeds(courseEmbed(course).build()).setComponents(courseButtons(course)).queue());
+                () -> channel.sendMessageEmbeds(courseEmbed(course, ratings).build()).setComponents(courseButtons(course)).queue());
+    }
+
+    /** Where student ratings come from; tests that have no database replace it. */
+    static java.util.function.Function<String, Ratings.Summary> ratingsSource = Ratings::summaryOrNull;
+
+    /** For tests: stop looking up ratings. */
+    public static void useRatings(java.util.function.Function<String, Ratings.Summary> source) {
+        ratingsSource = source;
     }
 
     private static String usage() {
@@ -103,6 +114,10 @@ public class Info extends Command {
 
     /** The whole entry for one course. */
     static EmbedBuilder courseEmbed(Course c) {
+        return courseEmbed(c, null);
+    }
+
+    static EmbedBuilder courseEmbed(Course c, Ratings.Summary ratings) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.setColor(levelColour(c.level()));
         eb.setTitle(escape(c.code) + " · " + c.title);
@@ -121,6 +136,7 @@ public class Info extends Command {
         String restrictions = clean(c.restrictions, "Restriction(s): ");
         if (!restrictions.isEmpty()) eb.addField("Restrictions", shorten(escape(restrictions), FIELD_MAX), false);
         if (!c.offering.isEmpty()) eb.addField("How it is offered", shorten(c.offering, FIELD_MAX), false);
+        eb.addField("Student ratings", Reviews.line(c.code, ratings), false);
         List<String> foot = new ArrayList<>();
         foot.add(c.source.equals("graduate") ? "Graduate" : c.level() + "000-level");
         if (!c.unit.isEmpty()) foot.add(c.unit);
@@ -153,6 +169,7 @@ public class Info extends Command {
             actions.add(Buttons.of(0, false, "!prereq " + c.code, "Prerequisite tree", ButtonStyle.SUCCESS));
             actions.add(Buttons.of(0, false, "!whynot " + c.code, "Can I take it?", ButtonStyle.SUCCESS));
         }
+        actions.add(Buttons.of(0, false, "!reviews " + c.code, "Reviews", ButtonStyle.SECONDARY));
         actions.add(Buttons.of(0, false, "!info " + c.department, "More " + c.department + " courses", ButtonStyle.SECONDARY));
         List<ActionRow> out = new ArrayList<>();
         if (!prereqs.isEmpty()) out.add(ActionRow.of(prereqs));

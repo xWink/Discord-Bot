@@ -179,6 +179,12 @@ public final class SlashCommands {
         simple("reminders", "Your waiting reminders");
         add(Commands.slash("dates", "The next dates on the academic calendar").addOptions(
                 str("filter", "Only dates mentioning this, like drop or exam", false)));
+        add(Commands.slash("rate", "Rate a course, anonymously").addOptions(
+                str("course", "A course code like CIS1300", true).setAutoComplete(true),
+                num("difficulty", "1 easy to 5 hard", true, 1, 5), num("workload", "1 light to 5 heavy", true, 1, 5),
+                str("comment", "Optional, up to 300 characters", false)));
+        add(Commands.slash("reviews", "How students rated a course").addOptions(
+                str("course", "A course code like CIS1300", true).setAutoComplete(true)));
         add(Commands.slash("join", "Join a course channel").addOptions(str("course", "Course code", true)));
         add(Commands.slash("leave", "Leave a course channel").addOptions(str("course", "Course code", true)));
 

@@ -112,6 +112,7 @@ public final class CommandList {
         commands.add(new HiLo.Move("!lower"));
         commands.add(new HiLo.Move("!cashout"));
         commands.add(new Dice());
+        commands.add(new command.commands.economy.Slots());
         commands.add(new Flip());
         commands.add(new InstallmentCommand());
         commands.add(new Gift());

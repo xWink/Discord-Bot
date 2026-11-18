@@ -1,5 +1,6 @@
 package command.util.misc;
 
+import command.util.art.GifWriter;
 import command.util.art.Sticker;
 import economy.Cosmetics;
 
@@ -113,70 +114,32 @@ public final class ProfileCard {
                     random.nextDouble()};
         }
 
-        javax.imageio.ImageWriter writer = ImageIO.getImageWritersByFormatName("gif").next();
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        try (javax.imageio.stream.ImageOutputStream ios = ImageIO.createImageOutputStream(out)) {
-            writer.setOutput(ios);
-            writer.prepareWriteSequence(null);
-            for (int i = 0; i < FRAMES; i++) {
-                double t = i / (double) FRAMES;
-                BufferedImage img = new BufferedImage(WIDTH, height, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g = img.createGraphics();
-                try {
-                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                    g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-                    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                    drawBase(g, loadout, height);
-                    int bob = (int) Math.round(5 * Math.sin(2 * Math.PI * t));
-                    g.drawImage(mascot, 510, 22 + bob, 390, 390, null);
-                    drawFront(g, s, loadout, pills, height);
-                    for (double[] star : stars) {
-                        double glow = Math.max(0, Math.sin(2 * Math.PI * (t + star[3])));
-                        if (glow > 0.15) twinkle(g, star[0], star[1], star[2] * (0.5 + glow), (int) (60 + 195 * glow));
-                    }
-                    glint(g, t, height);
-                } finally {
-                    g.dispose();
+        List<BufferedImage> frames = new ArrayList<>();
+        for (int i = 0; i < FRAMES; i++) {
+            double t = i / (double) FRAMES;
+            BufferedImage img = new BufferedImage(WIDTH, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g = img.createGraphics();
+            try {
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                drawBase(g, loadout, height);
+                int bob = (int) Math.round(5 * Math.sin(2 * Math.PI * t));
+                g.drawImage(mascot, 510, 22 + bob, 390, 390, null);
+                drawFront(g, s, loadout, pills, height);
+                for (double[] star : stars) {
+                    double glow = Math.max(0, Math.sin(2 * Math.PI * (t + star[3])));
+                    if (glow > 0.15) twinkle(g, star[0], star[1], star[2] * (0.5 + glow), (int) (60 + 195 * glow));
                 }
-                writer.writeToSequence(new javax.imageio.IIOImage(img, null, frameMetadata(writer, img, i == 0)), null);
+                glint(g, t, height);
+            } finally {
+                g.dispose();
             }
-            writer.endWriteSequence();
-        } finally {
-            writer.dispose();
+            frames.add(img);
         }
-        byte[] bytes = out.toByteArray();
+        byte[] bytes = GifWriter.write(frames, FRAME_MS, true);
         return bytes.length > MAX_GIF_BYTES ? null : bytes;
-    }
-
-    private static javax.imageio.metadata.IIOMetadata frameMetadata(javax.imageio.ImageWriter writer, BufferedImage img,
-                                                                    boolean first) throws IOException {
-        javax.imageio.metadata.IIOMetadata md = writer.getDefaultImageMetadata(
-                javax.imageio.ImageTypeSpecifier.createFromRenderedImage(img), null);
-        String format = "javax_imageio_gif_image_1.0";
-        javax.imageio.metadata.IIOMetadataNode root = (javax.imageio.metadata.IIOMetadataNode) md.getAsTree(format);
-        javax.imageio.metadata.IIOMetadataNode gce = child(root, "GraphicControlExtension");
-        gce.setAttribute("disposalMethod", "restoreToBackgroundColor");
-        gce.setAttribute("delayTime", Integer.toString(FRAME_MS / 10));
-        if (first) {
-            javax.imageio.metadata.IIOMetadataNode apps = child(root, "ApplicationExtensions");
-            javax.imageio.metadata.IIOMetadataNode app = new javax.imageio.metadata.IIOMetadataNode("ApplicationExtension");
-            app.setAttribute("applicationID", "NETSCAPE");
-            app.setAttribute("authenticationCode", "2.0");
-            app.setUserObject(new byte[]{1, 0, 0}); // loop forever
-            apps.appendChild(app);
-        }
-        md.setFromTree(format, root);
-        return md;
-    }
-
-    private static javax.imageio.metadata.IIOMetadataNode child(javax.imageio.metadata.IIOMetadataNode root, String name) {
-        for (int i = 0; i < root.getLength(); i++) {
-            if (root.item(i).getNodeName().equalsIgnoreCase(name)) return (javax.imageio.metadata.IIOMetadataNode) root.item(i);
-        }
-        javax.imageio.metadata.IIOMetadataNode node = new javax.imageio.metadata.IIOMetadataNode(name);
-        root.appendChild(node);
-        return node;
     }
 
     /** A four-point star in gold, for the twinkle. */

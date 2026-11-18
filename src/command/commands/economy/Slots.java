@@ -1,0 +1,102 @@
+package command.commands.economy;
+
+import command.Command;
+import command.util.art.GameArt;
+import command.util.game.SlotsGame;
+import database.Database;
+import database.connectors.EconomyConnector;
+import economy.EconomyService;
+import economy.WagerLimits;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle;
+import net.dv8tion.jda.api.utils.FileUpload;
+
+import java.awt.Color;
+import java.util.Random;
+
+/** {@code !slots <stake>}. Three reels spin as an animation; the result is settled before it is shown. */
+public class Slots extends Command {
+
+    private static final String PAYTABLE = "Three alike pay: cherry x3, lemon x5, bell x8, star x15, seven x25, "
+            + "mascot x50. Any two alike pay x1.4.";
+
+    private final Random random = new Random();
+    private final EconomyConnector ec = new EconomyConnector();
+
+    public Slots() {
+        super("!slots", true);
+    }
+
+    @Override
+    public boolean keyMatches(String string) {
+        return string.toLowerCase().startsWith(getKey());
+    }
+
+    @Override
+    public void start(MessageReceivedEvent event) {
+        long user = event.getAuthor().getIdLong();
+        String[] args = event.getMessage().getContentRaw().split("\\s+");
+        int stake;
+        try {
+            stake = args.length == 2 ? Integer.parseInt(args[1]) : 0;
+        } catch (NumberFormatException e) {
+            stake = 0;
+        }
+        if (stake < 1) {
+            event.getChannel().sendMessage("Say `!slots <stake>`. " + PAYTABLE).queue();
+            return;
+        }
+        try {
+            String blocked = WagerLimits.check(user, stake);
+            if (blocked != null) {
+                event.getChannel().sendMessage(blocked).queue();
+                return;
+            }
+            int spendable = ec.getSpendable(user);
+            if (stake > spendable) {
+                event.getChannel().sendMessage("You do not have " + stake + " GC spendable.").queue();
+                return;
+            }
+
+            SlotsGame.Symbol[] reels = SlotsGame.spin(random);
+            int net = SlotsGame.net(reels, stake);
+            try {
+                settle(user, stake, net, event.getMessageId());
+            } catch (EconomyService.InsufficientFundsRuntime e) {
+                event.getChannel().sendMessage("You do not have " + stake + " GC spendable.").queue();
+                return;
+            }
+
+            boolean won = net > 0;
+            String label = SlotsGame.label(reels);
+            String name = economy.Cosmetics.nameWithTitle(user, event.getAuthor().getName());
+            String result = net > 0 ? "You won " + net + " GC!" : net == 0 ? "A push: your stake came back."
+                    : "You lost " + stake + " GC.";
+
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setColor(won ? new Color(0xFFDD00) : new Color(0x3A3F47));
+            eb.setTitle(name + " pulls the lever");
+            eb.setDescription((won ? economy.Cosmetics.winHeader(user) : "") + result
+                    + "\nStake " + stake + " GC. Maximum loss was " + stake + " GC.");
+            eb.setImage("attachment://slots.gif");
+            eb.setFooter(label);
+            event.getChannel().sendFiles(FileUpload.fromData(GameArt.slots(reels, label, won), "slots.gif"))
+                    .setEmbeds(eb.build())
+                    .setActionRow(command.ui.Buttons.mine(user, "!slots " + stake, "Spin again (" + stake + " GC)",
+                            ButtonStyle.PRIMARY)).queue();
+        } catch (Exception e) {
+            printStackTraceAndSendMessage(event, e);
+        }
+    }
+
+    /** Reserve and settle in one transaction, so a crash cannot leave the stake held. */
+    private static void settle(long user, int stake, int net, String messageId) throws Exception {
+        String reservation = "slots:" + messageId;
+        Database.inTransaction(c -> {
+            EconomyService.reserveIn(c, user, stake, "slots", messageId, reservation);
+            EconomyService.settleReservationIn(c, reservation, net, "slots");
+            return null;
+        });
+    }
+}

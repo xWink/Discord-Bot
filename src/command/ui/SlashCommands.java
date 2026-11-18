@@ -86,6 +86,7 @@ public final class SlashCommands {
         add(Commands.slash("help", "The command list").addOptions(choice("topic", "Which page to open", false,
                 "overview", "games", "arcade", "economy", "profile", "info", "moderators")));
         add(Commands.slash("bet", "Play blackjack").addOptions(num("amount", "Stake in GC", true, 1, maxStake)));
+        add(Commands.slash("slots", "Spin the reels").addOptions(num("stake", "Stake in GC", true, 1, maxStake)));
         add(Commands.slash("hilo", "Higher or Lower").addOptions(num("stake", "Stake in GC", true, 1, maxStake)));
         add(Commands.slash("dice", "Two dice. Leave the stake off to play free").addOptions(
                 choice("pick", "What you are betting on", true, "low", "high", "seven"),

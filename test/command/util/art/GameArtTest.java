@@ -1,0 +1,64 @@
+package command.util.art;
+
+import command.util.game.SlotsGame.Symbol;
+import org.junit.Test;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.nio.file.Files;
+import java.util.Collections;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public class GameArtTest {
+
+    private static final long MAX_BYTES = 8L * 1024 * 1024; // Discord's upload limit is well above this
+
+    private static void save(String name, byte[] bytes) throws Exception {
+        File dir = new File("build/game-art");
+        dir.mkdirs();
+        Files.write(new File(dir, name).toPath(), bytes);
+        assertTrue(name + " too large: " + bytes.length, bytes.length < MAX_BYTES);
+    }
+
+    private static boolean isGif(byte[] b) {
+        return b.length > 6 && b[0] == 'G' && b[1] == 'I' && b[2] == 'F';
+    }
+
+    @Test
+    public void bangCardsDrawForEveryResult() throws Exception {
+        for (GameArt.Pull pull : GameArt.Pull.values()) {
+            byte[] png = GameArt.bangCard("A very long player name that should be cut off", 3, pull, 7,
+                    Collections.<String>emptyList(), 1);
+            BufferedImage img = ImageIO.read(new ByteArrayInputStream(png));
+            assertNotNull(img);
+            assertEquals(700, img.getWidth());
+            save("bang-" + pull.name().toLowerCase() + ".png", png);
+        }
+    }
+
+    @Test
+    public void coinLandsOnEitherFace() throws Exception {
+        for (boolean heads : new boolean[]{true, false}) {
+            byte[] gif = GameArt.coinSpin(heads);
+            assertTrue(isGif(gif));
+            save(heads ? "coin-heads.gif" : "coin-tails.gif", gif);
+        }
+    }
+
+    @Test
+    public void diceAndSlotsAnimate() throws Exception {
+        byte[] dice = GameArt.diceRoll(4, 3);
+        assertTrue(isGif(dice));
+        save("dice.gif", dice);
+        byte[] win = GameArt.slots(new Symbol[]{Symbol.MASCOT, Symbol.MASCOT, Symbol.MASCOT}, "THREE MASCOTS x50", true);
+        byte[] lose = GameArt.slots(new Symbol[]{Symbol.CHERRY, Symbol.BELL, Symbol.SEVEN}, "NO MATCH", false);
+        assertTrue(isGif(win) && isGif(lose));
+        save("slots-win.gif", win);
+        save("slots-lose.gif", lose);
+    }
+}

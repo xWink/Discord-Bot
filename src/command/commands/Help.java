@@ -35,6 +35,7 @@ public class Help extends Command {
                 new Entry("!bet <amount>", "Blackjack. Pays 3:2, a tie returns your stake"),
                 new Entry("!hit  !stand  !myhand", "Play your blackjack hand"),
                 new Entry("!dice <low|high|seven> [stake]", "Two dice. Leave the stake off to play free"),
+                new Entry("!slots <stake>", "Three reels, animated. Pairs pay 1.4x, triples up to 50x"),
                 new Entry("!hilo <stake>", "Higher or Lower. Then !higher, !lower or !cashout"),
                 new Entry("!duel @user [stake]", "Trivia duel. They reply !accept or !decline"),
                 new Entry("!duelanswer <letter>", "Answer your duel question"),

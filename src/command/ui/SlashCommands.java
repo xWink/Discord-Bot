@@ -51,7 +51,7 @@ public final class SlashCommands {
     // --- definitions ---------------------------------------------------------------------------------------
 
     private static void build() {
-        int maxStake = command.commands.blackjack.Bet.MAX_STAKE;
+        int maxStake = 1000000;
         String[] letters = {"A", "B", "C", "D", "E", "F"};
 
         // Everyone, no options

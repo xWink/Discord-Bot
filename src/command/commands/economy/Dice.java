@@ -1,7 +1,6 @@
 package command.commands.economy;
 
 import command.Command;
-import command.commands.blackjack.Bet;
 import command.util.game.DiceGame;
 import database.Database;
 import economy.EconomyService;
@@ -42,8 +41,8 @@ public class Dice extends Command {
         try {
             if (args.length == 3) {
                 stake = Integer.parseInt(args[2]);
-                if (stake < 1 || stake > Bet.MAX_STAKE) {
-                    event.getChannel().sendMessage("Stakes run from 1 to " + Bet.MAX_STAKE + " GC.").queue();
+                if (stake < 1) {
+                    event.getChannel().sendMessage("The stake must be at least 1 GC.").queue();
                     return;
                 }
                 String blocked = WagerLimits.check(event.getAuthor().getIdLong(), stake);

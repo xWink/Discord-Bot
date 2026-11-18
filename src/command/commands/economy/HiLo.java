@@ -1,7 +1,6 @@
 package command.commands.economy;
 
 import command.Command;
-import command.commands.blackjack.Bet;
 import command.util.cards.DeckOfCards;
 import command.util.game.HiLoGame;
 import database.Database;
@@ -37,9 +36,8 @@ public class HiLo extends Command {
         String[] args = event.getMessage().getContentRaw().split("\\s+");
         try {
             int stake = args.length == 2 ? Integer.parseInt(args[1]) : 0;
-            if (stake < 1 || stake > Bet.MAX_STAKE) {
-                event.getChannel().sendMessage("Say `!hilo <stake>` with a stake of 1 to " + Bet.MAX_STAKE
-                        + " GC. Guess `!higher` or `!lower` (ace high, a tie loses). One correct guess pays "
+            if (stake < 1) {
+                event.getChannel().sendMessage("Say `!hilo <stake>` with a stake of at least 1 GC. Guess `!higher` or `!lower` (ace high, a tie loses). One correct guess pays "
                         + "1x your stake and you may `!cashout`; two in a row pay 2x. A wrong guess forfeits the "
                         + "stake.").queue();
                 return;

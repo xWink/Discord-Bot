@@ -1,7 +1,6 @@
 package command.commands.economy;
 
 import command.Command;
-import command.commands.blackjack.Bet;
 import duel.Duel;
 import duel.DuelMath;
 import duel.DuelService;
@@ -53,8 +52,7 @@ public final class DuelCommands {
         public void start(MessageReceivedEvent event) {
             String[] args = event.getMessage().getContentRaw().split("\\s+");
             if (event.getMessage().getMentions().getUsers().size() != 1 || args.length < 2 || args.length > 3) {
-                event.getChannel().sendMessage("Say `!duel @user [stake]`. Stake 0-" + Bet.MAX_STAKE
-                        + " GC; leave it off to play free. Winner takes the pot (1 GC fee from 5 GC stakes up).")
+                event.getChannel().sendMessage("Say `!duel @user [stake]`. Stake in GC; leave it off to play free. Winner takes the pot (1 GC fee from 5 GC stakes up).")
                         .queue();
                 return;
             }
@@ -65,8 +63,8 @@ public final class DuelCommands {
                 event.getChannel().sendMessage("The stake must be a whole number.").queue();
                 return;
             }
-            if (stake < 0 || stake > Bet.MAX_STAKE) {
-                event.getChannel().sendMessage("Stakes run from 0 to " + Bet.MAX_STAKE + " GC.").queue();
+            if (stake < 0) {
+                event.getChannel().sendMessage("The stake cannot be negative.").queue();
                 return;
             }
             net.dv8tion.jda.api.entities.User target = event.getMessage().getMentions().getUsers().get(0);

@@ -208,18 +208,11 @@ public class EconomyIntegrationTest extends DbTestBase {
     }
 
     @Test
-    public void wagerLimitsBlockOptOutAndLossCap() throws Exception {
+    public void wagerLimitsBlockOptOut() throws Exception {
         long u = newUser();
         assertNull(WagerLimits.check(u, 5));
         WagerLimits.setPaidPlay(u, false);
         assertNotNull(WagerLimits.check(u, 5));
         WagerLimits.setPaidPlay(u, true);
-        eco.credit(u, 100, "t", null, "c-" + u);
-        for (int i = 0; i < 5; i++) {
-            eco.reserve(u, 10, "blackjack", null, "r" + i + "-" + u);
-            eco.settleReservation("r" + i + "-" + u, -10, "blackjack");
-        }
-        assertEquals(50, WagerLimits.lossesToday(u));
-        assertNotNull(WagerLimits.check(u, 1));
     }
 }

@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Draws the profile card in the server's red and gold. The mascot on the right wears whatever the player has
+ * Draws the profile card on a neutral slate background with gold accents. The mascot on the right wears whatever the player has
  * equipped, so every cosmetic is visible as art. Everything is drawn with shapes and the bundled mascot, so the
  * card looks the same on any machine.
  */
@@ -225,8 +225,8 @@ public final class ProfileCard {
     private static void drawBase(Graphics2D g, Cosmetics.Loadout l, int height) {
         boolean bundle = l.has("bundle-weekend");
         boolean glow = l.has("flair-day");
-        Color top = bundle ? new Color(0xFF2A2A) : new Color(0xA30000);
-        Color bottom = bundle ? new Color(0x8A0000) : new Color(0x2E0000);
+        Color top = bundle ? new Color(0x4C525C) : new Color(0x3A3F47);
+        Color bottom = bundle ? new Color(0x262A30) : new Color(0x14161A);
         Shape card = new RoundRectangle2D.Float(8, 8, WIDTH - 16, height - 16, 36, 36);
 
         g.setPaint(new GradientPaint(0, 0, top, WIDTH, height, bottom));
@@ -236,7 +236,7 @@ public final class ProfileCard {
         g.fillRect(0, 0, WIDTH, height);
         // soft spotlight behind the mascot
         g.setPaint(new java.awt.RadialGradientPaint(720, 190, 260, new float[]{0f, 1f},
-                new Color[]{new Color(255, 221, 0, 120), new Color(255, 221, 0, 0)}));
+                new Color[]{new Color(255, 255, 255, 70), new Color(255, 255, 255, 0)}));
         g.fillRect(440, 0, 460, HEIGHT);
         g.setClip(null);
 
@@ -267,11 +267,20 @@ public final class ProfileCard {
         drawNameBlock(g, s, l, 196);
         drawStats(g, s, 44, 226);
         drawInventory(g, pills, l, 44, HEIGHT - 24);
+        drawWearing(g, l, 44, 388);
+    }
 
+    /** One line naming what the mascot has on, so the art is never a guessing game. */
+    private static void drawWearing(Graphics2D g, Cosmetics.Loadout l, int x, int y) {
+        if (l.codes.isEmpty()) return;
+        List<String> names = new ArrayList<>();
+        for (String code : l.codes) names.add(Cosmetics.label(code));
         g.setFont(new Font("SansSerif", Font.BOLD, 13));
-        g.setColor(new Color(255, 221, 0, 170));
-        String tag = "GRYPHCOIN";
-        g.drawString(tag, WIDTH - 40 - g.getFontMetrics().stringWidth(tag), height - 30);
+        g.setColor(new Color(255, 221, 0, 230));
+        g.drawString("WEARING", x, y);
+        g.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        g.setColor(new Color(255, 255, 255, 210));
+        g.drawString(fit(g, String.join(", ", names), 400 - 80), x + 80, y);
     }
 
     private static void drawAvatar(Graphics2D g, Stats s, int x, int y, int size) {
@@ -378,7 +387,13 @@ public final class ProfileCard {
             g.setFont(new Font("SansSerif", Font.BOLD, 12));
             g.setColor(new Color(255, 221, 0, 220));
             g.drawString(cells[i][0], cx + 12, cy + 22);
-            g.setFont(new Font("SansSerif", Font.BOLD, 26));
+            Font value = new Font("SansSerif", Font.BOLD, 26);
+            g.setFont(value);
+            // shrink until the value fits inside the box, so "100.0%" never clips
+            while (g.getFontMetrics().stringWidth(cells[i][1]) > cellW - 20 && value.getSize() > 12) {
+                value = value.deriveFont((float) value.getSize() - 1);
+                g.setFont(value);
+            }
             g.setColor(Color.WHITE);
             g.drawString(cells[i][1], cx + 12, cy + 52);
         }
@@ -479,7 +494,7 @@ public final class ProfileCard {
         if (pills.isEmpty()) {
             g.setFont(new Font("SansSerif", Font.ITALIC, 13));
             g.setColor(new Color(255, 255, 255, 150));
-            g.drawString("You own nothing yet. Try !shop, then !equip.", x, HEIGHT - 48);
+            g.drawString("You own nothing yet. Try !shop, then !equip.", x, HEIGHT - 30);
             return;
         }
         g.setFont(new Font("SansSerif", Font.BOLD, 13));

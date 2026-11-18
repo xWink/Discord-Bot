@@ -28,8 +28,7 @@ public class PaidPlay extends Command {
                 event.getChannel().sendMessage("Paid play is now **off**. Free play still works.").queue();
             } else if (args.length == 2 && args[1].equalsIgnoreCase("on")) {
                 WagerLimits.setPaidPlay(user, true);
-                event.getChannel().sendMessage("Paid play is now **on**. Daily loss limit: "
-                        + WagerLimits.DAILY_LOSS_CAP + " GC.").queue();
+                event.getChannel().sendMessage("Paid play is now **on**.").queue();
             } else {
                 event.getChannel().sendMessage("Paid play is "
                         + (WagerLimits.isPaidPlayEnabled(user) ? "on" : "off")

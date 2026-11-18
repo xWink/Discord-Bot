@@ -47,7 +47,7 @@ Use two accounts (your own and an alt, or a friend) for the social flows.
 | Gift wrap | `!gift @alt 2 wrap happy birthday` | Alt gets 2, you pay 5, card embed |
 | Daily | `!bang` then `!daily` | 5 GC once; second claim shows the next time |
 | Blackjack | `!bet 5`, then `!wallet` mid-hand | 5 GC shows as reserved. `!hit`/`!stand` settle once |
-| Blackjack limits | `!bet 11`, `!paidplay off` then `!bet 1` | Refused with a reason |
+| Blackjack stakes | `!bet 3` with a 5 GC balance; `!paidplay off` then `!bet 1` | A stake over half your balance shows a warning but still plays (no cap). With paid play off it is refused |
 | Blackjack restart | Start a hand, stop the bot, start it again, `!myhand` | Hand is still there; leave it 2 min and it auto-stands |
 | Dice, hilo | `!dice high`, `!dice seven 2`, `!hilo 2`, `!higher`, `!cashout` | Free play works; stakes reserved/settled |
 | Arcade | `!arcade`, `!answer b`, again, `!arcadescores` | First round pays daily; repeats are free |
@@ -61,7 +61,7 @@ Use two accounts (your own and an alt, or a friend) for the social flows.
 | Event | `!event start night` (admin), `!event confirm @alt`, `!event end` | Alt gets 5 GC (and the weekly bonus) |
 | Boards | `!board arcade`, `!bangweek`, `!optout on` | Opted-out accounts disappear; `!bangweek` also shows best streaks |
 | Achievements | `!achievements` after your first correct arcade answer | One item ticked; `!board collection` counts it |
-| Profile card | `!profile` before and after `!equip` | A picture card; titles, badges, banners and effects change how it looks |
+| Profile card | `!profile` before and after `!equip` | A picture card on a neutral slate background; titles, badges, banners and effects change how it looks. A "WEARING" line names what the mascot has on, and survival never clips (try 100.0%) |
 | Emoji art | `sh gradlew exportArt`, then upload `art-out/*_128.png` as server emoji | 14 mascot variants in the server colours |
 | Alumni | `!alumni grant @alt thanks for everything` (mod), then `!profile` as the alt, `!alumni list` | Gold ribbon, cap and diploma on the card, 🎓 next to their name everywhere |
 | Equip | `!shop buy title-week`, `!equip title-week`, `!profile`, `!arcadescores` | Title after your name, badge under "Equipped" |

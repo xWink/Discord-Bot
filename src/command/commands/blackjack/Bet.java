@@ -19,8 +19,8 @@ import java.util.Collections;
 
 public class Bet extends Command {
 
-    /** Largest blackjack stake allowed. */
-    public static final int MAX_STAKE = 10;
+    /** Stakes above this share of the player's balance get a warning. */
+    static final double WARN_FRACTION = 0.5;
 
     private EconomyConnector ec;
 
@@ -64,6 +64,11 @@ public class Bet extends Command {
             if (blocked != null) {
                 channel.sendMessage(blocked).queue();
                 return;
+            }
+            int spendable = ec.getSpendable(userId);
+            if (betAmount > spendable * WARN_FRACTION && betAmount <= spendable) {
+                channel.sendMessage("\u26A0 Heads up: that is " + Math.round(100.0 * betAmount / spendable)
+                        + "% of your " + spendable + " GC balance. You can lose all of it.").queue();
             }
             channel.sendMessage("Stake: " + betAmount + " GC reserved. Maximum loss: " + betAmount
                     + " GC. Blackjack pays 3:2, a push returns your stake.").queue();
@@ -163,11 +168,6 @@ public class Bet extends Command {
             return false;
         }
 
-        // Stakes are capped at launch
-        if (betAmount > MAX_STAKE) {
-            channel.sendMessage("The maximum stake is " + MAX_STAKE + " GryphCoins.").queue();
-            return false;
-        }
         return true;
     }
 }

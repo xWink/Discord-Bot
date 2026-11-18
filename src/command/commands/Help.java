@@ -32,7 +32,7 @@ public class Help extends Command {
     public enum Category {
         OVERVIEW("overview", "📖", "Overview", "Start here", new Color(0xF5C542)),
         GAMES("games", "🎲", "Games", "Risk a few coins, or play free", new Color(0xE0457B),
-                new Entry("!bet <1-10>", "Blackjack. Pays 3:2, a tie returns your stake"),
+                new Entry("!bet <amount>", "Blackjack. Pays 3:2, a tie returns your stake"),
                 new Entry("!hit  !stand  !myhand", "Play your blackjack hand"),
                 new Entry("!dice <low|high|seven> [stake]", "Two dice. Leave the stake off to play free"),
                 new Entry("!hilo <stake>", "Higher or Lower. Then !higher, !lower or !cashout"),

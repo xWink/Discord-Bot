@@ -2,6 +2,7 @@ package command.util.art;
 
 import command.util.misc.CourseCatalog;
 import command.util.misc.CourseCatalog.Course;
+import command.util.misc.Prerequisites;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** Pictures for the course lookup: a banner that builds up, and the prerequisite chain drawn as connected boxes. */
 public final class CourseArt {
@@ -143,10 +145,14 @@ public final class CourseArt {
     private static final int COL_GAP = 70;
     private static final int ROW_GAP = 16;
 
+    /** Where a course stands for the person looking: finished, takeable now, or not yet. */
+    public enum State { NEUTRAL, DONE, READY, MAYBE, LOCKED }
+
     /** A course in the tree, how many steps below the target it sits, and where it is drawn. */
     private static final class Node {
         final String code;
         final String title;
+        State state = State.NEUTRAL;
         int depth;
         int x;
         int y;
@@ -205,6 +211,63 @@ public final class CourseArt {
         return nodes;
     }
 
+    /** Marks every course in the tree against what the person has finished (empty means no personal colouring). */
+    private static void markStates(CourseCatalog catalog, Map<String, Node> nodes, Set<String> done) {
+        if (done == null || done.isEmpty()) return;
+        for (Node n : nodes.values()) {
+            Course c = catalog.find(n.code);
+            if (done.contains(n.code)) {
+                n.state = State.DONE;
+            } else if (c == null) {
+                n.state = State.LOCKED;
+            } else {
+                Prerequisites.Status s = Prerequisites.of(c).check(done);
+                n.state = s == Prerequisites.Status.MET ? State.READY
+                        : s == Prerequisites.Status.UNKNOWN ? State.MAYBE : State.LOCKED;
+            }
+        }
+    }
+
+    /** How far along someone is towards a course. */
+    public static final class Progress {
+        /** Prerequisite courses in the tree, not counting the target. */
+        public final int needed;
+        /** How many of them are finished. */
+        public final int finished;
+        /** Courses that can be taken right now and lead towards the target, the ones closest to it first. */
+        public final List<Course> nextUp;
+        /** The target itself: {@code READY} means it can be taken now. */
+        public final State target;
+
+        Progress(int needed, int finished, List<Course> nextUp, State target) {
+            this.needed = needed;
+            this.finished = finished;
+            this.nextUp = nextUp;
+            this.target = target;
+        }
+    }
+
+    /** @param done the finished courses, with equivalent courses already added (see {@link Prerequisites#closure}) */
+    public static Progress progress(CourseCatalog catalog, Course root, Set<String> done) {
+        Map<String, Node> nodes = gather(catalog, root);
+        markStates(catalog, nodes, done);
+        int finished = 0;
+        List<Node> ready = new ArrayList<>();
+        for (Node n : nodes.values()) {
+            if (n.depth == 0) continue;
+            if (n.state == State.DONE) finished++;
+            else if (n.state == State.READY) ready.add(n);
+        }
+        // the ones closest to the target come first: taking them moves you furthest along
+        ready.sort((a, b) -> a.depth != b.depth ? Integer.compare(a.depth, b.depth) : a.code.compareTo(b.code));
+        List<Course> next = new ArrayList<>();
+        for (Node n : ready) {
+            Course c = catalog.find(n.code);
+            if (c != null) next.add(c);
+        }
+        return new Progress(nodes.size() - 1, finished, next, nodes.get(root.code).state);
+    }
+
     /** @return how many prerequisite courses the tree would show (not counting the target), for deciding to draw one */
     public static int prerequisiteCount(CourseCatalog catalog, Course root) {
         return gather(catalog, root).size() - 1;
@@ -216,15 +279,37 @@ public final class CourseArt {
         double w = BOX_W * s;
         double h = BOX_H * s;
         Shape r = new RoundRectangle2D.Double(n.x + (BOX_W - w) / 2, n.y + (BOX_H - h) / 2, w, h, 16, 16);
-        g.setColor(target ? new Color(0x4A3F00) : new Color(0, 0, 0, 140));
+        Color fill = target ? new Color(0x4A3F00) : new Color(0, 0, 0, 140);
+        Color edge = target ? GOLD : INK;
+        switch (n.state) {
+            case DONE: fill = new Color(0x1E5B3A); edge = new Color(0x3FA34D); break;
+            case READY: fill = new Color(0x1B3B5A); edge = new Color(0x3498DB); break;
+            case MAYBE: fill = new Color(0x4A3F00); edge = new Color(0xFEE75C); break;
+            case LOCKED: fill = new Color(0, 0, 0, 170); edge = new Color(0x6A707A); break;
+            default: break;
+        }
+        g.setColor(fill);
         g.fill(r);
-        g.setColor(target ? GOLD : INK);
+        g.setColor(target && n.state == State.NEUTRAL ? GOLD : edge);
         g.setStroke(new BasicStroke(target ? 4f : 3f));
         g.draw(r);
+        if (target && n.state != State.NEUTRAL) {
+            g.setColor(GOLD);
+            g.setStroke(new BasicStroke(2f));
+            g.draw(new RoundRectangle2D.Double(n.x - 5, n.y - 5, BOX_W + 10, BOX_H + 10, 20, 20));
+        }
         if (s >= 1) {
             g.setFont(new Font("SansSerif", Font.BOLD, 16));
-            g.setColor(target ? GOLD : Color.WHITE);
+            g.setColor(target ? GOLD : n.state == State.LOCKED ? new Color(255, 255, 255, 150) : Color.WHITE);
             g.drawString(n.code, n.x + 12, n.y + 24);
+            if (n.state == State.DONE) {
+                g.setColor(new Color(0x57F287));
+                g.drawString("\u2713", n.x + BOX_W - 26, n.y + 24);
+            } else if (n.state == State.READY) {
+                g.setColor(new Color(0x7CC4FF));
+                g.setFont(new Font("SansSerif", Font.BOLD, 11));
+                g.drawString("READY", n.x + BOX_W - 50, n.y + 22);
+            }
             Font small = new Font("SansSerif", Font.PLAIN, 12);
             g.setColor(new Color(255, 255, 255, 190));
             g.setFont(small);
@@ -243,7 +328,8 @@ public final class CourseArt {
         Path2D path = new Path2D.Double();
         path.moveTo(x1, y1);
         path.lineTo(mx, my);
-        g.setColor(new Color(255, 221, 0, 200));
+        g.setColor(from.state == State.DONE ? new Color(0x3FA34D) : from.state == State.LOCKED
+                ? new Color(255, 221, 0, 90) : new Color(255, 221, 0, 200));
         g.setStroke(new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g.draw(path);
         if (progress >= 1) {
@@ -256,6 +342,31 @@ public final class CourseArt {
         }
     }
 
+    private static void swatch(Graphics2D g, int x, int y, Color fill, Color edge, String label) {
+        g.setColor(fill);
+        g.fill(new RoundRectangle2D.Double(x, y, 16, 16, 5, 5));
+        g.setColor(edge);
+        g.setStroke(new BasicStroke(2f));
+        g.draw(new RoundRectangle2D.Double(x, y, 16, 16, 5, 5));
+        g.setFont(new Font("SansSerif", Font.PLAIN, 12));
+        g.setColor(new Color(255, 255, 255, 200));
+        g.drawString(label, x + 22, y + 13);
+    }
+
+    /** The key, and how far along the person is, under a coloured tree. */
+    private static void legend(Graphics2D g, int w, int h, Progress p, Course root) {
+        int y = h - 46;
+        swatch(g, 40, y, new Color(0x1E5B3A), new Color(0x3FA34D), "finished");
+        swatch(g, 130, y, new Color(0x1B3B5A), new Color(0x3498DB), "ready to take");
+        swatch(g, 250, y, new Color(0x4A3F00), new Color(0xFEE75C), "ready, part unchecked");
+        swatch(g, 410, y, new Color(0, 0, 0, 170), new Color(0x6A707A), "not yet");
+        String line = p.target == State.READY ? "You can take " + root.code + " now."
+                : p.target == State.MAYBE ? "You meet everything I can check for " + root.code + "."
+                : p.finished + " of " + p.needed + " prerequisite courses finished"
+                + (p.nextUp.isEmpty() ? "." : ". Next: " + p.nextUp.get(0).code + ".");
+        GameArt.outlined(g, line, new Font("SansSerif", Font.BOLD, 15), w / 2, h - 12, p.target == State.READY ? new Color(0x57F287) : Color.WHITE);
+    }
+
     /**
      * The course and what it needs, as boxes joined by arrows: the earliest courses on the left, the target on the
      * right. The picture builds from the left, one column at a time.
@@ -263,8 +374,22 @@ public final class CourseArt {
      * @return the GIF, or null if the course has no prerequisite courses to draw
      */
     public static byte[] prerequisiteTree(CourseCatalog catalog, Course root) throws IOException {
+        return prerequisiteTree(catalog, root, null);
+    }
+
+    /**
+     * The same tree coloured by what the person has finished: green for finished, blue for ready to take now, amber
+     * for ready apart from something that cannot be checked, grey for not yet. With no finished courses it is drawn
+     * plain.
+     *
+     * @param done finished courses, with equivalent courses already added; may be null or empty
+     */
+    public static byte[] prerequisiteTree(CourseCatalog catalog, Course root, Set<String> done) throws IOException {
         Map<String, Node> nodes = gather(catalog, root);
         if (nodes.size() < 2) return null;
+        markStates(catalog, nodes, done);
+        boolean personal = done != null && !done.isEmpty();
+        Progress progress = progress(catalog, root, done);
         int maxDepth = 0;
         for (Node n : nodes.values()) maxDepth = Math.max(maxDepth, n.depth);
         // one column per depth, deepest on the left
@@ -277,7 +402,7 @@ public final class CourseArt {
         int rows = 1;
         for (List<Node> col : columns) rows = Math.max(rows, col.size());
         int w = 40 + columns.size() * BOX_W + (columns.size() - 1) * COL_GAP + 40;
-        int h = 90 + rows * BOX_H + (rows - 1) * ROW_GAP + 30;
+        int h = 90 + rows * BOX_H + (rows - 1) * ROW_GAP + (personal ? 56 : 30);
         w = Math.max(w, 420);
         for (int c = 0; c < columns.size(); c++) {
             List<Node> col = columns.get(c);
@@ -310,8 +435,12 @@ public final class CourseArt {
                     box(g, n, n.depth == 0, grow);
                 }
                 if (step == steps) {
-                    GameArt.centered(g, "An arrow means \"needed for\". Some prerequisites are alternatives: check the text.",
-                            new Font("SansSerif", Font.PLAIN, 12), new Color(255, 255, 255, 160), w / 2, h - 12);
+                    if (personal) {
+                        legend(g, w, h, progress, root);
+                    } else {
+                        GameArt.centered(g, "An arrow means \"needed for\". Some prerequisites are alternatives: check the text.",
+                                new Font("SansSerif", Font.PLAIN, 12), new Color(255, 255, 255, 160), w / 2, h - 12);
+                    }
                 }
             } finally {
                 g.dispose();

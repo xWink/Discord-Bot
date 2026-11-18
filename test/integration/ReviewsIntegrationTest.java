@@ -142,7 +142,8 @@ public class ReviewsIntegrationTest extends DbTestBase {
         Ratings.rate(spammer, code, 5, 5, "spam spam spam");
         assertEquals(3, Ratings.summary(code).count);
         assertEquals(11.0 / 3, Ratings.summary(code).difficulty, 1e-9);
-        long id = Ratings.comments(code, 1).get(0).id; // the newest: the spam
+        // the three ratings can share a millisecond, so find the spam by its words, not by being newest
+        long id = Ratings.comments(code, 10).stream().filter(r -> r.comment.contains("spam")).findFirst().get().id;
 
         // hiding the comment keeps the scores
         FakeDiscord hide = FakeDiscord.sayAsOwner(newUser(), "Owner", "!review hide " + id, main.Server.BOTS_CHANNEL_ID);

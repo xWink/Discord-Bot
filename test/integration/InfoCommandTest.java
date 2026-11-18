@@ -19,6 +19,7 @@ public class InfoCommandTest {
     public void drawHere() {
         command.ui.Reveal.setInline(true); // draw on this thread so the reply is there to check
         Info.useRatings(code -> null);      // no database in these tests
+        command.commands.misc.Prereq.useCompleted(user -> java.util.Collections.<String>emptySet());
     }
 
     @After

@@ -83,4 +83,32 @@ public class PlannerIntegrationTest extends DbTestBase {
         // a title that only one course has needs no question either
         assertTrue(say(new Planner.WhyNot(), u, "!whynot game programming").embeds.get(0).getTitle().contains("Game Programming"));
     }
+
+    @Test
+    public void prereqTreeUsesYourFinishedCoursesAndNamesWhatIsNext() throws Exception {
+        command.commands.misc.Prereq.useCompleted(user -> {
+            try {
+                return CompletedStore.list(user);
+            } catch (java.sql.SQLException e) {
+                throw new IllegalStateException(e);
+            }
+        });
+        command.ui.Reveal.setInline(true);
+        try {
+            long u = newUser();
+            command.commands.misc.Prereq prereq = new command.commands.misc.Prereq();
+            FakeDiscord plain = FakeDiscord.say(u, "Student", "!prereq cis3750", main.Server.BOTS_CHANNEL_ID);
+            prereq.start(plain.event);
+            assertTrue(plain.said(), plain.said().contains("!completed add"));
+            CompletedStore.add(u, java.util.Arrays.asList("CIS*2520", "CIS*2430"));
+            FakeDiscord mine = FakeDiscord.say(u, "Student", "!prereq cis3750", main.Server.BOTS_CHANNEL_ID);
+            prereq.start(mine.event);
+            assertEquals(1, mine.files.size());
+            assertTrue(mine.said(), mine.said().contains("prerequisite courses finished"));
+            assertTrue(mine.said(), mine.said().contains("Next up: CIS\\*2750"));
+        } finally {
+            command.ui.Reveal.setInline(false);
+            command.commands.misc.Prereq.useCompleted(user -> java.util.Collections.<String>emptySet());
+        }
+    }
 }

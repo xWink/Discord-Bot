@@ -46,6 +46,17 @@ public final class Config {
         ArrayList<String> rawFile = new ArrayList<>();
         File working = new File(CONFIG_FILENAME);
         File home = new File(System.getProperty("user.home") + CONFIG_FILENAME);
+        if (Boolean.getBoolean("bot.offline") && !working.exists() && !home.exists()) {
+            // Offline tests (bot.offline) run without a config file: use inert fixture values and never exit.
+            logMessage("Offline mode: no [" + CONFIG_FILENAME + "], using test placeholders");
+            token = "offline";
+            channels = new String[] {"all"};
+            dbAddr = "localhost";
+            dbUser = "offline";
+            dbPass = "offline";
+            guildId = "0";
+            return;
+        }
         Scanner readConfig = getScanner(working, home);
         int current = 0;
 

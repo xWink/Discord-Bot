@@ -50,6 +50,10 @@ public class SwapCommand extends Command {
                 event.getChannel().sendMessage("You need an active colour rental to swap.").queue();
                 return;
             }
+            if (oldRoleId == -3) {
+                event.getChannel().sendMessage("You already have a colour purchase in progress. Try again in a moment.").queue();
+                return;
+            }
             if (oldRoleId == -2) {
                 event.getChannel().sendMessage("You already have that colour.").queue();
                 return;

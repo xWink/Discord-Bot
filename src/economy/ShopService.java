@@ -40,13 +40,65 @@ public final class ShopService {
         }
     }
 
+    /** The buyer may not start this purchase now; the message says why and is safe to show. */
+    public static final class PurchaseRejectedException extends Exception {
+        public PurchaseRejectedException(String message) {
+            super(message);
+        }
+    }
+
+    /** True when a purchase of the user's is still waiting on Discord. Locks the rows, so it sees committed ones. */
+    private static boolean hasPending(java.sql.Connection c, long user) throws SQLException {
+        try (PreparedStatement ps = c.prepareStatement(
+                "SELECT 1 FROM shop_purchases WHERE user = ? AND status = ? FOR UPDATE")) {
+            ps.setLong(1, user);
+            ps.setString(2, PENDING);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
     /**
-     * Charges the buyer and records a pending purchase in one transaction.
+     * @return true if the user holds an unexpired rental of exactly this role, so a stalled renewal's
+     *         cleanup must not take the role away
+     */
+    public boolean holdsActiveRental(long user, long roleId) throws SQLException {
+        return Database.inTransaction(c -> {
+            try (PreparedStatement ps = c.prepareStatement(
+                    "SELECT role_id, role_expiry FROM economy WHERE user = ?")) {
+                ps.setLong(1, user);
+                try (ResultSet rs = ps.executeQuery()) {
+                    return rs.next() && rs.getLong(1) == roleId && rs.getLong(2) > System.currentTimeMillis();
+                }
+            }
+        });
+    }
+
+    /**
+     * Charges the buyer and records a pending purchase in one transaction. Eligibility (one colour at a time,
+     * one purchase in flight) is checked under the wallet lock, so overlapping purchases cannot both pass.
+     *
+     * @throws PurchaseRejectedException if the member already has a different colour or a purchase in progress
      */
     public void begin(String purchaseId, long user, String listing, int cost, long roleId, int durationDays)
-            throws SQLException, InsufficientFundsException {
+            throws SQLException, InsufficientFundsException, PurchaseRejectedException {
         try {
             Database.inTransaction(c -> {
+                EconomyService.lockWallet(c, user);
+                if (hasPending(c, user)) {
+                    throw new PurchaseRejectedRuntime("You already have a colour purchase in progress. Try again in a moment.");
+                }
+                try (PreparedStatement ps = c.prepareStatement(
+                        "SELECT role_id, role_expiry FROM economy WHERE user = ? FOR UPDATE")) {
+                    ps.setLong(1, user);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next() && rs.getLong(2) > 0 && rs.getLong(1) != roleId) {
+                            throw new PurchaseRejectedRuntime("You already have a colour. "
+                                    + "If you would like to replace it **without** refund, please contact a moderator.");
+                        }
+                    }
+                }
                 EconomyService.debitIn(c, user, cost, "shop", purchaseId, purchaseId);
                 long now = System.currentTimeMillis();
                 try (PreparedStatement ps = c.prepareStatement("INSERT INTO shop_purchases (purchase_id, user, "
@@ -67,6 +119,15 @@ public final class ShopService {
             });
         } catch (EconomyService.InsufficientFundsRuntime e) {
             throw new InsufficientFundsException(0, cost);
+        } catch (PurchaseRejectedRuntime e) {
+            throw new PurchaseRejectedException(e.getMessage());
+        }
+    }
+
+    /** Unchecked carrier so a rejection rolls the transaction back from inside the lambda. */
+    private static final class PurchaseRejectedRuntime extends RuntimeException {
+        PurchaseRejectedRuntime(String message) {
+            super(message);
         }
     }
 
@@ -83,6 +144,7 @@ public final class ShopService {
         try {
             return Database.inTransaction(c -> {
                 EconomyService.lockWallet(c, user);
+                if (hasPending(c, user)) return -3L;
                 long oldRole;
                 try (PreparedStatement ps = c.prepareStatement(
                         "SELECT COALESCE(role_id, 0), role_expiry FROM economy WHERE user = ?")) {

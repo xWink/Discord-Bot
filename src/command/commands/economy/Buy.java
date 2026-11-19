@@ -82,6 +82,9 @@ public class Buy extends Command {
             } catch (InsufficientFundsException e) {
                 channel.sendMessage("You cannot afford this item.").queue();
                 return;
+            } catch (ShopService.PurchaseRejectedException e) {
+                channel.sendMessage(e.getMessage()).queue();
+                return;
             }
 
             event.getGuild().addRoleToMember(event.getMember(), role).queue(

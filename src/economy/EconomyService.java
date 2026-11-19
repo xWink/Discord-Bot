@@ -379,7 +379,11 @@ public final class EconomyService {
 
     static int applyDelta(Connection c, long user, int wallet, int delta, String reason, String ref,
                                   String opId) throws SQLException {
-        int after = wallet + delta;
+        // Wide arithmetic: a win that would push the wallet past the int range is capped at the maximum balance,
+        // never wrapped around to a negative one. The ledger records the delta that was actually applied.
+        long wide = (long) wallet + delta;
+        int after = (int) Math.max(Integer.MIN_VALUE, Math.min(Integer.MAX_VALUE, wide));
+        delta = after - wallet;
         try (PreparedStatement ps = c.prepareStatement("UPDATE economy SET wallet = ? WHERE user = ?")) {
             ps.setInt(1, after);
             ps.setLong(2, user);

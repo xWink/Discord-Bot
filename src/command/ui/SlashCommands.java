@@ -64,7 +64,7 @@ public final class SlashCommands {
         simple("mybang", "Your bang numbers");
         simple("daily", "When your daily reward is ready");
         simple("wallet", "Your balance, receipts and decay (sent by DM)");
-                simple("karma", "Your karma");
+        simple("karma", "Your karma");
         simple("ping", "Your latency");
         simple("hit", "Blackjack: take a card");
         simple("stand", "Blackjack: stand");
@@ -208,8 +208,6 @@ public final class SlashCommands {
         add(Commands.slash("compare", "Compare two or three courses").addOptions(
                 str("first", "A course code like CIS2500", true).setAutoComplete(true), str("second", "A course code like CIS2520", true).setAutoComplete(true),
                 str("third", "Optional third course", false).setAutoComplete(true)));
-        add(Commands.slash("join", "Join a course channel").addOptions(str("course", "Course code", true)));
-        add(Commands.slash("leave", "Leave a course channel").addOptions(str("course", "Course code", true)));
 
         // Moderators. The command itself checks the role, so anyone else is told no.
         add(Commands.slash("economy", "Moderator tools for the economy")

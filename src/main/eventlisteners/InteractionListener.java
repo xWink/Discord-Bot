@@ -40,12 +40,17 @@ public class InteractionListener extends ListenerAdapter {
         }
     }
 
+    /** Commands whose arguments (marks, ratings, reminders) must never be echoed in the channel. */
+    private static final java.util.Set<String> PRIVATE = new java.util.HashSet<>(java.util.Arrays.asList(
+            "grade", "grades", "need", "rate", "due", "digest", "remind", "completed", "taking"));
+
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         SlashCommands.Translation t = SlashCommands.translate(event);
-        // The command's own replies go to the channel. The visible slash reply stays, showing what ran,
-        // so the channel reads "<user> used /bet" followed by the bot's answer.
-        event.deferReply().queue(hook -> {
+        boolean priv = PRIVATE.contains(event.getName());
+        // The command's own replies go to the channel. For ordinary commands the visible slash reply stays, showing
+        // what ran. For private ones the acknowledgment is ephemeral and never repeats the arguments.
+        event.deferReply(priv).queue(hook -> {
             try {
                 MessageReceivedEvent synthetic = SyntheticMessage.event(event.getJDA(), event.getIdLong(), t.text,
                         event.getUser(), event.getMember(), event.getChannel(), t.users, t.roles, t.members);
@@ -53,7 +58,7 @@ public class InteractionListener extends ListenerAdapter {
                     hook.editOriginal("That command is not available right now.").queue();
                     return;
                 }
-                hook.editOriginal("Ran `" + t.text + "`").queue();
+                hook.editOriginal(priv ? "Done." : "Ran `" + t.text + "`").queue();
             } catch (Exception e) {
                 e.printStackTrace();
                 hook.editOriginal("Something went wrong running that. Please try again.").queue();

@@ -58,11 +58,28 @@ public class MinesGame {
 
     /** @return the net gain if the player stops now (never negative: stopping after a safe tile is a gain or push) */
     public int netIfStopped() {
-        return (int) Math.floor(stake * multiplier()) - stake;
+        long payout = (long) Math.floor((double) stake * multiplier());
+        return (int) Math.min(Integer.MAX_VALUE, payout - stake);
+    }
+
+    /** @return the largest stake whose full-clear payout still fits in an int, so no payout is ever cut short */
+    public static int maxStake(int mineCount) {
+        return (int) Math.min(Integer.MAX_VALUE, Math.floor(Integer.MAX_VALUE / multiplier(mineCount, TILES - mineCount)) - 1);
     }
 
     public boolean allSafeFound() {
         return found.size() == TILES - mines.size();
+    }
+
+    /** The decided outcome while settlement has not yet committed; retries replay it. */
+    private Integer pendingNet;
+
+    public synchronized Integer getPendingNet() { return pendingNet; }
+
+    /** Records the outcome the first time only, so a retry cannot change a result already decided. */
+    public synchronized int decide(int net) {
+        if (pendingNet == null) pendingNet = net;
+        return pendingNet;
     }
 
     public long getUserId() { return userId; }

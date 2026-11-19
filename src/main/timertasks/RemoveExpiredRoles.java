@@ -40,7 +40,11 @@ public class RemoveExpiredRoles extends TimerTask {
                     if (ShopService.getInstance().failAndRefund(p.purchaseId)) {
                         Member member = guild.getMemberById(p.user);
                         Role role = guild.getRoleById(p.roleId);
-                        if (member != null && role != null) guild.removeRoleFromMember(member, role).queue();
+                        // A stalled renewal of a colour they still rent must not take the paid role away.
+                        if (member != null && role != null
+                                && !ShopService.getInstance().holdsActiveRental(p.user, p.roleId)) {
+                            guild.removeRoleFromMember(member, role).queue();
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

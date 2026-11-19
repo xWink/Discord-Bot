@@ -35,15 +35,28 @@ public class ReminderTask extends TimerTask {
         }
         Server.API.retrieveUserById(r.user).queue(
                 user -> user.openPrivateChannel().queue(
-                        dm -> dm.sendMessage(text).queue(null, err -> toChannel(r, "<@" + r.user + "> I could not DM you. " + text)),
+                        dm -> dm.sendMessage(text).queue(ok -> sent(r), err -> toChannel(r, "<@" + r.user + "> I could not DM you. " + text)),
                         err -> toChannel(r, "<@" + r.user + "> I could not DM you. " + text)),
                 err -> toChannel(r, "<@" + r.user + "> " + text));
     }
 
+    /** Only a confirmed send completes the reminder; an unconfirmed one is claimed again after its lease. */
+    private void sent(Reminder r) {
+        try {
+            Reminders.markSent(r.id);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void toChannel(Reminder r, String text) {
         TextChannel channel = Server.API.getTextChannelById(r.channel);
-        if (channel != null) {
-            channel.sendMessage(text).setAllowedMentions(java.util.EnumSet.of(net.dv8tion.jda.api.entities.Message.MentionType.USER)).queue();
+        if (channel == null) {
+            System.out.println("Reminder " + r.id + " has nowhere to go (channel " + r.channel + " is gone); dropping it");
+            sent(r);
+            return;
         }
+        channel.sendMessage(text).setAllowedMentions(java.util.EnumSet.of(net.dv8tion.jda.api.entities.Message.MentionType.USER))
+                .queue(ok -> sent(r), err -> System.out.println("Reminder " + r.id + " not delivered yet; will retry"));
     }
 }

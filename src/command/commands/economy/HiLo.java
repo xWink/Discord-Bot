@@ -101,13 +101,18 @@ public class HiLo extends Command {
     }
 
     /** Settles a round and removes it; safe to call more than once. */
-    public static int finish(HiLoGame game, int net) throws Exception {
-        if (!GAMES.remove(game.getUserId(), game)) return 0;
-        Database.inTransaction(c -> {
-            EconomyService.settleReservationIn(c, game.getReservationId(), net, "hilo");
-            return null;
-        });
-        return net;
+    public static int finish(HiLoGame game, int requested) throws Exception {
+        synchronized (game) {
+            if (GAMES.get(game.getUserId()) != game) return 0;
+            // Keep the round (and its decided outcome) until the settlement commits so a failure can be retried.
+            int net = game.decide(requested);
+            Database.inTransaction(c -> {
+                EconomyService.settleReservationIn(c, game.getReservationId(), net, "hilo");
+                return null;
+            });
+            GAMES.remove(game.getUserId(), game);
+            return net;
+        }
     }
 
     /** {@code !higher}, {@code !lower}, {@code !cashout} share one handler. */
@@ -129,6 +134,12 @@ public class HiLo extends Command {
             try {
                 synchronized (game) {
                     if (GAMES.get(game.getUserId()) != game) return;
+                    if (game.getPendingNet() != null) {
+                        // An earlier attempt to settle this round failed; replay the decided outcome.
+                        int net = finish(game, game.getPendingNet());
+                        event.getChannel().sendMessage("Your round is settled: " + (net >= 0 ? "+" : "") + net + " GC.").queue();
+                        return;
+                    }
                     if (mode.equals("cashout")) {
                         if (game.getCorrect() == 0) {
                             event.getChannel().sendMessage("Make a correct guess first.").queue();

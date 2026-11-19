@@ -193,13 +193,14 @@ public final class Race {
                                 + ".").queue();
                         return;
                     }
-                    BY_CHANNEL.remove(channelId, round);
                     String op = "race:" + event.getMessageId();
                     Database.inTransaction(c -> {
                         EconomyService.settleReservationIn(c, round.reservation, -round.stake, "race");
                         EconomyService.creditIn(c, user, round.stake, "race", Long.toString(round.question.getId()), op);
                         return null;
                     });
+                    // Only after the settlement commits does the round leave memory; on failure it stays answerable.
+                    BY_CHANNEL.remove(channelId, round);
                     String explanation = round.question.getExplanation();
                     economy.Cosmetics.reply(event.getChannel(), user, name + " got it first: **"
                             + round.question.getChoices().get(round.question.getCorrectIndex()) + "**. You win "

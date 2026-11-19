@@ -137,7 +137,7 @@ public final class Reviews {
                 boolean first = Ratings.rate(user, c.code, difficulty, workload, Remind.defang(comment.toString()));
                 Summary s = Ratings.summary(c.code);
                 event.getChannel().sendMessage((first ? "Thanks! Rated " : "Updated your rating of ") + c.code.replace("*", "\\*")
-                        + ": difficulty " + difficulty + ", workload " + workload + ".\n" + line(c.code, s))
+                        + " (saved anonymously).\n" + line(c.code, s))
                         .setActionRow(Buttons.of(0, false, "!reviews " + c.code, "See the reviews", ButtonStyle.SECONDARY)).queue();
             } catch (Exception e) {
                 printStackTraceAndSendMessage(event, e);

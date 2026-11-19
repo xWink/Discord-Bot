@@ -87,6 +87,7 @@ public final class CommandList {
         commands.add(new Bang());
         commands.add(new BangScore());
         commands.add(new BangWeek());
+        commands.add(new command.commands.bang.MyBang());
         commands.add(new Bet());
         commands.add(new BountyCommand());
         commands.add(new BannerCommand());
@@ -155,6 +156,7 @@ public final class CommandList {
         commands.add(new Hit());
         commands.add(new Id());
         commands.add(new Info());
+        commands.add(new Karma());
         commands.add(new Market());
         commands.add(new MyHand());
         commands.add(new PaidPlay());

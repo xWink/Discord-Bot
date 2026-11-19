@@ -56,6 +56,17 @@ public class HiLoGame {
         return correct >= MAX_GUESSES;
     }
 
+    /** The decided outcome while settlement has not yet committed; retries replay it. */
+    private Integer pendingNet;
+
+    public synchronized Integer getPendingNet() { return pendingNet; }
+
+    /** Records the outcome the first time only, so a retry cannot change a result already decided. */
+    public synchronized int decide(int net) {
+        if (pendingNet == null) pendingNet = net;
+        return pendingNet;
+    }
+
     public long getUserId() { return userId; }
     public int getStake() { return stake; }
     public String getReservationId() { return reservationId; }

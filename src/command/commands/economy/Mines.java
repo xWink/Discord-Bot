@@ -44,13 +44,19 @@ public class Mines {
     }
 
     /** Settles a round and removes it; safe to call more than once. */
-    public static int finish(MinesGame game, int net) throws Exception {
-        if (!GAMES.remove(game.getUserId(), game)) return 0;
-        Database.inTransaction(c -> {
-            EconomyService.settleReservationIn(c, game.getReservationId(), net, "mines");
-            return null;
-        });
-        return net;
+    public static int finish(MinesGame game, int requested) throws Exception {
+        synchronized (game) {
+            if (GAMES.get(game.getUserId()) != game) return 0;
+            // The round stays available (with its decided outcome) until the settlement commits, so a failed
+            // transaction can be retried instead of losing the result.
+            int net = game.decide(requested);
+            Database.inTransaction(c -> {
+                EconomyService.settleReservationIn(c, game.getReservationId(), net, "mines");
+                return null;
+            });
+            GAMES.remove(game.getUserId(), game);
+            return net;
+        }
     }
 
     /** The 4x4 grid of tile buttons plus a Cash out button. Uncovered tiles show a gem and cannot be pressed. */
@@ -116,6 +122,11 @@ public class Mines {
                     event.getChannel().sendMessage("You already have a mines round open.").queue();
                     return;
                 }
+                if (stake > MinesGame.maxStake(mines)) {
+                    event.getChannel().sendMessage("With " + mines + " mines the stake can be at most "
+                            + MinesGame.maxStake(mines) + " GC, so the biggest payout stays within a wallet.").queue();
+                    return;
+                }
                 String blocked = Wagers.gate(user, stake);
                 if (blocked != null) {
                     event.getChannel().sendMessage(blocked).queue();
@@ -169,6 +180,12 @@ public class Mines {
             try {
                 synchronized (game) {
                     if (GAMES.get(user) != game) return;
+                    if (game.getPendingNet() != null) {
+                        // An earlier attempt to settle this round failed; replay the decided outcome.
+                        int net = finish(game, game.getPendingNet());
+                        channel.sendMessage("Your round is settled: " + (net >= 0 ? "+" : "") + net + " GC.").queue();
+                        return;
+                    }
                     if (cash) {
                         if (game.getFound().isEmpty()) {
                             channel.sendMessage("Uncover a tile first.").queue();

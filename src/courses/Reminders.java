@@ -9,7 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-/** People's reminders. Each is sent once: claiming a due reminder marks it done in the same transaction. */
+/** People's reminders. A due reminder is claimed, sent, and only then marked done, so a crash or failed send retries it. */
 public final class Reminders {
 
     /** Most reminders one person can have waiting. */
@@ -96,25 +96,46 @@ public final class Reminders {
         });
     }
 
-    /** @return reminders that have come due, now marked done so no other pass sends them again */
+    /** A claimed reminder whose delivery was never confirmed is handed out again after this long. */
+    public static final long CLAIM_LEASE_MS = 5 * 60 * 1000;
+
+    /**
+     * @return reminders that have come due, now claimed (done = 2) so no other pass sends them at the same time.
+     *         A claim that is never confirmed with {@link #markSent} (a crash, a failed send) expires after
+     *         {@link #CLAIM_LEASE_MS} and the reminder comes back.
+     */
     public static List<Reminder> claimDue(long now, int limit) throws SQLException {
         return Database.inTransaction(c -> {
             List<Reminder> out = new ArrayList<>();
             try (PreparedStatement ps = c.prepareStatement(
-                    "SELECT * FROM reminders WHERE done = 0 AND due <= ? ORDER BY due LIMIT ? FOR UPDATE")) {
+                    "SELECT * FROM reminders WHERE ((done = 0 AND due <= ?) OR (done = 2 AND claimed_at <= ?)) "
+                            + "ORDER BY due LIMIT ? FOR UPDATE")) {
                 ps.setLong(1, now);
-                ps.setInt(2, limit);
+                ps.setLong(2, now - CLAIM_LEASE_MS);
+                ps.setInt(3, limit);
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) out.add(read(rs));
                 }
             }
             for (Reminder r : out) {
-                try (PreparedStatement ps = c.prepareStatement("UPDATE reminders SET done = 1 WHERE id = ?")) {
-                    ps.setLong(1, r.id);
+                try (PreparedStatement ps = c.prepareStatement("UPDATE reminders SET done = 2, claimed_at = ? WHERE id = ?")) {
+                    ps.setLong(1, now);
+                    ps.setLong(2, r.id);
                     ps.executeUpdate();
                 }
             }
             return out;
+        });
+    }
+
+    /** Marks a claimed reminder as delivered, once Discord has confirmed the send. */
+    public static void markSent(long id) throws SQLException {
+        Database.inTransaction(c -> {
+            try (PreparedStatement ps = c.prepareStatement("UPDATE reminders SET done = 1 WHERE id = ? AND done = 2")) {
+                ps.setLong(1, id);
+                ps.executeUpdate();
+            }
+            return null;
         });
     }
 }

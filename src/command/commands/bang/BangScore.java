@@ -36,7 +36,7 @@ public class BangScore extends Command {
             return;
         }
         try {
-            event.getChannel().sendMessage(BangHighScore.getBangHighScore().toEmbed().build()).queue();
+            event.getChannel().sendMessageEmbeds(BangHighScore.getBangHighScore().toEmbed().build()).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

@@ -5,20 +5,17 @@ import command.util.cards.CardMessage;
 import command.util.cards.HandOfCards;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
-import database.connectors.EconomyConnector;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import command.util.game.BlackJackStore;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Hit extends Command {
-
-    private EconomyConnector ec;
 
     /**
      * Initializes the command's key to "!hit".
      */
     public Hit() {
         super("!hit", false);
-        ec = new EconomyConnector();
     }
 
     /**
@@ -37,56 +34,54 @@ public class Hit extends Command {
             return;
         }
 
-        int playerValue = game.hit();
-        String output = "";
-        String name = event.getAuthor().getName();
-        HandOfCards playerHand = game.getPlayer().getHand();
+        String name = economy.Cosmetics.nameWithTitle(event.getAuthor().getIdLong(), event.getAuthor().getName());
 
         try {
-            // Show player hand
-            CardMessage.createCardMessage(
-                    channel,
-                    name + "'s hand is now: " + playerHand.toString(),
-                    playerHand.getAsList()
-            ).queue();
+            synchronized (game) {
+                if (game.isSettled()) return;
+                int playerValue = game.hit();
+                game.touch();
+                String output = "";
+                HandOfCards playerHand = game.getPlayer().getHand();
 
-            // Game continues as normal if no blackjack or bust
-            if (playerValue < 21)
-                return;
+                // Show player hand, with buttons while the round goes on
+                net.dv8tion.jda.api.requests.restaction.MessageCreateAction shown = CardMessage.createCardMessage(
+                        channel,
+                        name + "'s hand is now: " + playerHand.toString(),
+                        playerHand.getAsList()
+                );
+                if (playerValue < 21) shown.setActionRow(command.ui.Buttons.blackjack(event.getAuthor().getIdLong()));
+                shown.queue();
 
-            // Player either won or busted
-            output += playerValue == 21 ? "You got 21!\n" : "You busted.\n";
+                // Game continues as normal if no blackjack or bust
+                if (playerValue < 21) {
+                    BlackJackStore.save(game);
+                    return;
+                }
 
-            // Check how much player won/lost
-            int reward = game.checkWinner();
+                // Player either hit 21 (auto-stand) or busted (round ends, dealer does not play)
+                output += playerValue == 21 ? "You got 21!\n" : "You busted.\n";
 
-            // Check if dealer busted
-            HandOfCards dealerHand = game.getDealer().getHand();
-            if (dealerHand.getValue() > 21) {
-                output += "Dealer busted!\n";
+                int reward = BlackJackStore.settle(game);
+                HandOfCards dealerHand = game.getDealer().getHand();
+                if (playerValue <= 21 && dealerHand.getValue() > 21) {
+                    output += "Dealer busted!\n";
+                }
+
+                if (reward > 0)
+                    output = economy.Cosmetics.winHeader(game.getPlayer().getUserId()) + output + "You earned " + reward + " *gc*";
+                else if (reward < 0)
+                    output += "You lost " + (-reward) + " *gc*";
+                else
+                    output += "Push, your stake is returned";
+                output += "\nDealers hand: " + dealerHand.toString();
+
+                CardMessage.createCardMessage(
+                        channel,
+                        output,
+                        dealerHand.getAsList()
+                ).queue();
             }
-
-            // Output player's winnings/losses
-            if (reward > 0)
-                output += "You earned " + reward + " *gc*";
-            else if (reward < 0)
-                output += "You lost " + (-reward) + " *gc*";
-            else
-                output += "Tie game, you didn't win or lose any money";
-            output += "\nDealers hand: " + dealerHand.toString();
-
-            // Show game results
-            CardMessage.createCardMessage(
-                    channel,
-                    output,
-                    dealerHand.getAsList()
-            ).queue();
-
-            // Update database
-            if (reward != 0)
-                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), reward);
-
-            BlackJackList.removeGame(game);
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

@@ -1,0 +1,166 @@
+package command.util.misc;
+
+import economy.Cosmetics;
+import org.junit.Test;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.nio.file.Files;
+import java.util.Arrays;
+
+import static org.junit.Assert.*;
+
+public class ProfileCardTest {
+
+    private static Cosmetics.Loadout wearing(String team, String... codes) {
+        Cosmetics.Loadout l = new Cosmetics.Loadout();
+        l.codes.addAll(Arrays.asList(codes));
+        l.team = team;
+        return l;
+    }
+
+    private static ProfileCard.Stats stats() {
+        ProfileCard.Stats s = new ProfileCard.Stats();
+        s.name = "GryphFan";
+        s.bangs = 142;
+        s.deaths = 19;
+        s.jams = 4;
+        s.survival = 86.6;
+        s.streak = 7;
+        s.karma = 12;
+        s.achievements = 5;
+        s.achievementsTotal = 9;
+        return s;
+    }
+
+    private static BufferedImage decode(byte[] png) throws Exception {
+        return ImageIO.read(new ByteArrayInputStream(png));
+    }
+
+    @Test
+    public void rendersEveryLoadoutAndSavesSamples() throws Exception {
+        File dir = new File("build/profile-cards");
+        dir.mkdirs();
+        Object[][] cases = {
+                {"default", wearing(null)},
+                {"flair-title", wearing(null, "flair-day", "title-week")},
+                {"bundle-fireworks", wearing(null, "bundle-weekend", "fx-fireworks", "badge-month", "badge-set")},
+                {"team-confetti", wearing("Gryphon Hockey", "banner-club", "victory-fx", "gauntlet-w3")},
+                {"trophy-season", wearing(null, "fx-trophy", "season-202610-arcade", "badge-month")},
+                {"stars-everything", wearing("Guelph Chess Club", "bundle-weekend", "fx-stars", "banner-club",
+                        "season-202610-duel", "gauntlet-w3", "badge-set", "badge-month", "flair-day")},
+        };
+        long previousHash = 0;
+        for (Object[] c : cases) {
+            byte[] png = ProfileCard.render(stats(), (Cosmetics.Loadout) c[1], 42);
+            BufferedImage img = decode(png);
+            assertEquals(ProfileCard.WIDTH, img.getWidth());
+            assertEquals(ProfileCard.HEIGHT, img.getHeight()); // no inventory panel when nothing is owned
+            Files.write(new File(dir, c[0] + ".png").toPath(), png);
+            long hash = Arrays.hashCode(png);
+            assertNotEquals("each loadout should look different", previousHash, hash);
+            previousHash = hash;
+        }
+    }
+
+    @Test
+    public void defaultCardDiffersFromDressedCard() throws Exception {
+        assertFalse(Arrays.equals(ProfileCard.render(stats(), wearing(null), 1),
+                ProfileCard.render(stats(), wearing(null, "bundle-weekend"), 1)));
+    }
+
+    @Test
+    public void longNamesAndMissingAvatarDoNotBreak() throws Exception {
+        ProfileCard.Stats s = stats();
+        s.name = "AVeryLongDiscordDisplayNameThatKeepsGoingAndGoingForeverAndEver";
+        assertNotNull(decode(ProfileCard.render(s, wearing("An Extremely Long Team Name Indeed Yes", "banner-club",
+                "title-week"), 7)));
+        s.name = "";
+        assertNotNull(decode(ProfileCard.render(s, wearing(null), 7)));
+    }
+
+    @Test
+    public void inventoryPanelGrowsTheCardAndMarksWornItems() throws Exception {
+        long now = System.currentTimeMillis();
+        java.util.List<Cosmetics.OwnedItem> owned = new java.util.ArrayList<>();
+        for (String code : new String[]{"victory-fx", "fx-fireworks", "fx-trophy", "fx-stars", "flair-day", "title-week",
+                "bundle-weekend", "badge-month", "badge-set", "banner-club", "event-pass", "season-1", "gauntlet-1"}) {
+            owned.add(new Cosmetics.OwnedItem(code, code.equals("badge-set") ? 0 : now + 3 * 86_400_000L));
+        }
+        byte[] few = ProfileCard.render(stats(), wearing(null, "fx-fireworks"),
+                owned.subList(0, 3), 3);
+        byte[] many = ProfileCard.render(stats(), wearing(null, "fx-fireworks", "title-week"), owned, 3);
+        BufferedImage fewImg = decode(few);
+        BufferedImage manyImg = decode(many);
+        assertTrue("an inventory adds height", fewImg.getHeight() > ProfileCard.HEIGHT);
+        assertTrue("more items need more rows", manyImg.getHeight() > fewImg.getHeight());
+        Files.write(new File("build/profile-cards/inventory-few.png").toPath(), few);
+        Files.write(new File("build/profile-cards/inventory-many.png").toPath(), many);
+    }
+
+    @Test
+    public void colourRentalAndInstallmentShowEvenWithNoCosmetics() throws Exception {
+        ProfileCard.Stats s = stats();
+        s.extras = java.util.Arrays.asList("Colour: orange  \u00B7  4d left", "Installment: blue  \u00B7  1200/2500 GC");
+        byte[] withExtras = ProfileCard.render(s, wearing(null), java.util.Collections.<Cosmetics.OwnedItem>emptyList(), 5);
+        byte[] without = ProfileCard.render(stats(), wearing(null), java.util.Collections.<Cosmetics.OwnedItem>emptyList(), 5);
+        assertTrue(decode(withExtras).getHeight() > decode(without).getHeight());
+        Files.write(new File("build/profile-cards/extras.png").toPath(), withExtras);
+    }
+
+    @Test
+    public void alumniCardHasItsRibbon() throws Exception {
+        Cosmetics.Loadout l = wearing("Gryphon Hockey", "alumni", "banner-club", "title-week");
+        l.alumni = true;
+        l.alumniYear = 2026;
+        ProfileCard.Stats s = stats();
+        s.extras = java.util.Arrays.asList("Alumni  \u00B7  Class of 2026");
+        byte[] png = ProfileCard.render(s, l, java.util.Collections.<Cosmetics.OwnedItem>emptyList(), 9);
+        Files.write(new File("build/profile-cards/alumni.png").toPath(), png);
+        assertNotNull(decode(png));
+    }
+
+    @Test
+    public void alumniWithoutAYearShowsPlainRibbon() throws Exception {
+        Cosmetics.Loadout withYear = wearing(null, "alumni");
+        withYear.alumni = true;
+        withYear.alumniYear = 2019;
+        Cosmetics.Loadout noYear = wearing(null, "alumni");
+        noYear.alumni = true;
+        byte[] a = ProfileCard.render(stats(), withYear, 4);
+        byte[] b = ProfileCard.render(stats(), noYear, 4);
+        assertFalse("the year changes the ribbon text", java.util.Arrays.equals(a, b));
+        Files.write(new File("build/profile-cards/alumni-no-year.png").toPath(), b);
+    }
+
+    @Test
+    public void animatedCardIsALoopingGifWithTransparentCorners() throws Exception {
+        Cosmetics.Loadout l = wearing(null, "bundle-weekend", "fx-stars", "badge-month");
+        byte[] gif = ProfileCard.renderAnimated(stats(), l, java.util.Collections.<Cosmetics.OwnedItem>emptyList(), 42);
+        assertNotNull("should fit under the size cap", gif);
+        assertEquals("GIF89a", new String(gif, 0, 6, "US-ASCII"));
+        assertTrue(new String(gif, "ISO-8859-1").contains("NETSCAPE2.0")); // loops forever
+        assertTrue(gif.length <= ProfileCard.MAX_GIF_BYTES);
+        new File("build/profile-cards").mkdirs();
+        Files.write(new File("build/profile-cards/animated.gif").toPath(), gif);
+
+        javax.imageio.ImageReader reader = ImageIO.getImageReadersByFormatName("gif").next();
+        reader.setInput(ImageIO.createImageInputStream(new ByteArrayInputStream(gif)));
+        assertEquals(ProfileCard.FRAMES, reader.getNumImages(true));
+        BufferedImage first = reader.read(0);
+        BufferedImage mid = reader.read(ProfileCard.FRAMES / 2);
+        assertEquals(ProfileCard.WIDTH, first.getWidth());
+        assertEquals(0, first.getRGB(0, 0) >>> 24); // rounded corner is see-through
+        assertNotEquals("frames should differ", Arrays.hashCode(((java.awt.image.DataBufferInt) toArgb(first)
+                .getRaster().getDataBuffer()).getData()), Arrays.hashCode(((java.awt.image.DataBufferInt) toArgb(mid)
+                .getRaster().getDataBuffer()).getData()));
+    }
+
+    private static BufferedImage toArgb(BufferedImage src) {
+        BufferedImage out = new BufferedImage(src.getWidth(), src.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        out.getGraphics().drawImage(src, 0, 0, null);
+        return out;
+    }
+}

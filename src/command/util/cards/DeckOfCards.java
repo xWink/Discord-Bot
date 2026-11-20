@@ -158,4 +158,23 @@ public class DeckOfCards {
     public int getSize() {
         return deck.size();
     }
+
+    /**
+     * Builds a deck holding exactly the given cards, top first.
+     *
+     * @param cards the cards in draw order
+     * @return the deck
+     */
+    public static DeckOfCards of(List<Card> cards) {
+        DeckOfCards d = new DeckOfCards(0);
+        d.deck.addAll(cards);
+        return d;
+    }
+
+    /**
+     * @return a copy of the remaining cards, top first
+     */
+    public List<Card> getCards() {
+        return new ArrayList<>(deck);
+    }
 }

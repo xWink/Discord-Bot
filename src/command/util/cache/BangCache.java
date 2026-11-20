@@ -2,7 +2,7 @@ package command.util.cache;
 
 import database.connectors.BangConnector;
 import main.Server;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.*;

@@ -1,13 +1,16 @@
 package command.commands.bang;
 
 import command.Command;
+import command.util.art.GameArt;
 import command.util.cache.BangCache;
 import command.util.cache.BangUpdate;
 import database.connectors.BangConnector;
-import database.connectors.EconomyConnector;
+import database.connectors.BangResults;
+import economy.DailyService;
+import economy.EconomyService;
 import main.Server;
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.sql.SQLException;
@@ -20,13 +23,16 @@ import java.util.Random;
 public class Bang extends Command {
 
     private BangConnector bc;
-    private EconomyConnector ec;
     private static int chambers;
     private static boolean jammed;
     private static boolean killed;
     private static boolean reward;
     private static boolean streak;
+    /** Which chamber this pull used, 0 to 5, for the cylinder picture. */
+    private int pullIndex;
     private long userId;
+    private long messageId;
+    private final EconomyService ec2 = EconomyService.getInstance();
 
     /**
      * Initializes the command's key to "!bang".
@@ -36,7 +42,6 @@ public class Bang extends Command {
     public Bang() {
         super("!bang", true);
         bc = new BangConnector();
-        ec = new EconomyConnector();
         resetBools();
         resetChambers();
     }
@@ -72,21 +77,22 @@ public class Bang extends Command {
      */
     private String getOutput(MessageReceivedEvent event) throws SQLException {
         String output = "";
-        Emote jamEmote = event.getGuild().getEmoteById(Server.JAM_EMOJI_ID);
-        Emote surviveEmote = event.getGuild().getEmoteById(Server.SURVIVE_EMOJI_ID);
+        RichCustomEmoji jamEmote = event.getGuild().getEmojiById(Server.JAM_EMOJI_ID);
+        RichCustomEmoji surviveEmote = event.getGuild().getEmojiById(Server.SURVIVE_EMOJI_ID);
         String name = event.getAuthor().getName();
 
         if (jammed) {
             output += "The gun jammed... " + name + " survived "
                     + (jamEmote != null
                     ? jamEmote.getAsMention() + jamEmote.getAsMention() + jamEmote.getAsMention()
-                    : "");
+                    : "\uD83C\uDF40\uD83C\uDF40\uD83C\uDF40"); // no custom emoji on this server: use clovers
         } else if (killed) {
             output += "Bang! " + name + " died :skull:";
         } else {
-            output += "Click. " + name + " survived  " + (surviveEmote != null ? surviveEmote.getAsMention() : "");
+            output += "Click. " + name + " survived  "
+                    + (surviveEmote != null ? surviveEmote.getAsMention() : "\uD83D\uDE05");
         }
-        output += "\nChambers left in the cylinder: ||  " + chambers + "  ||\n";
+        output += "\n";
 
         if (reward)
             output += name + " received their daily reward of 5 GryphCoins!\n";
@@ -122,6 +128,8 @@ public class Bang extends Command {
         }
 
         userId = event.getAuthor().getIdLong();
+        messageId = event.getMessageIdLong();
+        pullIndex = 6 - chambers;
         int pull = new Random().nextInt(chambers);
         if (pull == 0) tryToKill();
         else chambers--;
@@ -132,7 +140,7 @@ public class Bang extends Command {
             LocalDate lastPlayedDate = Instant.ofEpochMilli(lastPlayed).atZone(ZoneId.systemDefault()).toLocalDate();
             LocalDate now = Instant.ofEpochMilli(new Date().getTime()).atZone(ZoneId.systemDefault()).toLocalDate();
 
-            reward = bc.isEligibleForDaily(userId);
+            reward = DailyService.getInstance().claim(userId, "bang", new Date().getTime());
             streak = (now.minusDays(1).getDayOfYear() == lastPlayedDate.getDayOfYear()
                     && now.minusDays(1).getYear() == lastPlayedDate.getYear())
                     || bc.getUserRow(userId).getInt("streak") == 0;
@@ -146,14 +154,37 @@ public class Bang extends Command {
                     streak));
 
             giveRewards();
+            arcade.PunchCard.record(userId);
+            BangResults.record(userId, new Date().getTime(), killed, jammed);
 
-            if (!cache.isPanicking()) {
-                channel.sendMessage(getOutput(event)).queue();
-            }
+            if (!cache.isPanicking()) send(event, channel);
 
             resetBools();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
+        }
+    }
+
+    /**
+     * The pull as an animation (cylinder spins, hammer falls) that settles on the result card. The text and the
+     * Pull again button replace the placeholder once it has played. If the animation fails, text only.
+     */
+    private void send(MessageReceivedEvent event, MessageChannel channel) throws SQLException {
+        String text = getOutput(event);
+        try {
+            GameArt.Pull result = jammed ? GameArt.Pull.JAM : killed ? GameArt.Pull.BANG : GameArt.Pull.CLICK;
+            String name = event.getAuthor().getName();
+            int index = pullIndex;
+            int streakNow = bc.getCurrentStreak(userId);
+            java.util.List<String> codes = new java.util.ArrayList<>(economy.Cosmetics.loadout(userId).codes);
+            long user = userId;
+            command.ui.Reveal.render(channel, "bang.gif", "Spinning the cylinder\u2026",
+                    () -> GameArt.bangAnimation(name, index, result, streakNow, codes, user),
+                    text, command.ui.Buttons.single(command.ui.Buttons.mine(userId, "!bang", "Pull again",
+                            net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.DANGER)), 1900);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            channel.sendMessage(text).queue();
         }
     }
 
@@ -164,19 +195,15 @@ public class Bang extends Command {
      * @throws SQLException may be thrown when accessing database
      */
     private void giveRewards() throws SQLException {
-        int totalReward = 0;
+        // The daily was already paid atomically with its claim in DailyService.
+        // Each bonus carries a per-message operation ID so a retry cannot pay it twice.
+        String key = Long.toString(messageId);
         int currentStreak = bc.getCurrentStreak(userId);
 
         if (streak && currentStreak > 0 && currentStreak % 10 == 0)
-            totalReward += 50;
-
-        if (reward)
-            totalReward += 5;
+            ec2.credit(userId, 50, "bang:streak", key, "bang-streak:" + key);
 
         if (jammed)
-            totalReward += 50;
-
-        if (totalReward > 0)
-            ec.addOrRemoveMoney(userId, totalReward);
+            ec2.credit(userId, 50, "bang:jam", key, "bang-jam:" + key);
     }
 }

@@ -1,7 +1,7 @@
 package main.eventlisteners;
 
 
-import net.dv8tion.jda.api.events.DisconnectEvent;
+import net.dv8tion.jda.api.events.session.SessionDisconnectEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +16,7 @@ public class DisconnectEventListener extends ListenerAdapter {
      * @param event the disconnection event
      */
     @Override
-    public void onDisconnect(@NotNull DisconnectEvent event) {
+    public void onSessionDisconnect(@NotNull SessionDisconnectEvent event) {
         System.out.println("Attempting reconnect");
     }
 }

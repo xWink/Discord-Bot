@@ -2,6 +2,7 @@ package database.connectors;
 
 import database.Connector;
 import command.util.economy.RoleListing;
+import economy.EconomyService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,43 +19,36 @@ public final class EconomyConnector extends Connector {
     }
 
     /**
-     * Adds/removes a specified amount of money to the user's wealth column in
-     * the economy table.
-     *
-     * @param userId the ID number of the user getting/losing money
-     * @param amount the amount of money to add (negative value to remove)
-     * @throws SQLException may be thrown when creating a PreparedStatement
-     */
-    public void addOrRemoveMoney(long userId, int amount) throws SQLException {
-        if (!userExists(userId)) addUser(userId);
-        getConnection().prepareStatement("UPDATE " + getTable()
-                + " SET wallet = wallet + " + amount
-                + " WHERE user = " + userId).executeUpdate();
-    }
-
-    /**
-     * Checks if the user can afford a certain expense.
+     * Checks if the user can afford a certain expense from spendable coins
+     * (the wallet minus anything reserved by an open game or purchase).
      *
      * @param userId the ID number of the user
-     * @param cost the cost that is being compared to the user's wealth
+     * @param cost the cost that is being compared to the user's spendable balance
      * @return true if the user can afford the expense, false otherwise
-     * @throws SQLException may be thrown by getting "wallet" integer in ResultSet
+     * @throws SQLException may be thrown when reading the wallet
      */
     public boolean canAfford(long userId, int cost) throws SQLException {
-        if (!userExists(userId)) addUser(userId);
-        return getUserRow(userId).getInt("wallet") - cost >= 0;
+        return EconomyService.getInstance().getSpendable(userId) >= cost;
     }
 
     /**
-     * Getter for the amount of wealth a user has.
+     * @param userId the ID number of the user
+     * @return the wallet balance minus coins reserved by open games or purchases
+     * @throws SQLException may be thrown when reading the wallet
+     */
+    public int getSpendable(long userId) throws SQLException {
+        return EconomyService.getInstance().getSpendable(userId);
+    }
+
+    /**
+     * Getter for the amount of wealth a user has, including reserved coins.
      *
      * @param userId the ID number of the user
-     * @return the amount of money the user has
-     * @throws SQLException may be thrown by getting "wallet" integer in ResultSet
+     * @return the wallet balance
+     * @throws SQLException may be thrown when reading the wallet
      */
     public int getWealth(long userId) throws SQLException {
-        if (!userExists(userId)) addUser(userId);
-        return getUserRow(userId).getInt("wallet");
+        return EconomyService.getInstance().getBalance(userId);
     }
 
     /**
@@ -74,22 +68,6 @@ public final class EconomyConnector extends Connector {
     }
 
     /**
-     * Sets a user's role and its expiry time in the database.
-     *
-     * @param userId the ID number of the user
-     * @param listing the RoleListing that the user purchased
-     * @throws SQLException may be thrown when creating a PreparedStatement
-     */
-    public void setRole(long userId, RoleListing listing) throws SQLException {
-        if (!userExists(userId)) addUser(userId);
-        Date date = new Date();
-        getConnection().prepareStatement("UPDATE economy "
-                + "SET role_expiry = " + (date.getTime() + listing.getDuration() * 86400000)
-                + ", role_colour = '" + listing.getRole().getName()
-                + "' WHERE user = " + userId).executeUpdate();
-    }
-
-    /**
      * Searches the economy table for a row with matching user ID and returns
      * the ResultSet of the query.
      *
@@ -101,16 +79,44 @@ public final class EconomyConnector extends Connector {
         return getUserRow(userId, getTable());
     }
 
+    /** A rental whose time has run out. */
+    public static final class ExpiredRole {
+        public final long user;
+        public final long roleId;
+        public final String roleName;
+
+        ExpiredRole(long user, long roleId, String roleName) {
+            this.user = user;
+            this.roleId = roleId;
+            this.roleName = roleName;
+        }
+    }
+
     /**
-     * Gets a ResultSet containing all rows with expired roles.
-     *
-     * @return ResultSet containing all rows with expired roles
+     * @return every rental past its expiry, read fully before any are processed
      * @throws SQLException may be thrown when creating a PreparedStatement
      */
-    public ResultSet getExpiredRoles() throws SQLException {
-        Date date = new Date();
-        return getConnection().prepareStatement("SELECT user, role_colour FROM economy "
-                + "WHERE role_expiry > 0 AND role_expiry < " + date.getTime()).executeQuery();
+    public java.util.List<ExpiredRole> getExpiredRoles() throws SQLException {
+        java.util.List<ExpiredRole> list = new java.util.ArrayList<>();
+        try (ResultSet rs = getConnection().prepareStatement("SELECT user, role_id, role_colour FROM economy "
+                + "WHERE role_expiry > 0 AND role_expiry < " + new Date().getTime()).executeQuery()) {
+            while (rs.next()) {
+                list.add(new ExpiredRole(rs.getLong("user"), rs.getLong("role_id"), rs.getString("role_colour")));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * @param userId the ID number of the user
+     * @return the Discord role ID of the user's current rental, or 0 if none
+     * @throws SQLException may be thrown when reading the row
+     */
+    public long getRoleId(long userId) throws SQLException {
+        try (ResultSet rs = getConnection().prepareStatement("SELECT role_id FROM economy WHERE user = " + userId)
+                .executeQuery()) {
+            return rs.next() ? rs.getLong(1) : 0L;
+        }
     }
 
     /**
@@ -120,7 +126,7 @@ public final class EconomyConnector extends Connector {
      * @throws SQLException may be thrown when creating a PreparedStatement
      */
     public void resetUserRole(long userId) throws SQLException {
-        getConnection().prepareStatement("UPDATE economy SET role_expiry = 0, role_colour = NULL "
+        getConnection().prepareStatement("UPDATE economy SET role_expiry = 0, role_colour = NULL, role_id = NULL "
                 + "WHERE user = " + userId).executeUpdate();
     }
 

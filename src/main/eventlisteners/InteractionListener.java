@@ -1,0 +1,105 @@
+package main.eventlisteners;
+
+import command.ui.Buttons;
+import command.ui.CommandDispatcher;
+import command.ui.SlashCommands;
+import command.ui.SyntheticMessage;
+import main.Server;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.hooks.ListenerAdapter;
+
+import java.util.Collections;
+
+/**
+ * Registers the slash commands and runs slash commands and buttons by turning
+ * them into the equivalent text command (see {@link SyntheticMessage}).
+ */
+public class InteractionListener extends ListenerAdapter {
+
+    /** Publishes the slash commands to the server (instant), or globally if the server is not cached. */
+    @Override
+    public void onReady(ReadyEvent event) {
+        JDA jda = event.getJDA();
+        Guild guild = jda.getGuildById(Server.GUILD_ID);
+        try {
+            if (guild != null) {
+                guild.updateCommands().addCommands(SlashCommands.all()).queue(
+                        ok -> System.out.println("Registered " + ok.size() + " slash commands"),
+                        Throwable::printStackTrace);
+            } else {
+                jda.updateCommands().addCommands(SlashCommands.all()).queue(null, Throwable::printStackTrace);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /** Commands whose arguments (marks, ratings, reminders) must never be echoed in the channel. */
+    private static final java.util.Set<String> PRIVATE = new java.util.HashSet<>(java.util.Arrays.asList(
+            "grade", "grades", "need", "rate", "due", "digest", "remind", "completed", "taking"));
+
+    @Override
+    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+        SlashCommands.Translation t = SlashCommands.translate(event);
+        boolean priv = PRIVATE.contains(event.getName());
+        // The command's own replies go to the channel. For ordinary commands the visible slash reply stays, showing
+        // what ran. For private ones the acknowledgment is ephemeral and never repeats the arguments.
+        event.deferReply(priv).queue(hook -> {
+            try {
+                MessageReceivedEvent synthetic = SyntheticMessage.event(event.getJDA(), event.getIdLong(), t.text,
+                        event.getUser(), event.getMember(), event.getChannel(), t.users, t.roles, t.members);
+                if (!CommandDispatcher.dispatch(synthetic)) {
+                    hook.editOriginal("That command is not available right now.").queue();
+                    return;
+                }
+                hook.editOriginal(priv ? "Done." : "Ran `" + t.text + "`").queue();
+            } catch (Exception e) {
+                e.printStackTrace();
+                hook.editOriginal("Something went wrong running that. Please try again.").queue();
+            }
+        });
+    }
+
+    /** Suggests courses as someone types in /info. */
+    @Override
+    public void onCommandAutoCompleteInteraction(net.dv8tion.jda.api.events.interaction.command.CommandAutoCompleteInteractionEvent event) {
+        if (!(event.getName().equals("info") || event.getName().equals("prereq") || event.getName().equals("whynot") || event.getName().equals("rate") || event.getName().equals("reviews") || event.getName().equals("classmates") || event.getName().equals("compare") || event.getName().equals("grade") || event.getName().equals("plan") || event.getName().equals("grades") || event.getName().equals("need")) || !java.util.Arrays.asList("course", "first", "second", "third").contains(event.getFocusedOption().getName())) return;
+        java.util.List<net.dv8tion.jda.api.interactions.commands.Command.Choice> choices = new java.util.ArrayList<>();
+        for (command.util.misc.CourseCatalog.Course c
+                : command.util.misc.CourseCatalog.get().search(event.getFocusedOption().getValue(), 25)) {
+            String name = c.code + " " + c.title;
+            choices.add(new net.dv8tion.jda.api.interactions.commands.Command.Choice(
+                    name.length() > 100 ? name.substring(0, 99) + "\u2026" : name, c.code));
+        }
+        event.replyChoices(choices).queue();
+    }
+
+    @Override
+    public void onButtonInteraction(ButtonInteractionEvent event) {
+        Buttons.Parsed p = Buttons.parseId(event.getComponentId());
+        if (p == null) return;
+        long who = event.getUser().getIdLong();
+        if (p.allowed() != 0 && p.allowed() != who) {
+            event.reply("Those buttons are not for you. Say the command yourself, or use `/help`.")
+                    .setEphemeral(true).queue();
+            return;
+        }
+        if (p.consume()) event.editComponents(Collections.emptyList()).queue();
+        else event.deferEdit().queue();
+        try {
+            Member member = event.getMember();
+            MessageReceivedEvent synthetic = SyntheticMessage.event(event.getJDA(), event.getIdLong(), p.text(),
+                    event.getUser(), member, event.getChannel(), Collections.emptyList(), Collections.emptyList(),
+                    Collections.emptyList());
+            CommandDispatcher.dispatch(synthetic);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}

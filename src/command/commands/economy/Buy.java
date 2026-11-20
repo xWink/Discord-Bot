@@ -2,13 +2,16 @@ package command.commands.economy;
 
 import command.Command;
 import database.connectors.EconomyConnector;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.Role;
+import economy.InsufficientFundsException;
+import economy.ShopService;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import command.util.economy.Listing;
 import command.util.economy.Marketplace;
 import command.util.economy.RoleListing;
 
-import java.util.Objects;
+import java.sql.SQLException;
 
 public class Buy extends Command {
 
@@ -59,30 +62,61 @@ public class Buy extends Command {
         try {
             Listing listing = mp.getListing(Integer.parseInt(strings[1]) - 1);
 
-            if (!ec.canAfford(userId, listing.getCost())) {
-                channel.sendMessage("You cannot afford this item.").queue();
+            if (listing.getClass() != RoleListing.class) return;
+            RoleListing roleListing = (RoleListing) listing;
+            Role role = roleListing.getRole();
+
+            if (ec.userHasColour(userId) && !isSameColour(userId, role)) {
+                channel.sendMessage("You already have a colour. "
+                        + "If you would like to replace it **without** refund, "
+                        + "please contact a moderator.").queue();
                 return;
             }
 
-            if (listing.getClass() == RoleListing.class) {
-                if (ec.userHasColour(userId)) {
-                    channel.sendMessage("You already have a colour. "
-                            + "If you would like to replace it **without** refund, "
-                            + "please contact a moderator.").queue();
-                    return;
-                }
-
-                // Assign role
-                event.getGuild().addRoleToMember(event.getMember(), ((RoleListing) listing).getRole()).queue();
-                // Remove money
-                ec.addOrRemoveMoney(userId, -listing.getCost());
-                // Set role and expiry in database
-                ec.setRole(userId, (RoleListing) listing);
-                channel.sendMessage("Enjoy your new colour! :)").queue();
+            // Charge and record a pending purchase first; nothing is announced until Discord confirms.
+            String purchaseId = "buy:" + event.getMessageId();
+            ShopService shop = ShopService.getInstance();
+            try {
+                shop.begin(purchaseId, userId, roleListing.toString(), listing.getCost(), role.getIdLong(),
+                        (int) listing.getDuration());
+            } catch (InsufficientFundsException e) {
+                channel.sendMessage("You cannot afford this item.").queue();
+                return;
+            } catch (ShopService.PurchaseRejectedException e) {
+                channel.sendMessage(e.getMessage()).queue();
+                return;
             }
+
+            event.getGuild().addRoleToMember(event.getMember(), role).queue(
+                    ok -> {
+                        try {
+                            if (shop.complete(purchaseId, role.getName())) {
+                                channel.sendMessage("Enjoy your new colour! :)").queue();
+                            }
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            channel.sendMessage("Your colour was granted but saving it failed. "
+                                    + "Please contact a moderator with receipt `" + purchaseId + "`.").queue();
+                        }
+                    },
+                    failure -> {
+                        try {
+                            shop.failAndRefund(purchaseId);
+                            channel.sendMessage("Discord would not grant the colour, so you were refunded.").queue();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            channel.sendMessage("The colour grant failed and the refund needs a moderator. "
+                                    + "Receipt `" + purchaseId + "`.").queue();
+                        }
+                    });
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
+    }
+
+    /** Renewing the colour you already hold is allowed and extends it. */
+    private boolean isSameColour(long userId, Role role) throws SQLException {
+        return ec.getRoleId(userId) == role.getIdLong();
     }
 
     /**

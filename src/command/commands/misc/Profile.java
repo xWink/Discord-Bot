@@ -32,12 +32,81 @@ public class Profile extends Command {
         kc = new KarmaConnector();
     }
 
+    /** {@code !profile} or {@code !profile gif [on|off]}. */
+    @Override
+    public boolean keyMatches(String string) {
+        return string.equalsIgnoreCase(getKey()) || string.toLowerCase().startsWith(getKey() + " gif");
+    }
+
     @Override
     public void start(MessageReceivedEvent event) {
         this.event = event;
+        String note = null;
+        try {
+            String[] args = event.getMessage().getContentRaw().trim().split("\\s+");
+            long who = event.getAuthor().getIdLong();
+            if (args.length >= 3 && args[2].equalsIgnoreCase("on")) {
+                economy.ProfilePrefs.setAnimated(who, true);
+                note = "Animated profile is **on**. Turn it off any time with `!profile gif off`.";
+            } else if (args.length >= 3 && args[2].equalsIgnoreCase("off")) {
+                economy.ProfilePrefs.setAnimated(who, false);
+                note = "Animated profile is **off**.";
+            } else if (args.length >= 2 && args[1].equalsIgnoreCase("gif")) {
+                note = "Animated profile is **" + (economy.ProfilePrefs.isAnimated(who) ? "on" : "off")
+                        + "**. Say `!profile gif on` or `!profile gif off`.";
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         eb = new EmbedBuilder();
         createProfile();
-        event.getChannel().sendMessage(eb.build()).queue();
+        // The picture card is the main view. If drawing it fails for any reason, the text embed still works.
+        try {
+            long user = event.getAuthor().getIdLong();
+            command.util.misc.ProfileCard.Stats card = new command.util.misc.ProfileCard.Stats();
+            card.name = event.getAuthor().getName();
+            card.bangs = attempts;
+            card.deaths = deaths;
+            card.jams = jams;
+            card.survival = survivalRate;
+            card.streak = streak;
+            card.karma = karma;
+            card.achievements = economy.Achievements.unlocked(user).size();
+            card.achievementsTotal = economy.Achievements.ALL.size();
+            card.extras = economy.ProfileExtras.pills(user);
+            card.avatar = fetchAvatar(event.getAuthor().getEffectiveAvatarUrl());
+            economy.Cosmetics.Loadout loadout = economy.Cosmetics.loadout(user);
+            java.util.List<economy.Cosmetics.OwnedItem> owned = economy.Cosmetics.owned(user);
+            boolean animated = false;
+            try {
+                animated = economy.ProfilePrefs.isAnimated(user) && !command.ui.Motion.reduced();
+            } catch (Exception e) {
+                e.printStackTrace(); // a settings problem should never cost anyone their card
+            }
+            byte[] picture = animated ? command.util.misc.ProfileCard.renderAnimated(card, loadout, owned, user) : null;
+            if (animated && picture == null) {
+                note = (note == null ? "" : note + "\n") + "Your card is too large to animate, so here is the still one.";
+            }
+            boolean gif = picture != null;
+            if (!gif) picture = command.util.misc.ProfileCard.render(card, loadout, owned, user);
+            net.dv8tion.jda.api.requests.restaction.MessageCreateAction send = event.getChannel()
+                    .sendFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(picture, gif ? "profile.gif" : "profile.png"));
+            if (note != null) send.setContent(note);
+            send.setActionRow(
+                            command.ui.Buttons.of(user, false, "!wallet", "Wallet",
+                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SECONDARY),
+                            command.ui.Buttons.of(user, false, "!achievements", "Achievements",
+                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SECONDARY),
+                            command.ui.Buttons.of(user, false, "!shop owned", "What I own",
+                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.SECONDARY),
+                            command.ui.Buttons.of(user, false, animated ? "!profile gif off" : "!profile gif on",
+                                    animated ? "Stop animation" : "\u2728 Animate",
+                                    net.dv8tion.jda.api.interactions.components.buttons.ButtonStyle.PRIMARY)).queue();
+            return;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        event.getChannel().sendMessageEmbeds(eb.build()).queue();
     }
 
     private void createProfile() {
@@ -58,7 +127,9 @@ public class Profile extends Command {
             eb.setColor(Color.LIGHT_GRAY);
         }
 
-        eb.setTitle(event.getAuthor().getName() + "'s Profile");
+        economy.Cosmetics.Extras extras = economy.Cosmetics.extras(event.getAuthor().getIdLong());
+        if (extras.color != null) eb.setColor(extras.color);
+        eb.setTitle(event.getAuthor().getName() + extras.title + "'s Profile");
         eb.setThumbnail(event.getAuthor().getAvatarUrl());
 
         eb.addField("Bangs", "" + attempts, true);
@@ -68,6 +139,15 @@ public class Profile extends Command {
         eb.addField("Streak", streak + (streak > 0 ? " :fire:" : ""), true);
         eb.addField("Karma", "" + karma, false);
         eb.addField("Wallet", wallet + " *gc*", false);
+        try {
+            java.util.List<String> cosmetics = economy.CosmeticShop.getInstance()
+                    .owned(event.getAuthor().getIdLong());
+            if (!cosmetics.isEmpty()) eb.addField("Owned", String.join("\n", cosmetics), false);
+            String worn = economy.Cosmetics.extras(event.getAuthor().getIdLong()).badges.toString();
+            if (!worn.isEmpty()) eb.addField("Equipped", worn, false);
+        } catch (SQLException e) {
+            e.printStackTrace(); // cosmetics are optional on the profile
+        }
     }
 
     private void setBangData() throws SQLException {
@@ -87,5 +167,21 @@ public class Profile extends Command {
 
     private void setWalletData() throws SQLException {
         wallet = ec.getWealth(event.getAuthor().getIdLong());
+    }
+
+    /** Downloads the avatar for the card; a missing or slow avatar just means the card shows an initial. */
+    private static java.awt.image.BufferedImage fetchAvatar(String url) {
+        if (url == null) return null;
+        try {
+            java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL(url + "?size=256").openConnection();
+            c.setConnectTimeout(3000);
+            c.setReadTimeout(3000);
+            c.setRequestProperty("User-Agent", "gryph-discord-bot");
+            try (java.io.InputStream in = c.getInputStream()) {
+                return javax.imageio.ImageIO.read(in);
+            }
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

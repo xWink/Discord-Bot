@@ -3,7 +3,7 @@ package main.eventlisteners;
 import command.util.misc.MessageData;
 import database.connectors.MessagesConnector;
 import main.Server;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +65,7 @@ public class MessageBulkDeleteEventListener extends ListenerAdapter {
                     // Print any message with an image
                     if (image != null) {
                         ImageIO.write(image, "png", file);
-                        channel.sendMessage(out).addFile(file).queue();
+                        channel.sendMessage(out).addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(file)).queue();
                         out = new StringBuilder();
                     }
                 }

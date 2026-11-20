@@ -3,7 +3,7 @@ package main.eventlisteners;
 import command.util.misc.MessageData;
 import database.connectors.MessagesConnector;
 import main.Server;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
@@ -74,7 +74,7 @@ public class MessageUpdateEventListener extends ListenerAdapter {
         if (file == null) {
             channel.sendMessage("{EDIT} " + s).queue();
         } else {
-            channel.sendMessage("{EDIT} " + s).addFile(file).queue();
+            channel.sendMessage("{EDIT} " + s).addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(file)).queue();
         }
     }
 
@@ -84,7 +84,7 @@ public class MessageUpdateEventListener extends ListenerAdapter {
             channel.sendMessage("{EDIT} " + s2).queue();
         } else {
             channel.sendMessage("{EDIT} " + s1).queue();
-            channel.sendMessage("{EDIT} " + s2).addFile(file).queue();
+            channel.sendMessage("{EDIT} " + s2).addFiles(net.dv8tion.jda.api.utils.FileUpload.fromData(file)).queue();
         }
     }
 }

@@ -1,11 +1,10 @@
 package main.eventlisteners;
 
-import command.Command;
-import main.CommandList;
+import command.ui.CommandDispatcher;
 import command.util.misc.MessageData;
 import database.connectors.MessagesConnector;
 import main.Server;
-import net.dv8tion.jda.api.entities.Emote;
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -27,16 +26,7 @@ public class MessageReceivedEventListener extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         String messageContent = event.getMessage().getContentRaw();
         if (!event.getAuthor().isBot()) {
-            if (messageContent.startsWith("!")) {
-                // Find matching command
-                for (Command command : CommandList.getCommands()) {
-                    if (command.keyMatches(messageContent)
-                            && (event.getChannel().getIdLong() == (Server.BOTS_CHANNEL_ID) || command.isGlobal())) {
-                        command.start(event);
-                        return;
-                    }
-                }
-            }
+            if (CommandDispatcher.dispatch(event)) return;
 
             try {
                 mc.storeMessage(event.getMessage());
@@ -46,7 +36,7 @@ public class MessageReceivedEventListener extends ListenerAdapter {
         }
 
         if (event.getChannel().getIdLong() == Server.CHANNELS_CHANNEL_ID) {
-            Emote checkMark = event.getGuild().getEmoteById(Server.CHECK_EMOJI_ID);
+            RichCustomEmoji checkMark = event.getGuild().getEmojiById(Server.CHECK_EMOJI_ID);
             if (checkMark != null && messageNeedsCheckMark(messageContent))
                 event.getMessage().addReaction(checkMark).queue();
         }

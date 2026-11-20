@@ -168,7 +168,8 @@ public class BangUpdate {
 
     /**
      * Creates an SQL update for the bang table based on the data
-     * in this object.
+     * in this object. Gameplay stats only: the daily claim and its payout are
+     * committed by DailyService, never through this batch queue.
      *
      * @return a string that is an SQL update for the bang table
      */
@@ -178,7 +179,6 @@ public class BangUpdate {
                 + ", deaths = deaths + " + getDeaths()
                 + ", jams = jams + " + getJams()
                 + ", last_played = " + getLastPlayed()
-                + (isRewarded() ? ", last_daily = " + getLastPlayed() : "")
                 + (isStreakIncreased() ? ", streak = streak + 1" : "")
                 + " WHERE user = " + getId();
     }

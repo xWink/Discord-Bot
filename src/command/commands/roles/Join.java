@@ -4,6 +4,9 @@ import command.Command;
 import database.connectors.RolesConnector;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.entities.channel.concrete.Category;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.BufferedReader;
@@ -175,12 +178,8 @@ public class Join extends Command {
 
         // Set new channel permissions
         if (channel.getPermissionOverride(role) == null)
-            channel.createPermissionOverride(role).queue(permissionOverride -> {
-                // Let people with the specified role see the channel and read/send messages
-                permissionOverride.getManager().grant(Permission.VIEW_CHANNEL).queue();
-                permissionOverride.getManager().grant(Permission.MESSAGE_READ).queue();
-                hideChannel(channel);
-            });
+            channel.upsertPermissionOverride(role).grant(Permission.VIEW_CHANNEL)
+                    .queue(permissionOverride -> hideChannel(channel));
     }
 
     /**
@@ -189,15 +188,12 @@ public class Join extends Command {
      * @param channel the channel to be hidden from @everyone
      */
     private void hideChannel(TextChannel channel) {
-        if (channel.getPermissionOverride(channel.getGuild().getRolesByName("@everyone", true).get(0)) == null)
-            channel.createPermissionOverride(channel.getGuild().getRolesByName("@everyone", true).get(0))
-                    .queue(permissionOverride1 -> {
-                        permissionOverride1.getManager().deny(Permission.MESSAGE_READ).queue();
-
-                        // Do not let people with this role do @everyone or change nicknames
-                        permissionOverride1.getManager().deny(Permission.MESSAGE_MENTION_EVERYONE).queue();
-                        permissionOverride1.getManager().deny(Permission.NICKNAME_CHANGE).queue();
-                    });
+        Role everyone = channel.getGuild().getRolesByName("@everyone", true).get(0);
+        if (channel.getPermissionOverride(everyone) == null)
+            // Hidden from @everyone, who also cannot mention everyone or change nicknames here
+            channel.upsertPermissionOverride(everyone)
+                    .deny(Permission.VIEW_CHANNEL, Permission.MESSAGE_MENTION_EVERYONE, Permission.NICKNAME_CHANGE)
+                    .queue();
     }
 
     /**

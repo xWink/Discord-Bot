@@ -9,6 +9,8 @@ public final class EventListeners {
 
     public static final ImmutableList<ListenerAdapter> ALL = ImmutableList.of(
             new DisconnectEventListener(),
+            new HelpMenuListener(),
+            new InteractionListener(),
             new MessageBulkDeleteEventListener(),
             new MessageDeleteEventListener(),
             new MessageReceivedEventListener(),

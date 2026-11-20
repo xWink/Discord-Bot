@@ -25,8 +25,28 @@ public class RoleBot {
         BasicConfigurator.configure();
         try {
             logger.debug("Entering application.");
+            database.Database.migrate();
+            economy.EconomyService.getInstance().refundAllByReason("hilo");
+            economy.EconomyService.getInstance().refundAllByReason("mines");
+            economy.EconomyService.getInstance().refundAllByReason("race");
+            duel.DuelService.releaseOrphans();
+            economy.EconomyService.getInstance().refundAllByReason("gauntlet");
+            arcade.QuestionBank.loadBundled();
+            arcade.QuestionRefiller.requestRefill(0, null);
+            arcade.QuestionRefiller.requestSecondaryRefill();
+            arcade.QuestionRefiller.requestPackSync();
+            logger.debug("Recovered " + command.util.game.BlackJackStore.recover().size() + " open blackjack hands");
             Server.API.addEventListener(EventListeners.ALL.toArray());
             Timer timer = new Timer();
+            timer.schedule(new main.timertasks.SeasonTask(), 1000 * 120, 1000 * 60 * 60);
+            timer.schedule(new main.timertasks.BountyExpiry(), 1000 * 90, 1000 * 60 * 60);
+            timer.schedule(new main.timertasks.DuelSweep(), 1000 * 15, 1000 * 15);
+            timer.schedule(new main.timertasks.HiLoTimeout(), 1000 * 30, 1000 * 30);
+            timer.schedule(new main.timertasks.ReminderTask(), 1000 * 20, 1000 * 30);
+            timer.schedule(new main.timertasks.DigestTask(), 1000 * 25, 1000 * 60);
+            timer.schedule(new main.timertasks.MinesTimeout(), 1000 * 30, 1000 * 30);
+            timer.schedule(new main.timertasks.BlackJackTimeout(), 1000 * 30, 1000 * 30);
+            timer.schedule(new main.timertasks.DecaySweep(), 1000 * 60, 1000 * 60 * 60);
             timer.schedule(new RemoveExpiredRoles(), 1000 * 60 * 60, 1000 * 60 * 60);
             timer.schedule(new UpdateHighScores(), 1000 * 60 * 30, 1000 * 60 * 30);
             timer.schedule(new PruneBangStreaks(), 1000 * 60 * 60 * 2, 1000 * 60 * 60 * 2);

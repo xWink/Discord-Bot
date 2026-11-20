@@ -7,13 +7,20 @@ import command.util.cards.HandOfCards;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
 import command.util.game.Player;
+import command.util.game.BlackJackStore;
+import economy.EconomyService;
+import economy.WagerLimits;
 import database.connectors.EconomyConnector;
-import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
+import java.sql.SQLException;
 import java.util.Collections;
 
 public class Bet extends Command {
+
+    /** Stakes above this share of the player's balance get a warning. */
+    static final double WARN_FRACTION = 0.5;
 
     private EconomyConnector ec;
 
@@ -38,8 +45,8 @@ public class Bet extends Command {
     }
 
     /**
-     * Takes a certain amount of money from the betting player and starts
-     * a game of blackjack for them.
+     * Reserves the stake from the betting player and starts a game of
+     * blackjack for them. Blackjack pays 3:2, ties push, a bust loses at once.
      *
      * @param event the MessageReceivedEvent that triggered the command
      */
@@ -47,31 +54,54 @@ public class Bet extends Command {
     public void start(MessageReceivedEvent event) {
         if (!verifyInput(event)) return;
         long userId = event.getAuthor().getIdLong();
-        String name = event.getAuthor().getName();
+        String name = economy.Cosmetics.nameWithTitle(userId, event.getAuthor().getName());
         MessageChannel channel = event.getChannel();
 
         try {
             int betAmount = Integer.parseInt(event.getMessage().getContentRaw().split(" ")[1]);
 
-            // Verify that the user has enough money
-            if (!ec.canAfford(event.getAuthor().getIdLong(), betAmount)) {
-                channel.sendMessage("You do not have enough money to make that bet!\n"
-                        + "Your wallet contains " + ec.getWealth(userId) + " GryphCoins").queue();
+            String blocked = WagerLimits.check(userId, betAmount);
+            if (blocked != null) {
+                channel.sendMessage(blocked).queue();
                 return;
             }
+            int spendable = ec.getSpendable(userId);
+            if (betAmount > spendable * WARN_FRACTION && betAmount <= spendable) {
+                channel.sendMessage("\u26A0 Heads up: that is " + Math.round(100.0 * betAmount / spendable)
+                        + "% of your " + spendable + " GC balance. You can lose all of it.").queue();
+            }
+            channel.sendMessage("Stake: " + betAmount + " GC reserved. Maximum loss: " + betAmount
+                    + " GC. Blackjack pays 3:2, a push returns your stake.").queue();
 
-            // Start game
+            // Start game. The stake is reserved and the hand saved in one transaction.
             BlackJackGame game = new BlackJackGame(new Player(userId), betAmount);
+            game.setChannelId(channel.getIdLong());
             game.start();
+            try {
+                BlackJackStore.open(game);
+            } catch (EconomyService.InsufficientFundsRuntime e) {
+                channel.sendMessage("You do not have enough money to make that bet!\n"
+                        + "Your spendable balance is " + ec.getSpendable(userId) + " GryphCoins").queue();
+                return;
+            } catch (SQLException e) {
+                if (BlackJackList.getUserGame(userId) != null || isDuplicate(e)) {
+                    channel.sendMessage("You are already in a game\nTo see your cards, say `!myhand`").queue();
+                    return;
+                }
+                throw e;
+            }
+
             Card dealersFirstCard = game.getDealer().getHand().getAsList().get(0);
             HandOfCards playerHand = game.getPlayer().getHand();
 
             // Show player's cards
-            CardMessage.createCardMessage(
+            net.dv8tion.jda.api.requests.restaction.MessageCreateAction first = CardMessage.createCardMessage(
                     channel,
                     name + " received their first 2 cards: " + playerHand.toString(),
                     playerHand.getAsList()
-            ).queue();
+            );
+            if (playerHand.getValue() != 21) first.setActionRow(command.ui.Buttons.blackjack(userId));
+            first.queue();
 
             // Show dealer's first card
             CardMessage.createCardMessage(
@@ -86,30 +116,28 @@ public class Bet extends Command {
                 return;
             }
 
-            // Check how much the player won or if game is a tie
-            int result = game.checkWinner();
+            // Natural 21: settle immediately
+            BlackJackList.addGame(game);
+            int result = BlackJackStore.settle(game);
             String output;
-
-            // Set output string
             if (result > 0)
-                output = name + " got 21!\nYou won " + result + "*gc*!\n";
+                output = economy.Cosmetics.winHeader(userId) + name + " got 21!\nYou won " + result + "*gc*!\n";
             else
-                output = name + " got 21!\nIt's a draw, you earned 0 *gc*\n";
+                output = name + " got 21!\nIt's a push, your stake is returned\n";
             output += "Dealers hand: " + game.getDealer().getHand().toString();
 
-            // Show game results
             CardMessage.createCardMessage(
                     channel,
                     output,
                     game.getDealer().getHand().getAsList()
             ).queue();
-
-            // Update database and end game
-            if (result > 0) ec.addOrRemoveMoney(userId, result);
-            game.end();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
+    }
+
+    private static boolean isDuplicate(SQLException e) {
+        return e.getErrorCode() == 1062 || "23000".equals(e.getSQLState());
     }
 
     private boolean verifyInput(MessageReceivedEvent event) {
@@ -139,6 +167,7 @@ public class Bet extends Command {
             channel.sendMessage("You must bet at least 1 GryphCoin!").queue();
             return false;
         }
+
         return true;
     }
 }

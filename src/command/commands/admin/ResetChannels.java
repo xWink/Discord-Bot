@@ -3,7 +3,7 @@ package command.commands.admin;
 import command.AdminCommand;
 import command.Command;
 import main.Server;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.io.BufferedReader;

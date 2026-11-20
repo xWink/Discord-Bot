@@ -2,7 +2,8 @@ package command.commands.economy;
 
 import command.Command;
 import command.util.game.BlackJackList;
-import database.connectors.EconomyConnector;
+import economy.EconomyService;
+import economy.InsufficientFundsException;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.User;
@@ -12,14 +13,15 @@ import java.awt.*;
 
 public class Gift extends Command {
 
-    EconomyConnector ec;
+    /** Extra GC for the themed card; charged on top of the amount delivered. */
+    public static final int WRAP_FEE = 3;
+    private String wrapNote;
 
     /**
      * Initializes the command's key to "!gift"
      */
     public Gift() {
         super("!gift", true);
-        ec = new EconomyConnector();
     }
 
     @Override
@@ -30,28 +32,43 @@ public class Gift extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         if (!inputIsValid(event.getMessage())) {
-            event.getChannel().sendMessage("To gift someone *gc* say `!gift <@user> <amount>`").queue();
+            event.getChannel().sendMessage("To gift someone *gc* say `!gift <@user> <amount>` (add `wrap <note>` for a themed card, "
+                    + WRAP_FEE + " GC extra)").queue();
             return;
         }
 
         try {
-            long targetId = event.getMessage().getMentionedUsers().get(0).getIdLong();
+            long targetId = event.getMessage().getMentions().getUsers().get(0).getIdLong();
             int amount = Integer.parseInt(event.getMessage().getContentRaw().split("\\s+")[2]);
 
-            if (ec.canAfford(event.getAuthor().getIdLong(), amount)) {
-                if (BlackJackList.getUserGame(event.getAuthor().getIdLong()) != null) {
-                    event.getChannel().sendMessage("You cannot gift while in a game of blackjack").queue();
-                    return;
-                }
-                ec.addOrRemoveMoney(targetId, amount);
-                ec.addOrRemoveMoney(event.getAuthor().getIdLong(), -amount);
-                event.getChannel().sendMessage(getGiftEmbed(
-                                event.getAuthor(),
-                                event.getMessage().getMentionedUsers().get(0),
-                                amount).build()).queue();
-            } else {
-                event.getChannel().sendMessage("You cannot afford to send that gift").queue();
+            if (BlackJackList.getUserGame(event.getAuthor().getIdLong()) != null) {
+                event.getChannel().sendMessage("You cannot gift while in a game of blackjack").queue();
+                return;
             }
+
+            try {
+                // One operation ID per Discord message, so a retried event cannot pay twice.
+                String[] parts = event.getMessage().getContentRaw().split("\\s+");
+                boolean wrap = parts.length >= 4 && parts[3].equalsIgnoreCase("wrap");
+                if (wrap) {
+                    EconomyService.getInstance().transferWithFee(event.getAuthor().getIdLong(), targetId, amount,
+                            WRAP_FEE, "gift", Long.toString(event.getMessageIdLong()), "gift:" + event.getMessageId());
+                    String note = parts.length > 4 ? String.join(" ", java.util.Arrays.copyOfRange(parts, 4,
+                            parts.length)) : "";
+                    wrapNote = note.length() > 200 ? note.substring(0, 200) : note;
+                } else {
+                    wrapNote = null;
+                    EconomyService.getInstance().transfer(event.getAuthor().getIdLong(), targetId, amount,
+                            "gift", Long.toString(event.getMessageIdLong()), "gift:" + event.getMessageId());
+                }
+            } catch (InsufficientFundsException e) {
+                event.getChannel().sendMessage("You cannot afford to send that gift").queue();
+                return;
+            }
+            event.getChannel().sendMessageEmbeds(getGiftEmbed(
+                    event.getAuthor(),
+                    event.getMessage().getMentions().getUsers().get(0),
+                    amount).build()).queue();
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }
@@ -62,25 +79,31 @@ public class Gift extends Command {
 
         eb.setColor(Color.YELLOW);
         eb.setAuthor("Gift Successfully Sent!", sending.getAvatarUrl(), sending.getAvatarUrl());
-        eb.setTitle("Sent " + amt + " gc to " + receiving.getName() + "!");
+        eb.setTitle("Sent " + amt + " gc to " + economy.Cosmetics.nameWithTitle(receiving.getIdLong(), receiving.getName()) + "!");
         eb.setThumbnail(receiving.getAvatarUrl());
+        if (wrapNote != null) {
+            eb.setColor(Color.PINK);
+            eb.setDescription(":gift: " + (wrapNote.isEmpty() ? "A gift for you!" : wrapNote)
+                    + "\n_Gift wrap fee: " + WRAP_FEE + " GC_");
+        }
 
         return eb;
     }
 
     private boolean inputIsValid(Message message) {
-        if (message.getMentionedMembers().size() != 1) {
+        if (message.getMentions().getMembers().size() != 1) {
             return false;
         }
 
-        if (message.getMentionedMembers().get(0).getUser().getIdLong() == message.getAuthor().getIdLong()) {
+        if (message.getMentions().getMembers().get(0).getUser().getIdLong() == message.getAuthor().getIdLong()) {
             message.getChannel().sendMessage("You cannot gift yourself!").queue();
             return false;
         }
 
         String[] split = message.getContentRaw().split("\\s+");
 
-        if (split.length != 3) {
+        boolean wrapped = split.length >= 4 && split[3].equalsIgnoreCase("wrap");
+        if (split.length != 3 && !wrapped) {
             return false;
         }
 

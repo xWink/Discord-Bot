@@ -1,7 +1,7 @@
 package command.util.misc;
 
 import main.Server;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.User;
 
 import java.text.DateFormat;

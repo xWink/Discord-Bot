@@ -1,7 +1,7 @@
 package command.commands.bang;
 
 import command.Command;
-import database.connectors.BangConnector;
+import economy.DailyService;
 import main.Server;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
@@ -12,14 +12,11 @@ import java.util.TimeZone;
 
 public class Daily extends Command {
 
-    private BangConnector bc;
-
     /**
      * Initializes the command's key to "!daily".
      */
     public Daily() {
         super("!daily", true);
-        bc = new BangConnector();
     }
 
     /**
@@ -39,7 +36,7 @@ public class Daily extends Command {
         df.setTimeZone(zone); // Apply timezone to format
 
         try {
-            long resetTime = bc.getDaily(event.getAuthor().getIdLong());
+            long resetTime = DailyService.getInstance().nextEligibleAt(event.getAuthor().getIdLong());
             if (resetTime <= new Date().getTime()) {
                 if (event.getChannel().getIdLong() == Server.SPAM_CHANNEL_ID) {
                     event.getChannel().sendMessage("Your daily reward is available now! Say `!bang`").queue();

@@ -5,19 +5,16 @@ import command.util.cards.CardMessage;
 import command.util.cards.HandOfCards;
 import command.util.game.BlackJackGame;
 import command.util.game.BlackJackList;
-import database.connectors.EconomyConnector;
+import command.util.game.BlackJackStore;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 public class Stand extends Command {
-
-    private EconomyConnector ec;
 
     /**
      * Initializes the command's key to "!stand".
      */
     public Stand() {
         super("!stand", false);
-        ec = new EconomyConnector();
     }
 
     /**
@@ -29,7 +26,7 @@ public class Stand extends Command {
     @Override
     public void start(MessageReceivedEvent event) {
         BlackJackGame game = BlackJackList.getUserGame(event.getAuthor().getIdLong());
-        String author = event.getAuthor().getName();
+        String author = economy.Cosmetics.nameWithTitle(event.getAuthor().getIdLong(), event.getAuthor().getName());
 
         if (game == null) {
             event.getChannel().sendMessage("You haven't started a game yet!\n"
@@ -37,31 +34,30 @@ public class Stand extends Command {
             return;
         }
 
-        int reward = game.checkWinner();
-        HandOfCards dealerHand = game.getDealer().getHand();
-        String output = "Dealers hand: " + dealerHand.toString();
-
-        // Show dealer hand
-        CardMessage.createCardMessage(
-                event.getChannel(),
-                output,
-                dealerHand.getAsList()
-        ).queue();
-
-        // Show winnings/losses/tie
-        output = "";
-        if (reward > 0)
-            output += author + " wins! Earnings: " + reward + " *gc*";
-        else if (reward < 0)
-            output += author + " lost. Losses: " + (-reward) + " *gc*";
-        else
-            output += "Tie game, " + author + " didn't win or lose any money.";
-        event.getChannel().sendMessage(output).queue();
-
-        BlackJackList.removeGame(game);
-
         try {
-            if (reward != 0) ec.addOrRemoveMoney(event.getAuthor().getIdLong(), reward);
+            synchronized (game) {
+                if (game.isSettled()) return;
+                int reward = BlackJackStore.settle(game);
+                HandOfCards dealerHand = game.getDealer().getHand();
+
+                // Show dealer hand
+                CardMessage.createCardMessage(
+                        event.getChannel(),
+                        "Dealers hand: " + dealerHand.toString(),
+                        dealerHand.getAsList()
+                ).queue();
+
+                // Show winnings/losses/push
+                String output = "";
+                if (reward > 0)
+                    output += economy.Cosmetics.winHeader(event.getAuthor().getIdLong()) + author + " wins! Earnings: "
+                            + reward + " *gc*";
+                else if (reward < 0)
+                    output += author + " lost. Losses: " + (-reward) + " *gc*";
+                else
+                    output += "Push, " + author + "'s stake is returned.";
+                event.getChannel().sendMessage(output).queue();
+            }
         } catch (Exception e) {
             printStackTraceAndSendMessage(event, e);
         }

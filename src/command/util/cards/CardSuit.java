@@ -38,7 +38,7 @@ public enum CardSuit {
     }
 
     /**
-     * Emote getter.
+     * RichCustomEmoji getter.
      *
      * @return the emote that represents the suit on Discord
      */

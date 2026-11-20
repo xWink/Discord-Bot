@@ -1,7 +1,7 @@
 package command.commands.roles;
 
 import command.Command;
-import net.dv8tion.jda.api.entities.GuildChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 
 import java.util.List;
@@ -30,7 +30,8 @@ public class Roles extends Command {
 
             // Find any channel in Electives category
             for (GuildChannel channel : channelList) {
-                if (channel.getParent() == event.getGuild().getCategoriesByName("electives", true).get(0)) {
+                if (channel instanceof net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel
+                        && ((net.dv8tion.jda.api.entities.channel.attribute.ICategorizableChannel) channel).getParentCategory() == event.getGuild().getCategoriesByName("electives", true).get(0)) {
                     channelCount++;
                     message = message.concat(channelCount + ". " + channel.getName() + "\n");
                 }

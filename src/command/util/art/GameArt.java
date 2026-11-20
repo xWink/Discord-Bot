@@ -15,7 +15,6 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorConvertOp;
 import java.io.IOException;
@@ -26,14 +25,12 @@ import java.util.Random;
 
 /**
  * Pictures and animations for the games: the bang cylinder, the spinning coin, tumbling dice and slot reels.
- * Same look as the profile card (slate card, gold border) and drawn entirely with shapes plus the bundled
+ * Same look as the profile card (a Discord-dark card) and drawn entirely with shapes plus the bundled
  * mascot and coin art, so it renders the same on any machine.
  */
 public final class GameArt {
 
-    private static final Color GOLD = Sticker.GOLD;
-    private static final Color INK = Sticker.INK;
-    private static final Color RED = new Color(0xE02020);
+    private static final Color INK = Ui.OUTLINE;
 
     private GameArt() { }
 
@@ -48,12 +45,13 @@ public final class GameArt {
             map = new java.util.LinkedHashMap<Integer, byte[]>(16, 0.75f, true) {
                 @Override
                 protected boolean removeEldestEntry(java.util.Map.Entry<Integer, byte[]> eldest) {
-                    return size() > max;
+                    return size() > max * 2;
                 }
             };
         }
 
-        byte[] get(int key, java.util.concurrent.Callable<byte[]> draw) throws IOException {
+        byte[] get(int plainKey, java.util.concurrent.Callable<byte[]> draw) throws IOException {
+            int key = plainKey * 2 + Theme.current().ordinal(); // each palette draws its own
             synchronized (map) {
                 byte[] hit = map.get(key);
                 if (hit != null) return hit;
@@ -79,48 +77,17 @@ public final class GameArt {
 
     // ------------------------------------------------------------------ shared
 
-    static BufferedImage canvas(int w, int h) {
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = img.createGraphics();
-        try {
-            hints(g);
-            Shape card = new RoundRectangle2D.Float(6, 6, w - 12, h - 12, 30, 30);
-            g.setPaint(new GradientPaint(0, 0, new Color(0x3A3F47), w, h, new Color(0x14161A)));
-            g.fill(card);
-            g.setClip(card);
-            g.setPaint(new GradientPaint(0, 0, new Color(255, 255, 255, 40), 0, h * 0.5f, new Color(255, 255, 255, 0)));
-            g.fillRect(0, 0, w, h);
-            g.setClip(null);
-            g.setColor(GOLD);
-            g.setStroke(new BasicStroke(5f));
-            g.draw(card);
-            g.setColor(INK);
-            g.setStroke(new BasicStroke(2f));
-            g.draw(new RoundRectangle2D.Float(1, 1, w - 2, h - 2, 34, 34));
-        } finally {
-            g.dispose();
-        }
-        return img;
+    static BufferedImage canvas(int w, int h, String title) {
+        return Ui.card(w, h, title);
     }
 
     static void hints(Graphics2D g) {
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        Ui.hints(g);
     }
 
-    /** Text with a dark outline, centred on {@code cx}. */
+    /** Bold text centred on {@code cx}. (Kept under its old name; there is no outline any more.) */
     static void outlined(Graphics2D g, String text, Font font, int cx, int baseline, Color fill) {
-        g.setFont(font);
-        FontMetrics fm = g.getFontMetrics();
-        java.awt.font.GlyphVector gv = font.createGlyphVector(g.getFontRenderContext(), text);
-        Shape outline = gv.getOutline(cx - fm.stringWidth(text) / 2f, baseline);
-        g.setColor(INK);
-        g.setStroke(new BasicStroke(6f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.draw(outline);
-        g.setColor(fill);
-        g.fill(outline);
+        centered(g, text, font, fill, cx, baseline);
     }
 
     static void centered(Graphics2D g, String text, Font font, Color color, int cx, int baseline) {
@@ -160,54 +127,56 @@ public final class GameArt {
                                   long seed) throws IOException {
         int w = 700;
         int h = 300;
-        BufferedImage img = canvas(w, h);
+        BufferedImage img = canvas(w, h, "Revolver");
         Graphics2D g = img.createGraphics();
         try {
             hints(g);
             String head = result == Pull.BANG ? "BANG!" : result == Pull.JAM ? "JAMMED!" : "CLICK";
-            Color headColor = result == Pull.BANG ? RED : result == Pull.JAM ? new Color(0x4CD964) : Color.WHITE;
-            outlined(g, head, new Font("SansSerif", Font.BOLD, 58), 220, 92, headColor);
+            Color headColor = result == Pull.BANG ? Ui.bad() : result == Pull.JAM ? Ui.ok() : Ui.text();
+            outlined(g, head, Ui.bold(58), 220, 92, headColor);
             String sub = result == Pull.BANG ? name + " did not make it"
                     : result == Pull.JAM ? name + " got lucky" : name + " survived";
-            centered(g, fitText(g, sub, new Font("SansSerif", Font.BOLD, 20), 380), new Font("SansSerif", Font.BOLD, 20),
-                    new Color(255, 255, 255, 220), 220, 128);
+            centered(g, fitText(g, sub, Ui.bold(20), 380), Ui.bold(20),
+                    Ui.muted(), 220, 128);
 
             // the cylinder: spent chambers are grey, the pulled one shows the result, the rest are unknown
             for (int i = 0; i < 6; i++) {
                 int cx = 52 + i * 64;
                 int cy = 188;
                 Ellipse2D slot = new Ellipse2D.Float(cx - 26, cy - 26, 52, 52);
-                Color fill = new Color(0, 0, 0, 150);
+                Color fill = Ui.inset();
                 String mark = "";
                 if (i < pullIndex) {
-                    fill = new Color(110, 115, 125);
-                    mark = "✓";
+                    fill = Ui.control();
+                    mark = "-";
                 } else if (i == pullIndex) {
-                    fill = result == Pull.BANG ? RED : result == Pull.JAM ? new Color(0x4CD964) : GOLD;
-                    mark = result == Pull.BANG ? "✕" : result == Pull.JAM ? "♣" : "✓";
+                    fill = result == Pull.BANG ? Ui.bad() : result == Pull.JAM ? Ui.ok() : Ui.muted();
+                    mark = result == Pull.BANG ? "X" : result == Pull.JAM ? "*" : "o";
                 } else {
                     mark = "?";
                 }
                 g.setColor(fill);
                 g.fill(slot);
-                g.setColor(i == pullIndex ? Color.WHITE : INK);
-                g.setStroke(new BasicStroke(i == pullIndex ? 4f : 3f));
+                g.setColor(i == pullIndex ? Ui.text() : Ui.divider());
+                g.setStroke(new BasicStroke(i == pullIndex ? 3f : 2f));
                 g.draw(slot);
-                centered(g, mark, new Font("SansSerif", Font.BOLD, 24), i == pullIndex ? INK : new Color(255, 255, 255, 170),
-                        cx, cy + 9);
+                centered(g, mark, Ui.bold(24), i == pullIndex && result != Pull.CLICK ? Color.WHITE
+                        : i == pullIndex ? INK : Ui.muted(), cx, cy + 9);
             }
-            centered(g, "Chamber " + (pullIndex + 1) + " of 6", new Font("SansSerif", Font.PLAIN, 13),
-                    new Color(255, 255, 255, 150), 52 + 5 * 32, 238);
+            centered(g, "Chamber " + (pullIndex + 1) + " of 6", Ui.plain(13),
+                    Ui.muted(), 52 + 5 * 32, 238);
 
             // streak
-            g.setFont(new Font("SansSerif", Font.BOLD, 14));
-            g.setColor(new Color(255, 221, 0, 230));
+            g.setFont(Ui.bold(14));
+            g.setColor(Ui.text());
             int toBonus = 10 - (streak % 10);
             g.drawString(streak > 0 ? "STREAK " + streak + "  ·  bonus in " + toBonus + (toBonus == 1 ? " day" : " days")
                     : "Pull daily to build a streak", 40, 276);
 
             // the mascot: greyed and tipped over if the pull was fatal
             BufferedImage m = Sticker.render(codes, 230, seed);
+            mascotWell(g);
+            g.setClip(MASCOT_WELL);
             if (result == Pull.BANG) {
                 BufferedImage grey = new BufferedImage(m.getWidth(), m.getHeight(), BufferedImage.TYPE_INT_ARGB);
                 Graphics2D gg = grey.createGraphics();
@@ -230,12 +199,20 @@ public final class GameArt {
                 g.drawImage(m, 445, 35, null);
             }
             if (result == Pull.JAM) {
-                for (int i = 0; i < 3; i++) clover(g, 470 + i * 70, 40 + (i % 2) * 20, 22);
+                for (int i = 0; i < 3; i++) clover(g, 470 + i * 70, 56 + (i % 2) * 20, 22);
             }
+            g.setClip(null);
         } finally {
             g.dispose();
         }
         return png(img);
+    }
+
+    private static final java.awt.Rectangle MASCOT_WELL = new java.awt.Rectangle(438, 33, 240, 240);
+
+    /** The sunken white box the mascot sits in, like an icon in a label. */
+    private static void mascotWell(Graphics2D g) {
+        Ui.inset(g, MASCOT_WELL.x, MASCOT_WELL.y, MASCOT_WELL.width, MASCOT_WELL.height, Ui.inset());
     }
 
     private static final int BANG_W = 700;
@@ -244,24 +221,24 @@ public final class GameArt {
     /** A revolver cylinder seen end-on, turned by {@code angle}, with a marker at the top where the hammer falls. */
     private static void cylinder(Graphics2D g, double cx, double cy, double r, double angle) {
         Ellipse2D body = new Ellipse2D.Double(cx - r, cy - r, r * 2, r * 2);
-        g.setPaint(new GradientPaint((float) (cx - r), (float) (cy - r), new Color(0x9AA0AA), (float) (cx + r),
-                (float) (cy + r), new Color(0x3C4048)));
+        g.setPaint(new GradientPaint((float) (cx - r), (float) (cy - r), new Color(0xDADADA), (float) (cx + r),
+                (float) (cy + r), new Color(0x7C7C7C)));
         g.fill(body);
         g.setColor(INK);
-        g.setStroke(new BasicStroke(6f));
+        g.setStroke(new BasicStroke(3f));
         g.draw(body);
         for (int i = 0; i < 6; i++) {
             double a = angle + Math.PI / 3 * i - Math.PI / 2;
             double hx = cx + Math.cos(a) * r * 0.6;
             double hy = cy + Math.sin(a) * r * 0.6;
             Ellipse2D hole = new Ellipse2D.Double(hx - r * 0.2, hy - r * 0.2, r * 0.4, r * 0.4);
-            g.setColor(new Color(0x15171B));
+            g.setColor(new Color(0x2B2B2B));
             g.fill(hole);
             g.setColor(INK);
-            g.setStroke(new BasicStroke(3f));
+            g.setStroke(new BasicStroke(2f));
             g.draw(hole);
         }
-        g.setColor(new Color(0x6A707A));
+        g.setColor(new Color(0xA8A8A8));
         g.fill(new Ellipse2D.Double(cx - r * 0.18, cy - r * 0.18, r * 0.36, r * 0.36));
         g.setColor(INK);
         g.draw(new Ellipse2D.Double(cx - r * 0.18, cy - r * 0.18, r * 0.36, r * 0.36));
@@ -271,11 +248,8 @@ public final class GameArt {
         tip.lineTo(cx + 12, cy - r - 20);
         tip.lineTo(cx, cy - r - 2);
         tip.closePath();
-        g.setColor(GOLD);
-        g.fill(tip);
         g.setColor(INK);
-        g.setStroke(new BasicStroke(3f));
-        g.draw(tip);
+        g.fill(tip);
     }
 
     /** A burst of rays and a glow, for the shot or a sparkle of luck. */
@@ -284,7 +258,7 @@ public final class GameArt {
                 new Color[]{core, new Color(core.getRed(), core.getGreen(), core.getBlue(), 0)}));
         g.fill(new Ellipse2D.Double(cx - r, cy - r, r * 2, r * 2));
         g.setColor(rays);
-        g.setStroke(new BasicStroke(7f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g.setStroke(new BasicStroke(4f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
         for (int i = 0; i < 12; i++) {
             double a = Math.PI / 6 * i;
             double in = r * (i % 2 == 0 ? 0.35 : 0.45);
@@ -302,7 +276,10 @@ public final class GameArt {
      */
     public static byte[] bangAnimation(String name, int pullIndex, Pull result, int streak, Collection<String> codes,
                                        long seed) throws IOException {
-        BufferedImage bg = canvas(BANG_W, BANG_H);
+        BufferedImage bg = canvas(BANG_W, BANG_H, "Revolver");
+        Graphics2D bgg = bg.createGraphics();
+        mascotWell(bgg);
+        bgg.dispose();
         BufferedImage m = Sticker.render(codes, 230, seed);
         BufferedImage finalCard = ImageIO.read(new java.io.ByteArrayInputStream(
                 bangCard(name, pullIndex, result, streak, codes, seed)));
@@ -318,7 +295,7 @@ public final class GameArt {
             try {
                 hints(g);
                 cylinder(g, 220, 160, 100, angle);
-                outlined(g, "spinning\u2026", new Font("SansSerif", Font.BOLD, 22), 220, 285, Color.WHITE);
+                outlined(g, "spinning\u2026", Ui.bold(22), 220, 285, Ui.text());
                 g.drawImage(m, 445, 35, null);
             } finally {
                 g.dispose();
@@ -333,7 +310,7 @@ public final class GameArt {
             try {
                 hints(g);
                 cylinder(g, 220, 160, 100, 0);
-                outlined(g, i == 0 ? "\u2026" : "\u2026\u2026", new Font("SansSerif", Font.BOLD, 30), 220, 285, Color.WHITE);
+                outlined(g, i == 0 ? "\u2026" : "\u2026\u2026", Ui.bold(30), 220, 285, Ui.text());
                 int shake = i == 1 ? 3 : 0;
                 g.drawImage(m, 445 + shake, 35, null);
             } finally {
@@ -352,20 +329,20 @@ public final class GameArt {
                 cylinder(g, 220, 160, 100, 0);
                 double grow = 0.6 + 0.4 * i;
                 if (result == Pull.BANG) {
-                    burst(g, 220, 160, 150 * grow, new Color(255, 240, 160, 230), new Color(255, 120, 0, 230));
-                    g.setColor(new Color(255, 60, 40, 70 - i * 20));
+                    burst(g, 220, 160, 150 * grow, new Color(0xB9, 0xC3, 0xCE, 230), Ui.text());
+                    g.setColor(new Color(0xF2, 0x3F, 0x43, 60 - i * 20));
                     g.fillRect(0, 0, BANG_W, BANG_H);
                     int dx = (i % 2 == 0 ? 7 : -7);
                     g.drawImage(m, 445 + dx, 35, null);
-                    outlined(g, "BANG!", new Font("SansSerif", Font.BOLD, 56), 350, 150, RED);
+                    outlined(g, "BANG!", Ui.bold(56), 350, 150, Ui.bad());
                 } else if (result == Pull.JAM) {
-                    burst(g, 220, 160, 110 * grow, new Color(120, 255, 150, 200), new Color(60, 200, 90, 220));
+                    burst(g, 220, 160, 110 * grow, new Color(0xB9, 0xC3, 0xCE, 200), Ui.ok());
                     g.drawImage(m, 445, 35, null);
-                    outlined(g, "jam!", new Font("SansSerif", Font.BOLD, 44), 350, 150, new Color(0x4CD964));
+                    outlined(g, "jam!", Ui.bold(44), 350, 150, Ui.ok());
                 } else {
-                    burst(g, 220, 70, 36 * grow, new Color(255, 255, 255, 220), new Color(255, 221, 0, 230));
+                    burst(g, 220, 70, 36 * grow, new Color(0xB9, 0xC3, 0xCE, 220), Ui.muted());
                     g.drawImage(m, 445, 35, null);
-                    outlined(g, "click", new Font("SansSerif", Font.BOLD, 40), 350, 150, Color.WHITE);
+                    outlined(g, "click", Ui.bold(40), 350, 150, Ui.text());
                 }
             } finally {
                 g.dispose();
@@ -424,7 +401,7 @@ public final class GameArt {
         int halfTurns = heads ? 6 : 7;
         int w = 320;
         int h = 280;
-        BufferedImage bg = canvas(w, h);
+        BufferedImage bg = canvas(w, h, "Coin Flip");
         List<BufferedImage> frames = new ArrayList<>();
         List<Integer> delays = new ArrayList<>();
         for (int i = 0; i < COIN_FRAMES; i++) {
@@ -462,13 +439,11 @@ public final class GameArt {
     private static void die(Graphics2D g, int x, int y, int size, int value, double tilt) {
         AffineTransform old = g.getTransform();
         g.rotate(tilt, x + size / 2.0, y + size / 2.0);
-        Shape body = new RoundRectangle2D.Float(x, y, size, size, size * 0.22f, size * 0.22f);
-        g.setColor(new Color(0, 0, 0, 90));
-        g.fill(new RoundRectangle2D.Float(x + 4, y + 6, size, size, size * 0.22f, size * 0.22f));
-        g.setPaint(new GradientPaint(x, y, Color.WHITE, x + size, y + size, new Color(0xD8D8D8)));
+        Shape body = new java.awt.geom.Rectangle2D.Float(x, y, size, size);
+        g.setPaint(new GradientPaint(x, y, Color.WHITE, x + size, y + size, new Color(0xDCDCDC)));
         g.fill(body);
         g.setColor(INK);
-        g.setStroke(new BasicStroke(4f));
+        g.setStroke(new BasicStroke(2f));
         g.draw(body);
         g.setColor(INK);
         double[][] pos = {{0.5, 0.5}, {0.25, 0.25}, {0.75, 0.75}, {0.25, 0.75}, {0.75, 0.25}, {0.25, 0.5}, {0.75, 0.5}};
@@ -488,7 +463,7 @@ public final class GameArt {
     private static byte[] drawDice(int a, int b) throws IOException {
         int w = 360;
         int h = 220;
-        BufferedImage bg = canvas(w, h);
+        BufferedImage bg = canvas(w, h, "Dice");
         Random rnd = new Random(a * 31L + b);
         List<BufferedImage> frames = new ArrayList<>();
         List<Integer> delays = new ArrayList<>();
@@ -506,7 +481,7 @@ public final class GameArt {
                 die(g, 55, 55 + (int) (rnd.nextInt(30) * settle), 108, va, (rnd.nextDouble() - 0.5) * 1.2 * settle);
                 die(g, 197, 55 + (int) (rnd.nextInt(30) * settle), 108, vb, (rnd.nextDouble() - 0.5) * 1.2 * settle);
                 if (last) {
-                    outlined(g, "= " + (a + b), new Font("SansSerif", Font.BOLD, 30), w / 2, 196, Color.WHITE);
+                    outlined(g, "= " + (a + b), Ui.bold(30), w / 2, 196, Ui.text());
                 }
             } finally {
                 g.dispose();
@@ -584,13 +559,13 @@ public final class GameArt {
                 break;
             }
             case SEVEN: {
-                Font f = new Font("SansSerif", Font.BOLD, 100);
+                Font f = Ui.bold(100);
                 java.awt.font.GlyphVector gv = f.createGlyphVector(g.getFontRenderContext(), "7");
                 Shape o = gv.getOutline(-26, 36);
                 g.setColor(INK);
                 g.setStroke(new BasicStroke(12f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                 g.draw(o);
-                g.setColor(RED);
+                g.setColor(Ui.bad());
                 g.fill(o);
                 break;
             }
@@ -613,7 +588,7 @@ public final class GameArt {
     public static byte[] slots(SlotsGame.Symbol[] reels, String label, boolean win) throws IOException {
         int w = 440;
         int h = 250;
-        BufferedImage bg = canvas(w, h);
+        BufferedImage bg = canvas(w, h, "Slots");
         SlotsGame.Symbol[] all = SlotsGame.Symbol.values();
         int total = 20;
         int[] stop = {9, 13, 17};
@@ -630,9 +605,8 @@ public final class GameArt {
                 for (int r = 0; r < 3; r++) {
                     int x = 38 + r * (REEL + 20);
                     int y = 44;
-                    RoundRectangle2D window = new RoundRectangle2D.Float(x, y, REEL, REEL, 20, 20);
-                    g.setColor(new Color(0xF4F4F0));
-                    g.fill(window);
+                    java.awt.Rectangle window = new java.awt.Rectangle(x + 1, y + 1, REEL - 2, REEL - 2);
+                    Ui.inset(g, x, y, REEL, REEL, Ui.PAPER);
                     Shape oldClip = g.getClip();
                     g.setClip(window);
                     if (f >= stop[r]) {
@@ -648,12 +622,10 @@ public final class GameArt {
                         g.fillRect(x, y, REEL, REEL / 2);
                     }
                     g.setClip(oldClip);
-                    g.setColor(last && win ? GOLD : INK);
-                    g.setStroke(new BasicStroke(last && win ? 7f : 5f));
-                    g.draw(window);
+                    if (last && win) Ui.ring(g, x, y, REEL, REEL);
                 }
                 if (last && !label.isEmpty()) {
-                    outlined(g, label, new Font("SansSerif", Font.BOLD, 30), w / 2, 214, win ? GOLD : Color.WHITE);
+                    outlined(g, label, Ui.bold(30), w / 2, 214, win ? Ui.ok() : Ui.text());
                 }
             } finally {
                 g.dispose();
@@ -674,7 +646,7 @@ public final class GameArt {
     private static void wheel(Graphics2D g, double cx, double cy, double r, double rotation) {
         int[] order = command.util.game.RouletteGame.WHEEL;
         double step = Math.PI * 2 / order.length;
-        g.setColor(new Color(0x5B3A1E));
+        g.setColor(new Color(0x7A7A7A));
         g.fill(new Ellipse2D.Double(cx - r - 12, cy - r - 12, (r + 12) * 2, (r + 12) * 2));
         g.setColor(INK);
         g.setStroke(new BasicStroke(5f));
@@ -685,13 +657,13 @@ public final class GameArt {
             g.fill(new java.awt.geom.Arc2D.Double(cx - r, cy - r, r * 2, r * 2, -Math.toDegrees(a0),
                     -Math.toDegrees(step), java.awt.geom.Arc2D.PIE));
         }
-        g.setColor(new Color(0x15171B));
+        g.setColor(new Color(0x2B2B2B));
         g.fill(new Ellipse2D.Double(cx - r * 0.62, cy - r * 0.62, r * 1.24, r * 1.24));
-        g.setColor(GOLD);
-        g.setStroke(new BasicStroke(3f));
+        g.setColor(new Color(0xBDBDBD));
+        g.setStroke(new BasicStroke(2f));
         g.draw(new Ellipse2D.Double(cx - r * 0.62, cy - r * 0.62, r * 1.24, r * 1.24));
         g.draw(new Ellipse2D.Double(cx - r, cy - r, r * 2, r * 2));
-        g.setFont(new Font("SansSerif", Font.BOLD, 11));
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 10)); // the pocket numbers are tiny; the pixel font cannot go that small
         g.setColor(Color.WHITE);
         for (int i = 0; i < order.length; i++) {
             double a = rotation + step * i - Math.PI / 2;
@@ -703,7 +675,7 @@ public final class GameArt {
             g.setTransform(old);
         }
         g.setPaint(new java.awt.RadialGradientPaint((float) cx, (float) cy, (float) (r * 0.3), new float[]{0f, 1f},
-                new Color[]{new Color(0xFFE766), new Color(0xB8860B)}));
+                new Color[]{new Color(0xEEEEEE), new Color(0x8A8A8A)}));
         g.fill(new Ellipse2D.Double(cx - r * 0.3, cy - r * 0.3, r * 0.6, r * 0.6));
     }
 
@@ -715,7 +687,7 @@ public final class GameArt {
     private static byte[] drawRoulette(int result) throws IOException {
         int w = 520;
         int h = 320;
-        BufferedImage bg = canvas(w, h);
+        BufferedImage bg = canvas(w, h, "Roulette");
         int frames = 18;
         double finalRotation = -Math.PI * 2 / 37 * command.util.game.RouletteGame.pocket(result);
         List<BufferedImage> out = new ArrayList<>();
@@ -736,16 +708,12 @@ public final class GameArt {
                 g.setStroke(new BasicStroke(2f));
                 g.draw(new Ellipse2D.Double(160 - 7, 160 - 120 - 9, 14, 14));
                 if (i == frames - 1) {
-                    g.setColor(pocketColor(result));
-                    g.fill(new Ellipse2D.Double(340, 70, 140, 140));
-                    g.setColor(GOLD);
-                    g.setStroke(new BasicStroke(7f));
-                    g.draw(new Ellipse2D.Double(340, 70, 140, 140));
-                    outlined(g, Integer.toString(result), new Font("SansSerif", Font.BOLD, 64), 410, 142 + 22, Color.WHITE);
-                    String colour = result == 0 ? "GREEN" : command.util.game.RouletteGame.isRed(result) ? "RED" : "BLACK";
-                    centered(g, colour, new Font("SansSerif", Font.BOLD, 20), GOLD, 410, 245);
+                    Ui.inset(g, 340, 70, 140, 140, pocketColor(result));
+                    outlined(g, Integer.toString(result), Ui.bold(64), 410, 142 + 22, Color.WHITE);
+                    String colour = result == 0 ? "GREEN" : command.util.game.RouletteGame.isRed(result) ? "Ui.bad()" : "BLACK";
+                    centered(g, colour, Ui.bold(20), Ui.text(), 410, 245);
                 } else {
-                    centered(g, "no more bets", new Font("SansSerif", Font.BOLD, 18), new Color(255, 255, 255, 160), 410, 150);
+                    centered(g, "no more bets", Ui.bold(18), Ui.muted(), 410, 150);
                 }
             } finally {
                 g.dispose();
@@ -765,7 +733,10 @@ public final class GameArt {
     public static byte[] crash(int crashPoint, int target, boolean won) throws IOException {
         int w = 520;
         int h = 320;
-        BufferedImage bg = canvas(w, h);
+        BufferedImage bg = canvas(w, h, "Crash");
+        Graphics2D bgg = bg.createGraphics();
+        Ui.inset(bgg, 30, 30, w - 60, h - 80, Ui.inset());
+        bgg.dispose();
         double end = crashPoint / 100.0;
         double tgt = target / 100.0;
         double top = Math.max(2.0, Math.max(end, tgt) * 1.25);
@@ -784,16 +755,16 @@ public final class GameArt {
             Graphics2D g = f.createGraphics();
             try {
                 hints(g);
-                g.setColor(new Color(255, 255, 255, 30));
-                g.setStroke(new BasicStroke(1.5f));
+                g.setColor(Ui.divider());
+                g.setStroke(new BasicStroke(1f));
                 for (int k = 1; k <= 4; k++) g.drawLine(px, py + ph * k / 4, px + pw, py + ph * k / 4);
                 // target line
                 double ty = py + ph - ph * (tgt - 1) / (top - 1);
-                g.setColor(new Color(255, 221, 0, 140));
-                g.setStroke(new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, new float[]{8f, 8f}, 0));
+                g.setColor(Ui.muted());
+                g.setStroke(new BasicStroke(1f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, new float[]{6f, 4f}, 0));
                 g.draw(new java.awt.geom.Line2D.Double(px, ty, px + pw, ty));
-                g.setFont(new Font("SansSerif", Font.BOLD, 13));
-                g.setColor(GOLD);
+                g.setFont(Ui.bold(13));
+                g.setColor(Ui.muted());
                 g.drawString("target " + CrashGame_show(target), px + 4, (int) ty - 6);
                 // the curve
                 Path2D curve = new Path2D.Double();
@@ -811,24 +782,24 @@ public final class GameArt {
                     lastY = y;
                 }
                 boolean crashed = last && !won;
-                g.setColor(crashed ? RED : new Color(0x4CD964));
-                g.setStroke(new BasicStroke(6f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g.setColor(crashed ? Ui.bad() : Ui.ok());
+                g.setStroke(new BasicStroke(3f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
                 g.draw(curve);
                 if (m >= tgt || (last && won)) {
                     double q = Math.log(tgt) / Math.log(end); // how far along the climb the target sits
                     double dx = px + pw * Math.min(1, q);
-                    g.setColor(new Color(0x4CD964));
+                    g.setColor(Ui.ok());
                     g.fill(new Ellipse2D.Double(dx - 9, ty - 9, 18, 18));
                     g.setColor(INK);
                     g.setStroke(new BasicStroke(3f));
                     g.draw(new Ellipse2D.Double(dx - 9, ty - 9, 18, 18));
                 }
-                g.setColor(Color.WHITE);
-                g.fill(new Ellipse2D.Double(lastX - 7, lastY - 7, 14, 14));
+                g.setColor(Ui.text());
+                g.fill(new Ellipse2D.Double(lastX - 5, lastY - 5, 10, 10));
                 String label = last ? (won ? "CASHED OUT " + CrashGame_show(target) + "  (crash " + CrashGame_show(crashPoint) + ")"
                         : "CRASHED at " + CrashGame_show(crashPoint)) : CrashGame_show((int) Math.round(m * 100));
-                outlined(g, label, new Font("SansSerif", Font.BOLD, last ? 24 : 40), w / 2, last ? 293 : 296,
-                        last ? (won ? new Color(0x4CD964) : RED) : Color.WHITE);
+                outlined(g, label, Ui.bold( last ? 24 : 40), w / 2, last ? 293 : 296,
+                        last ? (won ? Ui.ok() : Ui.bad()) : Ui.text());
             } finally {
                 g.dispose();
             }
@@ -855,8 +826,8 @@ public final class GameArt {
     public static byte[] minesBoard(java.util.Set<Integer> found, java.util.Set<Integer> mines, int exploded,
                                     String label, boolean won) throws IOException {
         int w = 420;
-        int h = 400;
-        BufferedImage img = canvas(w, h);
+        int h = 432;
+        BufferedImage img = canvas(w, h, "Mines");
         Graphics2D g = img.createGraphics();
         try {
             hints(g);
@@ -865,27 +836,24 @@ public final class GameArt {
             int x0 = (w - (4 * cell + 3 * gap)) / 2;
             for (int i = 0; i < 16; i++) {
                 int x = x0 + (i % 4) * (cell + gap);
-                int y = 26 + (i / 4) * (cell + gap);
-                RoundRectangle2D tile = new RoundRectangle2D.Float(x, y, cell, cell, 16, 16);
+                int y = 38 + (i / 4) * (cell + gap);
                 boolean isMine = mines.contains(i);
                 boolean isFound = found.contains(i);
-                g.setColor(i == exploded ? new Color(0x8A1010) : isFound ? new Color(0x1E5B3A) : new Color(0, 0, 0, 130));
-                g.fill(tile);
-                g.setColor(INK);
-                g.setStroke(new BasicStroke(3f));
-                g.draw(tile);
+                if (i == exploded) Ui.inset(g, x, y, cell, cell, new Color(0x7A2B2E));
+                else if (isFound) Ui.inset(g, x, y, cell, cell, Ui.inset());
+                else Ui.control(g, x, y, cell, cell);
                 double cx = x + cell / 2.0;
                 double cy = y + cell / 2.0;
-                if (i == exploded) burst(g, cx, cy, 42, new Color(255, 240, 160, 220), new Color(255, 120, 0, 230));
+                if (i == exploded) burst(g, cx, cy, 42, new Color(255, 255, 255, 120), Ui.text());
                 if (isMine) {
-                    g.setColor(new Color(0x2B2F36));
+                    g.setColor(new Color(0x333333));
                     g.fill(new Ellipse2D.Double(cx - 17, cy - 17, 34, 34));
                     g.setColor(INK);
-                    g.setStroke(new BasicStroke(3f));
+                    g.setStroke(new BasicStroke(2f));
                     g.draw(new Ellipse2D.Double(cx - 17, cy - 17, 34, 34));
                     g.setColor(new Color(255, 255, 255, 140));
                     g.fill(new Ellipse2D.Double(cx - 9, cy - 11, 9, 9));
-                    g.setColor(new Color(255, 255, 255, 210));
+                    g.setColor(Ui.muted());
                     for (int k = 0; k < 8; k++) {
                         double a = Math.PI / 4 * k;
                         g.drawLine((int) (cx + Math.cos(a) * 17), (int) (cy + Math.sin(a) * 17),
@@ -898,15 +866,15 @@ public final class GameArt {
                     gem.lineTo(cx, cy + 24);
                     gem.lineTo(cx - 22, cy - 4);
                     gem.closePath();
-                    g.setPaint(new GradientPaint((float) (cx - 20), (float) (cy - 20), new Color(0x9CF5FF),
-                            (float) (cx + 20), (float) (cy + 20), new Color(0x23A8D8)));
+                    g.setPaint(new GradientPaint((float) (cx - 20), (float) (cy - 20), Color.WHITE,
+                            (float) (cx + 20), (float) (cy + 20), new Color(0x7F8FA0)));
                     g.fill(gem);
                     g.setColor(INK);
-                    g.setStroke(new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                    g.setStroke(new BasicStroke(2f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
                     g.draw(gem);
                 }
             }
-            outlined(g, label, new Font("SansSerif", Font.BOLD, 26), w / 2, h - 18, won ? new Color(0x4CD964) : RED);
+            outlined(g, label, Ui.bold(26), w / 2, h - 18, won ? Ui.ok() : Ui.bad());
         } finally {
             g.dispose();
         }
@@ -921,8 +889,8 @@ public final class GameArt {
      */
     public static byte[] scratch(command.util.game.ScratchGame.Card card, String label, boolean won) throws IOException {
         int w = 440;
-        int h = 470;
-        BufferedImage bg = canvas(w, h);
+        int h = 440;
+        BufferedImage bg = canvas(w, h, "Scratch Card");
         int cell = 104;
         int gap = 12;
         int x0 = (w - (3 * cell + 2 * gap)) / 2;
@@ -935,42 +903,33 @@ public final class GameArt {
             Graphics2D g = f.createGraphics();
             try {
                 hints(g);
-                outlined(g, "SCRATCH CARD", new Font("SansSerif", Font.BOLD, 26), w / 2, 40, GOLD);
                 for (int i = 0; i < 9; i++) {
                     int x = x0 + (i % 3) * (cell + gap);
-                    int y = 62 + (i / 3) * (cell + gap);
-                    RoundRectangle2D tile = new RoundRectangle2D.Float(x, y, cell, cell, 18, 18);
+                    int y = 40 + (i / 3) * (cell + gap);
                     boolean open = false;
                     for (int k = 0; k < step; k++) if (order[k] == i) open = true;
                     boolean partial = step < 9 && order[step] == i;
                     boolean hit = last && card.prize != null && card.cells[i] == card.prize.symbol;
                     if (open) {
-                        g.setColor(hit ? new Color(0xFFF3B0) : new Color(0xF4F4F0));
-                        g.fill(tile);
+                        Ui.inset(g, x, y, cell, cell, Ui.PAPER);
                         symbol(g, card.cells[i], x + cell / 2.0, y + cell / 2.0, cell * 0.78);
                     } else {
-                        g.setPaint(new GradientPaint(x, y, new Color(0xC9CDD3), x + cell, y + cell, new Color(0x8C919A)));
-                        g.fill(tile);
+                        Ui.control(g, x, y, cell, cell);
                         if (partial) {
                             // half scratched: a diagonal swipe of the symbol shows through
                             Shape old = g.getClip();
-                            g.setClip(tile);
-                            g.setColor(new Color(0xF4F4F0));
-                            g.fill(new java.awt.geom.Rectangle2D.Double(x, y, cell * 0.5, cell));
+                            g.setClip(new java.awt.Rectangle(x + 2, y + 2, cell / 2 - 2, cell - 4));
+                            g.setColor(Color.WHITE);
+                            g.fillRect(x, y, cell, cell);
                             symbol(g, card.cells[i], x + cell / 2.0, y + cell / 2.0, cell * 0.78);
-                            g.setColor(new Color(0x9A9FA8));
-                            g.fill(new java.awt.geom.Rectangle2D.Double(x + cell * 0.5, y, cell * 0.5, cell));
                             g.setClip(old);
                         } else {
-                            centered(g, "?", new Font("SansSerif", Font.BOLD, 40), new Color(255, 255, 255, 170), x + cell / 2,
-                                    y + cell / 2 + 14);
+                            centered(g, "?", Ui.bold(40), Ui.muted(), x + cell / 2, y + cell / 2 + 14);
                         }
                     }
-                    g.setColor(hit ? GOLD : INK);
-                    g.setStroke(new BasicStroke(hit ? 7f : 4f));
-                    g.draw(tile);
+                    if (hit) Ui.dashedRing(g, x, y, cell, cell);
                 }
-                if (last) outlined(g, label, new Font("SansSerif", Font.BOLD, 28), w / 2, h - 20, won ? GOLD : Color.WHITE);
+                if (last) outlined(g, label, Ui.bold(28), w / 2, h - 20, won ? Ui.ok() : Ui.text());
             } finally {
                 g.dispose();
             }
@@ -982,34 +941,25 @@ public final class GameArt {
 
     // ------------------------------------------------------------------ wordle
 
-    private static final Color WORDLE_GREEN = new Color(0x3FA34D);
-    private static final Color WORDLE_YELLOW = new Color(0xD4A017);
-    private static final Color WORDLE_GREY = new Color(0x4A4F57);
+    private static final Color WORDLE_GREEN = new Color(0x4A8F55);
+    private static final Color WORDLE_YELLOW = new Color(0xB8962A);
+    private static final Color WORDLE_GREY = new Color(0x4E5058);
 
     private static void wordleTile(Graphics2D g, int x, int y, int size, char letter, int score, double squash) {
-        double h = Math.max(4, size * squash);
-        double top = y + (size - h) / 2;
-        RoundRectangle2D tile = new RoundRectangle2D.Double(x, top, size, h, 12, 12);
+        int h = (int) Math.max(4, size * squash);
+        int top = y + (size - h) / 2;
+        Color c = score == 2 ? WORDLE_GREEN : score == 1 ? WORDLE_YELLOW : WORDLE_GREY;
         if (score < 0) {
-            g.setColor(new Color(0, 0, 0, 90));
-            g.fill(tile);
-            g.setColor(letter == 0 ? new Color(255, 255, 255, 50) : new Color(255, 255, 255, 140));
-            g.setStroke(new BasicStroke(3f));
-            g.draw(tile);
+            Ui.inset(g, x, top, size, h, Ui.inset());
         } else {
-            g.setColor(score == 2 ? WORDLE_GREEN : score == 1 ? WORDLE_YELLOW : WORDLE_GREY);
-            g.fill(tile);
-            g.setColor(INK);
-            g.setStroke(new BasicStroke(3f));
-            g.draw(tile);
+            Ui.control(g, x, top, size, h, c.brighter(), c);
         }
         if (letter != 0 && squash > 0.45) {
-            Font f = new Font("SansSerif", Font.BOLD, (int) (size * 0.55));
-            g.setFont(f);
+            g.setFont(Ui.bold((int) (size * 0.55)));
             g.setColor(Color.WHITE);
             String t = Character.toString(Character.toUpperCase(letter));
             FontMetrics fm = g.getFontMetrics();
-            g.drawString(t, x + (size - fm.stringWidth(t)) / 2f, (float) (top + h / 2 + fm.getAscent() * 0.36));
+            g.drawString(t, x + (size - fm.stringWidth(t)) / 2f, (float) (top + h / 2.0 + fm.getAscent() * 0.36));
         }
     }
 
@@ -1022,14 +972,13 @@ public final class GameArt {
         Graphics2D g = f.createGraphics();
         try {
             hints(g);
-            outlined(g, "WORDLE", new Font("SansSerif", Font.BOLD, 28), bg.getWidth() / 2, 42, GOLD);
             for (int row = 0; row < 6; row++) {
                 String guess = row < guesses.size() ? guesses.get(row) : null;
                 int[] score = guess == null ? null : command.util.game.WordleGame.score(guess, answer);
                 boolean newest = row == guesses.size() - 1;
                 for (int col = 0; col < 5; col++) {
                     int x = x0 + col * (size + gap);
-                    int y = 62 + row * (size + gap);
+                    int y = 38 + row * (size + gap);
                     if (guess == null) {
                         wordleTile(g, x, y, size, (char) 0, -1, 1);
                     } else if (newest && col > revealed) {
@@ -1044,7 +993,7 @@ public final class GameArt {
                 }
             }
             if (footer != null) {
-                centered(g, footer, new Font("SansSerif", Font.BOLD, 18), new Color(255, 255, 255, 220), bg.getWidth() / 2,
+                centered(g, footer, Ui.bold(18), Ui.text(), bg.getWidth() / 2,
                         bg.getHeight() - 20);
             }
         } finally {
@@ -1055,12 +1004,12 @@ public final class GameArt {
 
     /** The board as a picture. */
     public static byte[] wordleBoard(List<String> guesses, String answer, String footer) throws IOException {
-        return png(wordleFrame(canvas(420, 62 + 6 * 70 + 30), guesses, answer, 99, 1, footer));
+        return png(wordleFrame(canvas(420, 38 + 6 * 70 + 46, "Wordle"), guesses, answer, 99, 1, footer));
     }
 
     /** The board with the newest row flipping over tile by tile to show its colours. */
     public static byte[] wordleReveal(List<String> guesses, String answer, String footer) throws IOException {
-        BufferedImage bg = canvas(420, 62 + 6 * 70 + 30);
+        BufferedImage bg = canvas(420, 38 + 6 * 70 + 46, "Wordle");
         List<BufferedImage> frames = new ArrayList<>();
         List<Integer> delays = new ArrayList<>();
         for (int col = 0; col < 5; col++) {

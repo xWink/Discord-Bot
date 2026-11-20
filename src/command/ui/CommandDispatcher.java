@@ -25,10 +25,12 @@ public final class CommandDispatcher {
             if (command.isGlobal() || channelId == Server.BOTS_CHANNEL_ID || channelId == Server.SPAM_CHANNEL_ID) {
                 Stats.command(command.getKey());
                 Motion.begin(event.getAuthor().getIdLong());
+                Skin.begin(event.getAuthor().getIdLong());
                 try {
                     command.start(event);
                 } finally {
                     Motion.end();
+                    Skin.end();
                 }
             } else {
                 event.getChannel().sendMessage("`" + command.getKey() + "` works in <#" + Server.BOTS_CHANNEL_ID

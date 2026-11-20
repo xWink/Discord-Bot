@@ -1,6 +1,7 @@
 package command.util.misc;
 
 import command.util.art.GifWriter;
+import command.util.art.Ui;
 import command.util.art.Sticker;
 import economy.Cosmetics;
 
@@ -9,13 +10,9 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.GradientPaint;
 import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Draws the profile card on a neutral slate background with gold accents. The mascot on the right wears whatever the player has
+ * Draws the profile card as a plain grey Swing window: a title bar, bevelled fields and buttons. The mascot on the right wears whatever the player has
  * equipped, so every cosmetic is visible as art. Everything is drawn with shapes and the bundled mascot, so the
  * card looks the same on any machine.
  */
@@ -33,8 +30,8 @@ public final class ProfileCard {
     /** Height of the card with no inventory panel. */
     public static final int HEIGHT = 440;
 
-    private static final Color GOLD = Sticker.GOLD;
-    private static final Color INK = Sticker.INK;
+    /** The sunken box the mascot sits in. */
+    private static final java.awt.Rectangle WELL = new java.awt.Rectangle(496, 34, 396, 392);
 
     private ProfileCard() { }
 
@@ -70,10 +67,7 @@ public final class ProfileCard {
         BufferedImage img = new BufferedImage(WIDTH, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = img.createGraphics();
         try {
-            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-            g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            Ui.hints(g);
             draw(g, s, loadout, pills, height, seed);
         } finally {
             g.dispose();
@@ -92,8 +86,7 @@ public final class ProfileCard {
     static final int MAX_GIF_BYTES = 6 * 1024 * 1024;
 
     /**
-     * Same card as {@link #render}, as a looping GIF: the mascot bobs, stars twinkle around it and a
-     * glint sweeps across the card.
+     * Same card as {@link #render}, as a looping GIF: the mascot bobs and stars twinkle around it.
      *
      * @return the GIF, or null if it came out too large to send (callers fall back to the still card)
      */
@@ -105,12 +98,12 @@ public final class ProfileCard {
         List<Pill> pills = layoutPills(pg, owned, loadout, s.extras);
         pg.dispose();
         int height = HEIGHT + panelHeight(pills);
-        BufferedImage mascot = Sticker.render(loadout.codes, 400, seed);
+        BufferedImage mascot = Sticker.render(loadout.codes, 380, seed);
         java.util.Random random = new java.util.Random(seed);
         double[][] stars = new double[9][];
         for (int i = 0; i < stars.length; i++) {
             // x, y, size, phase
-            stars[i] = new double[]{470 + random.nextInt(400), 30 + random.nextInt(340), 7 + random.nextInt(9),
+            stars[i] = new double[]{520 + random.nextInt(350), 56 + random.nextInt(340), 6 + random.nextInt(7),
                     random.nextDouble()};
         }
 
@@ -120,19 +113,17 @@ public final class ProfileCard {
             BufferedImage img = new BufferedImage(WIDTH, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g = img.createGraphics();
             try {
-                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-                g.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-                g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-                drawBase(g, loadout, height);
+                Ui.hints(g);
+                drawBase(g, s, loadout, height);
                 int bob = (int) Math.round(5 * Math.sin(2 * Math.PI * t));
-                g.drawImage(mascot, 510, 22 + bob, 390, 390, null);
+                g.setClip(WELL.x + 2, WELL.y + 2, WELL.width - 4, WELL.height - 4);
+                g.drawImage(mascot, 504, 40 + bob, 380, 380, null);
+                g.setClip(null);
                 drawFront(g, s, loadout, pills, height);
                 for (double[] star : stars) {
                     double glow = Math.max(0, Math.sin(2 * Math.PI * (t + star[3])));
                     if (glow > 0.15) twinkle(g, star[0], star[1], star[2] * (0.5 + glow), (int) (60 + 195 * glow));
                 }
-                glint(g, t, height);
             } finally {
                 g.dispose();
             }
@@ -142,7 +133,7 @@ public final class ProfileCard {
         return bytes.length > MAX_GIF_BYTES ? null : bytes;
     }
 
-    /** A four-point star in gold, for the twinkle. */
+    /** A four-point star, for the twinkle. */
     private static void twinkle(Graphics2D g, double cx, double cy, double r, int alpha) {
         Path2D star = new Path2D.Double();
         double in = r * 0.28;
@@ -155,73 +146,35 @@ public final class ProfileCard {
             else star.lineTo(x, y);
         }
         star.closePath();
-        g.setColor(new Color(255, 244, 190, Math.min(255, alpha)));
+        g.setColor(new Color(0x6B, 0x6B, 0x6B, Math.min(255, alpha)));
         g.fill(star);
-    }
-
-    /** A soft diagonal shine that crosses the card once per loop. */
-    private static void glint(Graphics2D g, double t, int height) {
-        Shape card = new RoundRectangle2D.Float(8, 8, WIDTH - 16, height - 16, 36, 36);
-        java.awt.Shape oldClip = g.getClip();
-        g.setClip(card);
-        double x = -260 + t * (WIDTH + 520);
-        Color clear = new Color(255, 255, 255, 0);
-        Color shine = new Color(255, 255, 255, 46);
-        g.setPaint(new java.awt.LinearGradientPaint((float) x, 0, (float) (x + 200), 120,
-                new float[]{0f, 0.5f, 1f}, new Color[]{clear, shine, clear}));
-        g.fillRect(0, 0, WIDTH, height);
-        g.setClip(oldClip);
     }
 
     // ----------------------------------------------------------------- draw
 
     private static void draw(Graphics2D g, Stats s, Cosmetics.Loadout l, List<Pill> pills, int height, long seed)
             throws IOException {
-        drawBase(g, l, height);
+        drawBase(g, s, l, height);
         // mascot, wearing the loadout
-        BufferedImage mascot = Sticker.render(l.codes, 400, seed);
-        g.drawImage(mascot, 510, 22, 390, 390, null);
+        BufferedImage mascot = Sticker.render(l.codes, 380, seed);
+        g.setClip(WELL.x + 2, WELL.y + 2, WELL.width - 4, WELL.height - 4);
+        g.drawImage(mascot, 504, 40, 380, 380, null);
+        g.setClip(null);
         drawFront(g, s, l, pills, height);
     }
 
-    /** The card background, border and glow: everything behind the mascot. */
-    private static void drawBase(Graphics2D g, Cosmetics.Loadout l, int height) {
-        boolean bundle = l.has("bundle-weekend");
-        boolean glow = l.has("flair-day");
-        Color top = bundle ? new Color(0x4C525C) : new Color(0x3A3F47);
-        Color bottom = bundle ? new Color(0x262A30) : new Color(0x14161A);
-        Shape card = new RoundRectangle2D.Float(8, 8, WIDTH - 16, height - 16, 36, 36);
-
-        g.setPaint(new GradientPaint(0, 0, top, WIDTH, height, bottom));
-        g.fill(card);
-        g.setClip(card);
-        g.setPaint(new GradientPaint(0, 0, new Color(255, 255, 255, 46), 0, height * 0.4f, new Color(255, 255, 255, 0)));
-        g.fillRect(0, 0, WIDTH, height);
-        // soft spotlight behind the mascot
-        g.setPaint(new java.awt.RadialGradientPaint(720, 190, 260, new float[]{0f, 1f},
-                new Color[]{new Color(255, 255, 255, 70), new Color(255, 255, 255, 0)}));
-        g.fillRect(440, 0, 460, HEIGHT);
-        g.setClip(null);
-
-        if (glow) {
-            for (int i = 10; i >= 1; i--) {
-                g.setColor(new Color(255, 221, 0, 16));
-                g.setStroke(new BasicStroke(i * 2.4f));
-                g.draw(card);
-            }
+    /** The window, and the empty well the mascot goes in. */
+    private static void drawBase(Graphics2D g, Stats s, Cosmetics.Loadout l, int height) {
+        BufferedImage window = Ui.card(WIDTH, height, "Profile");
+        g.drawImage(window, 0, 0, null);
+        Ui.inset(g, WELL.x, WELL.y, WELL.width, WELL.height, Ui.inset());
+        // a dotted focus ring stands in for the glow of the day flair
+        if (l.has("flair-day")) Ui.dashedRing(g, WELL.x - 3, WELL.y - 3, WELL.width + 6, WELL.height + 6);
+        // an extra etched frame stands in for the weekend bundle's second border
+        if (l.has("bundle-weekend")) {
+            Ui.divider(g, 12, WIDTH - 12, height - 10);
+            Ui.divider(g, 12, WIDTH - 12, Ui.TOP + 4);
         }
-        g.setColor(GOLD);
-        g.setStroke(new BasicStroke(6f));
-        g.draw(card);
-        g.setColor(INK);
-        g.setStroke(new BasicStroke(2f));
-        g.draw(new RoundRectangle2D.Float(2, 2, WIDTH - 4, height - 4, 42, 42));
-        if (bundle) {
-            g.setColor(GOLD);
-            g.setStroke(new BasicStroke(2.5f));
-            g.draw(new RoundRectangle2D.Float(24, 24, WIDTH - 48, height - 48, 26, 26));
-        }
-
     }
 
     /** Everything in front of the mascot: avatar, name, stats, inventory. */
@@ -238,102 +191,70 @@ public final class ProfileCard {
         if (l.codes.isEmpty()) return;
         List<String> names = new ArrayList<>();
         for (String code : l.codes) names.add(Cosmetics.label(code));
-        g.setFont(new Font("SansSerif", Font.BOLD, 13));
-        g.setColor(new Color(255, 221, 0, 230));
-        g.drawString("WEARING", x, y);
-        g.setFont(new Font("SansSerif", Font.PLAIN, 13));
-        g.setColor(new Color(255, 255, 255, 210));
-        g.drawString(fit(g, String.join(", ", names), 400 - 80), x + 80, y);
+        g.setFont(Ui.bold(13));
+        g.setColor(Ui.text());
+        g.drawString("Wearing:", x, y);
+        g.setFont(Ui.plain(13));
+        g.setColor(Ui.muted());
+        g.drawString(fit(g, String.join(", ", names), 400 - 80), x + 70, y);
     }
 
     private static void drawAvatar(Graphics2D g, Stats s, int x, int y, int size) {
-        Shape circle = new Ellipse2D.Float(x, y, size, size);
-        g.setColor(new Color(0, 0, 0, 110));
-        g.fill(new Ellipse2D.Float(x + 4, y + 6, size, size));
+        Shape circle = new java.awt.geom.Ellipse2D.Float(x, y, size, size);
         Shape old = g.getClip();
         g.setClip(circle);
         if (s.avatar != null) {
             g.drawImage(s.avatar, x, y, size, size, null);
         } else {
-            g.setPaint(new GradientPaint(x, y, new Color(0xFFE766), x + size, y + size, new Color(0xE0A800)));
-            g.fill(circle);
-            g.setFont(new Font("SansSerif", Font.BOLD, 62));
-            g.setColor(INK);
+            g.setColor(Ui.control());
+            g.fillRect(x, y, size, size);
+            g.setFont(Ui.bold(62));
+            g.setColor(Ui.text());
             String initial = s.name.isEmpty() ? "?" : s.name.substring(0, 1).toUpperCase();
             FontMetrics fm = g.getFontMetrics();
             g.drawString(initial, x + (size - fm.stringWidth(initial)) / 2, y + (size + fm.getAscent() - fm.getDescent()) / 2);
         }
         g.setClip(old);
-        g.setColor(INK);
-        g.setStroke(new BasicStroke(9f));
-        g.draw(circle);
-        g.setColor(GOLD);
-        g.setStroke(new BasicStroke(5f));
-        g.draw(circle);
     }
 
     private static void drawNameBlock(Graphics2D g, Stats s, Cosmetics.Loadout l, int x) {
-        g.setFont(new Font("SansSerif", Font.BOLD, 40));
-        String name = fit(g, s.name, 480 - x + 60);
-        // outlined name: dark stroke first, white fill on top
-        java.awt.font.GlyphVector gv = g.getFont().createGlyphVector(g.getFontRenderContext(), name);
-        Shape outline = gv.getOutline(x, 92);
-        g.setColor(INK);
-        g.setStroke(new BasicStroke(6f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.draw(outline);
-        g.setColor(Color.WHITE);
-        g.fill(outline);
+        g.setFont(Ui.bold(34));
+        g.setColor(Ui.text());
+        g.drawString(fit(g, s.name, 480 - x + 60), x, 90);
 
-        int y = 106;
+        int y = 104;
         if (l.alumni) {
-            ribbon(g, x, y, "\u2605 ALUMNI" + (l.alumniYear > 0 ? "  \u00B7  Class of " + l.alumniYear : ""));
-            y += 40;
+            ribbon(g, x, y, "Alumni" + (l.alumniYear > 0 ? ", class of " + l.alumniYear : ""));
+            y += 34;
         }
         if (l.has("bundle-weekend") || l.has("title-week")) {
             ribbon(g, x, y, l.has("bundle-weekend") ? "the Weekender" : "the Scholar");
-            y += 40;
+            y += 34;
         }
         if (l.has("banner-club")) {
-            g.setFont(new Font("SansSerif", Font.BOLD, 20));
-            String team = fit(g, l.team != null ? l.team : "Team", 260) + " banner";
-            g.setColor(INK);
-            g.setStroke(new BasicStroke(5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            java.awt.font.GlyphVector tv = g.getFont().createGlyphVector(g.getFontRenderContext(), team);
-            Shape to = tv.getOutline(x + 2, y + 20);
-            g.draw(to);
-            g.setColor(GOLD);
-            g.fill(to);
+            g.setFont(Ui.bold(16));
+            g.setColor(Ui.muted());
+            g.drawString(fit(g, l.team != null ? l.team : "Team", 260) + " banner", x + 2, y + 18);
         }
     }
 
+    /** A title shown on a small button face. */
     private static void ribbon(Graphics2D g, int x, int y, String text) {
-        g.setFont(new Font("SansSerif", Font.BOLD | Font.ITALIC, 22));
-        FontMetrics fm = g.getFontMetrics();
-        int w = fm.stringWidth(text) + 40;
-        Path2D p = new Path2D.Float();
-        p.moveTo(x, y);
-        p.lineTo(x + w + 14, y);
-        p.lineTo(x + w, y + 17);
-        p.lineTo(x + w + 14, y + 34);
-        p.lineTo(x, y + 34);
-        p.closePath();
-        g.setColor(GOLD);
-        g.fill(p);
-        g.setColor(INK);
-        g.setStroke(new BasicStroke(4f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g.draw(p);
-        g.drawString(text, x + 18, y + 25);
+        Font font = Ui.bold(15);
+        g.setFont(font);
+        int w = g.getFontMetrics().stringWidth(text) + 28;
+        Ui.button(g, x, y, w, 28, text, font, false);
     }
 
     private static void drawStats(Graphics2D g, Stats s, int x, int y) {
         String[][] cells = {
-                {"BANGS", Integer.toString(s.bangs)},
-                {"DEATHS", Integer.toString(s.deaths)},
-                {"JAMS", Integer.toString(s.jams)},
-                {"SURVIVAL", String.format("%.1f%%", s.survival)},
-                {"STREAK", Integer.toString(s.streak)},
-                {"KARMA", Integer.toString(s.karma)},
-                {"UNLOCKS", s.achievements + "/" + s.achievementsTotal},
+                {"Bangs", Integer.toString(s.bangs)},
+                {"Deaths", Integer.toString(s.deaths)},
+                {"Jams", Integer.toString(s.jams)},
+                {"Survival", String.format("%.1f%%", s.survival)},
+                {"Streak", Integer.toString(s.streak)},
+                {"Karma", Integer.toString(s.karma)},
+                {"Unlocks", s.achievements + "/" + s.achievementsTotal},
         };
         int cellW = 104;
         int cellH = 66;
@@ -341,24 +262,20 @@ public final class ProfileCard {
         for (int i = 0; i < cells.length; i++) {
             int cx = x + (i % 4) * (cellW + gap);
             int cy = y + (i / 4) * (cellH + gap);
-            Shape box = new RoundRectangle2D.Float(cx, cy, cellW, cellH, 16, 16);
-            g.setColor(new Color(0, 0, 0, 120));
-            g.fill(box);
-            g.setColor(INK);
-            g.setStroke(new BasicStroke(3f));
-            g.draw(box);
-            g.setFont(new Font("SansSerif", Font.BOLD, 12));
-            g.setColor(new Color(255, 221, 0, 220));
-            g.drawString(cells[i][0], cx + 12, cy + 22);
-            Font value = new Font("SansSerif", Font.BOLD, 26);
+            // a caption over a read-only text field
+            g.setFont(Ui.bold(12));
+            g.setColor(Ui.muted());
+            g.drawString(cells[i][0], cx + 2, cy + 12);
+            Ui.inset(g, cx, cy + 18, cellW, cellH - 18, Ui.inset());
+            Font value = Ui.plain(24);
             g.setFont(value);
             // shrink until the value fits inside the box, so "100.0%" never clips
             while (g.getFontMetrics().stringWidth(cells[i][1]) > cellW - 20 && value.getSize() > 12) {
                 value = value.deriveFont((float) value.getSize() - 1);
                 g.setFont(value);
             }
-            g.setColor(Color.WHITE);
-            g.drawString(cells[i][1], cx + 12, cy + 52);
+            g.setColor(Ui.text());
+            g.drawString(cells[i][1], cx + 8, cy + 18 + (cellH - 18) / 2 + g.getFontMetrics().getAscent() / 2 - 2);
         }
     }
 
@@ -397,7 +314,7 @@ public final class ProfileCard {
             if (wa != wb) return wa ? -1 : 1;
             return Cosmetics.label(a.code).compareToIgnoreCase(Cosmetics.label(b.code));
         });
-        g.setFont(new Font("SansSerif", Font.BOLD, 14));
+        g.setFont(Ui.bold(14));
         FontMetrics fm = g.getFontMetrics();
         int x = PANEL_LEFT;
         int y = 0;
@@ -420,7 +337,7 @@ public final class ProfileCard {
             Cosmetics.OwnedItem item = sorted.get(i);
             Pill p = new Pill();
             p.worn = worn.codes.contains(item.code);
-            p.text = (p.worn ? "\u2713 " : "") + Cosmetics.label(item.code) + "  \u00B7  " + timeLeft(item.expiresAt);
+            p.text = Cosmetics.label(item.code) + ", " + timeLeft(item.expiresAt);
             p.w = fm.stringWidth(p.text) + 28;
             if (x + p.w > PANEL_RIGHT) {
                 x = PANEL_LEFT;
@@ -450,33 +367,27 @@ public final class ProfileCard {
         if (pills.isEmpty()) return 0;
         int lastRowY = 0;
         for (Pill p : pills) lastRowY = Math.max(lastRowY, p.y);
-        return 40 + lastRowY + PILL_H + 22;
+        return 40 + lastRowY;
     }
 
     private static void drawInventory(Graphics2D g, List<Pill> pills, Cosmetics.Loadout worn, int x, int y) {
+        Ui.divider(g, x, 488, HEIGHT - 42);
         if (pills.isEmpty()) {
-            g.setFont(new Font("SansSerif", Font.ITALIC, 13));
-            g.setColor(new Color(255, 255, 255, 150));
-            g.drawString("You own nothing yet. Try !shop, then !equip.", x, HEIGHT - 30);
+            g.setFont(new Font(Font.DIALOG, Font.ITALIC, 13));
+            g.setColor(Ui.muted());
+            g.drawString("You own nothing yet. Try !shop, then !equip.", x, HEIGHT - 22);
             return;
         }
-        g.setFont(new Font("SansSerif", Font.BOLD, 13));
-        g.setColor(new Color(255, 221, 0, 230));
-        g.drawString("INVENTORY", x, y + 4);
-        g.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        g.setColor(new Color(255, 255, 255, 150));
-        g.drawString("\u2713 = wearing now", x + 96, y + 4);
+        g.setFont(Ui.bold(13));
+        g.setColor(Ui.text());
+        g.drawString("Inventory", x, y + 4);
+        g.setFont(Ui.plain(12));
+        g.setColor(Ui.muted());
+        g.drawString("pressed = wearing now", x + 82, y + 4);
         int top = y + 18;
         for (Pill p : pills) {
-            Shape shape = new RoundRectangle2D.Float(p.x, top + p.y, p.w, PILL_H, PILL_H, PILL_H);
-            g.setColor(p.worn ? GOLD : p.special ? new Color(0xB30000) : new Color(0, 0, 0, 130));
-            g.fill(shape);
-            g.setColor(p.special ? GOLD : INK);
-            g.setStroke(new BasicStroke(p.special ? 2.5f : 3f));
-            g.draw(shape);
-            g.setFont(new Font("SansSerif", Font.BOLD, 14));
-            g.setColor(p.worn ? INK : Color.WHITE);
-            g.drawString(p.text, p.x + 14, top + p.y + 20);
+            Ui.button(g, p.x, top + p.y, p.w, PILL_H, p.text, Ui.bold(14), p.worn);
+            if (p.special) Ui.ring(g, p.x, top + p.y, p.w, PILL_H);
         }
     }
 

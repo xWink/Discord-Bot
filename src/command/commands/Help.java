@@ -85,6 +85,7 @@ public class Help extends Command {
                 new Entry("!ping", "Your latency"),
                 new Entry("!id <Discord ID>", "Look up a user"),
                 new Entry("!info <course | words | dept>", "Course info: a code, words from the title, or a department"),
+                new Entry("!theme light|dark", "Draw your pictures in the light or dark theme"),
                 new Entry("!motion off|on", "Turn every animation into plain text for you"),
                 new Entry("!prereq <course>", "Draws the chain of prerequisites"),
                 new Entry("!due add <course> <name> <when>", "Track what is due; I remind you the day before"),

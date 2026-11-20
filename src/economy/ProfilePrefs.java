@@ -74,4 +74,13 @@ public final class ProfilePrefs {
     public static void setSharingClasses(long user, boolean on) throws SQLException {
         setFlag(user, "share_classes", on);
     }
+
+    /** The picture palette someone chose with {@code !theme}: true for light, false for dark (the default). */
+    public static boolean isLightTheme(long user) throws SQLException {
+        return flag(user, "theme");
+    }
+
+    public static void setLightTheme(long user, boolean light) throws SQLException {
+        setFlag(user, "theme", light);
+    }
 }

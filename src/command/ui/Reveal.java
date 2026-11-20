@@ -65,11 +65,12 @@ public final class Reveal {
             plain(channel, result, buttons);
             return;
         }
+        final command.util.art.Theme theme = command.util.art.Theme.current(); // the worker draws in the asker's palette
         Runnable task = () -> {
             byte[] bytes;
             long started = System.currentTimeMillis();
             try {
-                bytes = job.call();
+                bytes = inTheme(theme, job);
                 Stats.render(System.currentTimeMillis() - started);
             } catch (Exception | OutOfMemoryError e) {
                 e.printStackTrace();
@@ -102,11 +103,12 @@ public final class Reveal {
             fallback.run();
             return;
         }
+        final command.util.art.Theme theme = command.util.art.Theme.current(); // the worker draws in the asker's palette
         Runnable task = () -> {
             byte[] bytes;
             long started = System.currentTimeMillis();
             try {
-                bytes = job.call();
+                bytes = inTheme(theme, job);
                 Stats.render(System.currentTimeMillis() - started);
             } catch (Exception | OutOfMemoryError e) {
                 e.printStackTrace();
@@ -125,6 +127,15 @@ public final class Reveal {
         } catch (RejectedExecutionException e) {
             Stats.renderRejected();
             fallback.run();
+        }
+    }
+
+    private static byte[] inTheme(command.util.art.Theme theme, Callable<byte[]> job) throws Exception {
+        command.util.art.Theme.use(theme);
+        try {
+            return job.call();
+        } finally {
+            if (!inline) command.util.art.Theme.clear();
         }
     }
 

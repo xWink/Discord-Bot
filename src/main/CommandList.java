@@ -162,6 +162,7 @@ public final class CommandList {
         commands.add(new PaidPlay());
         commands.add(new Ping());
         commands.add(new Profile());
+        commands.add(new command.commands.misc.ThemeCommand());
         commands.add(new Stand());
         commands.add(new ShopCommand());
         commands.add(new SwapCommand());

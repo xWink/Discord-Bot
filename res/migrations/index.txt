@@ -24,3 +24,4 @@ V23__taking_courses.sql
 V24__grade_items.sql
 V25__due_and_digest.sql
 V26__reminder_claims.sql
+V27__theme.sql

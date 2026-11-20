@@ -9,9 +9,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.geom.Path2D;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,19 +21,12 @@ import java.util.Set;
 /** Pictures for the course lookup: a banner that builds up, and the prerequisite chain drawn as connected boxes. */
 public final class CourseArt {
 
-    private static final Color GOLD = Sticker.GOLD;
-    private static final Color INK = Sticker.INK;
 
     private CourseArt() { }
 
+    /** Course level as a shade of grey: the deeper the level, the darker. */
     private static Color levelColour(int level) {
-        switch (level) {
-            case 1: return new Color(0x57F287);
-            case 2: return new Color(0x3498DB);
-            case 3: return new Color(0xE67E22);
-            case 4: return new Color(0xED4245);
-            default: return new Color(0x9B59B6);
-        }
+        return Ui.mix(Ui.faint(), Ui.text(), (Math.max(1, Math.min(level, 5)) - 1) / 4.0);
     }
 
     private static String fit(Graphics2D g, String text, Font font, int max) {
@@ -49,25 +40,23 @@ public final class CourseArt {
     // ------------------------------------------------------------------ banner
 
     private static final int BANNER_W = 700;
-    private static final int BANNER_H = 170;
+    private static final int BANNER_H = 180;
 
-    private static void chip(Graphics2D g, String text, int x, int y, Color fill, double grow) {
+    private static void chip(Graphics2D g, String text, int x, int y, boolean on, double grow) {
         if (grow <= 0) return;
-        g.setFont(new Font("SansSerif", Font.BOLD, 16));
+        g.setFont(Ui.bold(16));
         FontMetrics fm = g.getFontMetrics();
         int w = fm.stringWidth(text) + 26;
         int h = 30;
         double scale = Math.min(1, grow);
         int dw = (int) (w * scale);
         int dh = (int) (h * scale);
-        Shape pill = new RoundRectangle2D.Double(x + (w - dw) / 2.0, y + (h - dh) / 2.0, dw, dh, h, h);
-        g.setColor(fill);
-        g.fill(pill);
-        g.setColor(INK);
-        g.setStroke(new BasicStroke(3f));
-        g.draw(pill);
+        int bx = x + (w - dw) / 2;
+        int by = y + (h - dh) / 2;
+        if (on) Ui.inset(g, bx, by, dw, dh, Ui.select());
+        else Ui.control(g, bx, by, dw, dh);
         if (scale >= 1) {
-            g.setColor(Color.WHITE.equals(fill) ? INK : Color.WHITE);
+            g.setColor(Ui.text());
             g.drawString(text, x + 13, y + 21);
         }
     }
@@ -78,30 +67,25 @@ public final class CourseArt {
         try {
             GameArt.hints(g);
             Color level = levelColour(c.level());
-            // a stripe in the level's colour slides down the left edge
+            // a bar in the level's shade slides down the left edge
             g.setColor(level);
-            int stripe = (int) (Math.min(1, step / 2.0) * (BANNER_H - 36));
-            g.fillRoundRect(18, 18, 10, stripe, 8, 8);
+            int stripe = (int) (Math.min(1, step / 2.0) * (BANNER_H - Ui.TOP - 24));
+            g.fillRect(18, Ui.TOP + 12, 10, stripe);
             // the code slides in from the left
             double slide = 1 - Math.min(1, step / 3.0);
             int codeX = 50 - (int) (slide * 120);
             if (step >= 1) {
-                g.setFont(new Font("SansSerif", Font.BOLD, 40));
-                java.awt.font.GlyphVector gv = g.getFont().createGlyphVector(g.getFontRenderContext(), c.code);
-                Shape o = gv.getOutline(codeX, 66);
-                g.setColor(INK);
-                g.setStroke(new BasicStroke(7f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                g.draw(o);
-                g.setColor(GOLD);
-                g.fill(o);
+                g.setFont(Ui.bold(40));
+                g.setColor(Ui.text());
+                g.drawString(c.code, codeX, 76);
             }
             // the title fades up
             if (step >= 2) {
                 int alpha = (int) (255 * Math.min(1, (step - 1) / 2.0));
-                Font font = new Font("SansSerif", Font.BOLD, 22);
-                g.setColor(new Color(255, 255, 255, alpha));
+                Font font = Ui.bold(22);
+                g.setColor(new Color(Ui.text().getRed(), Ui.text().getGreen(), Ui.text().getBlue(), alpha));
                 g.setFont(font);
-                g.drawString(fit(g, c.title, font, BANNER_W - 100), 52, 100);
+                g.drawString(fit(g, c.title, font, BANNER_W - 100), 52, 108);
             }
             // chips pop in one after another
             List<String> chips = new ArrayList<>();
@@ -110,11 +94,11 @@ public final class CourseArt {
             if (!c.credits.isEmpty()) chips.add(c.credits + " credits");
             if (c.source.equals("graduate")) chips.add("Graduate");
             int x = 52;
-            g.setFont(new Font("SansSerif", Font.BOLD, 16));
+            g.setFont(Ui.bold(16));
             for (int i = 0; i < chips.size(); i++) {
                 double grow = (step - 3 - i * 0.6) / 1.0;
                 int w = g.getFontMetrics().stringWidth(chips.get(i)) + 26;
-                chip(g, chips.get(i), x, 120, i == 0 ? level.darker() : new Color(0, 0, 0, 150), grow);
+                chip(g, chips.get(i), x, 126, i == 0, grow);
                 x += w + 10;
             }
         } finally {
@@ -125,7 +109,7 @@ public final class CourseArt {
 
     /** The course code, title and facts building up over a second, then holding. */
     public static byte[] banner(Course c) throws IOException {
-        BufferedImage bg = GameArt.canvas(BANNER_W, BANNER_H);
+        BufferedImage bg = GameArt.canvas(BANNER_W, BANNER_H, "Course");
         List<BufferedImage> frames = new ArrayList<>();
         List<Integer> delays = new ArrayList<>();
         int steps = 8;
@@ -276,42 +260,30 @@ public final class CourseArt {
     private static void box(Graphics2D g, Node n, boolean target, double grow) {
         if (grow <= 0) return;
         double s = Math.min(1, grow);
-        double w = BOX_W * s;
-        double h = BOX_H * s;
-        Shape r = new RoundRectangle2D.Double(n.x + (BOX_W - w) / 2, n.y + (BOX_H - h) / 2, w, h, 16, 16);
-        Color fill = target ? new Color(0x4A3F00) : new Color(0, 0, 0, 140);
-        Color edge = target ? GOLD : INK;
+        int w = (int) (BOX_W * s);
+        int h = (int) (BOX_H * s);
+        int x = n.x + (BOX_W - w) / 2;
+        int y = n.y + (BOX_H - h) / 2;
         switch (n.state) {
-            case DONE: fill = new Color(0x1E5B3A); edge = new Color(0x3FA34D); break;
-            case READY: fill = new Color(0x1B3B5A); edge = new Color(0x3498DB); break;
-            case MAYBE: fill = new Color(0x4A3F00); edge = new Color(0xFEE75C); break;
-            case LOCKED: fill = new Color(0, 0, 0, 170); edge = new Color(0x6A707A); break;
-            default: break;
+            case DONE: Ui.inset(g, x, y, w, h, Ui.select()); break;
+            case LOCKED: Ui.outline(g, x, y, w, h, Ui.control()); break;
+            default: Ui.control(g, x, y, w, h); break;
         }
-        g.setColor(fill);
-        g.fill(r);
-        g.setColor(target && n.state == State.NEUTRAL ? GOLD : edge);
-        g.setStroke(new BasicStroke(target ? 4f : 3f));
-        g.draw(r);
-        if (target && n.state != State.NEUTRAL) {
-            g.setColor(GOLD);
-            g.setStroke(new BasicStroke(2f));
-            g.draw(new RoundRectangle2D.Double(n.x - 5, n.y - 5, BOX_W + 10, BOX_H + 10, 20, 20));
-        }
+        if (target) Ui.ring(g, x, y, w, h);
         if (s >= 1) {
-            g.setFont(new Font("SansSerif", Font.BOLD, 16));
-            g.setColor(target ? GOLD : n.state == State.LOCKED ? new Color(255, 255, 255, 150) : Color.WHITE);
+            if (n.state == State.MAYBE) Ui.dashedRing(g, n.x, n.y, BOX_W, BOX_H);
+            Color ink = n.state == State.LOCKED ? Ui.muted() : Ui.text();
+            g.setFont(Ui.bold(16));
+            g.setColor(ink);
             g.drawString(n.code, n.x + 12, n.y + 24);
+            g.setFont(Ui.bold(11));
             if (n.state == State.DONE) {
-                g.setColor(new Color(0x57F287));
-                g.drawString("\u2713", n.x + BOX_W - 26, n.y + 24);
+                g.drawString("done", n.x + BOX_W - 38, n.y + 22);
             } else if (n.state == State.READY) {
-                g.setColor(new Color(0x7CC4FF));
-                g.setFont(new Font("SansSerif", Font.BOLD, 11));
-                g.drawString("READY", n.x + BOX_W - 50, n.y + 22);
+                g.drawString("ready", n.x + BOX_W - 40, n.y + 22);
             }
-            Font small = new Font("SansSerif", Font.PLAIN, 12);
-            g.setColor(new Color(255, 255, 255, 190));
+            Font small = Ui.plain(12);
+            g.setColor(n.state == State.LOCKED ? Ui.muted() : Ui.text());
             g.setFont(small);
             g.drawString(fit(g, n.title.isEmpty() ? "not in the catalogue" : n.title, small, BOX_W - 20), n.x + 12, n.y + 44);
         }
@@ -328,9 +300,8 @@ public final class CourseArt {
         Path2D path = new Path2D.Double();
         path.moveTo(x1, y1);
         path.lineTo(mx, my);
-        g.setColor(from.state == State.DONE ? new Color(0x3FA34D) : from.state == State.LOCKED
-                ? new Color(255, 221, 0, 90) : new Color(255, 221, 0, 200));
-        g.setStroke(new BasicStroke(3f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g.setColor(from.state == State.LOCKED ? Ui.control() : Ui.muted());
+        g.setStroke(new BasicStroke(2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER));
         g.draw(path);
         if (progress >= 1) {
             Path2D head = new Path2D.Double();
@@ -342,29 +313,32 @@ public final class CourseArt {
         }
     }
 
-    private static void swatch(Graphics2D g, int x, int y, Color fill, Color edge, String label) {
-        g.setColor(fill);
-        g.fill(new RoundRectangle2D.Double(x, y, 16, 16, 5, 5));
-        g.setColor(edge);
-        g.setStroke(new BasicStroke(2f));
-        g.draw(new RoundRectangle2D.Double(x, y, 16, 16, 5, 5));
-        g.setFont(new Font("SansSerif", Font.PLAIN, 12));
-        g.setColor(new Color(255, 255, 255, 200));
-        g.drawString(label, x + 22, y + 13);
+    private static int swatch(Graphics2D g, int x, int y, State state, String label) {
+        switch (state) {
+            case DONE: Ui.inset(g, x, y, 16, 16, Ui.select()); break;
+            case LOCKED: Ui.outline(g, x, y, 16, 16, Ui.control()); break;
+            default: Ui.control(g, x, y, 16, 16); break;
+        }
+        if (state == State.MAYBE) Ui.dashedRing(g, x, y, 16, 16);
+        g.setFont(Ui.plain(12));
+        g.setColor(Ui.text());
+        g.drawString(label, x + 24, y + 12);
+        return x + 24 + g.getFontMetrics().stringWidth(label) + 18;
     }
 
     /** The key, and how far along the person is, under a coloured tree. */
     private static void legend(Graphics2D g, int w, int h, Progress p, Course root) {
         int y = h - 46;
-        swatch(g, 40, y, new Color(0x1E5B3A), new Color(0x3FA34D), "finished");
-        swatch(g, 130, y, new Color(0x1B3B5A), new Color(0x3498DB), "ready to take");
-        swatch(g, 250, y, new Color(0x4A3F00), new Color(0xFEE75C), "ready, part unchecked");
-        swatch(g, 410, y, new Color(0, 0, 0, 170), new Color(0x6A707A), "not yet");
+        int x = 40;
+        x = swatch(g, x, y, State.DONE, "finished");
+        x = swatch(g, x, y, State.READY, "ready to take");
+        x = swatch(g, x, y, State.MAYBE, "part unchecked");
+        swatch(g, x, y, State.LOCKED, "not yet");
         String line = p.target == State.READY ? "You can take " + root.code + " now."
                 : p.target == State.MAYBE ? "You meet everything I can check for " + root.code + "."
                 : p.finished + " of " + p.needed + " prerequisite courses finished"
                 + (p.nextUp.isEmpty() ? "." : ". Next: " + p.nextUp.get(0).code + ".");
-        GameArt.outlined(g, line, new Font("SansSerif", Font.BOLD, 15), w / 2, h - 12, p.target == State.READY ? new Color(0x57F287) : Color.WHITE);
+        GameArt.outlined(g, line, Ui.bold(15), w / 2, h - 12, Ui.text());
     }
 
     /**
@@ -403,7 +377,7 @@ public final class CourseArt {
         for (List<Node> col : columns) rows = Math.max(rows, col.size());
         int w = 40 + columns.size() * BOX_W + (columns.size() - 1) * COL_GAP + 40;
         int h = 90 + rows * BOX_H + (rows - 1) * ROW_GAP + (personal ? 56 : 30);
-        w = Math.max(w, 420);
+        w = Math.max(w, personal ? 600 : 420);
         for (int c = 0; c < columns.size(); c++) {
             List<Node> col = columns.get(c);
             int colHeight = col.size() * BOX_H + (col.size() - 1) * ROW_GAP;
@@ -413,7 +387,7 @@ public final class CourseArt {
                 n.y = 70 + (rows * BOX_H + (rows - 1) * ROW_GAP - colHeight) / 2 + r * (BOX_H + ROW_GAP);
             }
         }
-        BufferedImage bg = GameArt.canvas(w, h);
+        BufferedImage bg = GameArt.canvas(w, h, "Prerequisites - " + root.code);
         List<BufferedImage> frames = new ArrayList<>();
         List<Integer> delays = new ArrayList<>();
         int steps = columns.size() * 2;
@@ -422,7 +396,6 @@ public final class CourseArt {
             Graphics2D g = f.createGraphics();
             try {
                 GameArt.hints(g);
-                GameArt.outlined(g, "Prerequisites for " + root.code, new Font("SansSerif", Font.BOLD, 24), w / 2, 44, GOLD);
                 for (Node n : nodes.values()) {
                     int col = maxDepth - n.depth;
                     double grow = (step - col * 2) / 2.0;
@@ -439,7 +412,7 @@ public final class CourseArt {
                         legend(g, w, h, progress, root);
                     } else {
                         GameArt.centered(g, "An arrow means \"needed for\". Some prerequisites are alternatives: check the text.",
-                                new Font("SansSerif", Font.PLAIN, 12), new Color(255, 255, 255, 160), w / 2, h - 12);
+                                Ui.plain(12), Ui.muted(), w / 2, h - 12);
                     }
                 }
             } finally {
@@ -455,35 +428,30 @@ public final class CourseArt {
 
     private static void histogram(Graphics2D g, String title, int[] counts, double average, int x, int y, int w, int h,
                                   Color colour, double grow) {
-        g.setFont(new Font("SansSerif", Font.BOLD, 16));
-        g.setColor(GOLD);
+        g.setFont(Ui.bold(16));
+        g.setColor(Ui.text());
         g.drawString(title, x, y - 10);
         int max = 1;
         for (int c : counts) max = Math.max(max, c);
         int barW = (w - 4 * 12) / 5;
         for (int i = 0; i < 5; i++) {
             int bx = x + i * (barW + 12);
-            int full = (int) ((h - 30) * counts[i] / (double) max);
+            int full = (int) ((h - 42) * counts[i] / (double) max);
             int bh = (int) (full * Math.min(1, grow));
-            g.setColor(new Color(0, 0, 0, 120));
-            g.fill(new RoundRectangle2D.Double(bx, y, barW, h - 22, 8, 8));
-            g.setColor(colour);
-            g.fill(new RoundRectangle2D.Double(bx, y + h - 22 - bh, barW, Math.max(bh, 0), 8, 8));
-            g.setColor(INK);
-            g.setStroke(new BasicStroke(2f));
-            g.draw(new RoundRectangle2D.Double(bx, y, barW, h - 22, 8, 8));
-            g.setFont(new Font("SansSerif", Font.BOLD, 13));
-            g.setColor(Color.WHITE);
+            Ui.inset(g, bx, y, barW, h - 22, Ui.inset());
+            if (bh > 1) Ui.control(g, bx + 2, y + h - 22 - bh - 2, barW - 4, bh, colour, colour);
+            g.setFont(Ui.bold(13));
+            g.setColor(Ui.text());
             String label = Integer.toString(i + 1);
             g.drawString(label, bx + (barW - g.getFontMetrics().stringWidth(label)) / 2, y + h - 4);
             if (counts[i] > 0 && grow >= 1) {
                 String n = Integer.toString(counts[i]);
-                g.drawString(n, bx + (barW - g.getFontMetrics().stringWidth(n)) / 2, y + h - 22 - bh - 4);
+                g.drawString(n, bx + (barW - g.getFontMetrics().stringWidth(n)) / 2, y + h - 22 - bh - 6);
             }
         }
         if (grow >= 1) {
-            g.setFont(new Font("SansSerif", Font.BOLD, 20));
-            g.setColor(Color.WHITE);
+            g.setFont(Ui.bold(20));
+            g.setColor(Ui.text());
             g.drawString(String.format("avg %.1f", average), x + w - 80, y - 10);
         }
     }
@@ -491,8 +459,8 @@ public final class CourseArt {
     /** Two bar charts, how hard and how heavy students found the course, growing from nothing. */
     public static byte[] ratingsChart(Course c, courses.Ratings.Summary s) throws IOException {
         int w = 640;
-        int h = 290;
-        BufferedImage bg = GameArt.canvas(w, h);
+        int h = 300;
+        BufferedImage bg = GameArt.canvas(w, h, "Ratings - " + c.code);
         List<BufferedImage> frames = new ArrayList<>();
         List<Integer> delays = new ArrayList<>();
         int steps = 6;
@@ -502,10 +470,10 @@ public final class CourseArt {
             try {
                 GameArt.hints(g);
                 double grow = step / (double) steps;
-                GameArt.outlined(g, c.code + " \u00B7 " + s.count + (s.count == 1 ? " rating" : " ratings"),
-                        new Font("SansSerif", Font.BOLD, 22), w / 2, 36, GOLD);
-                histogram(g, "Difficulty", s.difficultyCounts, s.difficulty, 40, 80, 260, 180, new Color(0xE67E22), grow);
-                histogram(g, "Workload", s.workloadCounts, s.workload, 340, 80, 260, 180, new Color(0x3498DB), grow);
+                GameArt.outlined(g, c.code + ": " + s.count + (s.count == 1 ? " rating" : " ratings"),
+                        Ui.bold(18), w / 2, 48, Ui.text());
+                histogram(g, "Difficulty", s.difficultyCounts, s.difficulty, 40, 90, 260, 180, Ui.select(), grow);
+                histogram(g, "Workload", s.workloadCounts, s.workload, 340, 90, 260, 180, Ui.select(), grow);
             } finally {
                 g.dispose();
             }
@@ -551,7 +519,7 @@ public final class CourseArt {
         }
         int w = Math.max(460, 40 + columns * BOX_W + (columns - 1) * COL_GAP + 40);
         int h = 92 + rows * BOX_H + (rows - 1) * ROW_GAP + 70;
-        BufferedImage bg = GameArt.canvas(w, h);
+        BufferedImage bg = GameArt.canvas(w, h, "Route - " + plan.target.code);
         List<BufferedImage> frames = new ArrayList<>();
         List<Integer> delays = new ArrayList<>();
         int steps = columns * 2;
@@ -560,14 +528,13 @@ public final class CourseArt {
             Graphics2D g = f.createGraphics();
             try {
                 GameArt.hints(g);
-                GameArt.outlined(g, "Route to " + plan.target.code, new Font("SansSerif", Font.BOLD, 24), w / 2, 40, GOLD);
                 for (int c = 0; c < columns; c++) {
                     double grow = (step - c * 2) / 2.0;
                     if (grow <= 0) continue;
-                    GameArt.centered(g, terms.get(c).term.label(), new Font("SansSerif", Font.BOLD, 15), new Color(255, 255, 255, (int) (230 * Math.min(1, grow))),
+                    GameArt.centered(g, terms.get(c).term.label(), Ui.bold(15), new Color(Ui.text().getRed(), Ui.text().getGreen(), Ui.text().getBlue(), (int) (255 * Math.min(1, grow))),
                             40 + c * (BOX_W + COL_GAP) + BOX_W / 2, 76);
                     if (terms.get(c).courses.isEmpty()) {
-                        GameArt.centered(g, "nothing fits", new Font("SansSerif", Font.ITALIC, 13), new Color(255, 255, 255, 120),
+                        GameArt.centered(g, "nothing fits", new Font(Font.DIALOG, Font.ITALIC, 13), Ui.muted(),
                                 40 + c * (BOX_W + COL_GAP) + BOX_W / 2, 92 + BOX_H / 2);
                     }
                 }
@@ -585,9 +552,9 @@ public final class CourseArt {
                 if (step == steps) {
                     String line = plan.complete ? "Earliest finish: " + plan.finish().label() + " \u00B7 " + columns + (columns == 1 ? " term" : " terms")
                             + " \u00B7 up to " + perTerm + " courses a term" : "No route found in " + columns + " terms";
-                    GameArt.outlined(g, line, new Font("SansSerif", Font.BOLD, 15), w / 2, h - 30, plan.complete ? new Color(0x57F287) : Color.WHITE);
-                    GameArt.centered(g, "Blue = ready to take now. A ? means the catalogue does not say when it is offered.",
-                            new Font("SansSerif", Font.PLAIN, 11), new Color(255, 255, 255, 150), w / 2, h - 12);
+                    GameArt.outlined(g, line, Ui.bold(15), w / 2, h - 30, plan.complete ? Ui.ok() : Ui.text());
+                    GameArt.centered(g, "Bold outline = ready to take now. A ? means the catalogue does not say when it is offered.",
+                            Ui.plain(11), Ui.muted(), w / 2, h - 12);
                 }
             } finally {
                 g.dispose();
